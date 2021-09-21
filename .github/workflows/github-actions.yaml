@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: build
-        run: npm deploy-lambda
+        run: npm run deploy-lambda
 
       - name: Deploy to AWS
         uses: appleboy/lambda-action@master
