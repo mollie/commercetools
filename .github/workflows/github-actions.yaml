@@ -1,0 +1,41 @@
+name: GitHub Actions
+on: [push]
+jobs:
+  Test-GitHub-Actions:
+    # env:
+    #   MOLLIE_CONFIG: ${{ secrets.MOLLIE_CONFIG_JSON }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install deps
+        run: npm install
+
+      - name: Build
+        run: npm run build
+      # - name: Move node modules to build folder
+      #   run: mv node_modules build/
+      # - name: Zip contents
+      #   run: (cd build && zip -r ../function.zip .)
+      # - name: Deploy to AWS
+      #   uses: appleboy/lambda-action@master
+      #   with:
+      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws_region: ${{ secrets.AWS_REGION }}
+      #     function_name: get-mollie-payment-methods-lambda
+      #     environment: MOLLIE_CONFIG=${{ secrets.MOLLIE_CONFIG_JSON }}
+      #     zip_file: function.zip
+      # - name: Deploy to GCP
+      #   uses: google-github-actions/deploy-cloudrun@main
+      #   with:
+      #     project_id:
+      #     service_account_key:
+      #     export_default_credentials: true
+      # - name: Deploy to Azure
+      #   uses: Azure/functions-action@v1.4.3
+      #   with:
+      #     app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+      #     package: ${{ secrets.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      #     publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
