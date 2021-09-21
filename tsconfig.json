@@ -17,7 +17,8 @@
     // "rootDir": "src/"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "lambdaHandler.ts"
   ],
   "exclude": [
     "node_modules",

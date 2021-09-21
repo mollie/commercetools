@@ -1,5 +1,5 @@
 import { createMollieClient } from '@mollie/api-client';
-import { loadConfig } from '../config/config';
+import { loadConfig } from './config/config';
 
 let config = loadConfig();
 
