@@ -2,11 +2,12 @@
   "name": "julien",
   "version": "0.0.1",
   "description": "",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "scripts": {
     "build": "node_modules/typescript/bin/tsc",
     "start": "node .",
     "develop": "nodemon src/index.ts",
+    "deploy-lambda": "npm i && npm run build && cp build/src/lambdaHandler.js build/src/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

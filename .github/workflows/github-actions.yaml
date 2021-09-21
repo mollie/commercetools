@@ -1,7 +1,8 @@
 name: GitHub Actions
 on: [push]
 jobs:
-  Test-GitHub-Actions:
+  # AND Sanity check live envs test deployments
+  Dev-Build:
     env:
       MOLLIE_CONFIG: ${{ secrets.MOLLIE_CONFIG_JSON }}
     runs-on: ubuntu-latest
@@ -14,10 +15,14 @@ jobs:
 
       - name: Build
         run: npm run build
-      - name: Move node modules to build folder
-        run: mv node_modules build/
-      - name: Zip contents
-        run: (cd build && zip -r ../function.zip .)
+  Deploy-AWS:
+    env:
+      MOLLIE_CONFIG: ${{ secrets.MOLLIE_CONFIG_JSON }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: build
+        run: npm deploy-lambda
+
       - name: Deploy to AWS
         uses: appleboy/lambda-action@master
         with:
@@ -26,7 +31,7 @@ jobs:
           aws_region: ${{ secrets.AWS_REGION }}
           function_name: get-mollie-payment-methods-lambda
           environment: MOLLIE_CONFIG=${{ secrets.MOLLIE_CONFIG_JSON }}
-          zip_file: function.zip
+          zip_file: extension-module.zip
       # - name: Deploy to GCP
       #   uses: google-github-actions/deploy-cloudrun@main
       #   with:
@@ -39,3 +44,4 @@ jobs:
       #     app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
       #     package: ${{ secrets.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
       #     publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+  # Production ready Docker build & deploy etc
