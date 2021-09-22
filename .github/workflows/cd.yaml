@@ -1,20 +1,9 @@
-name: GitHub Actions
-on: [push]
+name: CD
+on:
+  workflow_dispatch:
+    branches:
+      - main
 jobs:
-  # AND Sanity check live envs test deployments
-  # Dev-Build:
-  #   env:
-  #     MOLLIE_CONFIG: ${{ secrets.MOLLIE_CONFIG_JSON }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v2
-
-  #     - name: Install deps
-  #       run: npm install
-
-  #     - name: Build
-  #       run: npm run build
   Deploy-AWS:
     env:
       MOLLIE_CONFIG: ${{ secrets.MOLLIE_CONFIG_JSON }}
