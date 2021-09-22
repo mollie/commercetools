@@ -3,8 +3,8 @@ FROM node:16-alpine
 # A directory within the virtualized Docker environment
 WORKDIR /app
 
-# Copy all files from current directory to working dir in image
-COPY package.json ./
+# Copy all needed files from current directory to working dir in image
+COPY package*.json ./
 COPY tsconfig.json ./
 COPY src ./src
 
