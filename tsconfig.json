@@ -14,7 +14,7 @@
     "emitDecoratorMetadata": true,
     "target": "es2017",
     "outDir": "build/",
-    // "rootDir": "src/"
+    "rootDir": "."
   },
   "include": [
     "src/**/*",

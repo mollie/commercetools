@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@main
+        uses: actions/checkout@v2
 
       - name: build
         run: npm run zip-lambda

@@ -6,15 +6,13 @@ on:
 jobs:
   # AND Sanity check live envs test deployments
   Dev-Build:
-    env:
-      MOLLIE_CONFIG: ${{ secrets.MOLLIE_CONFIG_JSON }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@main
+        uses: actions/checkout@v2
 
       - name: Install deps
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
