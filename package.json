@@ -7,7 +7,7 @@
     "build": "node_modules/typescript/bin/tsc",
     "start": "node .",
     "develop": "nodemon src/runner.ts",
-    "deploy-lambda": "npm i && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip .",
+    "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
