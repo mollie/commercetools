@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@main
 
       - name: build
-        run: npm run deploy-lambda
+        run: npm run zip-lambda
 
       - name: Deploy to AWS
         uses: appleboy/lambda-action@master
