@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { config } from './config/config';
 import createMollieClient, { List, Method } from '@mollie/api-client';
 
@@ -5,12 +6,12 @@ const mollieApiKey = config.mollieApiKey
 
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
-exports.handler = async (req, res) => {
+exports.handler = async (req: Request, res: Response) => {
   // Methods for the Orders API
   try {
     const methods: List<Method> = await mollieClient.methods.all();
     res.status(200).send(methods)
-  } catch (error) {
+  } catch (error: any) {
     console.warn(error);
     res.status(400).send(error.message)
   }
