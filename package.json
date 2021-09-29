@@ -8,6 +8,7 @@
     "start": "node build/src/runner.js",
     "develop": "nodemon src/runner.ts",
     "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
+    "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

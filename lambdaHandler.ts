@@ -1,17 +1,7 @@
 import { createMollieClient } from '@mollie/api-client';
-import { loadConfig } from './config/config';
+import { config } from './config/config';
 
-let config = loadConfig();
-
-let testApiKey: string;
-try {
-  testApiKey = config.MOLLIE_TEST_API_KEY;
-} catch (err) {
-  throw new Error('Set env config file');
-}
-
-const mollieClient = createMollieClient({ apiKey: testApiKey });
-
+const mollieClient = createMollieClient({ apiKey: config.mollieApiKey });
 
 exports.handler = async () => {
   // Methods for the Payments API

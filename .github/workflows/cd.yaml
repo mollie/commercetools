@@ -1,8 +1,5 @@
 name: CD
-on:
-  workflow_dispatch:
-    branches:
-      - main
+on: [workflow_dispatch]
 jobs:
   Deploy-AWS:
     env:
@@ -12,7 +9,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: build
+      - name: build_AWS
         run: npm run zip-lambda
 
       - name: Deploy to AWS
@@ -24,12 +21,27 @@ jobs:
           function_name: get-mollie-payment-methods-lambda
           environment: MOLLIE_CONFIG=${{ secrets.MOLLIE_CONFIG_JSON }}
           zip_file: extension-module.zip
-      # - name: Deploy to GCP
-      #   uses: google-github-actions/deploy-cloudrun@main
-      #   with:
-      #     project_id:
-      #     service_account_key:
-      #     export_default_credentials: true
+
+  Deploy-GCP-Function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: build_GCP
+        run: npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && cp -R node_modules build/
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloud-functions@main
+        with:
+          name: mollie-commercetools-function
+          runtime: nodejs14
+          credentials: ${{ secrets.GCP_SA_KEY }}
+          region: europe-west1
+          source_dir: build
+          entry_point: handler
+      # - id: test
+      #   run: curl "${{ steps.deploy.outputs.url }}"
       # - name: Deploy to Azure
       #   uses: Azure/functions-action@v1.4.3
       #   with:

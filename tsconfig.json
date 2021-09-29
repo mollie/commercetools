@@ -18,7 +18,8 @@
   },
   "include": [
     "src/**/*",
-    "lambdaHandler.ts"
+    "lambdaHandler.ts",
+    "gcpFunctionHandler.ts",
   ],
   "exclude": [
     "node_modules",
