@@ -1,4 +1,4 @@
 export interface Config {
-  port: number | string;
+  port?: number | string;
   mollieApiKey: string;
 }

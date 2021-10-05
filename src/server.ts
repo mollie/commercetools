@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import app from './app'
+import config from '../config/config';
 
-// TODO: Get port from config once the gpc-function feature is merged (reworked config export)
-const port = process.env.PORT || 3000
+const port = config.port
 
 const _exit = _.once(() => {
   console.log('\nClosing http server.')
