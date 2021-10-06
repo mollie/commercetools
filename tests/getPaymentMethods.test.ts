@@ -52,8 +52,8 @@ describe("getPaymentMethods unit tests", () => {
     expect(JSON.parse(setCustomFieldObject.value)).toMatchObject(mockedResponse);
   })
 
-  it("Should not fail on empty request body", async () => {
-    const mockedRequest = { body: {} } as Request
+  it("Should not fail without request body", async () => {
+    const mockedRequest = {} as Request
     const mollieClient = { methods: { all: jest.fn().mockResolvedValueOnce([]) } } as any
     const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient)
 
@@ -64,7 +64,7 @@ describe("getPaymentMethods unit tests", () => {
 
   it("Should return error if mollieClient call fails", async () => {
     const mockedError = new Error('Test error')
-    const mockedRequest = { body: {} } as Request
+    const mockedRequest = {} as Request
     const mollieClient = { methods: { all: jest.fn().mockRejectedValue(mockedError) } } as any
     const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient)
 
