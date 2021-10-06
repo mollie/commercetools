@@ -1,5 +1,6 @@
 export type CTActionResponse = {
   actions: Action[]
+  version?: number
 }
 
 export type Action = {
@@ -7,8 +8,7 @@ export type Action = {
   type?: {
     key: string
   },
-  fields?:
-  {
+  fields?: {
     actionType: string,
     request?: string,
     response?: string,

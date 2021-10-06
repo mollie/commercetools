@@ -1,11 +1,13 @@
 import { MollieClient, List, Method } from "@mollie/api-client"
 import { Request } from "express"
 import { CTActionResponse } from "../types"
+import { createDate } from "../utils"
 
 export default async function getPaymentMethods(req: Request, mollieClient: MollieClient) {
   try {
     const methods: List<Method> = await mollieClient.methods.all()
     const ctResponse: CTActionResponse = {
+      version: 1,
       actions: [
         {
           action: "addInterfaceInteraction",
@@ -17,8 +19,7 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
             actionType: "getPaymentMethods",
             request: JSON.stringify(req.body.custom?.fields?.paymentMethodsRequest),
             response: JSON.stringify(methods),
-            // TODO: Extract this into a util function to have it unified
-            createdAt: new Date().toISOString(),
+            createdAt: createDate(),
           }
         },
         {
