@@ -7,8 +7,7 @@ export type Action = {
   type?: {
     key: string
   },
-  fields?:
-  {
+  fields?: {
     actionType: string,
     request?: string,
     response?: string,

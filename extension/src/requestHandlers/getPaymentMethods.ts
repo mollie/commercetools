@@ -1,6 +1,7 @@
 import { MollieClient, List, Method } from "@mollie/api-client"
 import { Request } from "express"
 import { CTActionResponse } from "../types"
+import { createDateNowString } from "../utils"
 
 export default async function getPaymentMethods(req: Request, mollieClient: MollieClient) {
   try {
@@ -17,8 +18,7 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
             actionType: "getPaymentMethods",
             request: JSON.stringify(req.body?.custom?.fields?.paymentMethodsRequest),
             response: JSON.stringify(methods),
-            // TODO: Extract this into a util function to have it unified
-            createdAt: new Date().toISOString(),
+            createdAt: createDateNowString(),
           }
         },
         {
