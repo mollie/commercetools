@@ -6,11 +6,11 @@
 
 ## Configure custom fields for your project
 
-We use Custom Fields on the Payment, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project.
+We use Custom Fields on the Payment, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project. 
 
-To do this, we make two requests to the `types` endpoint.
+To do this, we make two requests to the `types` endpoint. 
 
-N.B. this list is still work in progress and will be updated as we develop.
+N.B. this list is still work in progress and will be updated as we develop. 
 
 **(1) Payment**
 
@@ -120,6 +120,7 @@ Body:
 }
 ```
 
+
 (2) Payment Interface Interaction:
 
 POST `/<project-id>/types`
@@ -183,4 +184,4 @@ Body:
 }
 ```
 
-**Todo** Add a script and / or Postman Collection for merchants to use.
+**Todo** Add a script and / or Postman Collection for merchants to use. 
