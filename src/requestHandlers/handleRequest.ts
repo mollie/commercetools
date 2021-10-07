@@ -7,6 +7,9 @@ const mollieApiKey = config.mollieApiKey
 const mollieClient = createMollieClient({ apiKey: mollieApiKey })
 
 export default async function handleRequest(req: Request, res: Response) {
+  // Only accept '/' endpoint
+  if (req.path !== '/') return res.sendStatus(400)
+
   // add method check (POST)
   // add authorization check
   // response with error if any of those fail

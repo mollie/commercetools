@@ -1,15 +1,14 @@
 import { Config } from './config-model'
 
-function loadConfig() {
+export function loadConfig(ctMollieConfig: string | undefined) {
   try {
-    // Parse env config
-    const envConfig = JSON.parse(process.env.CT_MOLLIE_CONFIG || '')
+    // Parse env config, don't allow running without config
+    const envConfig = JSON.parse(ctMollieConfig || '')
 
     // Allow missing parts of config and fill in with defaults
     const config: Config = {
       port: envConfig.port || 3000,
-      // TODO: Move this to test config/setup
-      mollieApiKey: envConfig.mollieApiKey || 'mollieApiKey',
+      mollieApiKey: envConfig.mollieApiKey,
       ...envConfig
     }
     return config
@@ -20,6 +19,7 @@ function loadConfig() {
   }
 }
 
-export const config = loadConfig()
+const ctMollieConfig = process.env.CT_MOLLIE_CONFIG
+const config = loadConfig(ctMollieConfig)
 
 export default config

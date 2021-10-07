@@ -1,0 +1,1 @@
+process.env.CT_MOLLIE_CONFIG = '{"mollieApiKey":"testMollieApiKey"}'
