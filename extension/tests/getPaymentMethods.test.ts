@@ -59,6 +59,30 @@ describe("getPaymentMethods unit tests", () => {
     expect(JSON.parse(setCustomFieldObject.value)).toMatchObject(mockedResponse);
   })
 
+  it("Should return NO_PAYMENT_METHODS when methods returned are empty", async () => {
+    const mockedPaymentMethodsRequest = {
+      locale: "en_US",
+      resource: "orders",
+      billingCountry: "NL",
+      includeWallets: "applepay",
+      orderLineCategories: "eco,meal",
+    }
+    const mockedRequest = {
+      body: { custom: { fields: { paymentMethodsRequest: mockedPaymentMethodsRequest } } }
+    } as Request
+    const mockedResponse = "NO_AVAILABLE_PAYMENT_METHODS"
+    const mollieClient = { methods: { all: jest.fn().mockResolvedValueOnce(mockedResponse) } } as any
+    const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient)
+    const addInterfaceInteractionObject = _.find(mockedMollieResponse.actions, ["action", "addInterfaceInteraction"])
+    const setCustomFieldObject = _.find(mockedMollieResponse.actions, ["action", "setCustomField"])
+
+    expect(mockedMollieResponse).toHaveProperty('actions');
+    expect(mockedMollieResponse.actions).toBeInstanceOf(Array);
+    expect(mockedMollieResponse.actions).toHaveLength(2);
+    expect(JSON.parse(addInterfaceInteractionObject.fields.request)).toMatchObject(mockedPaymentMethodsRequest);
+    expect(JSON.parse(setCustomFieldObject.value)).toMatch(mockedResponse);
+  })
+
   it("Should not fail without request body", async () => {
     const mockedRequest = {} as Request
     const mollieClient = { methods: { all: jest.fn().mockResolvedValueOnce([]) } } as any
