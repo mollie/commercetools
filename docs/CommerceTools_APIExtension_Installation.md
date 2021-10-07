@@ -183,4 +183,4 @@ Body:
 }
 ```
 
-**Todo** Add a script and / or Postman Collection for merchants to use.
+**Todo** Add a script and / or Postman Collection for merchants to use. 
