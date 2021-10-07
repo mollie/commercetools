@@ -17,7 +17,6 @@ N.B. this list is still work in progress and will be updated as we develop.
 POST `/<project-id>/types`
 
 Body:
-
 ```
 {
     "key": "ct-mollie-integration-payment-type",
