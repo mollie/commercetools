@@ -7,6 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY src ./src
+COPY config ./config
 
 # Install node modules and build assets
 RUN npm install && npm run build
