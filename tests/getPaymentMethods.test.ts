@@ -3,6 +3,13 @@ import getPaymentMethods from "../src/requestHandlers/getPaymentMethods"
 import { Request } from "express"
 
 describe("getPaymentMethods unit tests", () => {
+  beforeAll(() => {
+    console.warn = jest.fn
+  })
+  afterAll(() => {
+    jest.clearAllMocks()
+  })
+
   it("Should call mollie mollieClient.methods.all", async () => {
     const mockedRequest = {
       body: { custom: { fields: { paymentMethodsRequest: {} } } }
