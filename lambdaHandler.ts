@@ -1,5 +1,5 @@
 import { createMollieClient } from '@mollie/api-client';
-import { config } from './config/config';
+import config from './config/config';
 
 const mollieClient = createMollieClient({ apiKey: config.mollieApiKey });
 

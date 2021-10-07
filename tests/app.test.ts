@@ -10,6 +10,6 @@ describe("Health check", () => {
 
   it("Should not have a /random-endpoint", async () => {
     const res = await request(app).get("/random-endpoint")
-    expect(res.statusCode).toBe(404)
+    expect(res.statusCode).toBe(400)
   })
 })
