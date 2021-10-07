@@ -6,6 +6,7 @@ import { createDateNowString } from "../utils"
 export default async function getPaymentMethods(req: Request, mollieClient: MollieClient) {
   try {
     const methods: List<Method> = await mollieClient.methods.all()
+    const availablePaymentMethods: string = (methods.length > 0) ? JSON.stringify(methods) : "NO_AVAILABLE_PAYMENT_METHODS"
     const ctResponse: CTActionResponse = {
       actions: [
         {
@@ -17,14 +18,14 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
           {
             actionType: "getPaymentMethods",
             request: JSON.stringify(req.body?.custom?.fields?.paymentMethodsRequest),
-            response: JSON.stringify(methods),
+            response: availablePaymentMethods,
             createdAt: createDateNowString(),
           }
         },
         {
           action: "setCustomField",
           name: "paymentMethodsResponse",
-          value: JSON.stringify(methods)
+          value: availablePaymentMethods
         },
       ]
     }
