@@ -5,7 +5,7 @@ import { CTActionResponse } from "../types"
 export default async function getPaymentMethods(req: Request, mollieClient: MollieClient) {
   try {
     const methods: List<Method> = await mollieClient.methods.all()
-    const availablePaymentMethods = (methods.length > 0) ? JSON.stringify(methods) : "NO_AVAILABLE_PAYMENT_METHODS"
+    const availablePaymentMethods: string = (methods.length > 0) ? JSON.stringify(methods) : "NO_AVAILABLE_PAYMENT_METHODS"
     const ctResponse: CTActionResponse = {
       actions: [
         {
