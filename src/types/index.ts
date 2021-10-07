@@ -1,6 +1,5 @@
 export type CTActionResponse = {
   actions: Action[]
-  version?: number
 }
 
 export type Action = {
