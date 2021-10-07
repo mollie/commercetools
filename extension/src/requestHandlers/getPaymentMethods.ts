@@ -16,7 +16,7 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
           fields:
           {
             actionType: "getPaymentMethods",
-            request: JSON.stringify(req.body.custom?.fields?.paymentMethodsRequest),
+            request: JSON.stringify(req.body?.custom?.fields?.paymentMethodsRequest),
             response: availablePaymentMethods,
             // TODO: Extract this into a util function to have it unified
             createdAt: new Date().toISOString(),
