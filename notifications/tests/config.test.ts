@@ -1,23 +1,37 @@
 import { loadConfig } from '../config/config'
 
 describe("Config test", () => {
-  it("Should return config object with some defaults", async () => {
-    const CT_MOLLIE_TEST_CONFIG = '{}'
-    const config = loadConfig(CT_MOLLIE_TEST_CONFIG)
-    expect(config).toBeInstanceOf(Object)
-    expect(config).toHaveProperty('port')
-    expect(config).toHaveProperty('mollieApiKey')
-    expect(config.port).toBe(3001)
+  const OLD_ENV = {...process.env}
+  beforeEach(() => {
+    process.env = OLD_ENV
   })
 
-  it("Should return provided env config, extended with missing default config", async () => {
-    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({ port: 2000, testKey: "testValue" })
-    const config = loadConfig(CT_MOLLIE_TEST_CONFIG)
-    expect(config).toBeInstanceOf(Object)
-    expect(config).toHaveProperty('mollieApiKey')
-    expect(config).toHaveProperty('port')
-    expect(config).toHaveProperty('testKey')
-    expect(config.port).toBe(2000)
+  afterAll(() => {
+    process.env = OLD_ENV
+  })
+
+  it("Should return config object with correct keys from process.env.CT_MOLLIE_CONFIG, and default port when not provided", async () => {
+    const config = loadConfig(process.env.CT_MOLLIE_CONFIG)
+
+    const expectedConfig = {
+      port: 3001,
+      mollieApiKey: "testMollieApiKey"
+    }
+    expect(config).toEqual(expectedConfig);
+  })
+
+  it("Should return config object with given api key, port and any extra fields", async () => {
+    const temporaryCTConfig = JSON.stringify({mollieApiKey:"testMollieApiKey", testKey: "testValue", port: 2000})
+    process.env.CT_MOLLIE_CONFIG = temporaryCTConfig
+
+    const config = loadConfig(process.env.CT_MOLLIE_CONFIG)
+
+    const expectedConfig = {
+      port: 2000,
+      mollieApiKey: "testMollieApiKey",
+      testKey: "testValue"
+    }
+    expect(config).toEqual(expectedConfig);
   })
 
   it("Should return an error if no config is provided", async () => {
