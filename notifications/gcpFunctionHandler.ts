@@ -18,7 +18,6 @@ exports.handler = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await processAction(action, req, mollieClient)
     res.status(200).send('Ok')
   } catch (error: any) {
     console.warn(error)
