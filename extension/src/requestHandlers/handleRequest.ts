@@ -26,15 +26,15 @@ export default async function handleRequest(req: Request, res: Response) {
   if (!action) {
     // return error response
   }
-  const actionResult = await processAction(action, req, mollieClient);
+  const actionResult = await processAction(action, req.body, mollieClient);
   return res.send(actionResult);
 }
 
-const processAction = function (action: string, req: Request, mollieClient: MollieClient) {
+const processAction = function (action: string, body: any, mollieClient: MollieClient) {
   let result = {};
   switch (action) {
     case 'getPaymentMethods':
-      result = actions.getPaymentMethods(req, mollieClient);
+      result = actions.getPaymentMethods(body.resource.obj, mollieClient);
       break;
     default:
       // TODO: Implement once errors are defined
