@@ -2,4 +2,4 @@
 
 WIP
 
-Add documentation for installation & usage here. 
+Add documentation for installation & usage here.

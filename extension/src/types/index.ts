@@ -1,18 +1,18 @@
 export type CTActionResponse = {
-  actions: Action[]
-}
+  actions: Action[];
+};
 
 export type Action = {
-  action: string,
+  action: string;
   type?: {
-    key: string
-  },
+    key: string;
+  };
   fields?: {
-    actionType: string,
-    request?: string,
-    response?: string,
-    createdAt?: string,
-  },
-  name?: string,
-  value?: string
-}
+    actionType: string;
+    request?: string;
+    response?: string;
+    createdAt?: string;
+  };
+  name?: string;
+  value?: string;
+};
