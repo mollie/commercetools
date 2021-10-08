@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "outDir": "build/",
+    "rootDir": "."
+  },
+  "include": [
+    "src/**/*",
+    "lambdaHandler.ts",
+    "gcpFunctionHandler.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts"
+  ],
+  "compileOnSave": true
+}
