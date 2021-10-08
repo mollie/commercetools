@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
-import createMollieClient, { MollieClient } from "@mollie/api-client";
-import config from "../../config/config";
-import actions from "./actions";
+import { Request, Response } from 'express';
+import createMollieClient, { MollieClient } from '@mollie/api-client';
+import config from '../../config/config';
+import actions from './actions';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
 export default async function handleRequest(req: Request, res: Response) {
   // Only accept '/' endpoint
-  if (req.path !== "/") return res.sendStatus(400);
+  if (req.path !== '/') return res.sendStatus(400);
 
   // add method check (POST)
   // add authorization check
@@ -21,7 +21,7 @@ export default async function handleRequest(req: Request, res: Response) {
 
   // validate/get action
   // const action:  = validateAction(request...)
-  const action: string | undefined = "getPaymentMethods";
+  const action: string | undefined = 'getPaymentMethods';
   // error if unknown action
   if (!action) {
     // return error response
@@ -37,12 +37,12 @@ const processAction = function (
 ) {
   let result = {};
   switch (action) {
-    case "getPaymentMethods":
+    case 'getPaymentMethods':
       result = actions.getPaymentMethods(req, mollieClient);
       break;
     default:
       // TODO: Implement once errors are defined
-      result = "someErrorObject";
+      result = 'someErrorObject';
   }
   // Transform this for CT acceptable object
   return result;
