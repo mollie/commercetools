@@ -4,10 +4,10 @@ exports[`formatMollieErrorResponse should return Bad request when error's status
 Object {
   "code": "BadRequest",
   "extensionExtraInfo": Object {
-    "field": undefined,
+    "field": "amount.value",
     "links": Object {
       "documentation": Object {
-        "href": "https://docs.mollie.com/another-link",
+        "href": "https://docs.mollie.com/overview/handling-errors",
         "type": "text/html",
       },
     },
@@ -41,7 +41,7 @@ Object {
     "field": "",
     "links": Object {
       "documentation": Object {
-        "href": "https://docs.mollie.com/another-general-error-link",
+        "href": "https://docs.mollie.com/overview/handling-errors",
         "type": "text/html",
       },
     },

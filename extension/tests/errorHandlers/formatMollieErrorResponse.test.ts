@@ -22,8 +22,9 @@ describe('formatMollieErrorResponse', () => {
     const mockError = {
       status: 400,
       title: 'Bad Request',
+      field: 'amount.value',
       links: {
-        documentation: { href: 'https://docs.mollie.com/another-link', type: 'text/html' },
+        documentation: { href: 'https://docs.mollie.com/overview/handling-errors', type: 'text/html' },
       },
     };
     const { status, errors } = formatMollieErrorResponse(mockError);
@@ -40,7 +41,7 @@ describe('formatMollieErrorResponse', () => {
       title: 'Server Error',
       field: '',
       links: {
-        documentation: { href: 'https://docs.mollie.com/another-general-error-link', type: 'text/html' },
+        documentation: { href: 'https://docs.mollie.com/overview/handling-errors', type: 'text/html' },
       },
     };
     const { status, errors } = formatMollieErrorResponse(mockError);
