@@ -30,11 +30,7 @@ export default async function handleRequest(req: Request, res: Response) {
   return res.send(actionResult);
 }
 
-const processAction = function (
-  action: string,
-  req: Request,
-  mollieClient: MollieClient
-) {
+const processAction = function (action: string, req: Request, mollieClient: MollieClient) {
   let result = {};
   switch (action) {
     case 'getPaymentMethods':

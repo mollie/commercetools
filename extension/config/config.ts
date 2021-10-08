@@ -13,9 +13,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     };
     return config;
   } catch (e) {
-    throw new Error(
-      'Commercetools - Mollie Integration configuration is missing or not provided in the valid JSON format'
-    );
+    throw new Error('Commercetools - Mollie Integration configuration is missing or not provided in the valid JSON format');
   }
 }
 

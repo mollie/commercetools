@@ -15,5 +15,5 @@ const signals = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
 
 const server = app.listen(port, () => {
   console.log(`🚀 Notifications Module started on port: ${port} 🚀`);
-  signals.forEach((signal) => process.once(signal, _exit));
+  signals.forEach(signal => process.once(signal, _exit));
 });

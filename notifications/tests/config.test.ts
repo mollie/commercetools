@@ -39,8 +39,6 @@ describe('Config test', () => {
   });
 
   it('Should return an error if no config is provided', async () => {
-    expect(() => loadConfig(undefined)).toThrowError(
-      'configuration is missing'
-    );
+    expect(() => loadConfig(undefined)).toThrowError('configuration is missing');
   });
 });

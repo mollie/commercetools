@@ -3,16 +3,10 @@ import { Request } from 'express';
 import { CTActionResponse } from '../types';
 import { createDateNowString } from '../utils';
 
-export default async function getPaymentMethods(
-  req: Request,
-  mollieClient: MollieClient
-) {
+export default async function getPaymentMethods(req: Request, mollieClient: MollieClient) {
   try {
     const methods: List<Method> = await mollieClient.methods.all();
-    const availablePaymentMethods: string =
-      methods.length > 0
-        ? JSON.stringify(methods)
-        : 'NO_AVAILABLE_PAYMENT_METHODS';
+    const availablePaymentMethods: string = methods.length > 0 ? JSON.stringify(methods) : 'NO_AVAILABLE_PAYMENT_METHODS';
     const ctResponse: CTActionResponse = {
       actions: [
         {
@@ -22,9 +16,7 @@ export default async function getPaymentMethods(
           },
           fields: {
             actionType: 'getPaymentMethods',
-            request: JSON.stringify(
-              req.body?.custom?.fields?.paymentMethodsRequest
-            ),
+            request: JSON.stringify(req.body?.custom?.fields?.paymentMethodsRequest),
             response: availablePaymentMethods,
             createdAt: createDateNowString(),
           },
