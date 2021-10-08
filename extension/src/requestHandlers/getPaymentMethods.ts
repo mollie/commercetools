@@ -31,6 +31,15 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
       status: 200,
     } as CTUpdatesRequestedResponse;
   } catch (error: any) {
+    // TODO: Check status of error
+
+    // 401 or 403 - return Unauthorized to CT
+
+    // 400 - return bad request and mollie error to CT
+
+    // 5xx - return failed to CT 
+
+    // for all scenarios, log the error
     console.warn(error);
     return error;
   }
