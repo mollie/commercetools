@@ -1,0 +1,33 @@
+{
+	"info": {
+		"_postman_id": "b9edc596-c815-495c-a49b-dd51983b0f60",
+		"name": "Mollie_CT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ListPaymentMethodsWithOptions",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"action\": \"create\",\n  \"resource\": {\n    \"typeId\": \"payment\",\n    \"id\": \"c9248314-a739-41de-934c-e10c1942f8a1\",\n    \"obj\": {\n      \"id\": \"c9248314-a739-41de-934c-e10c1942f8a1\",\n      \"version\": 1,\n      \"lastMessageSequenceNumber\": 1,\n      \"createdAt\": \"1970-01-01T00:00:00.000Z\",\n      \"lastModifiedAt\": \"1970-01-01T00:00:00.000Z\",\n      \"lastModifiedBy\": {},\n      \"createdBy\": {},\n      \"amountPlanned\": {\n        \"type\": \"centPrecision\",\n        \"currencyCode\": \"EUR\",\n        \"centAmount\": 1289,\n        \"fractionDigits\": 2\n      },\n      \"paymentMethodInfo\": {},\n      \"custom\": {\n        \"type\": {\n          \"key\": \"ct-mollie-payment-type\",\n          \"typeId\": \"type\"\n        },\n        \"fields\": {\n          \"paymentMethodsRequest\": {\n            \"locale\": \"nl_NL\",\n            \"resource\": \"orders\",\n            \"billingCountry\": \"NL\",\n            \"includeWallets\": \"applepay\",\n            \"orderLineCategories\": \"eco,meal\",\n            \"issuers\": false,\n            \"pricing\": false\n          }\n        }\n      }\n    },\n    \"paymentStatus\": {},\n    \"transactions\": [],\n    \"interfaceInteractions\": []\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000",
+					"host": [
+						"localhost"
+					],
+					"port": "3000"
+				}
+			},
+			"response": []
+		}
+	]
+}
