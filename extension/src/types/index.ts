@@ -1,5 +1,7 @@
-export type CTActionResponse = {
-  actions: Action[];
+export type CTUpdatesRequestedResponse = {
+  status: number;
+  actions?: Action[];
+  errors?: Error[];
 };
 
 export type Action = {
@@ -15,4 +17,10 @@ export type Action = {
   };
   name?: string;
   value?: string;
+};
+
+export type Error = {
+  code: string;
+  message: string;
+  extensionExtraInfo?: JSON;
 };
