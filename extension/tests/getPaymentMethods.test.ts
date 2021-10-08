@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
+import { CTUpdatesRequestedResponse } from '../src/types';
 import getPaymentMethods from '../src/requestHandlers/getPaymentMethods';
 import { createDateNowString } from '../src/utils';
 
@@ -118,8 +119,8 @@ describe('getPaymentMethods unit tests', () => {
     const mollieClient = {
       methods: { all: jest.fn().mockRejectedValue(mockedError) },
     } as any;
-    const getPaymentMethodsResponse = await getPaymentMethods(mockedRequest, mollieClient);
-
-    expect(getPaymentMethodsResponse).toBeInstanceOf(Error);
+    const { errors, status } = await getPaymentMethods(mockedRequest, mollieClient);
+    expect(status).toBe(400);
+    expect(errors).toBeInstanceOf(Array);
   });
 });

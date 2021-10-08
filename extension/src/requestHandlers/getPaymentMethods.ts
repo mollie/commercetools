@@ -1,7 +1,8 @@
 import { MollieClient, List, Method } from '@mollie/api-client';
 import { Request } from 'express';
-import { CTUpdatesRequestedResponse, Action } from '../types';
+import { CTUpdatesRequestedResponse, Action, CTError } from '../types';
 import { createDateNowString } from '../utils';
+import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 
 export default async function getPaymentMethods(req: Request, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
@@ -31,16 +32,9 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
       status: 200,
     } as CTUpdatesRequestedResponse;
   } catch (error: any) {
-    // TODO: Check status of error
-
-    // 401 or 403 - return Unauthorized to CT
-
-    // 400 - return bad request and mollie error to CT
-
-    // 5xx - return failed to CT 
-
+    const errorResponse = formatMollieErrorResponse(error);
     // for all scenarios, log the error
     console.warn(error);
-    return error;
+    return errorResponse;
   }
 }

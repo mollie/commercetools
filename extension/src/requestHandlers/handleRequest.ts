@@ -27,8 +27,12 @@ export default async function handleRequest(req: Request, res: Response) {
   if (!action) {
     // return error response
   }
-  const { actions, status } = await processAction(action, req, mollieClient);
-  return res.status(status).send({ actions: actions });
+  const { actions, errors, status } = await processAction(action, req, mollieClient);
+  if (errors?.length) {
+    return res.status(status).send({ errors: errors });
+  } else {
+    return res.status(status).send({ actions: actions });
+  }
 }
 
 const processAction = async function (action: string, req: Request, mollieClient: MollieClient) {
