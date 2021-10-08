@@ -1,4 +1,4 @@
-import getPaymentMethods from './getPaymentMethods'
+import getPaymentMethods from "./getPaymentMethods";
 export default {
-  getPaymentMethods
-}
+  getPaymentMethods,
+};
