@@ -1,7 +1,7 @@
 export type CTUpdatesRequestedResponse = {
   status: number;
   actions?: Action[];
-  errors?: Error[];
+  errors?: CTError[];
 };
 
 export type Action = {
@@ -19,8 +19,8 @@ export type Action = {
   value?: string;
 };
 
-export type Error = {
+export type CTError = {
   code: string;
   message: string;
-  extensionExtraInfo?: JSON;
+  extensionExtraInfo?: Object;
 };

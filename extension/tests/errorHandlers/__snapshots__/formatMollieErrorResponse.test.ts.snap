@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formatMollieErrorResponse should return Bad request when error's status is 400 1`] = `
+Object {
+  "code": "BadRequest",
+  "extensionExtraInfo": Object {
+    "field": undefined,
+    "links": Object {
+      "documentation": Object {
+        "href": "https://docs.mollie.com/another-link",
+        "type": "text/html",
+      },
+    },
+    "title": "Bad Request",
+  },
+  "message": "Request formatted incorrectly or missing information",
+}
+`;
+
+exports[`formatMollieErrorResponse should return Forbidden when error's status is 403 or 4O1 1`] = `
+Object {
+  "code": "Forbidden",
+  "extensionExtraInfo": Object {
+    "field": undefined,
+    "links": Object {
+      "documentation": Object {
+        "href": "https://docs.mollie.com/overview/authentication",
+        "type": "text/html",
+      },
+    },
+    "title": "Unauthorized Request",
+  },
+  "message": "Forbidden or Unauthorized - Request to Mollie API failed",
+}
+`;
+
+exports[`formatMollieErrorResponse should return General error when the error's status is greater or equal to 500 1`] = `
+Object {
+  "code": "General",
+  "extensionExtraInfo": Object {
+    "field": "",
+    "links": Object {
+      "documentation": Object {
+        "href": "https://docs.mollie.com/another-general-error-link",
+        "type": "text/html",
+      },
+    },
+    "title": "Server Error",
+  },
+  "message": "Server Error. Please see logs for more details",
+}
+`;
