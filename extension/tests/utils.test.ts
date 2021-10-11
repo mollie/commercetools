@@ -33,15 +33,20 @@ describe('Utils unit test', () => {
           },
         },
       };
+      const expectedOptions = {
+        amount: {
+          value: '10.10',
+          currency: 'EUR',
+        },
+        locale: 'nl_NL',
+        billingCountry: 'NL',
+        includeWallets: 'applepay',
+        orderLineCategories: 'eco,meal',
+        resource: 'orders',
+      };
 
       const mollieOptions = ut.methodListMapper(ctObj);
-      expect(mollieOptions.amount).toHaveProperty('value', '10.10');
-      expect(mollieOptions.amount).toHaveProperty('currency', 'EUR');
-      expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
-      expect(mollieOptions).toHaveProperty('billingCountry', 'NL');
-      expect(mollieOptions).toHaveProperty('includeWallets', 'applepay');
-      expect(mollieOptions).toHaveProperty('orderLineCategories', 'eco,meal');
-      expect(mollieOptions.include).toBeUndefined();
+      expect(mollieOptions).toEqual(expectedOptions);
     });
 
     it('Should properly parse includes and not have ', async () => {
