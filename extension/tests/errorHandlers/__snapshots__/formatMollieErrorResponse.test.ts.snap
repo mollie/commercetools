@@ -50,3 +50,37 @@ Object {
   "message": "Server Error. Please see logs for more details",
 }
 `;
+
+exports[`formatMollieErrorResponse should return a general 4xx error when the error's status is 4xx, but not 400, 401 or 403 1`] = `
+Object {
+  "code": "SyntaxError",
+  "extensionExtraInfo": Object {
+    "field": "amount.value",
+    "links": Object {
+      "documentation": Object {
+        "href": "https://docs.mollie.com/overview/handling-errors",
+        "type": "text/html",
+      },
+    },
+    "title": "Unprocessable Entity",
+  },
+  "message": "Request error - 422 code returned from Mollie",
+}
+`;
+
+exports[`formatMollieErrorResponse should return a general 4xx error when the error's status is 4xx, but not 400, 401 or 403 2`] = `
+Object {
+  "code": "SyntaxError",
+  "extensionExtraInfo": Object {
+    "field": "amount.value",
+    "links": Object {
+      "documentation": Object {
+        "href": "https://docs.mollie.com/overview/handling-errors",
+        "type": "text/html",
+      },
+    },
+    "title": "Payment Required",
+  },
+  "message": "Request error - 402 code returned from Mollie",
+}
+`;

@@ -18,30 +18,39 @@ const getExtraInfo = (error: any) => {
  */
 export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedResponse => {
   let formattedError = {} as CTError;
+  const status = error.status;
+  switch (true) {
+    case status === 401:
+    case status === 403:
+      formattedError = {
+        code: 'Unauthorized',
+        message: 'Forbidden or Unauthorized - Request to Mollie API failed',
+        extensionExtraInfo: getExtraInfo(error),
+      };
+      break;
 
-  // 401 or 403
-  if (error.status === 401 || error.status === 403) {
-    formattedError = {
-      code: 'Unauthorized',
-      message: 'Forbidden or Unauthorized - Request to Mollie API failed',
-      extensionExtraInfo: getExtraInfo(error),
-    };
-  }
-  // 400
-  if (error.status === 400) {
-    formattedError = {
-      code: 'SyntaxError',
-      message: 'Request formatted incorrectly or missing information',
-      extensionExtraInfo: getExtraInfo(error),
-    };
-  }
-  // 5xx
-  if (error.status >= 500) {
-    formattedError = {
-      code: 'General',
-      message: 'Server Error. Please see logs for more details',
-      extensionExtraInfo: getExtraInfo(error),
-    };
+    case status === 400:
+      formattedError = {
+        code: 'SyntaxError',
+        message: 'Request formatted incorrectly or missing information',
+        extensionExtraInfo: getExtraInfo(error),
+      };
+      break;
+
+    case status >= 400 && status < 500:
+      formattedError = {
+        code: 'SyntaxError',
+        message: `Request error - ${error.status} code returned from Mollie`,
+        extensionExtraInfo: getExtraInfo(error),
+      };
+      break;
+    default:
+      //5xx
+      formattedError = {
+        code: 'General',
+        message: 'Server Error. Please see logs for more details',
+        extensionExtraInfo: getExtraInfo(error),
+      };
   }
 
   return {
