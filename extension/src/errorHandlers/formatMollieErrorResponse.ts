@@ -1,6 +1,6 @@
 import { CTError, CTUpdatesRequestedResponse } from '../types';
 
-// This is based on ApiError from Mollie's SDK
+// This is based on MollieApiError interface from Mollie's SDK
 const getExtraInfo = (error: any) => {
   return {
     links: error?.links,
@@ -11,7 +11,7 @@ const getExtraInfo = (error: any) => {
 
 /**
  *
- * @param error ApiError from Mollie (extended from Node's Error)
+ * @param error Takes Error or ApiError from Mollie SDK (extended from Node's Error class)
  * Formats error from failed request to Mollie into a
  * Commerce Tools "Validation Failed" response.
  * Docs: https://docs.commercetools.com/api/projects/api-extensions#error

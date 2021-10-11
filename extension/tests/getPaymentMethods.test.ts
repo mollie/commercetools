@@ -1,6 +1,5 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
-import { CTUpdatesRequestedResponse } from '../src/types';
 import getPaymentMethods from '../src/requestHandlers/getPaymentMethods';
 import { createDateNowString } from '../src/utils';
 

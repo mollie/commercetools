@@ -42,18 +42,16 @@ const processAction = async function (action: string, req: Request, mollieClient
       result = await actions.getPaymentMethods(req, mollieClient);
       break;
     default:
-      // TODO: Implement once errors are defined
       result = {
         status: 400,
         errors: [
           {
             code: 'InvalidOperation',
-            message: 'Error processing action',
+            message: 'Error processing request, please check request and try again',
           },
         ],
       };
   }
-  // Transform this for CT acceptable object
   return result;
 };
 
