@@ -22,7 +22,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
   // 401 or 403
   if (error.status === 401 || error.status === 403) {
     formattedError = {
-      code: 'Forbidden',
+      code: 'Unauthorized',
       message: 'Forbidden or Unauthorized - Request to Mollie API failed',
       extensionExtraInfo: getExtraInfo(error),
     };
@@ -30,7 +30,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
   // 400
   if (error.status === 400) {
     formattedError = {
-      code: 'BadRequest',
+      code: 'Unauthorized',
       message: 'Request formatted incorrectly or missing information',
       extensionExtraInfo: getExtraInfo(error),
     };

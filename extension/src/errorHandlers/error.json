@@ -1,0 +1,17 @@
+{
+    "errors": [
+        {
+            "code": "Forbidden",
+            "message": "Forbidden or Unauthorized - Request to Mollie API failed",
+            "extensionExtraInfo": {
+                "links": {
+                    "documentation": {
+                        "href": "https://docs.mollie.com/overview/authentication",
+                        "type": "text/html"
+                    }
+                },
+                "title": "Unauthorized Request"
+            }
+        }
+    ]
+}

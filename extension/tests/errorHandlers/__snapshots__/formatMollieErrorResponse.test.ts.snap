@@ -2,7 +2,7 @@
 
 exports[`formatMollieErrorResponse should return Bad request when error's status is 400 1`] = `
 Object {
-  "code": "BadRequest",
+  "code": "Unauthorized",
   "extensionExtraInfo": Object {
     "field": "amount.value",
     "links": Object {
@@ -19,7 +19,7 @@ Object {
 
 exports[`formatMollieErrorResponse should return Forbidden when error's status is 403 or 4O1 1`] = `
 Object {
-  "code": "Forbidden",
+  "code": "Unauthorized",
   "extensionExtraInfo": Object {
     "field": undefined,
     "links": Object {
