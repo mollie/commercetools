@@ -3,9 +3,9 @@ import { validateAction } from '../src/requestHandlers/actions';
 describe('validateAction', () => {
   it('Should return getPaymentMethods when payment is created (action = Create)', () => {
     const mockReqBody = {
-      action: 'Create'
-    }
-    const action = validateAction(mockReqBody)
+      action: 'Create',
+    };
+    const action = validateAction(mockReqBody);
     expect(action).toBe('getPaymentMethods');
   });
 
@@ -16,13 +16,13 @@ describe('validateAction', () => {
         obj: {
           custom: {
             fields: {
-              paymentMethodsRequest: "{}"
-            }
-          }
-        }
-      }
-    }
-    const action = validateAction(mockReqBody)
+              paymentMethodsRequest: '{}',
+            },
+          },
+        },
+      },
+    };
+    const action = validateAction(mockReqBody);
     expect(action).toBe('getPaymentMethods');
   });
-})
+});
