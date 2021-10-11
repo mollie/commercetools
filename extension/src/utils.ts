@@ -11,7 +11,7 @@ export function amountMapper(amountPlanned: any): string {
   const { centAmount, fractionDigits } = amountPlanned;
   const divider = Math.pow(10, fractionDigits || 2);
   const mollieAmount = (centAmount / divider).toFixed(2);
-  return mollieAmount
+  return mollieAmount;
 }
 
 export function methodListMapper(ctObj: any): MethodsListParams {
@@ -31,7 +31,7 @@ export function methodListMapper(ctObj: any): MethodsListParams {
   };
 
   if (ctObj.custom?.fields?.paymentMethodsRequest) {
-    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest)
+    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
     const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
     const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
 
