@@ -19,11 +19,11 @@ export default async function handleRequest(req: Request, res: Response) {
   // }
 
   // validate/get action
-  const action = validateAction(req.body)
+  const action = validateAction(req.body);
 
   if (!action) {
     // return error response, this is just temporary so that TS doesn't complain!!
-    return res.status(400)
+    return res.status(400);
   }
 
   const { actions, errors, status } = await processAction(action, req.body, mollieClient);

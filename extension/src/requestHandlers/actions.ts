@@ -4,11 +4,11 @@ export default {
 };
 
 export function validateAction(body: any): string | undefined {
-  let action = undefined
+  let action = undefined;
   switch (true) {
     case body.action === 'create':
-      action = 'getPaymentMethods'
-      break
+      action = 'getPaymentMethods';
+      break;
   }
-  return action
+  return action;
 }

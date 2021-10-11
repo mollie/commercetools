@@ -10,11 +10,11 @@ export function createDateNowString() {
 export function methodListMapper(ctObj: any): MethodsListParams {
   // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
   if (!ctObj.amountPlanned) {
-    return {}
+    return {};
   }
-  const { currencyCode, centAmount, fractionDigits } = ctObj.amountPlanned
-  const divider = Math.pow(10, fractionDigits || 2)
-  const mollieAmount = (centAmount / divider).toFixed(2)
+  const { currencyCode, centAmount, fractionDigits } = ctObj.amountPlanned;
+  const divider = Math.pow(10, fractionDigits || 2);
+  const mollieAmount = (centAmount / divider).toFixed(2);
 
   const mObject: MethodsListParams = {
     amount: {
@@ -23,21 +23,22 @@ export function methodListMapper(ctObj: any): MethodsListParams {
     },
     // Resource is hardcoded, for the time being we only support Orders API
     resource: 'orders',
-  }
+  };
 
   if (ctObj.custom?.fields?.paymentMethodsRequest) {
-    const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = ctObj.custom?.fields?.paymentMethodsRequest
-    const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined
+    const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = ctObj.custom?.fields?.paymentMethodsRequest;
+    const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
 
-    Object.assign(mObject,
+    Object.assign(
+      mObject,
       locale && { locale: locale },
       include && { include: include },
       includeWallets && { includeWallets: includeWallets },
       billingCountry && { billingCountry: billingCountry },
       sequenceType && { sequenceType: sequenceType },
-      orderLineCategories && { orderLineCategories: orderLineCategories }
-    )
+      orderLineCategories && { orderLineCategories: orderLineCategories },
+    );
   }
 
-  return mObject
+  return mObject;
 }
