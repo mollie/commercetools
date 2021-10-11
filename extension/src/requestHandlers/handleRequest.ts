@@ -28,9 +28,6 @@ export default async function handleRequest(req: Request, res: Response) {
     // return error response
   }
   const { actions, errors, status } = await processAction(action, req, mollieClient);
-  console.log(actions)
-  console.log(errors)
-  console.log(status)
   if (errors?.length) {
     return res.status(status).send({ errors: errors });
   } else {
