@@ -3,6 +3,7 @@ import createMollieClient, { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse } from '../types/index';
 import config from '../../config/config';
 import actions, { validateAction } from './actions';
+import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
@@ -22,8 +23,8 @@ export default async function handleRequest(req: Request, res: Response) {
   const action = validateAction(req.body);
 
   if (!action) {
-    // return error response, this is just temporary so that TS doesn't complain!!
-    return res.status(400);
+    const error = formatMollieErrorResponse({ status: 400 });
+    return res.send(error);
   }
 
   const { actions, errors, status } = await processAction(action, req.body, mollieClient);
