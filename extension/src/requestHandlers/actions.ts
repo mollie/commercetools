@@ -12,7 +12,7 @@ export default {
 export function validateAction(body: any): string | undefined {
   let action = undefined;
   switch (true) {
-    case body.action === 'create':
+    case body.action === 'Create':
       action = 'getPaymentMethods';
       break;
   }

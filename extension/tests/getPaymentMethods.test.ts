@@ -14,15 +14,15 @@ describe('getPaymentMethods unit tests', () => {
     jest.clearAllMocks();
   });
 
-  it('Should call mollie mollieClient.methods.all', async () => {
+  it('Should call mollie mollieClient.methods.list', async () => {
     const mockedRequest = {
       custom: { fields: { paymentMethodsRequest: {} } },
     };
     const mollieClient = {
-      methods: { all: jest.fn().mockResolvedValueOnce([]) },
+      methods: { list: jest.fn().mockResolvedValueOnce([]) },
     } as any;
     await getPaymentMethods(mockedRequest, mollieClient);
-    expect(mollieClient.methods.all).toBeCalled();
+    expect(mollieClient.methods.list).toBeCalled();
   });
 
   it('Should return status and two update actions for Commerce Tools', async () => {
@@ -50,7 +50,7 @@ describe('getPaymentMethods unit tests', () => {
     ];
 
     const mollieClient = {
-      methods: { all: jest.fn().mockResolvedValueOnce(mockedResponse) },
+      methods: { list: jest.fn().mockResolvedValueOnce(mockedResponse) },
     } as any;
     const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
@@ -70,7 +70,7 @@ describe('getPaymentMethods unit tests', () => {
     };
     const mockedResponse = 'NO_AVAILABLE_PAYMENT_METHODS';
     const mollieClient = {
-      methods: { all: jest.fn().mockResolvedValueOnce(mockedResponse) },
+      methods: { list: jest.fn().mockResolvedValueOnce(mockedResponse) },
     } as any;
     const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
@@ -88,7 +88,7 @@ describe('getPaymentMethods unit tests', () => {
   // it('Should not fail without request body', async () => {
   //   const mockedRequest = {} as Request;
   //   const mollieClient = {
-  //     methods: { all: jest.fn().mockResolvedValueOnce([]) },
+  //     methods: { list: jest.fn().mockResolvedValueOnce([]) },
   //   } as any;
   //   const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
@@ -100,7 +100,7 @@ describe('getPaymentMethods unit tests', () => {
     const mockedError = new Error('Test error');
     const mockedRequest = {} as Request;
     const mollieClient = {
-      methods: { all: jest.fn().mockRejectedValue(mockedError) },
+      methods: { list: jest.fn().mockRejectedValue(mockedError) },
     } as any;
     const { errors, status } = await getPaymentMethods(mockedRequest, mollieClient);
     expect(status).toBe(400);

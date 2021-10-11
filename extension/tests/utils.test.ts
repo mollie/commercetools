@@ -7,7 +7,7 @@ describe('Utils unit test', () => {
       expect(mollieOptions).toMatchObject({});
     });
 
-    it('Should return properly formated amount for molie', async () => {
+    it('Should return properly formated amount for mollie', async () => {
       const ctObj = {
         amountPlanned: {
           currencyCode: 'USD',
@@ -20,7 +20,7 @@ describe('Utils unit test', () => {
       expect(mollieOptions.amount).toHaveProperty('currency', 'USD');
     });
 
-    it('Should return properly formated custom fields for molie', async () => {
+    it('Should return properly formated custom fields for mollie', async () => {
       const ctObj = {
         amountPlanned: {
           currencyCode: 'EUR',
