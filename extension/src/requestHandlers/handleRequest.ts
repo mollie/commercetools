@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
+import { CTUpdatesRequestedResponse } from '../types/index';
 import config from '../../config/config';
 import actions from './actions';
 
@@ -26,21 +27,31 @@ export default async function handleRequest(req: Request, res: Response) {
   if (!action) {
     // return error response
   }
-  const actionResult = await processAction(action, req, mollieClient);
-  return res.send(actionResult);
+  const { actions, errors, status } = await processAction(action, req, mollieClient);
+  if (errors?.length) {
+    return res.status(status).send({ errors: errors });
+  } else {
+    return res.status(status).send({ actions: actions });
+  }
 }
 
-const processAction = function (action: string, req: Request, mollieClient: MollieClient) {
-  let result = {};
+const processAction = async function (action: string, req: Request, mollieClient: MollieClient) {
+  let result = {} as CTUpdatesRequestedResponse;
   switch (action) {
     case 'getPaymentMethods':
-      result = actions.getPaymentMethods(req, mollieClient);
+      result = await actions.getPaymentMethods(req, mollieClient);
       break;
     default:
-      // TODO: Implement once errors are defined
-      result = 'someErrorObject';
+      result = {
+        status: 400,
+        errors: [
+          {
+            code: 'InvalidOperation',
+            message: 'Error processing request, please check request and try again',
+          },
+        ],
+      };
   }
-  // Transform this for CT acceptable object
   return result;
 };
 
