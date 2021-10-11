@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
 import config from '../../config/config';
-import actions from './actions';
+import actions, { validateAction } from './actions';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
@@ -17,14 +17,12 @@ export default async function handleRequest(req: Request, res: Response) {
 
   // }
 
-  // handle request based on action
-
   // validate/get action
-  // const action:  = validateAction(request...)
-  const action: string | undefined = 'getPaymentMethods';
-  // error if unknown action
+  const action = validateAction(req.body)
+
   if (!action) {
-    // return error response
+    // return error response, this is just temporary so that TS doesn't complain!!
+    return res.status(400)
   }
   const actionResult = await processAction(action, req.body, mollieClient);
   return res.send(actionResult);
