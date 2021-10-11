@@ -2,7 +2,7 @@
 
 exports[`formatMollieErrorResponse should return Bad request when error's status is 400 1`] = `
 Object {
-  "code": "Unauthorized",
+  "code": "SyntaxError",
   "extensionExtraInfo": Object {
     "field": "amount.value",
     "links": Object {

@@ -30,7 +30,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
   // 400
   if (error.status === 400) {
     formattedError = {
-      code: 'Unauthorized',
+      code: 'SyntaxError',
       message: 'Request formatted incorrectly or missing information',
       extensionExtraInfo: getExtraInfo(error),
     };
