@@ -16,7 +16,7 @@ export default async function getPaymentMethods(ctObj: any, mollieClient: Mollie
         },
         fields: {
           actionType: 'getPaymentMethods',
-          request: JSON.stringify(ctObj?.custom?.fields?.paymentMethodsRequest),
+          request: ctObj?.custom?.fields?.paymentMethodsRequest,
           response: availablePaymentMethods,
           createdAt: createDateNowString(),
         },

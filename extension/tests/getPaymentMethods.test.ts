@@ -26,13 +26,7 @@ describe('getPaymentMethods unit tests', () => {
   });
 
   it('Should return status and two update actions for Commerce Tools', async () => {
-    const mockedPaymentMethodsRequest = {
-      locale: 'en_US',
-      resource: 'orders',
-      billingCountry: 'NL',
-      includeWallets: 'applepay',
-      orderLineCategories: 'eco,meal',
-    };
+    const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedRequest = {
       custom: {
         fields: { paymentMethodsRequest: mockedPaymentMethodsRequest },
@@ -68,13 +62,7 @@ describe('getPaymentMethods unit tests', () => {
   });
 
   it('Should return NO_PAYMENT_METHODS when methods returned are empty', async () => {
-    const mockedPaymentMethodsRequest = {
-      locale: 'en_US',
-      resource: 'orders',
-      billingCountry: 'NL',
-      includeWallets: 'applepay',
-      orderLineCategories: 'eco,meal',
-    };
+    const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedRequest = {
       custom: {
         fields: { paymentMethodsRequest: mockedPaymentMethodsRequest },

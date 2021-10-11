@@ -29,14 +29,7 @@ describe('Utils unit test', () => {
         },
         custom: {
           fields: {
-            paymentMethodsRequest: {
-              locale: 'nl_NL',
-              billingCountry: 'NL',
-              includeWallets: 'applepay',
-              orderLineCategories: 'eco,meal',
-              issuers: false,
-              pricing: false,
-            },
+            paymentMethodsRequest: "{\"locale\":\"nl_NL\",\"billingCountry\":\"NL\",\"includeWallets\":\"applepay\",\"orderLineCategories\":\"eco,meal\",\"issuers\":false,\"pricing\":false}",
           },
         },
       };
@@ -59,11 +52,7 @@ describe('Utils unit test', () => {
         },
         custom: {
           fields: {
-            paymentMethodsRequest: {
-              locale: 'nl_NL',
-              issuers: false,
-              pricing: true,
-            },
+            paymentMethodsRequest: "{\"locale\":\"nl_NL\",\"issuers\":false,\"pricing\":true}",
           },
         },
       };
