@@ -1,10 +1,14 @@
-import _ from 'lodash';
-import getPaymentMethods from '../src/requestHandlers/getPaymentMethods';
 import { Request } from 'express';
+import { mocked } from 'ts-jest/utils';
+import getPaymentMethods from '../src/requestHandlers/getPaymentMethods';
+import { createDateNowString } from '../src/utils';
+
+jest.mock('../src/utils');
 
 describe('getPaymentMethods unit tests', () => {
   beforeAll(() => {
-    console.warn = jest.fn;
+    console.warn = jest.fn();
+    mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterAll(() => {
     jest.clearAllMocks();
@@ -21,7 +25,7 @@ describe('getPaymentMethods unit tests', () => {
     expect(mollieClient.methods.all).toBeCalled();
   });
 
-  it('Should return correctly formated response with saved request and response', async () => {
+  it('Should return status and two update actions for Commerce Tools', async () => {
     const mockedPaymentMethodsRequest = {
       locale: 'en_US',
       resource: 'orders',
@@ -54,17 +58,13 @@ describe('getPaymentMethods unit tests', () => {
     const mollieClient = {
       methods: { all: jest.fn().mockResolvedValueOnce(mockedResponse) },
     } as any;
-    const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient);
+    const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
-    const addInterfaceInteractionObject = _.find(mockedMollieResponse.actions, ['action', 'addInterfaceInteraction']);
-    const setCustomFieldObject = _.find(mockedMollieResponse.actions, ['action', 'setCustomField']);
-
-    expect(mockedMollieResponse).toHaveProperty('actions');
-    expect(mockedMollieResponse.actions).toBeInstanceOf(Array);
-    expect(mockedMollieResponse.actions).toHaveLength(2);
-
-    expect(JSON.parse(addInterfaceInteractionObject.fields.request)).toMatchObject(mockedPaymentMethodsRequest);
-    expect(JSON.parse(setCustomFieldObject.value)).toMatchObject(mockedResponse);
+    expect(status).toBe(200);
+    expect(actions).toHaveLength(2);
+    actions?.forEach(action => {
+      expect(action).toMatchSnapshot();
+    });
   });
 
   it('Should return NO_PAYMENT_METHODS when methods returned are empty', async () => {
@@ -84,15 +84,16 @@ describe('getPaymentMethods unit tests', () => {
     const mollieClient = {
       methods: { all: jest.fn().mockResolvedValueOnce(mockedResponse) },
     } as any;
-    const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient);
-    const addInterfaceInteractionObject = _.find(mockedMollieResponse.actions, ['action', 'addInterfaceInteraction']);
-    const setCustomFieldObject = _.find(mockedMollieResponse.actions, ['action', 'setCustomField']);
+    const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
-    expect(mockedMollieResponse).toHaveProperty('actions');
-    expect(mockedMollieResponse.actions).toBeInstanceOf(Array);
-    expect(mockedMollieResponse.actions).toHaveLength(2);
-    expect(JSON.parse(addInterfaceInteractionObject.fields.request)).toMatchObject(mockedPaymentMethodsRequest);
-    expect(JSON.parse(setCustomFieldObject.value)).toMatch(mockedResponse);
+    expect(status).toBe(200);
+    expect(actions).toHaveLength(2);
+    actions?.forEach(action => {
+      expect(action).toMatchSnapshot();
+    });
+
+    const paymentMethodsResponseCTCustomField = actions?.find(a => a.action === 'setCustomField');
+    expect(paymentMethodsResponseCTCustomField?.value).toEqual(JSON.stringify('NO_AVAILABLE_PAYMENT_METHODS'));
   });
 
   // Probably not needed, instead add a check on handle request to make sure we get the right CT object
@@ -101,11 +102,10 @@ describe('getPaymentMethods unit tests', () => {
   //   const mollieClient = {
   //     methods: { all: jest.fn().mockResolvedValueOnce([]) },
   //   } as any;
-  //   const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient);
+  //   const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
-  //   expect(mockedMollieResponse).toHaveProperty('actions');
-  //   expect(mockedMollieResponse.actions).toBeInstanceOf(Array);
-  //   expect(mockedMollieResponse.actions).toHaveLength(2);
+  //   expect(status).toBe(200);
+  //   expect(actions).toHaveLength(2);
   // });
 
   it('Should return error if mollieClient call fails', async () => {
@@ -114,8 +114,8 @@ describe('getPaymentMethods unit tests', () => {
     const mollieClient = {
       methods: { all: jest.fn().mockRejectedValue(mockedError) },
     } as any;
-    const mockedMollieResponse = await getPaymentMethods(mockedRequest, mollieClient);
-
-    expect(mockedMollieResponse).toBeInstanceOf(Error);
+    const { errors, status } = await getPaymentMethods(mockedRequest, mollieClient);
+    expect(status).toBe(400);
+    expect(errors).toBeInstanceOf(Array);
   });
 });
