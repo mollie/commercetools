@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse } from '../types/index';
 import config from '../../config/config';
-import actions from './actions';
+import actions, { validateAction } from './actions';
+import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
@@ -10,8 +11,6 @@ const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 export default async function handleRequest(req: Request, res: Response) {
   if (req.path !== '/') return res.status(400).end();
   try {
-    // Only accept '/' endpoint
-
     // add method check (POST)
     // add authorization check
     // response with error if any of those fail
@@ -19,16 +18,14 @@ export default async function handleRequest(req: Request, res: Response) {
 
     // }
 
-    // handle request based on action
+    const action = validateAction(req.body);
 
-    // validate/get action
-    // const action:  = validateAction(request...)
-    const action: string | undefined = 'getPaymentMethods';
-    // error if unknown action
     if (!action) {
-      // return error response
+      const error = formatMollieErrorResponse({ status: 400 });
+      return res.send(error);
     }
-    const { actions, errors, status } = await processAction(action, req, mollieClient);
+
+    const { actions, errors, status } = await processAction(action, req.body, mollieClient);
     if (errors?.length) {
       return res.status(status).send({ errors: errors });
     } else {
@@ -45,11 +42,11 @@ export default async function handleRequest(req: Request, res: Response) {
   }
 }
 
-const processAction = async function (action: string, req: Request, mollieClient: MollieClient) {
+const processAction = async function (action: string, body: any, mollieClient: MollieClient) {
   let result = {} as CTUpdatesRequestedResponse;
   switch (action) {
     case 'getPaymentMethods':
-      result = await actions.getPaymentMethods(req, mollieClient);
+      result = await actions.getPaymentMethods(body?.resource?.obj, mollieClient);
       break;
     default:
       result = {

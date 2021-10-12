@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { mocked } from 'ts-jest/utils';
-import actions from '../../src/requestHandlers/actions';
+import actions, { validateAction } from '../../src/requestHandlers/actions';
 import handleRequest from '../../src/requestHandlers/handleRequest';
 
 jest.mock('../../src/requestHandlers/actions');
@@ -29,6 +29,7 @@ describe('handleRequest', () => {
   });
 
   it('should return a list of actions and status 200 when processed action returns successfully', async () => {
+    mocked(validateAction).mockReturnValue('getPaymentMethods');
     mocked(actions.getPaymentMethods).mockResolvedValue({ status: 200, actions: [{ action: 'update' }] });
 
     await handleRequest(req, res);
@@ -72,6 +73,7 @@ describe('handleRequest', () => {
   it('should catch and handle errors and return a general error response to CT', async () => {
     const mockError = new Error('Something went wrong');
     mockError.name = 'Big error';
+    mocked(validateAction).mockReturnValue('getPaymentMethods');
     mocked(actions.getPaymentMethods).mockRejectedValue({ name: 'Big error', message: 'Something went wrong' });
 
     await handleRequest(req, res);

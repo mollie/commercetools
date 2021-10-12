@@ -60,10 +60,10 @@ Add the following global variables into the config file:
 ## Docker
 
 To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container with:
-`docker build -t ct-molie-extension:latest .`
+`docker build -t ct-mollie-extension:latest .`
 
 After the docker image has build, you could run it with a command like the following to start the container:
-`docker run -e CT_MOLLIE_CONFIG=xxxxxx --name ct-molie-extension ct-molie-extension:latest`
+`docker run -e CT_MOLLIE_CONFIG=xxxxxx --name ct-mollie-extension ct-mollie-extension:latest`
 
 When finished, to stop the container, run:
-`docker stop ct-molie-extension`
+`docker stop ct-mollie-extension`

@@ -1,12 +1,12 @@
 import { MollieClient, List, Method } from '@mollie/api-client';
-import { Request } from 'express';
 import { CTUpdatesRequestedResponse, Action, CTError } from '../types';
-import { createDateNowString } from '../utils';
+import { createDateNowString, methodListMapper } from '../utils';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 
-export default async function getPaymentMethods(req: Request, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function getPaymentMethods(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    const methods: List<Method> = await mollieClient.methods.all();
+    const mollieOptions = methodListMapper(ctObj);
+    const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
     const availablePaymentMethods: string = methods.length > 0 ? JSON.stringify(methods) : 'NO_AVAILABLE_PAYMENT_METHODS';
     const ctUpdateActions: Action[] = [
       {
@@ -16,7 +16,7 @@ export default async function getPaymentMethods(req: Request, mollieClient: Moll
         },
         fields: {
           actionType: 'getPaymentMethods',
-          request: JSON.stringify(req.body?.custom?.fields?.paymentMethodsRequest),
+          request: ctObj?.custom?.fields?.paymentMethodsRequest,
           response: availablePaymentMethods,
           createdAt: createDateNowString(),
         },

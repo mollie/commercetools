@@ -7,6 +7,7 @@ app.get('/health', (req, res) => {
   res.send('Ok');
 });
 
+app.use(express.json());
 app.use('/', handleRequest);
 
 export default app;
