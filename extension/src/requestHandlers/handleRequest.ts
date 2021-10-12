@@ -46,7 +46,7 @@ const processAction = async function (action: string, body: any, mollieClient: M
   let result = {} as CTUpdatesRequestedResponse;
   switch (action) {
     case 'getPaymentMethods':
-      result = await actions.getPaymentMethods(body.resource.obj, mollieClient);
+      result = await actions.getPaymentMethods(body?.resource?.obj, mollieClient);
       break;
     default:
       result = {
