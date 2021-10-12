@@ -14,5 +14,11 @@ jobs:
       - name: Install deps
         run: npm ci
 
+      - name: Linting
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
       - name: Build
         run: npm run build
