@@ -16,7 +16,7 @@
     "lint:fix": "prettier --write ./src ./tests ./config ./**/*.md"
   },
   "keywords": [],
-  "author": "AND Digital",
+  "author": "Mollie",
   "license": "MIT",
   "devDependencies": {
     "@types/express": "^4.17.13",
