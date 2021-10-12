@@ -7,4 +7,9 @@ describe('Health check', () => {
     expect(res.statusCode).toBe(200);
     expect(res.text).toBe('Ok');
   });
+
+  it('Should not have a /random-endpoint', async () => {
+    const res = await request(app).get('/random-endpoint');
+    expect(res.statusCode).toBe(400);
+  });
 });

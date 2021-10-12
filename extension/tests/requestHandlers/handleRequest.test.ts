@@ -6,18 +6,20 @@ import handleRequest from '../../src/requestHandlers/handleRequest';
 jest.mock('../../src/requestHandlers/actions');
 
 describe('handleRequest', () => {
-  let req = {} as Request;
-  let res = {} as Response;
+  const req = {} as Request;
+  const res = {} as Response;
 
-  let mockStatus = jest.fn().mockReturnValue(res);
-  let mockSend = jest.fn().mockReturnValue(res);
-  let mockConsoleWarn = jest.fn();
+  const mockStatus = jest.fn().mockReturnValue(res);
+  const mockSend = jest.fn().mockReturnValue(res);
+  const mockEnd = jest.fn();
+  const mockConsoleWarn = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     res.status = mockStatus;
     res.send = mockSend;
+    res.end = mockEnd;
     req.path = '/';
     console.warn = mockConsoleWarn;
   });
