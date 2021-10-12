@@ -1,0 +1,21 @@
+name: CD-GCP
+on: [workflow_dispatch]
+jobs:
+  Deploy-GCP-Function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: build_GCP
+        run: npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && cp -R node_modules build/
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloud-functions@main
+        with:
+          name: mollie-commercetools-function
+          runtime: nodejs14
+          credentials: ${{ secrets.GCP_SA_KEY }}
+          region: europe-west1
+          source_dir: build
+          entry_point: handler
