@@ -15,6 +15,9 @@ export function validateAction(body: any): string | undefined {
     case body.action === 'Create':
       action = 'getPaymentMethods';
       break;
+    case body.resource?.obj?.custom?.fields?.paymentMethodsRequest && !body.resource?.obj?.custom?.fields?.paymentMethodsResponse:
+      action = 'getPaymentMethods';
+      break;
   }
   return action;
 }
