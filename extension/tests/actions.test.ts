@@ -16,4 +16,20 @@ describe('validateAction', () => {
     const action = validateAction(mockReqBody);
     expect(action).toBe('getPaymentMethods');
   });
+
+  it('Should return createOrder when createOrderRequest is present and createOrderResponse is not', () => {
+    const mockReqBody = {
+      resource: {
+        obj: {
+          custom: {
+            fields: {
+              createOrderRequest: '{}',
+            },
+          },
+        },
+      },
+    };
+    const action = validateAction(mockReqBody);
+    expect(action).toBe('createOrder');
+  });
 });

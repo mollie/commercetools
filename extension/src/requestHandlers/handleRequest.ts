@@ -48,6 +48,9 @@ const processAction = async function (action: string, body: any, mollieClient: M
     case 'getPaymentMethods':
       result = await actions.getPaymentMethods(body?.resource?.obj, mollieClient);
       break;
+    case 'createOrder':
+      result = await actions.createOrder(body, mollieClient);
+      break;
     default:
       result = {
         status: 400,
