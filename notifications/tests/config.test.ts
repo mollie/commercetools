@@ -16,6 +16,13 @@ describe('Config test', () => {
     const expectedConfig = {
       port: 3001,
       mollieApiKey: 'testMollieApiKey',
+      ctConfig: {
+        authUrl: 'https://auth.dummy.com',
+        clientId: '123456789',
+        clientSecret: 'abcdefghi',
+        host: 'https://api.dummy.com',
+        projectKey: 'test',
+      },
     };
     expect(config).toEqual(expectedConfig);
   });
