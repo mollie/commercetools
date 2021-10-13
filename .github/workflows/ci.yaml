@@ -4,9 +4,36 @@ on:
     branches:
       - develop
 jobs:
-  # AND Sanity check live envs test deployments
-  Dev-Build:
+  Dev-Extension-Build:
+    name: extension
+    concurrency: Dev-Extension-Build
     runs-on: ubuntu-latest
+    defaults: 
+      run: 
+        working-directory: extension
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Linting
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+  Dev-Notification-Build:
+    name: notifications
+    concurrency: Dev-Notification-Build
+    runs-on: ubuntu-latest
+    defaults: 
+      run: 
+        working-directory: notifications
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
