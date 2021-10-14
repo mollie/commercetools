@@ -11,6 +11,8 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
 | `redirectUrl: "https://www.exampleredirect.com"`    | `redirectUrl: "https://www.exampleredirect.com"` |
 | `locale: nl_NL`                                     | `locale: nl_NL`                                  |
 | `shopperCountryMustMatchBillingCountry: false`      | `shopperCountryMustMatchBillingCountry: false`   |
+| `expiresAt: "2021-12-25"`                           | `expiresAt: '2021-12-25'`                        |
+| `billingAddress: [billingAddress]`                  | `billingAddress: [billingAddress]`               |
 | `lines: [array of lines]`                           | `lines: [array of lines]`                        |
 
 # lines object (inside createPaymentRequest object)
@@ -21,6 +23,19 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
 | `quantity: 1`                                                        | `quantity: 1 `                                      |
 | `price: { value: { currencyCode: "EUR", centAmount: "1000" } }`      | `unitPrice: { currency: "EUR", value: "10.00" } `   |
 | `totalPrice: { value: { currencyCode: "EUR", centAmount: "1000" } }` | `totalAmount: { currency: "EUR", value: "10.00" } ` |
+
+# billingAddress object (inside createPaymentRequest object)
+
+| Parameter (CT)                                | Parameter (Mollie)                            |
+| --------------------------------------------- | --------------------------------------------- |
+| `firstName: "Piet"`                           | `givenName: "Piet" `                          |
+| `lastName: "Mondriaan"`                       | `familyName: "Mondriaan" `                    |
+| `email: "coloured_square_lover@basicart.com"` | `email: "coloured_square_lover@basicart.com"` |
+| `streetName: "Keizersgracht"`                 | `streetAndNumber: "Keizersgracht 126" `       |
+| `streetNumber: "126"`                         |                                               |
+| `postalCode: "1234AB"`                        | `postalCode: "1234AB"`                        |
+| `country: "NL"`                               | `country: "NL" `                              |
+| `city: "Amsterdam"`                           | `city: "Amsterdam"`                           |
 
 # amoundPlanned object (req.body.resource.obj.amountPlanned)
 

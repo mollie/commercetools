@@ -1,17 +1,30 @@
 import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed } from '@mollie/api-client';
+import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTUpdatesRequestedResponse } from '../types';
 import { amountMapper, createDateNowString } from '../utils';
 
-function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): PaymentMethod {
-  // to complete - convert ct payment method list to mollie payment methods
-  // mollie methods allowed:
-  // applepay bancontact banktransfer belfius creditcard directdebit eps giftcard giropay ideal kbc klarnapaylater klarnasliceit mybank paypal paysafecard przelewy24 sofort voucher
-  let molliePaymentMethod: PaymentMethod;
-  if (CTPaymentMethod == 'CREDIT_CARD') {
-    return PaymentMethod.creditcard;
+export function getBillingAddress(billingAddressObject: any, method: string): OrderAddress {
+  let rtnObject;
+  method === PaymentMethod.paypal
+    ? (rtnObject = {} as OrderAddress)
+    : (rtnObject = {
+        givenName: billingAddressObject.firstName,
+        familyName: billingAddressObject.lastName,
+        email: billingAddressObject.email,
+        streetAndNumber: billingAddressObject?.streetName && billingAddressObject?.streetNumber ? billingAddressObject?.streetName + ' ' + billingAddressObject?.streetNumber : '',
+        city: billingAddressObject.city,
+        postalCode: billingAddressObject.postalCode,
+        country: billingAddressObject.country,
+      });
+  return rtnObject;
+}
+
+export function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): PaymentMethod {
+  if (!(CTPaymentMethod in PaymentMethod)) {
+    return '' as PaymentMethod;
   }
-  return PaymentMethod.ideal;
+  return PaymentMethod[CTPaymentMethod as keyof typeof PaymentMethod];
 }
 
 function calculateTaxRate(totalPrice: string, taxRate: string): string {
@@ -42,11 +55,12 @@ export function extractLine(line: any) {
     },
     // to finish - tax rate
     vatRate: '00.00',
+    // vatRate: calculateTaxRate(line.taxRate.amount),
     vatAmount: {
       currency: 'EUR',
-      // value: calculateTaxRate(amountMapper({line.totalPrice.centAmount), line.taxRate})
       value: '0.00',
     },
+    // vatAmount: calculateTaxAmount(line.taxRate.amount, line.taxedPrice.totalGross),
     // vatRate: line.taxRate,
     // vatAmount: {
     //     currency: line.vatAmount.currency,
@@ -70,18 +84,8 @@ export function fillOrderValues(body: any): OrderCreateParams {
     redirectUrl: deStringedOrderRequest.redirectUrl,
     shopperCountryMustMatchBillingCountry: deStringedOrderRequest.shopperCountryMustMatchBillingCountry || false,
     method: CTPaymentMethodToMolliePaymentMethod(body?.resource?.obj?.paymentMethodInfo?.method),
-    // To complete - expiry time
-    expiresAt: body?.custom?.expiresAt || '',
-    // To add - billing address
-    billingAddress: {
-      streetAndNumber: 'Keizersgracht 126',
-      city: 'Amsterdam',
-      postalCode: '1234AB',
-      country: 'NL',
-      givenName: 'Piet',
-      familyName: 'Mondriaan',
-      email: 'piet@mondriaan.com',
-    },
+    expiresAt: deStringedOrderRequest.expiresAt || '',
+    billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress, body?.resource?.obj?.paymentMethodInfo?.method),
     lines: extractAllLines(deStringedOrderRequest.lines),
     embed: [OrderEmbed.payments],
   };
