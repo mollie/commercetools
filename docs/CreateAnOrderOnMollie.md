@@ -93,3 +93,23 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
     }]
 }
 ```
+
+## Creating commercetools actions from Mollie's response
+
+When an order is successfully created on Mollie, we update commercetools payment with following actions
+
+| Action name (CT)                 | Value                                                           |
+| -------------------------------- | --------------------------------------------------------------- |
+| `setCustomField`                 | `createOrderResponse: <mollie Order response in string format>` |
+| `setCustomField`                 | `mollieOrderStatus: "created"`                                  |
+| `setKey`                         | `key: <mollie Order ID>`                                        |
+| `changeTransactionInteractionId` | `transactionId: <first CT transaction ID> *`                    |
+|                                  | `interactionId: <mollie Payment ID>`                            |
+| `addInterfaceInteraction`        | `actionType: "createOrder"`                                     |
+|                                  | `createdAt: <local ISO time string> **`                         |
+|                                  | `request: <createOrderRequest custom field in string format>`   |
+|                                  | `response: <mollie Order response in string format>`            |
+
+\* Actions will always use first transaction
+
+\*\* Timestamp for the time being is local of your deployment
