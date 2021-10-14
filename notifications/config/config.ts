@@ -1,4 +1,24 @@
+import _ from 'lodash';
 import { Config } from './config-model';
+
+const isConfigValid = (config: Config): { valid: boolean; message: string } => {
+  const { mollieApiKey, ctConfig } = config;
+  let message = '';
+
+  if (!mollieApiKey) {
+    message = message + 'No Mollie API Key found\n';
+  }
+  if (!config.ctConfig) {
+    message = message + 'No Commercetools configuration present\n';
+  }
+  if (!ctConfig?.host || !ctConfig?.clientId || !ctConfig?.clientSecret || !ctConfig?.authUrl || !ctConfig?.projectKey) {
+    message = message + 'Commercetools configuration requires missing required key(s)\n';
+  }
+  return {
+    valid: !message.length,
+    message,
+  };
+};
 
 export function loadConfig(ctMollieConfig: string | undefined) {
   try {
@@ -8,14 +28,18 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     // Allow missing parts of config and fill in with defaults
     const config: Config = {
       port: envConfig.port || 3001,
-      mollieApiKey: envConfig.mollieApiKey,
       ...envConfig,
     };
 
-    // TODO: Throw error if API Key, CT integration details etc. not present
-    return config;
+    const { valid, message } = isConfigValid(config);
+    if (valid) {
+      return config;
+    } else {
+      console.error(message);
+      throw new Error(message);
+    }
   } catch (e) {
-    throw new Error('Commercetools - Mollie Integration configuration is missing or not provided in the valid JSON format');
+    throw new Error('Commercetools - Mollie Integration configuration is incomplete, missing or not provided in the valid JSON format');
   }
 }
 

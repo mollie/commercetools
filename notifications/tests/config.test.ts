@@ -2,8 +2,10 @@ import { loadConfig } from '../config/config';
 
 describe('Config test', () => {
   const OLD_ENV = { ...process.env };
+  const mockConsoleError = jest.fn();
   beforeEach(() => {
     process.env = OLD_ENV;
+    console.error = mockConsoleError;
   });
 
   afterAll(() => {
@@ -27,25 +29,18 @@ describe('Config test', () => {
     expect(config).toEqual(expectedConfig);
   });
 
-  it('Should return config object with given api key, port and any extra fields', async () => {
+  it('Should throw error and console error a message when config does not have required fields', () => {
     const temporaryCTConfig = JSON.stringify({
-      mollieApiKey: 'testMollieApiKey',
-      testKey: 'testValue',
       port: 2000,
     });
     process.env.CT_MOLLIE_CONFIG = temporaryCTConfig;
 
-    const config = loadConfig(process.env.CT_MOLLIE_CONFIG);
-
-    const expectedConfig = {
-      port: 2000,
-      mollieApiKey: 'testMollieApiKey',
-      testKey: 'testValue',
-    };
-    expect(config).toEqual(expectedConfig);
+    expect(() => loadConfig(process.env.CT_MOLLIE_CONFIG)).toThrowError();
+    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockConsoleError).toHaveBeenCalledWith('No Mollie API Key found\nNo Commercetools configuration present\nCommercetools configuration requires missing required key(s)\n');
   });
 
   it('Should return an error if no config is provided', async () => {
-    expect(() => loadConfig(undefined)).toThrowError('configuration is missing');
+    expect(() => loadConfig(undefined)).toThrowError('Commercetools - Mollie Integration configuration is incomplete, missing or not provided in the valid JSON format');
   });
 });
