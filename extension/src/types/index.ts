@@ -17,6 +17,9 @@ export type Action = {
   };
   name?: string;
   value?: string;
+  key?: string;
+  transactionId?: string;
+  interactionId?: string;
 };
 
 export type CTError = {

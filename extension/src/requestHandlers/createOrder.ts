@@ -1,8 +1,7 @@
-import { MollieClient, PaymentMethod } from '@mollie/api-client';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/orders/parameters';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed } from '@mollie/api-client';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
-import { CTUpdatesRequestedResponse } from '../types';
-import { amountMapper } from '../utils';
+import { Action, CTUpdatesRequestedResponse } from '../types';
+import { amountMapper, createDateNowString } from '../utils';
 
 function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): PaymentMethod {
   // to complete - convert ct payment method list to mollie payment methods
@@ -57,10 +56,10 @@ export function extractLine(line: any) {
   return extractedLine;
 }
 
-export function fillOrderValues(body: any): CreateParameters {
+export function fillOrderValues(body: any): OrderCreateParams {
   const deStringedOrderRequest = JSON.parse(body?.resource?.obj?.custom?.fields?.createOrderRequest);
   const amountConverted = amountMapper({ centAmount: body?.resource?.obj?.amountPlanned?.centAmount });
-  const orderValues: CreateParameters = {
+  const orderValues: OrderCreateParams = {
     amount: {
       value: amountConverted,
       currency: body?.resource?.obj?.amountPlanned?.currencyCode,
@@ -84,17 +83,61 @@ export function fillOrderValues(body: any): CreateParameters {
       email: 'piet@mondriaan.com',
     },
     lines: extractAllLines(deStringedOrderRequest.lines),
+    embed: [OrderEmbed.payments],
   };
   return orderValues;
 }
 
+export function createCtActions(orderResponse: Order, ctObj: any): Action[] {
+  const stringifiedMollieOrder = JSON.stringify(orderResponse);
+  // TODO: Double check this.. array of payments
+  const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
+  const result: Action[] = [
+    {
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        actionType: 'createOrder',
+        createdAt: createDateNowString(),
+        request: ctObj?.custom?.fields?.createOrderRequest,
+        response: JSON.stringify(orderResponse),
+      },
+    },
+    {
+      action: 'setCustomField',
+      name: 'createOrderResponse',
+      value: stringifiedMollieOrder,
+    },
+    {
+      action: 'setCustomField',
+      name: 'mollieOrderStatus',
+      value: 'created',
+    },
+    {
+      action: 'setKey',
+      key: orderResponse.id,
+    },
+    {
+      action: 'changeTransactionInteractionId',
+      transactionId: ctObj?.transactions?.[0]?.id,
+      // TODO: Is interactionId Mollie's Payment ID or Order ID?
+      interactionId: molliePaymentId,
+    },
+  ];
+  return result;
+}
+
 export default async function createOrder(body: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
+    // TODO: refactor to not pass the whole body..
     const mollieCreatedOrder = await mollieClient.orders.create(fillOrderValues(body));
+    const ctActions = createCtActions(mollieCreatedOrder, body?.resource?.obj);
     return {
-      actions: [],
+      actions: ctActions,
       status: 201,
-    } as CTUpdatesRequestedResponse;
+    };
   } catch (error: any) {
     console.warn(error);
     const errorResponse = formatMollieErrorResponse(error);
