@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import fetch from 'node-fetch-commonjs';
-import createMollieClient, { MollieClient } from '@mollie/api-client';
+import createMollieClient from '@mollie/api-client';
 import config from '../../config/config';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
@@ -9,7 +9,7 @@ import actions from './index';
 import { isOrderOrPayment } from '../utils';
 
 const mollieApiKey = config.mollieApiKey;
-const mollieClient: MollieClient = createMollieClient({ apiKey: mollieApiKey });
+const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
 const {
   ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
@@ -48,27 +48,46 @@ const commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHtt
  * @param res Response
  */
 export default async function handleRequest(req: Request, res: Response) {
-  // Only accept '/' endpoint
   const {
     body: { id },
     path,
   } = req;
+  // Only accept '/' endpoint
   if (path !== '/') return res.sendStatus(400);
+
   try {
-    // Receive call from webhook with body { id: <resource_id> }
+    // Receive webhook trigger from Mollie with order or payment ID
     const resourceType = isOrderOrPayment(id);
     if (resourceType === 'invalid') {
-      return res.sendStatus(400);
+      return res.status(400).send(`ID ${id} is invalid`);
     }
 
     // Call to mollie's API for order/payment status
     if (resourceType === 'order') {
       const order = await actions.getOrderDetailsById(id, mollieClient);
-      return res.status(200).send(order);
+      console.log(order.id); // To show this is working
     } else {
       const payment = await actions.getPaymentDetailsById(id, mollieClient);
-      return res.status(200).send(payment);
+      console.log(payment.id); // To show this is working
+      // TODO: https://anddigitaltransformation.atlassian.net/browse/CMI-44
+      return res.status(200).send('Payment flow not implemented yet');
     }
+
+    // TODO: Parse for order & payment statuses
+
+    // Get payment from CT -> payment key == mollie order_id
+    const ctPayment = await actions.getPaymentByKey(id, commercetoolsClient, projectKey);
+
+    // TODO: Parse CT Payment for transactions & statuses
+
+    // TODO: should order / payment status be updated?
+
+    // TODO: Format update actions
+
+    // TODO: UpdatePaymentByKey on CT
+
+    // Return ctPayment for now to demo getPaymentByKey
+    res.status(200).send(ctPayment);
   } catch (error) {
     console.error(error);
     res.status(400).send(error);

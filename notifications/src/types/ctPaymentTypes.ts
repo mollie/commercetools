@@ -13,13 +13,20 @@ export type CTPayment = {
     state?: Object;
   };
   transactions?: CTTransaction[];
+  custom?: {
+    fields: {
+      mollieOrderStatus?: string;
+      createOrderRequest?: string;
+      createOrderResponse?: string;
+    };
+  };
 };
 
 export type CTTransaction = {
   id: string;
   amount: CTMoney;
   interactionId?: string;
-  state?: 'Initial' | 'Pending' | 'Success' | 'Failure';
+  state: 'Initial' | 'Pending' | 'Success' | 'Failure';
 };
 
 export type CTMoney = {
