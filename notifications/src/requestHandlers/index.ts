@@ -1,8 +1,13 @@
 import getPaymentDetailsById from './mollie/getPaymentDetailsById';
-import getOrderDetailsById from './mollie/getOrderDetailsById';
-import { getPaymentByKey } from './commercetools/getPaymentByKey';
+import getOrderDetailsById, { parseOrder } from './mollie/getOrderDetailsById';
+import { getPaymentByKey, parsePayment } from './commercetools/getPaymentByKey';
+import { updatePaymentByKey } from './commercetools/updatePaymentByKey';
+
 export default {
-  getPaymentByKey,
-  getOrderDetailsById,
-  getPaymentDetailsById,
+  ctGetPaymentByKey: getPaymentByKey,
+  ctUpdatePaymentByKey: updatePaymentByKey,
+  ctParsePayment: parsePayment,
+  mGetOrderDetailsById: getOrderDetailsById,
+  mParseOrder: parseOrder,
+  mGetPaymentDetailsById: getPaymentDetailsById,
 };
