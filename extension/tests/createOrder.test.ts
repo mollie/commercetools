@@ -1,4 +1,4 @@
-import { fillOrderValues, extractLine, CTPaymentMethodToMolliePaymentMethod, getBillingAddress } from '../src/requestHandlers/createOrder';
+import { fillOrderValues, extractLine, CTPaymentMethodToMolliePaymentMethod, getBillingAddress, getShippingAddress, isDiscountAmountValid } from '../src/requestHandlers/createOrder';
 import { PaymentMethod } from '@mollie/api-client';
 
 describe('Create orders tests', () => {
@@ -13,7 +13,8 @@ describe('Create orders tests', () => {
         id: 'appleVariantId',
       },
       quantity: 1,
-      taxRate: '00.00',
+      sku: 'SKU1234567',
+      type: 'physical',
       price: {
         id: 'applePriceId',
         value: {
@@ -23,7 +24,21 @@ describe('Create orders tests', () => {
       },
       totalPrice: {
         currencyCode: 'EUR',
-        centAmount: 1000,
+        centAmount: 1200,
+      },
+      taxRate: {
+        amount: 0.2,
+        includedInPrice: true,
+      },
+      taxedPrice: {
+        totalGross: {
+          centAmount: 200,
+          currencyCode: 'EUR',
+        },
+        totalNet: {
+          centAmount: 200,
+          currencyCode: 'EUR',
+        },
       },
       state: [
         {
@@ -38,25 +53,30 @@ describe('Create orders tests', () => {
     const mockedMollieLine = {
       name: 'apple',
       quantity: 1,
+      sku: 'SKU1234567',
+      type: 'physical',
+      imageUrl: '',
+      productUrl: '',
+      metadata: {},
       unitPrice: {
         currency: 'EUR',
         value: '10.00',
       },
       totalAmount: {
         currency: 'EUR',
-        value: '10.00',
+        value: '12.00',
       },
-      vatRate: '00.00',
+      vatRate: '20.00',
       vatAmount: {
         currency: 'EUR',
-        value: '0.00',
+        value: '2.00',
       },
     };
     expect(extractLine(mockedCTLine)).toMatchObject(mockedMollieLine);
   });
   it('Should fill out an order on mollie from CT', async () => {
     const mockedCreateOrderRequestFields =
-      '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"taxRate":{"name": "taxRateApple", "amount": "00.00", "includedInPrice": "false", "country": "NL"}, "taxedPrice": { "totalNet": { "currencyCode": "EUR", "centAmount": 0 }, "totalGross": { "currencyCode": "EUR", "centAmount": 0 } },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
+      '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"shippingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"taxRate":{"name": "taxRateApple", "amount": 0, "includedInPrice": false, "country": "NL"}, "taxedPrice": { "totalNet": { "currencyCode": "EUR", "centAmount": 0 }, "totalGross": { "currencyCode": "EUR", "centAmount": 0 } },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
     const mockedCreateOrderRequest = {
       resource: {
         obj: {
@@ -88,6 +108,16 @@ describe('Create orders tests', () => {
         familyName: 'Mondriaan',
         email: 'coloured_square_lover@basicart.com',
       },
+      shippingAddress: {
+        streetAndNumber: 'Keizersgracht 126',
+        city: 'Amsterdam',
+        postalCode: '1234AB',
+        country: 'NL',
+        givenName: 'Piet',
+        familyName: 'Mondriaan',
+        email: 'coloured_square_lover@basicart.com',
+      },
+      metadata: {},
       lines: [
         {
           name: 'apple',
@@ -100,7 +130,7 @@ describe('Create orders tests', () => {
             currency: 'EUR',
             value: '10.00',
           },
-          vatRate: '00.00',
+          vatRate: '0.00',
           vatAmount: {
             currency: 'EUR',
             value: '0.00',
@@ -156,5 +186,30 @@ describe('Create orders tests', () => {
       country: 'Netherlands',
     };
     expect(getBillingAddress(mockedWrongBillingAddressBody, mockedPaymentMethod)).toMatchObject(mockedWrongExpectedResponse);
+  });
+  it('Should extract the correct shipping address from the request body', () => {
+    const mockedShippingAddressBody = {
+      firstName: 'Piet',
+      lastName: 'Mondriaan',
+      email: 'coloured_square_lover@basicart.com',
+      streetName: 'Keizersgracht',
+      streetNumber: '126',
+      city: 'Amsterdam',
+      postalCode: '1234AB',
+      country: 'Netherlands',
+    };
+    const mockedExpectedResponse = {
+      givenName: 'Piet',
+      familyName: 'Mondriaan',
+      email: 'coloured_square_lover@basicart.com',
+      streetAndNumber: 'Keizersgracht 126',
+      city: 'Amsterdam',
+      postalCode: '1234AB',
+      country: 'Netherlands',
+    };
+    expect(getShippingAddress(mockedShippingAddressBody)).toMatchObject(mockedExpectedResponse);
+  });
+  it('Should validate the discount amount object', () => {
+    expect(isDiscountAmountValid({ currency: 'EUR', value: 2000 })).toBeTruthy();
   });
 });

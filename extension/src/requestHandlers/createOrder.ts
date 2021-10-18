@@ -1,8 +1,14 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed } from '@mollie/api-client';
-import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType, OrderLine } from '@mollie/api-client';
+import { OrderAddress, OrderStatus } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTUpdatesRequestedResponse } from '../types';
 import { amountMapper, createDateNowString } from '../utils';
+
+enum MollieLineCategoryType {
+  meal = 'meal',
+  eco = 'eco',
+  gift = 'gift',
+}
 
 export function getBillingAddress(billingAddressObject: any, method: string): OrderAddress {
   let rtnObject;
@@ -20,6 +26,19 @@ export function getBillingAddress(billingAddressObject: any, method: string): Or
   return rtnObject;
 }
 
+export function getShippingAddress(shippingAddressObject: any): OrderAddress {
+  let rtnObject: OrderAddress = {
+    givenName: shippingAddressObject.firstName,
+    familyName: shippingAddressObject.lastName,
+    email: shippingAddressObject.email,
+    streetAndNumber: shippingAddressObject?.streetName && shippingAddressObject?.streetNumber ? shippingAddressObject?.streetName + ' ' + shippingAddressObject?.streetNumber : '',
+    city: shippingAddressObject.city,
+    postalCode: shippingAddressObject.postalCode,
+    country: shippingAddressObject.country,
+  };
+  return rtnObject;
+}
+
 export function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): PaymentMethod {
   if (!(CTPaymentMethod in PaymentMethod)) {
     return '' as PaymentMethod;
@@ -27,9 +46,20 @@ export function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): P
   return PaymentMethod[CTPaymentMethod as keyof typeof PaymentMethod];
 }
 
-function calculateTaxRate(totalPrice: string, taxRate: string): string {
-  const taxRateString = (parseInt(totalPrice) * parseInt(taxRate)).toString();
-  return taxRateString;
+export function calculateTaxRate(ctTaxRateAmount: number): string {
+  if (ctTaxRateAmount < 0) {
+    return '';
+  }
+  return (ctTaxRateAmount * 100).toFixed(2);
+}
+
+export function calculateTaxAmount(ctTotalAmount: number, ctUnitAmount: number, currencyCode: string): any {
+  let mollieTaxValue = (ctTotalAmount - ctUnitAmount).toFixed(2);
+  let rtnObject = {
+    currency: currencyCode,
+    value: mollieTaxValue,
+  };
+  return rtnObject;
 }
 
 function extractAllLines(lines: any) {
@@ -40,33 +70,40 @@ function extractAllLines(lines: any) {
   return extractedLines;
 }
 
+export function isDiscountAmountValid(inputObject: any): boolean {
+  if (inputObject && inputObject.currency && inputObject.value) {
+    return true;
+  }
+  return false;
+}
+
 export function extractLine(line: any) {
-  const extractedLine = {
+  const unitPriceValueString = amountMapper({ centAmount: line.price.value.centAmount });
+  const totalPriceValueString = amountMapper({ centAmount: line.totalPrice.centAmount * line.quantity });
+  const extractedLine: any = {
     // Name as english for the time being
     name: line.name.en,
     quantity: line.quantity,
     unitPrice: {
       currency: line.price.value.currencyCode,
-      value: amountMapper({ centAmount: line.price.value.centAmount }),
+      value: unitPriceValueString,
     },
     totalAmount: {
       currency: line.totalPrice.currencyCode,
-      value: amountMapper({ centAmount: line.totalPrice.centAmount }),
+      value: totalPriceValueString,
     },
-    // to finish - tax rate
-    vatRate: '00.00',
-    // vatRate: calculateTaxRate(line.taxRate.amount),
-    vatAmount: {
-      currency: 'EUR',
-      value: '0.00',
-    },
-    // vatAmount: calculateTaxAmount(line.taxRate.amount, line.taxedPrice.totalGross),
-    // vatRate: line.taxRate,
-    // vatAmount: {
-    //     currency: line.vatAmount.currency,
-    //     value: calculateTaxRate(totalAmountCurrency, line.taxRate)
-    // }
+    vatRate: calculateTaxRate(line.taxRate.amount),
+    vatAmount: calculateTaxAmount(parseInt(totalPriceValueString), parseInt(unitPriceValueString), line.totalPrice.currencyCode),
+    type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
+    category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
+    sku: line.sku ? line.sku : '',
+    imageUrl: line.imageUrl ? line.imageUrl : '',
+    productUrl: line.productUrl ? line.productUrl : '',
+    metadata: line.metadata ? line.metadata : {},
   };
+  if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
+    extractedLine.discountAmount = line.discountAmount;
+  }
   return extractedLine;
 }
 
@@ -86,7 +123,9 @@ export function fillOrderValues(body: any): OrderCreateParams {
     method: CTPaymentMethodToMolliePaymentMethod(body?.resource?.obj?.paymentMethodInfo?.method),
     expiresAt: deStringedOrderRequest.expiresAt || '',
     billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress, body?.resource?.obj?.paymentMethodInfo?.method),
+    shippingAddress: deStringedOrderRequest.shippingAddress ? getShippingAddress(deStringedOrderRequest.shippingAddress) : ({} as OrderAddress),
     lines: extractAllLines(deStringedOrderRequest.lines),
+    metadata: deStringedOrderRequest.metadata || {},
     embed: [OrderEmbed.payments],
   };
   return orderValues;

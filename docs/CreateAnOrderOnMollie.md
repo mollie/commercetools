@@ -4,38 +4,60 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
 
 # createPaymentRequest object (req.body.resource.obj.custom.fields.createPaymentRequest)
 
-| Parameter (CT)                                      | Parameter (Mollie)                               |
-| --------------------------------------------------- | ------------------------------------------------ |
-| `orderNumber: 10920`                                | `orderNumber: 10920 `                            |
-| `orderWebhookUrl: "https://www.examplewebhook.com"` | `webhookUrl: "https://www.examplewebhook.com"`   |
-| `redirectUrl: "https://www.exampleredirect.com"`    | `redirectUrl: "https://www.exampleredirect.com"` |
-| `locale: nl_NL`                                     | `locale: nl_NL`                                  |
-| `shopperCountryMustMatchBillingCountry: false`      | `shopperCountryMustMatchBillingCountry: false`   |
-| `expiresAt: "2021-12-25"`                           | `expiresAt: '2021-12-25'`                        |
-| `billingAddress: [billingAddress]`                  | `billingAddress: [billingAddress]`               |
-| `lines: [array of lines]`                           | `lines: [array of lines]`                        |
+| Parameter (CT)                                      | Parameter (Mollie)                               | Required |
+| --------------------------------------------------- | ------------------------------------------------ | -------- |
+| `orderNumber: 10920`                                | `orderNumber: 10920 `                            | YES      |
+| `orderWebhookUrl: "https://www.examplewebhook.com"` | `webhookUrl: "https://www.examplewebhook.com"`   | YES      |
+| `redirectUrl: "https://www.exampleredirect.com"`    | `redirectUrl: "https://www.exampleredirect.com"` | YES      |
+| `locale: nl_NL`                                     | `locale: nl_NL`                                  | YES      |
+| `shopperCountryMustMatchBillingCountry: false`      | `shopperCountryMustMatchBillingCountry: false`   | NO       |
+| `expiresAt: "2021-12-25"`                           | `expiresAt: '2021-12-25'`                        | NO       |
+| `billingAddress: [billingAddress]`                  | `billingAddress: [billingAddress]`               | YES      |
+| `shippingAddress: [billingAddress]`                 | `shippingAddress: [shippingAddress]`             | NO       |
+| `lines: [array of lines]`                           | `lines: [array of lines]`                        | YES      |
+| `metadata: {}`                                      | `metadata: {}`                                   | NO       |
 
 # lines object (inside createPaymentRequest object)
 
-| Parameter (CT)                                                       | Parameter (Mollie)                                  |
-| -------------------------------------------------------------------- | --------------------------------------------------- |
-| `name: { en: "apple" }`                                              | `name: apple `                                      |
-| `quantity: 1`                                                        | `quantity: 1 `                                      |
-| `price: { value: { currencyCode: "EUR", centAmount: "1000" } }`      | `unitPrice: { currency: "EUR", value: "10.00" } `   |
-| `totalPrice: { value: { currencyCode: "EUR", centAmount: "1000" } }` | `totalAmount: { currency: "EUR", value: "10.00" } ` |
+| Parameter (CT)                                                           | Parameter (Mollie)                                                        | Required |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------- | -------- |
+| `name: { en: "apple" }`                                                  | `name: apple `                                                            | YES      |
+| `quantity: 1`                                                            | `quantity: 1 `                                                            | YES      |
+| `type: [OrderLineType]`                                                  | `type: [OrderLineType] `                                                  | NO       |
+| `discountAmount: { value: { currencyCode: "EUR", centAmount: "0000" } }` | `discountAmount: { value: { currencyCode: "EUR", centAmount: "0000" } } ` | NO       |
+| `sku: SKU12345`                                                          | `sku: SKU12345 `                                                          | NO       |
+| `imageUrl: "https://image-url.com/"`                                     | `imageUrl: "https://image-url.com/" `                                     | NO       |
+| `productUrl: "https://image-url.com/"`                                   | `productUrl: "https://image-url.com/" `                                   | NO       |
+| `metadata: { extraData: "some extra stuff" }`                            | `metadata: { extraData: "some extra stuff" }`                             | NO       |
+| `price: { value: { currencyCode: "EUR", centAmount: "1000" } }`          | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
+| `totalPrice: { value: { currencyCode: "EUR", centAmount: "1000" } }`     | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
 
-# billingAddress object (inside createPaymentRequest object)
+# billingAddress/shippingAddress object (inside createPaymentRequest object)
 
-| Parameter (CT)                                | Parameter (Mollie)                            |
-| --------------------------------------------- | --------------------------------------------- |
-| `firstName: "Piet"`                           | `givenName: "Piet" `                          |
-| `lastName: "Mondriaan"`                       | `familyName: "Mondriaan" `                    |
-| `email: "coloured_square_lover@basicart.com"` | `email: "coloured_square_lover@basicart.com"` |
-| `streetName: "Keizersgracht"`                 | `streetAndNumber: "Keizersgracht 126" `       |
-| `streetNumber: "126"`                         |                                               |
-| `postalCode: "1234AB"`                        | `postalCode: "1234AB"`                        |
-| `country: "NL"`                               | `country: "NL" `                              |
-| `city: "Amsterdam"`                           | `city: "Amsterdam"`                           |
+| Parameter (CT)                                | Parameter (Mollie)                            | Required |
+| --------------------------------------------- | --------------------------------------------- | -------- |
+| `firstName: "Piet"`                           | `givenName: "Piet" `                          | YES      |
+| `lastName: "Mondriaan"`                       | `familyName: "Mondriaan" `                    | YES      |
+| `email: "coloured_square_lover@basicart.com"` | `email: "coloured_square_lover@basicart.com"` | YES      |
+| `streetName: "Keizersgracht"`                 | `streetAndNumber: "Keizersgracht 126" `       | YES      |
+| `streetNumber: "126"`                         |                                               | YES      |
+| `postalCode: "1234AB"`                        | `postalCode: "1234AB"`                        | YES      |
+| `country: "NL"`                               | `country: "NL" `                              | YES      |
+| `city: "Amsterdam"`                           | `city: "Amsterdam"`                           | YES      |
+
+To create an order, you do not need to provide a billing/shipping address. However, if provided, all the fields (eg firstName, streetNumber) must also be provided.
+
+# OrderLineType enum
+
+One of:
+
+- physical
+- discount
+- digital
+- shipping_fee
+- store_credit
+- gift_card
+- surcharge
 
 # amoundPlanned object (req.body.resource.obj.amountPlanned)
 
@@ -56,7 +78,7 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
 {
     custom: {
         fields: {
-                createOrderRequest: "{\"orderNumber\":\"1001\",\"orderWebhookUrl\":\"https:\/\/www.examplewebhook.com\/\",\"locale\":\"nl_NL\",\"redirectUrl\":\"https:\/\/www.exampleredirect.com\/\",\"lines\":[{\"id\":\"18920\",\"productId\":\"900220\",\"name\":{\"en\":\"apple\"},\"variant\":{\"id\":\"294028\"},\"price\":{\"id\":\"lineItemPriceId\",\"value\":{\"currencyCode\":\"EUR\",\"centAmount\":1000}},\"totalPrice\":{\"currencyCode\":\"EUR\",\"centAmount\":1000},\"quantity\":1,\"taxRate\":\"00.00\",\"shopperCountryMustMatchBillingCountry\":true,\"state\":[{\"quantity\":1,\"state\":{\"typeId\":\"state\",\"id\":\"stateOfApple\"}}]}]}"
+                createOrderRequest: "{\"orderNumber\":\"1001\",\"billingAddress\":{\"firstName\": \"Piet\", \"lastName\": \"Mondriaan\", \"email\": \"coloured_square_lover@basicart.com\", \"streetName\": \"Keizersgracht\", \"streetNumber\": \"126\", \"postalCode\": \"1234AB\", \"country\": \"NL\", \"city\": \"Amsterdam\"},\"shippingAddress\":{\"firstName\": \"Piet\", \"lastName\": \"Mondriaan\", \"email\": \"coloured_square_lover@basicart.com\", \"streetName\": \"Keizersgracht\", \"streetNumber\": \"126\", \"postalCode\": \"1234AB\", \"country\": \"NL\", \"city\": \"Amsterdam\"},\"orderWebhookUrl\":\"https:\/\/www.examplewebhook.com\/\",\"locale\":\"nl_NL\",\"redirectUrl\":\"https:\/\/www.exampleredirect.com\/\",\"lines\":[{\"id\":\"18920\",\"productId\":\"900220\",\"name\":{\"en\":\"apple\"},\"variant\":{\"id\":\"294028\"},\"price\":{\"id\":\"lineItemPriceId\",\"value\":{\"currencyCode\":\"EUR\",\"centAmount\":1000}},\"totalPrice\":{\"currencyCode\":\"EUR\",\"centAmount\":1000},\"quantity\":1,\"taxRate\":{\"name\": \"taxRateApple\", \"amount\": 0, \"includedInPrice\": false, \"country\": \"NL\"}, \"taxedPrice\": { \"totalNet\": { \"currencyCode\": \"EUR\", \"centAmount\": 0 }, \"totalGross\": { \"currencyCode\": \"EUR\", \"centAmount\": 0 } },\"shopperCountryMustMatchBillingCountry\":true,\"state\":[{\"quantity\":1,\"state\":{\"typeId\":\"state\",\"id\":\"stateOfApple\"}}]}]}"
             }
         },
     amountPlanned: {
@@ -81,6 +103,15 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
     method: "creditcard",
     shopperCountryMustMatchBillingCountry: false,
     billingAddress: {
+        streetAndNumber: 'Keizersgracht 126',
+        city: 'Amsterdam',
+        postalCode: '1234AB',
+        country: 'NL',
+        givenName: 'Piet',
+        familyName: 'Mondriaan',
+        email: 'piet@mondriaan.com'
+    },
+    shippingAddress: {
         streetAndNumber: 'Keizersgracht 126',
         city: 'Amsterdam',
         postalCode: '1234AB',
