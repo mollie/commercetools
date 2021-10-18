@@ -9,3 +9,17 @@ export default async function getOrderDetailsById(orderId: string, mollieClient:
     throw error;
   }
 }
+
+export const parseOrder = (order: Order) => {
+  const { status, _embedded } = order;
+
+  const payments = _embedded?.payments || [];
+
+  const paymentIdAndStatuses = payments.map(payment => {
+    return {
+      id: payment.id,
+      status: payment.status,
+    };
+  });
+  return { status, payments: paymentIdAndStatuses };
+};
