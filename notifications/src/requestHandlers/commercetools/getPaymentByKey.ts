@@ -26,10 +26,3 @@ export async function getPaymentByKey(key: string, commercetoolsClient: any, pro
     throw error;
   }
 }
-
-export const parsePayment = (payment: CTPayment) => {
-  const { custom, version } = payment;
-  const orderStatus = custom?.fields?.mollieOrderStatus;
-
-  return { version, orderStatus };
-};
