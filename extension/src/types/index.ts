@@ -31,5 +31,5 @@ export type CTError = {
 export enum ControllerAction {
   GetPaymentMethods = 'getPaymentMethods',
   CreateOrder = 'createOrder',
-  Invalid = 'invalid',
+  NoAction = 'noAction',
 }

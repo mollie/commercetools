@@ -30,7 +30,7 @@ describe('handleRequest', () => {
   });
 
   it('should return a list of actions and status 200 when processed action returns successfully', async () => {
-    mocked(validateAction).mockReturnValue(ControllerAction.GetPaymentMethods);
+    mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
     mocked(actions.getPaymentMethods).mockResolvedValue({ status: 200, actions: [{ action: 'update' }] });
 
     await handleRequest(req, res);
@@ -45,9 +45,20 @@ describe('handleRequest', () => {
     await handleRequest(req, res);
 
     expect(mockStatus).toHaveBeenCalledWith(400);
+    expect(mockEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return status 200 if when the action is NoAction', async () => {
+    mocked(validateAction).mockReturnValueOnce(ControllerAction.NoAction);
+
+    await handleRequest(req, res);
+
+    expect(mockStatus).toHaveBeenCalledWith(200);
+    expect(mockEnd).toHaveBeenCalledTimes(1);
   });
 
   it('should return status 400 and an array of formatted errors if an error happens whilst processing actions', async () => {
+    mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
     mocked(actions.getPaymentMethods).mockResolvedValue({
       status: 400,
       errors: [
@@ -74,7 +85,7 @@ describe('handleRequest', () => {
   it('should catch and handle errors and return a general error response to CT', async () => {
     const mockError = new Error('Something went wrong');
     mockError.name = 'Big error';
-    mocked(validateAction).mockReturnValue(ControllerAction.GetPaymentMethods);
+    mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
     mocked(actions.getPaymentMethods).mockRejectedValue({ name: 'Big error', message: 'Something went wrong' });
 
     await handleRequest(req, res);

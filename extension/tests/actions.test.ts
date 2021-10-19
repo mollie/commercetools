@@ -34,7 +34,7 @@ describe('validateAction', () => {
     expect(action).toBe(ControllerAction.CreateOrder);
   });
 
-  it('Should return Invalid if no createOrder or getPaymentMethods fields are present', () => {
+  it('Should return NoAction if createOrder and getPaymentMethods request & response fields are present', () => {
     const mockReqBody = {
       resource: {
         obj: {
@@ -50,6 +50,6 @@ describe('validateAction', () => {
       },
     };
     const action = validateAction(mockReqBody);
-    expect(action).toBe(ControllerAction.Invalid);
+    expect(action).toBe(ControllerAction.NoAction);
   });
 });

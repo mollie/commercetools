@@ -23,5 +23,5 @@ export function validateAction(body: any): ControllerAction {
     return ControllerAction.CreateOrder;
   }
 
-  return ControllerAction.Invalid;
+  return ControllerAction.NoAction;
 }

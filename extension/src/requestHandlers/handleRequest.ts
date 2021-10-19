@@ -22,10 +22,9 @@ export default async function handleRequest(req: Request, res: Response) {
 
     const action = validateAction(req.body);
 
-    if (action === ControllerAction.Invalid) {
-      debug('No action, returning error');
-      const error = formatMollieErrorResponse({ status: 400 });
-      return res.send(error);
+    if (action === ControllerAction.NoAction) {
+      debug('No action, ending request');
+      return res.status(200).end();
     }
 
     const { actions, errors, status } = await processAction(action, req.body, mollieClient);
