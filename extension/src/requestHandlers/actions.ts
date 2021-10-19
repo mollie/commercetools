@@ -1,5 +1,6 @@
 import getPaymentMethods from './getPaymentMethods';
 import createOrder from './createOrder';
+import { ControllerAction } from '../types/index';
 export default {
   getPaymentMethods,
   createOrder,
@@ -9,17 +10,18 @@ export default {
  * validateAction expects CT formatted body with action (and later custom params)
  * @param body
  * Based on logic it then returns either an action string or undefined if no action could be determined
- * @returns 'actionName'
+ * @returns ControllerAction
  */
-export function validateAction(body: any): string | undefined {
-  let action = undefined;
-  switch (true) {
-    case body.resource?.obj?.custom?.fields?.paymentMethodsRequest && !body.resource?.obj?.custom?.fields?.paymentMethodsResponse:
-      action = 'getPaymentMethods';
-      break;
-    case body.resource?.obj?.custom?.fields?.createOrderRequest && !body.resource?.obj?.custom?.fields?.createOrderResponse:
-      action = 'createOrder';
-      break;
+export function validateAction(body: any): ControllerAction {
+  const requestFields = body.resource?.obj?.custom?.fields;
+
+  if (requestFields?.paymentMethodsRequest && !requestFields?.paymentMethodsResponse) {
+    return ControllerAction.GetPaymentMethods;
   }
-  return action;
+
+  if (requestFields?.createOrderRequest && !requestFields?.createOrderResponse) {
+    return ControllerAction.CreateOrder;
+  }
+
+  return ControllerAction.Invalid;
 }

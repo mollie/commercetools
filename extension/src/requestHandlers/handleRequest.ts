@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
 import Debug from 'debug';
-import { CTUpdatesRequestedResponse } from '../types/index';
+import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
 import config from '../../config/config';
 import actions, { validateAction } from './actions';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
@@ -22,7 +22,7 @@ export default async function handleRequest(req: Request, res: Response) {
 
     const action = validateAction(req.body);
 
-    if (!action) {
+    if (action === ControllerAction.Invalid) {
       debug('No action, returning error');
       const error = formatMollieErrorResponse({ status: 400 });
       return res.send(error);
@@ -46,15 +46,15 @@ export default async function handleRequest(req: Request, res: Response) {
   }
 }
 
-const processAction = async function (action: string, body: any, mollieClient: MollieClient) {
+const processAction = async function (action: ControllerAction, body: any, mollieClient: MollieClient) {
   let result = {} as CTUpdatesRequestedResponse;
   switch (action) {
-    case 'getPaymentMethods':
-      debug('action: getPaymentMethods');
+    case ControllerAction.GetPaymentMethods:
+      debug(`action: ${ControllerAction.GetPaymentMethods}`);
       result = await actions.getPaymentMethods(body?.resource?.obj, mollieClient);
       break;
-    case 'createOrder':
-      debug('action: createOrder');
+    case ControllerAction.CreateOrder:
+      debug(`action: ${ControllerAction.CreateOrder}`);
       result = await actions.createOrder(body, mollieClient);
       break;
     default:

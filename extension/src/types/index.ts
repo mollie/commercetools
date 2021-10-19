@@ -27,3 +27,9 @@ export type CTError = {
   message: string;
   extensionExtraInfo?: Object;
 };
+
+export enum ControllerAction {
+  GetPaymentMethods = 'getPaymentMethods',
+  CreateOrder = 'createOrder',
+  Invalid = 'invalid',
+}
