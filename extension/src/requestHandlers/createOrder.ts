@@ -10,25 +10,25 @@ enum MollieLineCategoryType {
   gift = 'gift',
 }
 
-export function getBillingAddress(billingAddressObject: any, method: string): OrderAddress {
-  let rtnObject;
-  method === PaymentMethod.paypal
-    ? (rtnObject = {} as OrderAddress)
-    : (rtnObject = {
-        givenName: billingAddressObject.firstName,
-        familyName: billingAddressObject.lastName,
-        email: billingAddressObject.email,
-        streetAndNumber: billingAddressObject?.streetName && billingAddressObject?.streetNumber ? billingAddressObject?.streetName + ' ' + billingAddressObject?.streetNumber : '',
-        city: billingAddressObject.city,
-        postalCode: billingAddressObject.postalCode,
-        country: billingAddressObject.country,
-      });
-  return rtnObject;
+export function getBillingAddress(billingAddressObject: any): OrderAddress {
+  return {
+    givenName: billingAddressObject.firstName,
+    familyName: billingAddressObject.lastName,
+    email: billingAddressObject.email,
+    streetAndNumber: billingAddressObject?.streetName && billingAddressObject?.streetNumber ? billingAddressObject?.streetName + ' ' + billingAddressObject?.streetNumber : '',
+    city: billingAddressObject.city,
+    postalCode: billingAddressObject.postalCode,
+    country: billingAddressObject.country,
+  };
+}
+
+export function convertCTTaxRateToMollieTaxRate(CTTaxRate: any): string {
+  return (parseFloat(CTTaxRate) * 100).toFixed(2);
 }
 
 export function getShippingAddress(shippingAddressObject: any): OrderAddress {
   let rtnObject: OrderAddress = {
-    givenName: shippingAddressObject.firstName,
+    givenName: shippingAddressObject.firstName || '',
     familyName: shippingAddressObject.lastName,
     email: shippingAddressObject.email,
     streetAndNumber: shippingAddressObject?.streetName && shippingAddressObject?.streetNumber ? shippingAddressObject?.streetName + ' ' + shippingAddressObject?.streetNumber : '',
@@ -44,22 +44,6 @@ export function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): P
     return '' as PaymentMethod;
   }
   return PaymentMethod[CTPaymentMethod as keyof typeof PaymentMethod];
-}
-
-export function calculateTaxRate(ctTaxRateAmount: number): string {
-  if (ctTaxRateAmount < 0) {
-    return '';
-  }
-  return (ctTaxRateAmount * 100).toFixed(2);
-}
-
-export function calculateTaxAmount(ctTotalAmount: number, ctUnitAmount: number, currencyCode: string): any {
-  let mollieTaxValue = (ctTotalAmount - ctUnitAmount).toFixed(2);
-  let rtnObject = {
-    currency: currencyCode,
-    value: mollieTaxValue,
-  };
-  return rtnObject;
 }
 
 function extractAllLines(lines: any) {
@@ -92,8 +76,11 @@ export function extractLine(line: any) {
       currency: line.totalPrice.currencyCode,
       value: totalPriceValueString,
     },
-    vatRate: calculateTaxRate(line.taxRate.amount),
-    vatAmount: calculateTaxAmount(parseInt(totalPriceValueString), parseInt(unitPriceValueString), line.totalPrice.currencyCode),
+    vatRate: convertCTTaxRateToMollieTaxRate(line.vatRate),
+    vatAmount: {
+      currency: line.vatAmount.currencyCode,
+      value: amountMapper({ centAmount: line.vatAmount.centAmount }),
+    },
     type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
     category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
     sku: line.sku ? line.sku : '',
@@ -122,12 +109,14 @@ export function fillOrderValues(body: any): OrderCreateParams {
     shopperCountryMustMatchBillingCountry: deStringedOrderRequest.shopperCountryMustMatchBillingCountry || false,
     method: CTPaymentMethodToMolliePaymentMethod(body?.resource?.obj?.paymentMethodInfo?.method),
     expiresAt: deStringedOrderRequest.expiresAt || '',
-    billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress, body?.resource?.obj?.paymentMethodInfo?.method),
-    shippingAddress: deStringedOrderRequest.shippingAddress ? getShippingAddress(deStringedOrderRequest.shippingAddress) : ({} as OrderAddress),
+    billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress),
     lines: extractAllLines(deStringedOrderRequest.lines),
     metadata: deStringedOrderRequest.metadata || {},
     embed: [OrderEmbed.payments],
   };
+  if (deStringedOrderRequest.shippingAddress) {
+    orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
+  }
   return orderValues;
 }
 

@@ -1,4 +1,12 @@
-import { fillOrderValues, extractLine, CTPaymentMethodToMolliePaymentMethod, getBillingAddress, getShippingAddress, isDiscountAmountValid } from '../src/requestHandlers/createOrder';
+import {
+  fillOrderValues,
+  extractLine,
+  CTPaymentMethodToMolliePaymentMethod,
+  getBillingAddress,
+  convertCTTaxRateToMollieTaxRate,
+  getShippingAddress,
+  isDiscountAmountValid,
+} from '../src/requestHandlers/createOrder';
 import { PaymentMethod } from '@mollie/api-client';
 
 describe('Create orders tests', () => {
@@ -13,6 +21,11 @@ describe('Create orders tests', () => {
         id: 'appleVariantId',
       },
       quantity: 1,
+      vatRate: '0.0',
+      vatAmount: {
+        currencyCode: 'EUR',
+        centAmount: 0,
+      },
       sku: 'SKU1234567',
       type: 'physical',
       price: {
@@ -66,17 +79,17 @@ describe('Create orders tests', () => {
         currency: 'EUR',
         value: '12.00',
       },
-      vatRate: '20.00',
+      vatRate: '0.00',
       vatAmount: {
         currency: 'EUR',
-        value: '2.00',
+        value: '0.00',
       },
     };
     expect(extractLine(mockedCTLine)).toMatchObject(mockedMollieLine);
   });
   it('Should fill out an order on mollie from CT', async () => {
     const mockedCreateOrderRequestFields =
-      '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"shippingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"taxRate":{"name": "taxRateApple", "amount": 0, "includedInPrice": false, "country": "NL"}, "taxedPrice": { "totalNet": { "currencyCode": "EUR", "centAmount": 0 }, "totalGross": { "currencyCode": "EUR", "centAmount": 0 } },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
+      '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"shippingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"vatRate":"0", "vatAmount": { "currencyCode": "EUR", "centAmount": 0 },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
     const mockedCreateOrderRequest = {
       resource: {
         obj: {
@@ -168,7 +181,7 @@ describe('Create orders tests', () => {
       postalCode: '1234AB',
       country: 'Netherlands',
     };
-    expect(getBillingAddress(mockedBillingAddressBody, mockedPaymentMethod)).toMatchObject(mockedExpectedResponse);
+    expect(getBillingAddress(mockedBillingAddressBody)).toMatchObject(mockedExpectedResponse);
     const mockedWrongBillingAddressBody = {
       firstName: 'Piet',
       streetNumber: '126',
@@ -185,7 +198,14 @@ describe('Create orders tests', () => {
       postalCode: '1234AB',
       country: 'Netherlands',
     };
-    expect(getBillingAddress(mockedWrongBillingAddressBody, mockedPaymentMethod)).toMatchObject(mockedWrongExpectedResponse);
+    expect(getBillingAddress(mockedWrongBillingAddressBody)).toMatchObject(mockedWrongExpectedResponse);
+  });
+  it('Should convert the tax rate from CT -> mollie correctly', () => {
+    expect(convertCTTaxRateToMollieTaxRate(0.2)).toBe('20.00');
+    expect(convertCTTaxRateToMollieTaxRate(0)).toBe('0.00');
+    expect(convertCTTaxRateToMollieTaxRate(0.1775)).toBe('17.75');
+    expect(convertCTTaxRateToMollieTaxRate(0.40110228)).toBe('40.11');
+    expect(convertCTTaxRateToMollieTaxRate(-0.2411)).toBe('-24.11');
   });
   it('Should extract the correct shipping address from the request body', () => {
     const mockedShippingAddressBody = {

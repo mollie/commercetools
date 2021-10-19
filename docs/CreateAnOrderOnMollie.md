@@ -4,18 +4,20 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
 
 # createPaymentRequest object (req.body.resource.obj.custom.fields.createPaymentRequest)
 
-| Parameter (CT)                                      | Parameter (Mollie)                               | Required |
-| --------------------------------------------------- | ------------------------------------------------ | -------- |
-| `orderNumber: 10920`                                | `orderNumber: 10920 `                            | YES      |
-| `orderWebhookUrl: "https://www.examplewebhook.com"` | `webhookUrl: "https://www.examplewebhook.com"`   | YES      |
-| `redirectUrl: "https://www.exampleredirect.com"`    | `redirectUrl: "https://www.exampleredirect.com"` | YES      |
-| `locale: nl_NL`                                     | `locale: nl_NL`                                  | YES      |
-| `shopperCountryMustMatchBillingCountry: false`      | `shopperCountryMustMatchBillingCountry: false`   | NO       |
-| `expiresAt: "2021-12-25"`                           | `expiresAt: '2021-12-25'`                        | NO       |
-| `billingAddress: [billingAddress]`                  | `billingAddress: [billingAddress]`               | YES      |
-| `shippingAddress: [billingAddress]`                 | `shippingAddress: [shippingAddress]`             | NO       |
-| `lines: [array of lines]`                           | `lines: [array of lines]`                        | YES      |
-| `metadata: {}`                                      | `metadata: {}`                                   | NO       |
+| Parameter (CT)                                                     | Parameter (Mollie)                               | Required |
+| ------------------------------------------------------------------ | ------------------------------------------------ | -------- |
+| `orderNumber: 10920`                                               | `orderNumber: 10920 `                            | YES      |
+| `orderWebhookUrl: "https://www.examplewebhook.com"`                | `webhookUrl: "https://www.examplewebhook.com"`   | YES      |
+| `redirectUrl: "https://www.exampleredirect.com"`                   | `redirectUrl: "https://www.exampleredirect.com"` | YES      |
+| `locale: nl_NL`                                                    | `locale: nl_NL`                                  | YES      |
+| `shopperCountryMustMatchBillingCountry: false`                     | `shopperCountryMustMatchBillingCountry: false`   | NO       |
+| `expiresAt: "2021-12-25"`                                          | `expiresAt: '2021-12-25'`                        | NO       |
+| `billingAddress: [billingAddress]`                                 | `billingAddress: [billingAddress]`               | YES      |
+| `shippingAddress: [billingAddress]`                                | `shippingAddress: [shippingAddress]`             | NO       |
+| `lines: [array of lines]`                                          | `lines: [array of lines]`                        | YES      |
+| `metadata: {}`                                                     | `metadata: {}`                                   | NO       |
+| `vatRate: 0.2`                                                     | `vatRate: 20.00 `                                | YES      |
+| `vatAmount: { value: { currencyCode: "EUR", centAmount: "200" } }` | `vatAmount: { currency: "EUR", value: "2.00" } ` | YES      |
 
 # lines object (inside createPaymentRequest object)
 
