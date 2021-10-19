@@ -1,16 +1,33 @@
+import { PaymentMethod } from '@mollie/api-client';
+import { mocked } from 'ts-jest/utils';
+import { createDateNowString, amountMapper } from '../../src/utils';
 import {
   fillOrderValues,
   extractLine,
   CTPaymentMethodToMolliePaymentMethod,
   getBillingAddress,
-  convertCTTaxRateToMollieTaxRate,
+  createCtActions,
   getShippingAddress,
   isDiscountAmountValid,
-} from '../src/requestHandlers/createOrder';
-import { PaymentMethod } from '@mollie/api-client';
+  convertCTTaxRateToMollieTaxRate,
+} from '../../src/requestHandlers/createOrder';
+
+jest.mock('../../src/utils');
 
 describe('Create orders tests', () => {
+  const mockConsoleError = jest.fn();
+  beforeEach(() => {
+    console.error = mockConsoleError;
+    mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('Should extract line from CT data', () => {
+    mocked(amountMapper)
+      .mockReturnValueOnce('10.00') // extractLine:unitPriceValueString
+      .mockReturnValueOnce('12.00') // extractLine:totalPriceValueString
+      .mockReturnValueOnce('0.00'); // extractLine:vatAmount.value
     const mockedCTLine = {
       id: '18920',
       productId: '90020',
@@ -88,6 +105,11 @@ describe('Create orders tests', () => {
     expect(extractLine(mockedCTLine)).toMatchObject(mockedMollieLine);
   });
   it('Should fill out an order on mollie from CT', async () => {
+    mocked(amountMapper)
+      .mockReturnValueOnce('10.00') // fillOrderValues:amountConverted
+      .mockReturnValueOnce('10.00') // extractLine:unitPriceValueString
+      .mockReturnValueOnce('10.00') // extractLine:totalPriceValueString
+      .mockReturnValueOnce('0.00'); // extractLine:vatAmount.value
     const mockedCreateOrderRequestFields =
       '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"shippingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"vatRate":"0", "vatAmount": { "currencyCode": "EUR", "centAmount": 0 },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
     const mockedCreateOrderRequest = {
@@ -151,13 +173,25 @@ describe('Create orders tests', () => {
         },
       ],
     };
-    expect(fillOrderValues(mockedCreateOrderRequest)).toMatchObject(mockedMollieCreateOrderObject);
+    await expect(fillOrderValues(mockedCreateOrderRequest)).resolves.toMatchObject(mockedMollieCreateOrderObject);
+  });
+  it('Should return an error if mollie order parameters can not be created', async () => {
+    const mockedCreateOrderRequest = {
+      resource: {
+        obj: {
+          custom: { fields: { createOrderRequest: 'banana' } },
+        },
+      },
+    };
+    const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' };
+    await expect(fillOrderValues(mockedCreateOrderRequest)).rejects.toEqual(expectedError);
+    expect(mockConsoleError).toHaveBeenCalledTimes(1);
   });
   it('Should return the correct mollie payment method', () => {
     expect(CTPaymentMethodToMolliePaymentMethod('sofort')).toMatch(PaymentMethod.sofort);
     expect(CTPaymentMethodToMolliePaymentMethod('ideal')).toMatch(PaymentMethod.ideal);
   });
-  it('Should error on incorrect payment method', () => {
+  it('Should return empty string on incorrect payment method', () => {
     expect(CTPaymentMethodToMolliePaymentMethod('banana')).toMatch('');
   });
   it('Should fetch the correct billing address from the request body', () => {
@@ -206,6 +240,53 @@ describe('Create orders tests', () => {
     expect(convertCTTaxRateToMollieTaxRate(0.1775)).toBe('17.75');
     expect(convertCTTaxRateToMollieTaxRate(0.40110228)).toBe('40.11');
     expect(convertCTTaxRateToMollieTaxRate(-0.2411)).toBe('-24.11');
+  });
+  it('Should create correct ct actions from request and mollies order', async () => {
+    const mockedCreateOrderString = '{"orderNumber":"1001"}';
+    const mockedCtObject = {
+      custom: { fields: { createOrderRequest: mockedCreateOrderString } },
+    };
+    const mockedMollieCreatedOrder: any = {
+      resource: 'order',
+      id: 'ord_dsczl7',
+      profileId: 'pfl_VtWA783A63',
+      amount: { value: '10.00', currency: 'EUR' },
+      orderNumber: '1001',
+      _embedded: {
+        payments: [
+          {
+            resource: 'payment',
+            id: 'tr_2hwPMAs5qU',
+            description: 'Order 1001',
+            profileId: 'pfl_VtWA783A63',
+            orderId: 'ord_ufqybf',
+          },
+        ],
+      },
+    };
+    const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject);
+    ctActions.forEach(action => {
+      expect(action).toMatchSnapshot();
+    });
+  });
+  it('Should return an error if mollie order does not return payments', async () => {
+    const mockedCreateOrderString = '{"orderNumber":"1001"}';
+    const mockedCtObject = {
+      custom: { fields: { createOrderRequest: mockedCreateOrderString } },
+    };
+    const mockedMollieCreatedOrder: any = {
+      resource: 'order',
+      id: 'ord_dsczl7',
+      profileId: 'pfl_VtWA783A63',
+      amount: { value: '10.00', currency: 'EUR' },
+      orderNumber: '1001',
+    };
+    const expectedError = {
+      field: '<MollieOrder>._embedded.payments.[0].id',
+      status: 400,
+      title: 'Could not get Mollie payment id.',
+    };
+    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject)).rejects.toEqual(expectedError);
   });
   it('Should extract the correct shipping address from the request body', () => {
     const mockedShippingAddressBody = {

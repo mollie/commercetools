@@ -94,36 +94,44 @@ export function extractLine(line: any) {
   return extractedLine;
 }
 
-export function fillOrderValues(body: any): OrderCreateParams {
-  const deStringedOrderRequest = JSON.parse(body?.resource?.obj?.custom?.fields?.createOrderRequest);
-  const amountConverted = amountMapper({ centAmount: body?.resource?.obj?.amountPlanned?.centAmount });
-  const orderValues: OrderCreateParams = {
-    amount: {
-      value: amountConverted,
-      currency: body?.resource?.obj?.amountPlanned?.currencyCode,
-    },
-    orderNumber: deStringedOrderRequest.orderNumber.toString(),
-    webhookUrl: deStringedOrderRequest.orderWebhookUrl,
-    locale: deStringedOrderRequest.locale,
-    redirectUrl: deStringedOrderRequest.redirectUrl,
-    shopperCountryMustMatchBillingCountry: deStringedOrderRequest.shopperCountryMustMatchBillingCountry || false,
-    method: CTPaymentMethodToMolliePaymentMethod(body?.resource?.obj?.paymentMethodInfo?.method),
-    expiresAt: deStringedOrderRequest.expiresAt || '',
-    billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress),
-    lines: extractAllLines(deStringedOrderRequest.lines),
-    metadata: deStringedOrderRequest.metadata || {},
-    embed: [OrderEmbed.payments],
-  };
-  if (deStringedOrderRequest.shippingAddress) {
-    orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
+export function fillOrderValues(body: any): Promise<OrderCreateParams> {
+  try {
+    const deStringedOrderRequest = JSON.parse(body?.resource?.obj?.custom?.fields?.createOrderRequest);
+    const amountConverted = amountMapper({ centAmount: body?.resource?.obj?.amountPlanned?.centAmount });
+    const orderValues: OrderCreateParams = {
+      amount: {
+        value: amountConverted,
+        currency: body?.resource?.obj?.amountPlanned?.currencyCode,
+      },
+      orderNumber: deStringedOrderRequest.orderNumber.toString(),
+      webhookUrl: deStringedOrderRequest.orderWebhookUrl,
+      locale: deStringedOrderRequest.locale,
+      redirectUrl: deStringedOrderRequest.redirectUrl,
+      shopperCountryMustMatchBillingCountry: deStringedOrderRequest.shopperCountryMustMatchBillingCountry || false,
+      method: CTPaymentMethodToMolliePaymentMethod(body?.resource?.obj?.paymentMethodInfo?.method),
+      expiresAt: deStringedOrderRequest.expiresAt || '',
+      billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress),
+      lines: extractAllLines(deStringedOrderRequest.lines),
+      metadata: deStringedOrderRequest.metadata || {},
+      embed: [OrderEmbed.payments],
+    };
+    if (deStringedOrderRequest.shippingAddress) {
+      orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
+    }
+    return Promise.resolve(orderValues);
+  } catch (e) {
+    console.error(e);
+    return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' });
   }
-  return orderValues;
 }
 
-export function createCtActions(orderResponse: Order, ctObj: any): Action[] {
+export function createCtActions(orderResponse: Order, ctObj: any): Promise<Action[]> {
   const stringifiedMollieOrder = JSON.stringify(orderResponse);
-  // TODO: Double check this.. array of payments
   const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
+  if (!molliePaymentId) {
+    // This should theoretically never happen
+    return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
+  }
   const result: Action[] = [
     {
       action: 'addInterfaceInteraction',
@@ -152,26 +160,30 @@ export function createCtActions(orderResponse: Order, ctObj: any): Action[] {
       key: orderResponse.id,
     },
     {
-      action: 'changeTransactionInteractionId',
-      transactionId: ctObj?.transactions?.[0]?.id,
-      // TODO: Is interactionId Mollie's Payment ID or Order ID?
-      interactionId: molliePaymentId,
+      action: 'addTransaction',
+      transaction: {
+        timestamp: orderResponse.createdAt,
+        type: 'Charge',
+        amount: ctObj.amount,
+        interactionId: molliePaymentId,
+      },
     },
   ];
-  return result;
+  return Promise.resolve(result);
 }
 
 export default async function createOrder(body: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     // TODO: refactor to not pass the whole body..
-    const mollieCreatedOrder = await mollieClient.orders.create(fillOrderValues(body));
-    const ctActions = createCtActions(mollieCreatedOrder, body?.resource?.obj);
+    const orderParams = await fillOrderValues(body);
+    const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
+    const ctActions = await createCtActions(mollieCreatedOrder, body?.resource?.obj);
     return {
       actions: ctActions,
       status: 201,
     };
   } catch (error: any) {
-    console.warn(error);
+    console.error(error);
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

@@ -18,6 +18,7 @@ export type Action = {
   name?: string;
   value?: string;
   key?: string;
+  transaction?: CTTransaction;
   transactionId?: string;
   interactionId?: string;
 };
@@ -26,6 +27,21 @@ export type CTError = {
   code: string;
   message: string;
   extensionExtraInfo?: Object;
+};
+
+export type CTMoney = {
+  type?: 'centPrecision';
+  currencyCode: string;
+  centAmount: number;
+  fractionDigits?: number;
+};
+
+export type CTTransaction = {
+  timestamp: string;
+  type: 'Charge';
+  amount: CTMoney;
+  interactionId?: string;
+  state?: 'Initial' | 'Pending' | 'Success' | 'Failure';
 };
 
 export enum ControllerAction {
