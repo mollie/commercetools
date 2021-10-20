@@ -61,13 +61,15 @@ export default async function handleRequest(req: Request, res: Response) {
     if (resourceType === 'invalid') {
       return res.status(400).send(`ID ${id} is invalid`);
     }
-
+    let mollieOrderStatus;
+    let updateActions = [];
     // Call to mollie's API for order/payment status
     if (resourceType === 'order') {
-      const order = await actions.getOrderDetailsById(id, mollieClient);
+      const order = await actions.mGetOrderDetailsById(id, mollieClient);
+      mollieOrderStatus = order.status;
       console.log(order.id); // To show this is working
     } else {
-      const payment = await actions.getPaymentDetailsById(id, mollieClient);
+      const payment = await actions.mGetPaymentDetailsById(id, mollieClient);
       console.log(payment.id); // To show this is working
       // TODO: https://anddigitaltransformation.atlassian.net/browse/CMI-44
       return res.status(200).send('Payment flow not implemented yet');
@@ -76,8 +78,16 @@ export default async function handleRequest(req: Request, res: Response) {
     // TODO: Parse for order & payment statuses
 
     // Get payment from CT -> payment key == mollie order_id
-    const ctPayment = await actions.getPaymentByKey(id, commercetoolsClient, projectKey);
-
+    const ctPayment = await actions.ctGetPaymentByKey(id, commercetoolsClient, projectKey);
+    const ctVersion = ctPayment.version;
+    const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
+    if (mollieOrderStatus !== ctOrderStatus) {
+      updateActions.push({
+        action: 'setCustomField',
+        name: 'mollieOrderStatus',
+        value: mollieOrderStatus,
+      });
+    }
     // TODO: Parse CT Payment for transactions & statuses
 
     // TODO: should order / payment status be updated?
@@ -85,9 +95,9 @@ export default async function handleRequest(req: Request, res: Response) {
     // TODO: Format update actions
 
     // TODO: UpdatePaymentByKey on CT
-
+    const updatedPayment = await actions.ctUpdatePaymentByKey(id, commercetoolsClient, projectKey, ctVersion, updateActions);
     // Return ctPayment for now to demo getPaymentByKey
-    res.status(200).send(ctPayment);
+    res.status(200).send(updatedPayment);
   } catch (error) {
     console.error(error);
     res.status(400).send(error);
