@@ -7,6 +7,7 @@ import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createClient } from '@commercetools/sdk-client';
 import actions from './index';
 import { isOrderOrPayment } from '../utils';
+import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField } from '../types/ctUpdateActions';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
@@ -62,7 +63,7 @@ export default async function handleRequest(req: Request, res: Response) {
       return res.status(400).send(`ID ${id} is invalid`);
     }
     let mollieOrderStatus;
-    let updateActions = [];
+    let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField)[] = [];
     // Call to mollie's API for order/payment status
     if (resourceType === 'order') {
       const order = await actions.mGetOrderDetailsById(id, mollieClient);
@@ -83,7 +84,7 @@ export default async function handleRequest(req: Request, res: Response) {
     const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
     if (mollieOrderStatus !== ctOrderStatus) {
       updateActions.push({
-        action: 'setCustomField',
+        action: UpdateActionKey.SetCustomField,
         name: 'mollieOrderStatus',
         value: mollieOrderStatus,
       });

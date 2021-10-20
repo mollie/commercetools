@@ -1,3 +1,4 @@
+// https://docs.commercetools.com/api/projects/payments#payment
 export type CTPayment = {
   id: string;
   version: number;
@@ -26,10 +27,18 @@ export type CTTransaction = {
   id: string;
   amount: CTMoney;
   interactionId?: string;
-  state: 'Initial' | 'Pending' | 'Success' | 'Failure';
+  state: CTTransactionState;
 };
 
 export type CTMoney = {
-  centAmout: number;
+  centAmount: number;
   currencyCode: string;
 };
+
+// https://docs.commercetools.com/api/projects/payments#transactionstate
+export enum CTTransactionState {
+  Initial = 'Initial',
+  Pending = 'Pending',
+  Success = 'Success',
+  Failure = 'Failure',
+}
