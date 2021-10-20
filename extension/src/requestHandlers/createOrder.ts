@@ -164,7 +164,7 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
       transaction: {
         timestamp: orderResponse.createdAt,
         type: 'Charge',
-        amount: ctObj.amount,
+        amount: ctObj.amountPlanned,
         interactionId: molliePaymentId,
       },
     },
