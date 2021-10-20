@@ -1,4 +1,6 @@
-# Setting up API Extension on Commerce Tools
+# Setting up the API Extension on commercetools
+
+**Work in progress** 
 
 ## Installing API Extension
 
@@ -182,5 +184,3 @@ Body:
     ]
 }
 ```
-
-**Todo** Add a script and / or Postman Collection for merchants to use. 

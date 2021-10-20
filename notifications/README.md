@@ -1,20 +1,20 @@
 # Notification Module
 
-Handles status updates from Mollie webhooks and passes these onto Commerce Tools.
+The Notifications module handles status updates from Mollie webhooks and updates the corresponding commercetools resource.
 
-## Commerce Tools SDK
+## commercetools SDK
 
-The notification module uses Commerce Tools's [node sdk](https://commercetools.github.io/nodejs/sdk/) to make requests to CommerceTools. We are not using the V2 Typescript client as it is still in Beta.
+The notification module uses commercetools's [node sdk](https://commercetools.github.io/nodejs/sdk/) to make requests to commercetools. We are not using the V2 Typescript client yet as it is still in [beta status](https://github.com/commercetools/commercetools-sdk-typescript/issues/126).
 
-The sdk modules do not all have types files (`d.ts`) which typescript can understand, nor a `@types/` module to install. This meant Typescript complains. To get around this, I had to add a custom `typings` folder for these modules and update our `tsconfig` to read from there as well.
+The SDK modules do not all have types files (`d.ts`) which typescript can understand, nor a `@types/` module to install. To allow this to work with Typescript, there is the `./typings` folder for these modules. The `tsconfig` reads types from here as well as the default `node_modules` path.
 
-The SDK also relies on `fetch`. I originally tried `node-fetch`, however this is ES module, so would not work in a commonjs project (ref: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/36539). Our `tsconfig` uses commonjs. I instead installed [node-fetch-commonjs](https://www.npmjs.com/package/node-fetch-commonjs).
+The SDK also relies on `fetch`. As `tsconfig` uses `commonjs`, the `node-fetch` module will [not work in this project](https://github.com/DefinitelyTyped/DefinitelyTyped/issues/36539). Instead, we use [node-fetch-commonjs](https://www.npmjs.com/package/node-fetch-commonjs).
 
 ## Authentication
 
-We use the [ClientCredentials flow](https://docs.commercetools.com/api/authorization#client-credentials-flow) to authenticate with Commerce Tools. This returns an `access_token` which can be used to authenticate requests.
+We use the [ClientCredentials flow](https://docs.commercetools.com/api/authorization#client-credentials-flow) to authenticate with commercetools. This returns an `access_token` which can be used to authenticate requests.
 
-If you do not provide `scopes`, then all scopes are granted to the `access_token`. It's highly recommended to limit to only the scopes the Notificaitons module will need. This is [managing payments](https://docs.commercetools.com/api/scopes#manage_paymentsprojectkey).
+If you do not provide `scopes`, then all scopes are granted to the `access_token`. It's highly recommended to limit to only the scopes the Notificaitons module will need. The scope needed is [managing payments](https://docs.commercetools.com/api/scopes#manage_paymentsprojectkey).
 
 ## Running Notifications
 
@@ -37,7 +37,7 @@ Notifications uses one environment variable `CT_MOLLIE_CONFIG`. This should be a
 }
 ```
 
-You can export this in your terminal using `export`, e.g:
+Locally, you can export this in your terminal using `export`, e.g:
 
 ```
 export CT_MOLLIE_CONFIG='{"port":"3001","mollieApiKey":"qvvmvmf9swR4zH38Q","ctConfig":{"projectKey":"demo" ... }}'
@@ -62,8 +62,11 @@ npm run start
 
 ### Deploying
 
-Focus on deploying only to **GCP** Cloud Functions for test purposes.
+#### GCP Functions
 
-This will need the `CT_MOLLIE_CONFIG` environment variable to your Google Cloud Function.
+Setting up the extension as a google cloud function requires creating a function, setting up entry point and secrets and uploading the source code.
 
-Package the code using `npm run zip-gcp-function` then upload.
+1. Run `npm run zip-gcp-function` from the notification repository root directory (i.e. where package.json is located)
+2. Upload the generated zip file to your google cloud function ([Guide to creating cloud functions](https://cloud.google.com/functions/docs#training-and-tutorials))
+3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables`
+4. Set Runtime to `Node.js 14` and change entry point to `handler`

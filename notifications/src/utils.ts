@@ -25,7 +25,7 @@ export const isOrderOrPayment = (resourceId: string): string => {
  * Mollie payment status - https://docs.mollie.com/payments/status-changes
  * Commercetools Transaction states - https://docs.commercetools.com/api/projects/payments#transactionstate
  *
- * CommerceTools <-> Mollie
+ * commercetools <-> Mollie
  * Success - paid, authorized
  * Failure - expired, canceled, failed
  *

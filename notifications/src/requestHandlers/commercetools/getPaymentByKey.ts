@@ -5,7 +5,7 @@ import { CTPayment } from '../../types/ctPaymentTypes';
  * @param commercetoolsClient
  * @param projectKey
  * @returns CTPayment object
- * Returns CommerceTools Payment
+ * Returns commercetools Payment
  * https://docs.commercetools.com/api/projects/payments#representations
  */
 export async function getPaymentByKey(key: string, commercetoolsClient: any, projectKey: string): Promise<CTPayment> {

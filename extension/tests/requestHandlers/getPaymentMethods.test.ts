@@ -25,7 +25,7 @@ describe('getPaymentMethods unit tests', () => {
     expect(mollieClient.methods.list).toBeCalled();
   });
 
-  it('Should return status and two update actions for Commerce Tools', async () => {
+  it('Should return status and two update actions for commercetools', async () => {
     const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedRequest = {
       custom: {

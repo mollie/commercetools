@@ -1,6 +1,8 @@
 ## Creating an Order on Mollie
 
-To create an order on Mollie, we need to have a minimum number of parameters on Commercetools. These will get converted on Mollie. Below are some conversion tables, as well as JSON representations of the calls being mapped from CT -> Mollie.
+**Work in progress**
+
+To create an order on Mollie, we need to have a minimum number of parameters on commercetools. These will get converted on Mollie. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
 
 # createPaymentRequest object (req.body.resource.obj.custom.fields.createPaymentRequest)
 

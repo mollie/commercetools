@@ -1,33 +1,20 @@
 # Deployment
 
-<!-- Not sure if we will use this table, once we update our cloud deployment config we can decide whether to keep it or not -->
-<!-- ## AWS, GCP, Azure
-
-For these cloud providers, first global variables must be set in the config file. After that a zip command must be run, as follows:
-
-| Cloud Provider | Global (Environment) Variables                   | Zip Command          |
-| -------------- | ------------------------------------------------ | -------------------- |
-| AWS (Lambda)   | AWS_ACCESS_KEY_ID=<>                             | `npm run zip-lambda` |
-|                | AWS_REGION=<>                                    |                      |
-|                | AWS_SECRET_ACCESS_KEY=<>                         |                      |
-|                | AWS_FUNCTION_NAME=<>                             |                      |
-| GCP            | GCP_PROJECT_ID=<>                                | `npm run zip-gcp`    |
-|                | GCP_SERVICE_ACCOUNT_KEY=<>                       |                      |
-| Azure          | AZURE_FUNCTIONAPP_NAME=<>                        | `npm run zip-azure`  |
-|                | AZURE_FUNCTIONAPP_PACKAGE_PATH=<> (Optional)     |                      |
-|                | AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> (Optional)  |                      | -->
-
+**Work in progress**
 
 ## Environment variable
 
-Commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure below.
+commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure below.
 
 ```json
 {
     "port": 3000,
-    "mollieApiKey": "mollieApiKey"
+    "mollieApiKey": "mollieApiKey",
+    ...
 }
 ```
+
+_N.B. Environment variables deployment subject to change as we're developing_
 
 ## AWS Lambda
 
@@ -35,8 +22,6 @@ Commercetools Mollie integration requires 1 environment variable to start. This 
 2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 14.x.
 3. Upload the 'extension-module.zip' file to the lambda function (in the code section, select upload from zip file)
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
-
-<!-- Environment variables deployment might change -->
 
 ## GCP functions
 
@@ -49,7 +34,7 @@ Setting up the extension as a google cloud function requires an existing functio
 
 ## Azure
 
-<!-- Still to implement -->
+// TODO
 
 Add the following global variables into the config file:
 

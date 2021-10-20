@@ -23,7 +23,7 @@ Object {
 }
 `;
 
-exports[`getPaymentMethods unit tests Should return status and two update actions for Commerce Tools 1`] = `
+exports[`getPaymentMethods unit tests Should return status and two update actions for commercetools 1`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
@@ -38,7 +38,7 @@ Object {
 }
 `;
 
-exports[`getPaymentMethods unit tests Should return status and two update actions for Commerce Tools 2`] = `
+exports[`getPaymentMethods unit tests Should return status and two update actions for commercetools 2`] = `
 Object {
   "action": "setCustomField",
   "name": "paymentMethodsResponse",

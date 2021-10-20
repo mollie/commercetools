@@ -1,5 +1,5 @@
 # API Extension
 
-WIP
+**Work in progress**
 
-Add documentation for installation & usage here.
+TODO: Add documentation for installation & usage here.

@@ -13,7 +13,7 @@ const getExtraInfo = (error: any) => {
  *
  * @param error Takes Error or ApiError from Mollie SDK (extended from Node's Error class)
  * Formats error from failed request to Mollie into a
- * Commerce Tools "Validation Failed" response.
+ * commercetools "Validation Failed" response.
  * Docs: https://docs.commercetools.com/api/projects/api-extensions#error
  */
 export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedResponse => {
