@@ -1,4 +1,6 @@
 import { PaymentStatus } from '@mollie/api-client';
+import { CTTransaction, CTTransactionState } from './types/ctPaymentTypes';
+import { UpdateActionChangeTransactionState, UpdateActionKey } from './types/ctUpdateActions';
 
 export const isOrderOrPayment = (resourceId: string): string => {
   const orderRegex = new RegExp('^ord_');
@@ -32,30 +34,65 @@ export const isOrderOrPayment = (resourceId: string): string => {
  * N.B. There are other payment states in Mollie, but the webhook will not be called for them
  *
  */
-export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPaymentStatus: string): { shouldUpdate: boolean; newStatus: string } => {
-  let shouldUpdate;
-  let newStatus = '';
+export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPaymentStatus: string): { shouldUpdate: boolean; newStatus: CTTransactionState } => {
+  let shouldUpdate: boolean;
+  let newStatus = CTTransactionState.Initial;
 
   switch (molliePaymentStatus) {
     // Success statuses
-    case 'paid':
-    case 'authorized':
+    case PaymentStatus.paid:
+    case PaymentStatus.authorized:
       shouldUpdate = cTPaymentStatus === 'Success' ? false : true;
-      newStatus = 'Success';
+      newStatus = CTTransactionState.Success;
+      break;
 
     // Failure statuses
-    case 'expired':
-    case 'canceled':
-    case 'failed':
+    case PaymentStatus.canceled:
+    case PaymentStatus.failed:
+    case PaymentStatus.expired:
       shouldUpdate = cTPaymentStatus === 'Failure' ? false : true;
-      newStatus = 'Failure';
+      newStatus = CTTransactionState.Failure;
+      break;
 
     default:
       shouldUpdate = false;
+      break;
   }
   return { shouldUpdate, newStatus };
 };
 
-export const shouldOrderStatusUpdate = (mollieOrderStatus: string, ctOrderStatus: string): boolean => {
-  return mollieOrderStatus === ctOrderStatus;
+/**
+ * @param molliePayments: array of mollie payments
+ * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
+ * @returns molliePayment
+ */
+export const getMatchingMolliePayment = (molliePayments: any[], ctInteractionId: string): any => {
+  return molliePayments.find(payment => payment.id === ctInteractionId) || {};
+};
+
+/**
+ * Gets an array of transactionStateUpdateOrderActions, a list of commands which tells CT to update transactions based on the corresponding mollie payment states.
+ * @param ctTransactions: array of commercetools transactions
+ * @param molliePayments: array of mollie payments
+ * @returns UpdateActionChangeTransactionState[]
+ */
+export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: any): UpdateActionChangeTransactionState[] => {
+  const changeTransactionStateUpdateActions: UpdateActionChangeTransactionState[] = [];
+  if (ctTransactions.length > 0) {
+    for (let ctTransaction of ctTransactions) {
+      let matchingMolliePayment = getMatchingMolliePayment(molliePayments, ctTransaction.interactionId || '');
+      // Check if we found a matching mollie payment
+      if (matchingMolliePayment.status) {
+        let shouldOrderStatusUpdateObject = shouldPaymentStatusUpdate(matchingMolliePayment.status, ctTransaction.state);
+        if (shouldOrderStatusUpdateObject.shouldUpdate) {
+          changeTransactionStateUpdateActions.push({
+            action: UpdateActionKey.ChangeTransactionState,
+            transactionId: ctTransaction.id,
+            state: shouldOrderStatusUpdateObject.newStatus,
+          });
+        }
+      }
+    }
+  }
+  return changeTransactionStateUpdateActions;
 };

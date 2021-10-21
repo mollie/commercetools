@@ -6,7 +6,8 @@ import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createClient } from '@commercetools/sdk-client';
 import actions from './index';
-import { isOrderOrPayment } from '../utils';
+import { getTransactionStateUpdateOrderActions, isOrderOrPayment } from '../utils';
+import { CTTransaction } from '../types/ctPaymentTypes';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField } from '../types/ctUpdateActions';
 
 const mollieApiKey = config.mollieApiKey;
@@ -63,12 +64,13 @@ export default async function handleRequest(req: Request, res: Response) {
       return res.status(400).send(`ID ${id} is invalid`);
     }
     let mollieOrderStatus;
+    let molliePayments;
     let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField)[] = [];
     // Call to mollie's API for order/payment status
     if (resourceType === 'order') {
       const order = await actions.mGetOrderDetailsById(id, mollieClient);
       mollieOrderStatus = order.status;
-      console.log(order.id); // To show this is working
+      molliePayments = order._embedded?.payments;
     } else {
       const payment = await actions.mGetPaymentDetailsById(id, mollieClient);
       console.log(payment.id); // To show this is working
@@ -91,11 +93,12 @@ export default async function handleRequest(req: Request, res: Response) {
     }
     // TODO: Parse CT Payment for transactions & statuses
 
+    const transactionStateUpdateOrderActions = getTransactionStateUpdateOrderActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments);
+    if (transactionStateUpdateOrderActions.length) {
+      updateActions.push(...transactionStateUpdateOrderActions);
+    }
     // TODO: should order / payment status be updated?
 
-    // TODO: Format update actions
-
-    // TODO: UpdatePaymentByKey on CT
     const updatedPayment = await actions.ctUpdatePaymentByKey(id, commercetoolsClient, projectKey, ctVersion, updateActions);
     // Return ctPayment for now to demo getPaymentByKey
     res.status(200).send(updatedPayment);
