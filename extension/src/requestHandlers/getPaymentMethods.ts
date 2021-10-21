@@ -1,5 +1,5 @@
 import { MollieClient, List, Method } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, Action, CTError } from '../types';
+import { CTUpdatesRequestedResponse, Action } from '../types';
 import { createDateNowString, methodListMapper } from '../utils';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 

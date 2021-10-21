@@ -47,5 +47,6 @@ export type CTTransaction = {
 export enum ControllerAction {
   GetPaymentMethods = 'getPaymentMethods',
   CreateOrder = 'createOrder',
+  CreateOrderPayment = 'createOrderPayment',
   NoAction = 'noAction',
 }

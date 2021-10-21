@@ -1,9 +1,11 @@
 import getPaymentMethods from './getPaymentMethods';
 import createOrder from './createOrder';
+import createOrderPayment from './createOrderPayment';
 import { ControllerAction } from '../types/index';
 export default {
   getPaymentMethods,
   createOrder,
+  createOrderPayment,
 };
 
 /**
@@ -21,6 +23,10 @@ export function validateAction(body: any): ControllerAction {
 
   if (requestFields?.createOrderRequest && !requestFields?.createOrderResponse) {
     return ControllerAction.CreateOrder;
+  }
+
+  if (requestFields?.createOrderPaymentRequest && !requestFields?.createOrderPaymentResponse) {
+    return ControllerAction.CreateOrderPayment;
   }
 
   return ControllerAction.NoAction;

@@ -1,4 +1,4 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType, OrderLine } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
 import { OrderAddress, OrderStatus } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTUpdatesRequestedResponse } from '../types';

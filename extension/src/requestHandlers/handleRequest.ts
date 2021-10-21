@@ -4,7 +4,6 @@ import Debug from 'debug';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
 import config from '../../config/config';
 import actions, { validateAction } from './actions';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 
 const debug = Debug('extension:handleRequest');
 const mollieApiKey = config.mollieApiKey;
@@ -55,6 +54,10 @@ const processAction = async function (action: ControllerAction, body: any, molli
     case ControllerAction.CreateOrder:
       debug(`action: ${ControllerAction.CreateOrder}`);
       result = await actions.createOrder(body, mollieClient);
+      break;
+    case ControllerAction.CreateOrderPayment:
+      debug(`action: ${ControllerAction.CreateOrderPayment}`);
+      result = await actions.createOrderPayment(body?.resource?.obj, mollieClient);
       break;
     default:
       result = {
