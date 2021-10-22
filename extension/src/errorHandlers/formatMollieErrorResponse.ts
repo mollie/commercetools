@@ -37,6 +37,22 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
       };
       break;
 
+    case status === 422:
+      formattedError = {
+        code: 'SemanticError',
+        message: error.message,
+        extensionExtraInfo: getExtraInfo(error),
+      };
+      break;
+
+    case status === 404:
+      formattedError = {
+        code: 'ObjectNotFound',
+        message: error.message,
+        extensionExtraInfo: getExtraInfo(error),
+      };
+      break;
+
     case status >= 400 && status < 500:
       formattedError = {
         code: 'SyntaxError',

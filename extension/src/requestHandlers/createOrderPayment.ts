@@ -8,9 +8,11 @@ export function getOrdersPaymentsParams(ctObj: any): Promise<OrderPaymentCreateP
     const parsedCreateOrderPaymentRequest = JSON.parse(ctObj?.custom?.fields?.createOrderPaymentRequest);
     const orderPaymentCreateParams = {
       orderId: ctObj?.key,
-      // method: parsedCreateOrderPaymentRequest.method,
-      // customerId: ''
     };
+    const { method, customerId, mandateId } = parsedCreateOrderPaymentRequest;
+    if (method) Object.assign(orderPaymentCreateParams, { method });
+    if (customerId) Object.assign(orderPaymentCreateParams, { customerId });
+    if (mandateId) Object.assign(orderPaymentCreateParams, { mandateId });
     return Promise.resolve(orderPaymentCreateParams);
   } catch (e) {
     console.error(e);
