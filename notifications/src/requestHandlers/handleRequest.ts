@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import fetch from 'node-fetch-commonjs';
 import createMollieClient from '@mollie/api-client';
-import config from '../../config/config';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createClient } from '@commercetools/sdk-client';
-import actions from './index';
-import { getTransactionStateUpdateOrderActions, isOrderOrPayment } from '../utils';
-import { CTTransaction } from '../types/ctPaymentTypes';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField } from '../types/ctUpdateActions';
+import { CTTransaction } from '../types/ctPaymentTypes';
+import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment } from '../utils';
+import config from '../../config/config';
+import actions from './index';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
@@ -36,15 +36,6 @@ const ctHttpMiddleWare = createHttpMiddleware({
 const commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHttpMiddleWare] });
 
 /**
- * FLOW TO IMPLEMENT
- * Webhook will call / with order or payment id
- * Call to mollie's API for order/payment status
- * Call to CT for Payment object to update
- * Format update actions for CT
- * Call updatePaymentByKey on CT with new status
- */
-
-/**
  * handleRequest
  * @param req Request
  * @param res Response
@@ -63,45 +54,53 @@ export default async function handleRequest(req: Request, res: Response) {
     if (resourceType === 'invalid') {
       return res.status(400).send(`ID ${id} is invalid`);
     }
-    let mollieOrderStatus;
-    let molliePayments;
+
+    // Order or Payment flow will populate the updated actions
     let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField)[] = [];
-    // Call to mollie's API for order/payment status
+    let mollieOrderId;
+    let ctPaymentVersion;
+
+    // Order webhook - updateActions
     if (resourceType === 'order') {
       const order = await actions.mGetOrderDetailsById(id, mollieClient);
-      mollieOrderStatus = order.status;
-      molliePayments = order._embedded?.payments;
-    } else {
-      const payment = await actions.mGetPaymentDetailsById(id, mollieClient);
-      console.log(payment.id); // To show this is working
-      // TODO: https://anddigitaltransformation.atlassian.net/browse/CMI-44
-      return res.status(200).send('Payment flow not implemented yet');
+      const mollieOrderStatus = order.status;
+      const molliePayments = order._embedded?.payments;
+
+      const ctPayment = await actions.ctGetPaymentByKey(id, commercetoolsClient, projectKey);
+      ctPaymentVersion = ctPayment.version;
+      const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
+
+      if (mollieOrderStatus !== ctOrderStatus) {
+        updateActions.push({
+          action: UpdateActionKey.SetCustomField,
+          name: 'mollieOrderStatus',
+          value: mollieOrderStatus,
+        });
+      }
+
+      const transactionStateUpdateOrderActions = getTransactionStateUpdateOrderActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments);
+      if (transactionStateUpdateOrderActions.length) {
+        updateActions.push(...transactionStateUpdateOrderActions);
+      }
+    }
+    // Payment webhook - updateActions
+    else {
+      const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
+      mollieOrderId = molliePayment.orderId ?? '';
+      const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
+      ctPaymentVersion = ctPayment.version;
+      const ctTransactions = ctPayment.transactions || [];
+      const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
+      if (paymentStatusUpdateAction) {
+        updateActions.push(paymentStatusUpdateAction);
+      }
     }
 
-    // TODO: Parse for order & payment statuses
+    // Update the CT Payment
+    const ctKey = resourceType === 'order' ? id : mollieOrderId;
+    await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion ?? 1, updateActions);
 
-    // Get payment from CT -> payment key == mollie order_id
-    const ctPayment = await actions.ctGetPaymentByKey(id, commercetoolsClient, projectKey);
-    const ctVersion = ctPayment.version;
-    const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
-    if (mollieOrderStatus !== ctOrderStatus) {
-      updateActions.push({
-        action: UpdateActionKey.SetCustomField,
-        name: 'mollieOrderStatus',
-        value: mollieOrderStatus,
-      });
-    }
-    // TODO: Parse CT Payment for transactions & statuses
-
-    const transactionStateUpdateOrderActions = getTransactionStateUpdateOrderActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments);
-    if (transactionStateUpdateOrderActions.length) {
-      updateActions.push(...transactionStateUpdateOrderActions);
-    }
-    // TODO: should order / payment status be updated?
-
-    const updatedPayment = await actions.ctUpdatePaymentByKey(id, commercetoolsClient, projectKey, ctVersion, updateActions);
-    // Return ctPayment for now to demo getPaymentByKey
-    res.status(200).send(updatedPayment);
+    res.status(200).end();
   } catch (error) {
     console.error(error);
     res.status(400).send(error);

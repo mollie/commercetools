@@ -1,4 +1,4 @@
-import { PaymentStatus } from '@mollie/api-client';
+import { Payment, PaymentStatus } from '@mollie/api-client';
 import { CTTransaction, CTTransactionState } from './types/ctPaymentTypes';
 import { UpdateActionChangeTransactionState, UpdateActionKey } from './types/ctUpdateActions';
 
@@ -95,4 +95,30 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
     }
   }
   return changeTransactionStateUpdateActions;
+};
+
+/**
+ *
+ * @param ctTransactions
+ * @param molliePayment
+ * @returns UpdateAction or void
+ */
+export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], molliePayment: Payment): UpdateActionChangeTransactionState | void => {
+  const { id: molliePaymentId, status: molliePaymentStatus } = molliePayment;
+  const matchingTransaction = ctTransactions.find(transaction => transaction.interactionId === molliePaymentId);
+
+  // No corresponding CT Transaction
+  if (matchingTransaction === undefined) {
+    return;
+  }
+
+  const { shouldUpdate, newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, matchingTransaction.state);
+  if (shouldUpdate) {
+    const updateAction: UpdateActionChangeTransactionState = {
+      action: UpdateActionKey.ChangeTransactionState,
+      transactionId: matchingTransaction?.id,
+      state: newStatus as CTTransactionState,
+    };
+    return updateAction;
+  }
 };

@@ -1,7 +1,7 @@
-import { PaymentStatus } from '@mollie/api-client';
+import { PaymentStatus, Payment } from '@mollie/api-client';
 import { CTMoney, CTTransaction, CTTransactionState } from '../src/types/ctPaymentTypes';
 import { UpdateActionKey } from '../src/types/ctUpdateActions';
-import { isOrderOrPayment, shouldPaymentStatusUpdate, getMatchingMolliePayment, getTransactionStateUpdateOrderActions } from '../src/utils';
+import { isOrderOrPayment, shouldPaymentStatusUpdate, getMatchingMolliePayment, getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction } from '../src/utils';
 
 describe('isOrderOrPayment', () => {
   it("should return order when the resource id starts with 'ord_'", () => {
@@ -17,6 +17,7 @@ describe('isOrderOrPayment', () => {
     expect(result).toBe('invalid');
   });
 });
+
 describe('shouldPaymentStatusUpdate', () => {
   it('should return correct object when valid parameters are provided', () => {
     expect(shouldPaymentStatusUpdate(PaymentStatus.paid, 'Failure')).toMatchObject({ shouldUpdate: true, newStatus: CTTransactionState.Success });
@@ -26,6 +27,7 @@ describe('shouldPaymentStatusUpdate', () => {
     expect(shouldPaymentStatusUpdate('skjdfhksjfdh', 'Failnvnvjsdnjsure')).toMatchObject({ shouldUpdate: false, newStatus: 'Initial' });
   });
 });
+
 describe('getMatchingMolliePayment', () => {
   const mockedMolliePaymentsArray = [
     {
@@ -50,6 +52,7 @@ describe('getMatchingMolliePayment', () => {
     expect(getMatchingMolliePayment(mockedMolliePaymentsArray, 'tr_askjdnkjnv')).toMatchObject({});
   });
 });
+
 describe('getTransactionStateUpdateOrderActions', () => {
   const mockedMolliePaymentsArray = [
     {
@@ -129,5 +132,68 @@ describe('getTransactionStateUpdateOrderActions', () => {
       },
     ] as CTTransaction[];
     expect(getTransactionStateUpdateOrderActions(mockedUpdatedCTTransactionsArray, mockedMolliePaymentsArray)).toEqual([]);
+  });
+});
+
+describe('getPaymentStatusUpdateAction', () => {
+  const mockMolliePayment = {
+    id: 'tr_12345',
+    status: 'paid',
+  } as Payment;
+
+  const mockMollieUnknownPayment = {
+    id: 'tr_00000',
+    status: 'paid',
+  } as Payment;
+
+  const mockCTTransactions = [
+    {
+      id: '5603cab8-ed6f-4d8e-a339-c4efc45ba971',
+      interactionId: 'tr_12345',
+      state: CTTransactionState.Initial,
+      amount: {
+        centAmount: 1000,
+        currencyCode: 'EUR',
+      },
+    },
+    {
+      id: '95a74202-48b5-4a5e-ae92-50820f479f4c',
+      interactionId: 'tr_45609',
+      state: CTTransactionState.Failure,
+      amount: {
+        centAmount: 1000,
+        currencyCode: 'EUR',
+      },
+    },
+  ];
+
+  const mockAlreadyUpdatedCTTransactions = [
+    {
+      id: '5603cab8-ed6f-4d8e-a339-c4efc45ba971',
+      interactionId: 'tr_12345',
+      state: CTTransactionState.Success,
+      amount: {
+        centAmount: 1000,
+        currencyCode: 'EUR',
+      },
+    },
+  ];
+  it('should return an update action if the payment status on mollie has changed', () => {
+    const updateAction = getPaymentStatusUpdateAction(mockCTTransactions, mockMolliePayment);
+    expect(updateAction).toEqual({
+      action: 'changeTransactionState',
+      transactionId: '5603cab8-ed6f-4d8e-a339-c4efc45ba971',
+      state: 'Success',
+    });
+  });
+
+  it('should return void if there is no corresponding CT Transaction for the mollie payment', () => {
+    const updateAction = getPaymentStatusUpdateAction(mockCTTransactions, mockMollieUnknownPayment);
+    expect(updateAction).toBe(undefined);
+  });
+
+  it('should return void if there is no changed needed as Transaction & payment status are equivalent', () => {
+    const updateAction = getPaymentStatusUpdateAction(mockAlreadyUpdatedCTTransactions, mockMolliePayment);
+    expect(updateAction).toBe(undefined);
   });
 });
