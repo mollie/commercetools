@@ -1,7 +1,14 @@
 import { PaymentStatus, Payment } from '@mollie/api-client';
 import { CTMoney, CTTransaction, CTTransactionState } from '../src/types/ctPaymentTypes';
 import { UpdateActionKey } from '../src/types/ctUpdateActions';
-import { isOrderOrPayment, shouldPaymentStatusUpdate, getMatchingMolliePayment, getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction } from '../src/utils';
+import {
+  isOrderOrPayment,
+  shouldPaymentStatusUpdate,
+  getMatchingMolliePayment,
+  getTransactionStateUpdateOrderActions,
+  getPaymentStatusUpdateAction,
+  convertMollieToCTPaymentAmount,
+} from '../src/utils';
 
 describe('isOrderOrPayment', () => {
   it("should return order when the resource id starts with 'ord_'", () => {
@@ -135,15 +142,37 @@ describe('getTransactionStateUpdateOrderActions', () => {
   });
 });
 
+describe('convertMollieToCTPaymentAmount', () => {
+  it('should return correct centAmount from mollie payment amount', () => {
+    const testCases = [
+      { mollieAmount: '10.00', expectedCentAmount: 1000 },
+      { mollieAmount: '15.00', expectedCentAmount: 1500 },
+      { mollieAmount: '0.50', expectedCentAmount: 50 },
+      { mollieAmount: '19.99', expectedCentAmount: 1999 },
+    ];
+    testCases.forEach(({ mollieAmount, expectedCentAmount }) => {
+      expect(convertMollieToCTPaymentAmount(mollieAmount)).toBe(expectedCentAmount);
+    });
+  });
+});
+
 describe('getPaymentStatusUpdateAction', () => {
   const mockMolliePayment = {
     id: 'tr_12345',
     status: 'paid',
+    amount: {
+      currency: 'EUR',
+      value: '10.00',
+    },
   } as Payment;
 
-  const mockMollieUnknownPayment = {
+  const mockMolliePayment2 = {
     id: 'tr_00000',
     status: 'paid',
+    amount: {
+      currency: 'EUR',
+      value: '10.00',
+    },
   } as Payment;
 
   const mockCTTransactions = [
@@ -187,9 +216,19 @@ describe('getPaymentStatusUpdateAction', () => {
     });
   });
 
-  it('should return void if there is no corresponding CT Transaction for the mollie payment', () => {
-    const updateAction = getPaymentStatusUpdateAction(mockCTTransactions, mockMollieUnknownPayment);
-    expect(updateAction).toBe(undefined);
+  it('should return addTransaction action if there is no corresponding CT Transaction for the mollie payment', () => {
+    const updateAction = getPaymentStatusUpdateAction(mockCTTransactions, mockMolliePayment2);
+    expect(updateAction).toEqual({
+      action: 'addTransaction',
+      transaction: {
+        amount: {
+          currencyCode: 'EUR',
+          centAmount: 1000,
+        },
+        state: 'Success',
+        type: 'Charge',
+      },
+    });
   });
 
   it('should return void if there is no changed needed as Transaction & payment status are equivalent', () => {

@@ -4,7 +4,7 @@ import createMollieClient from '@mollie/api-client';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createClient } from '@commercetools/sdk-client';
-import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField } from '../types/ctUpdateActions';
+import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
 import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment } from '../utils';
 import config from '../../config/config';
@@ -56,7 +56,7 @@ export default async function handleRequest(req: Request, res: Response) {
     }
 
     // Order or Payment flow will populate the updated actions
-    let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField)[] = [];
+    let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField | AddTransaction)[] = [];
     let mollieOrderId;
     let ctPaymentVersion;
 

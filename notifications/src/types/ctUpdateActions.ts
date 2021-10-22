@@ -1,4 +1,4 @@
-import { CTTransactionState } from './ctPaymentTypes';
+import { CTTransactionState, CTTransactionDraft } from './ctPaymentTypes';
 
 // https://docs.commercetools.com/api/projects/payments#set-customfield
 export type UpdateActionSetCustomField = {
@@ -14,7 +14,13 @@ export type UpdateActionChangeTransactionState = {
   state: CTTransactionState;
 };
 
+export type AddTransaction = {
+  action: UpdateActionKey.AddTransaction;
+  transaction: CTTransactionDraft;
+};
+
 export enum UpdateActionKey {
   SetCustomField = 'setCustomField',
   ChangeTransactionState = 'changeTransactionState',
+  AddTransaction = 'addTransaction',
 }

@@ -30,6 +30,14 @@ export type CTTransaction = {
   state: CTTransactionState;
 };
 
+export type CTTransactionDraft = {
+  type: CTTransactionType;
+  amount: CTMoney;
+  timestamp?: string;
+  interactionId?: string;
+  state?: CTTransactionState;
+};
+
 export type CTMoney = {
   centAmount: number;
   currencyCode: string;
@@ -41,4 +49,13 @@ export enum CTTransactionState {
   Pending = 'Pending',
   Success = 'Success',
   Failure = 'Failure',
+}
+
+// https://docs.commercetools.com/api/projects/payments#transactiontype
+export enum CTTransactionType {
+  Authorization = 'Authorization',
+  CancelAuthorization = 'CancelAuthorization',
+  Charge = 'Charge',
+  Refund = 'Refund',
+  Chargeback = 'Chargeback',
 }

@@ -1,6 +1,6 @@
 import { Payment, PaymentStatus } from '@mollie/api-client';
-import { CTTransaction, CTTransactionState } from './types/ctPaymentTypes';
-import { UpdateActionChangeTransactionState, UpdateActionKey } from './types/ctUpdateActions';
+import { CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
+import { UpdateActionChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
 
 export const isOrderOrPayment = (resourceId: string): string => {
   const orderRegex = new RegExp('^ord_');
@@ -99,19 +99,42 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
 
 /**
  *
+ * @param mollieValue e.g. "10.00"
+ * @param fractionDigits defaults to 2 in commercetools
+ * WIP - does not handle other values of fractionDigits yet
+ */
+export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigits = 2) => {
+  return Math.ceil(parseFloat(mollieValue) * Math.pow(10, fractionDigits));
+};
+
+/**
+ *
  * @param ctTransactions
  * @param molliePayment
  * @returns UpdateAction or void
  */
-export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], molliePayment: Payment): UpdateActionChangeTransactionState | void => {
+export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], molliePayment: Payment): UpdateActionChangeTransactionState | AddTransaction | void => {
   const { id: molliePaymentId, status: molliePaymentStatus } = molliePayment;
   const matchingTransaction = ctTransactions.find(transaction => transaction.interactionId === molliePaymentId);
 
-  // No corresponding CT Transaction
+  // If no corresponding CT Transaction, create it
   if (matchingTransaction === undefined) {
-    return;
+    const { newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, '');
+    const addTransaction: AddTransaction = {
+      action: UpdateActionKey.AddTransaction,
+      transaction: {
+        amount: {
+          currencyCode: molliePayment.amount.currency,
+          centAmount: convertMollieToCTPaymentAmount(molliePayment.amount.value),
+        },
+        state: newStatus,
+        type: CTTransactionType.Charge,
+      },
+    };
+    return addTransaction;
   }
 
+  // Corresponding transaction, update it
   const { shouldUpdate, newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, matchingTransaction.state);
   if (shouldUpdate) {
     const updateAction: UpdateActionChangeTransactionState = {
