@@ -1,6 +1,7 @@
-import { MollieClient, OrderPaymentCreateParams } from '@mollie/api-client';
+import { MollieClient, OrderPaymentCreateParams, Payment } from '@mollie/api-client';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
-import { CTUpdatesRequestedResponse } from '../types';
+import { Action, CTUpdatesRequestedResponse } from '../types';
+import { createDateNowString } from '../utils';
 
 export function getOrdersPaymentsParams(ctObj: any): Promise<OrderPaymentCreateParams> {
   try {
@@ -17,14 +18,46 @@ export function getOrdersPaymentsParams(ctObj: any): Promise<OrderPaymentCreateP
   }
 }
 
-export default async function createOrderPayment(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export function createCtActions(orderPaymentResponse: Payment, ctObj: any): Action[] {
+  const stringifiedOrderPaymentResponse = JSON.stringify(orderPaymentResponse);
+  const result: Action[] = [
+    {
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        actionType: 'createOrderPayment',
+        createdAt: createDateNowString(),
+        request: ctObj?.custom?.fields?.createOrderPaymentRequest,
+        response: stringifiedOrderPaymentResponse,
+      },
+    },
+    {
+      action: 'setCustomField',
+      name: 'createOrderPaymentResponse',
+      value: stringifiedOrderPaymentResponse,
+    },
+    {
+      action: 'addTransaction',
+      transaction: {
+        timestamp: orderPaymentResponse.createdAt,
+        type: 'Charge',
+        amount: ctObj.amountPlanned,
+        interactionId: orderPaymentResponse.id,
+      },
+    },
+  ];
+  return result;
+}
+
+export default async function createOrderPayment(ctObj: any, mollieClient: MollieClient, getOrdersPaymentsParams: Function, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
     const ordersPaymentsParams = await getOrdersPaymentsParams(ctObj);
     const mollieOrderPaymentRes = await mollieClient.orders_payments.create(ordersPaymentsParams);
-    console.log('mollieOrderPaymentRes', mollieOrderPaymentRes);
-
+    const ctActions = createCtActions(mollieOrderPaymentRes, ctObj);
     return {
-      actions: [],
+      actions: ctActions,
       status: 201,
     };
   } catch (error: any) {

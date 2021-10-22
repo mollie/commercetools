@@ -4,6 +4,7 @@ import Debug from 'debug';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
 import config from '../../config/config';
 import actions, { validateAction } from './actions';
+import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 
 const debug = Debug('extension:handleRequest');
 const mollieApiKey = config.mollieApiKey;
@@ -57,7 +58,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       break;
     case ControllerAction.CreateOrderPayment:
       debug(`action: ${ControllerAction.CreateOrderPayment}`);
-      result = await actions.createOrderPayment(body?.resource?.obj, mollieClient);
+      result = await actions.createOrderPayment(body?.resource?.obj, mollieClient, getOrdersPaymentsParams, createOrderPaymentActions);
       break;
     default:
       result = {

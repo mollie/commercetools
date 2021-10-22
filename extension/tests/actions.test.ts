@@ -34,6 +34,22 @@ describe('validateAction', () => {
     expect(action).toBe(ControllerAction.CreateOrder);
   });
 
+  it('Should return createOrderPayment when createOrderPaymentRequest is present and createOrderPaymentResponse is not', () => {
+    const mockReqBody = {
+      resource: {
+        obj: {
+          custom: {
+            fields: {
+              createOrderPaymentRequest: '{}',
+            },
+          },
+        },
+      },
+    };
+    const action = validateAction(mockReqBody);
+    expect(action).toBe(ControllerAction.CreateOrderPayment);
+  });
+
   it('Should return NoAction if createOrder and getPaymentMethods request & response fields are present', () => {
     const mockReqBody = {
       resource: {

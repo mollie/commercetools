@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 1`] = `
+Object {
+  "action": "addInterfaceInteraction",
+  "fields": Object {
+    "actionType": "createOrderPayment",
+    "createdAt": "2021-10-08T12:12:02.625Z",
+    "request": "{\\"method\\":\\"creditcard\\"}",
+    "response": "{\\"resource\\":\\"payment\\",\\"id\\":\\"tr_mAmMrPGnxe\\",\\"createdAt\\":\\"2021-10-20T15:35:13+00:00\\",\\"amount\\":{\\"value\\":\\"4.20\\",\\"currency\\":\\"EUR\\"},\\"description\\":\\"Order 1001\\",\\"method\\":null,\\"status\\":\\"open\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"orderId\\":\\"ord_3uwvfd\\"}",
+  },
+  "type": Object {
+    "key": "ct-mollie-integration-interface-interaction-type",
+  },
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 2`] = `
+Object {
+  "action": "setCustomField",
+  "name": "createOrderPaymentResponse",
+  "value": "{\\"resource\\":\\"payment\\",\\"id\\":\\"tr_mAmMrPGnxe\\",\\"createdAt\\":\\"2021-10-20T15:35:13+00:00\\",\\"amount\\":{\\"value\\":\\"4.20\\",\\"currency\\":\\"EUR\\"},\\"description\\":\\"Order 1001\\",\\"method\\":null,\\"status\\":\\"open\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"orderId\\":\\"ord_3uwvfd\\"}",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 3`] = `
+Object {
+  "action": "addTransaction",
+  "transaction": Object {
+    "amount": Object {
+      "centAmount": 420,
+      "currencyCode": "EUR",
+    },
+    "interactionId": "tr_mAmMrPGnxe",
+    "timestamp": "2021-10-20T15:35:13+00:00",
+    "type": "Charge",
+  },
+}
+`;
