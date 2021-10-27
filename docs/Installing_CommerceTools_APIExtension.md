@@ -116,6 +116,28 @@ Body:
             },
             "required": false,
             "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "createShipmentRequest",
+            "label": {
+                "en": "request"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "createShipmentResponse",
+            "label": {
+                "en": "request"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
         }
     ]
 }
