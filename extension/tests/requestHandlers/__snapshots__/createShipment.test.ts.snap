@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 1`] = `
+Object {
+  "action": "addInterfaceInteraction",
+  "fields": Object {
+    "actionType": "createShipment",
+    "createdAt": "2021-10-08T12:12:02.625Z",
+    "request": "{\\"lines\\":[{\\"id\\":\\"odl_1.d8ck99\\",\\"quantity\\":1}],\\"tracking\\":{\\"carrier\\":\\"PostNL\\",\\"code\\":\\"3SKABA000000000\\",\\"url\\":\\"http://postnl.nl/tracktrace/?B=3SKABA000000000&P=1015CW&D=NL&T=C\\"}}",
+    "response": "{\\"resource\\":\\"shipment\\",\\"id\\":\\"shp_t72vlb\\",\\"orderId\\":\\"ord_qzwg9x\\",\\"createdAt\\":\\"2021-10-27T10:25:24+00:00\\",\\"tracking\\":{\\"carrier\\":\\"PostNL\\",\\"code\\":\\"3SKABA000000000\\",\\"url\\":\\"http://postnl.nl/tracktrace/?B=3SKABA000000000&P=1015CW&D=NL&T=C\\"},\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.d8ck99\\",\\"orderId\\":\\"ord_qzwg9x\\",\\"name\\":\\"orange\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"completed\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-10-27T10:02:36+00:00\\"}]}",
+  },
+  "type": Object {
+    "key": "ct-mollie-integration-interface-interaction-type",
+  },
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 2`] = `
+Object {
+  "action": "setCustomField",
+  "name": "createShipmentResponse",
+  "value": "{\\"resource\\":\\"shipment\\",\\"id\\":\\"shp_t72vlb\\",\\"orderId\\":\\"ord_qzwg9x\\",\\"createdAt\\":\\"2021-10-27T10:25:24+00:00\\",\\"tracking\\":{\\"carrier\\":\\"PostNL\\",\\"code\\":\\"3SKABA000000000\\",\\"url\\":\\"http://postnl.nl/tracktrace/?B=3SKABA000000000&P=1015CW&D=NL&T=C\\"},\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.d8ck99\\",\\"orderId\\":\\"ord_qzwg9x\\",\\"name\\":\\"orange\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"completed\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-10-27T10:02:36+00:00\\"}]}",
+}
+`;
