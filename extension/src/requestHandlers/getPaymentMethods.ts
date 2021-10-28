@@ -7,7 +7,11 @@ export default async function getPaymentMethods(ctObj: any, mollieClient: Mollie
   try {
     const mollieOptions = methodListMapper(ctObj);
     const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
-    const availablePaymentMethods: string = methods.length > 0 ? JSON.stringify(methods) : 'NO_AVAILABLE_PAYMENT_METHODS';
+    const responseMethods = JSON.stringify({
+      count: methods.count,
+      methods,
+    });
+    const availablePaymentMethods: string = methods.count > 0 ? responseMethods : JSON.stringify({ count: 0, methods: 'NO_AVAILABLE_PAYMENT_METHODS' });
     const ctUpdateActions: Action[] = [
       {
         action: 'addInterfaceInteraction',

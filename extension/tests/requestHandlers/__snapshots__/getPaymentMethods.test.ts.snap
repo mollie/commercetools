@@ -7,7 +7,7 @@ Object {
     "actionType": "getPaymentMethods",
     "createdAt": "2021-10-08T12:12:02.625Z",
     "request": "{\\"locale\\":\\"en_US\\",\\"resource\\":\\"orders\\",\\"billingCountry\\":\\"NL\\",\\"includeWallets\\":\\"applepay\\",\\"orderLineCategories\\":\\"eco,meal\\"}",
-    "response": "\\"NO_AVAILABLE_PAYMENT_METHODS\\"",
+    "response": "{\\"count\\":0,\\"methods\\":\\"NO_AVAILABLE_PAYMENT_METHODS\\"}",
   },
   "type": Object {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -19,7 +19,7 @@ exports[`getPaymentMethods unit tests Should return NO_PAYMENT_METHODS when meth
 Object {
   "action": "setCustomField",
   "name": "paymentMethodsResponse",
-  "value": "\\"NO_AVAILABLE_PAYMENT_METHODS\\"",
+  "value": "{\\"count\\":0,\\"methods\\":\\"NO_AVAILABLE_PAYMENT_METHODS\\"}",
 }
 `;
 
@@ -30,7 +30,7 @@ Object {
     "actionType": "getPaymentMethods",
     "createdAt": "2021-10-08T12:12:02.625Z",
     "request": "{\\"locale\\":\\"en_US\\",\\"resource\\":\\"orders\\",\\"billingCountry\\":\\"NL\\",\\"includeWallets\\":\\"applepay\\",\\"orderLineCategories\\":\\"eco,meal\\"}",
-    "response": "[{\\"resource\\":\\"method\\",\\"id\\":\\"ideal\\",\\"description\\":\\"iDEAL\\",\\"minimumAmount\\":{\\"value\\":\\"0.01\\",\\"currency\\":\\"EUR\\"},\\"maximumAmount\\":{\\"value\\":\\"50000.00\\",\\"currency\\":\\"EUR\\"},\\"image\\":{\\"size1x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.png\\",\\"size2x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal%402x.png\\",\\"svg\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.svg\\"},\\"status\\":\\"pending-boarding\\",\\"_links\\":{}}]",
+    "response": "{\\"count\\":2,\\"methods\\":[{\\"resource\\":\\"method\\",\\"id\\":\\"ideal\\",\\"description\\":\\"iDEAL\\",\\"minimumAmount\\":{\\"value\\":\\"0.01\\",\\"currency\\":\\"EUR\\"},\\"maximumAmount\\":{\\"value\\":\\"50000.00\\",\\"currency\\":\\"EUR\\"},\\"image\\":{\\"size1x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.png\\",\\"size2x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal%402x.png\\",\\"svg\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.svg\\"}},{\\"resource\\":\\"method\\",\\"id\\":\\"paypal\\",\\"description\\":\\"PayPal\\",\\"minimumAmount\\":{\\"value\\":\\"0.01\\",\\"currency\\":\\"EUR\\"},\\"maximumAmount\\":null,\\"image\\":{\\"size1x\\":\\"https://www.mollie.com/external/icons/payment-methods/paypal.png\\",\\"size2x\\":\\"https://www.mollie.com/external/icons/payment-methods/paypal%402x.png\\",\\"svg\\":\\"https://www.mollie.com/external/icons/payment-methods/paypal.svg\\"}}]}",
   },
   "type": Object {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -42,6 +42,6 @@ exports[`getPaymentMethods unit tests Should return status and two update action
 Object {
   "action": "setCustomField",
   "name": "paymentMethodsResponse",
-  "value": "[{\\"resource\\":\\"method\\",\\"id\\":\\"ideal\\",\\"description\\":\\"iDEAL\\",\\"minimumAmount\\":{\\"value\\":\\"0.01\\",\\"currency\\":\\"EUR\\"},\\"maximumAmount\\":{\\"value\\":\\"50000.00\\",\\"currency\\":\\"EUR\\"},\\"image\\":{\\"size1x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.png\\",\\"size2x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal%402x.png\\",\\"svg\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.svg\\"},\\"status\\":\\"pending-boarding\\",\\"_links\\":{}}]",
+  "value": "{\\"count\\":2,\\"methods\\":[{\\"resource\\":\\"method\\",\\"id\\":\\"ideal\\",\\"description\\":\\"iDEAL\\",\\"minimumAmount\\":{\\"value\\":\\"0.01\\",\\"currency\\":\\"EUR\\"},\\"maximumAmount\\":{\\"value\\":\\"50000.00\\",\\"currency\\":\\"EUR\\"},\\"image\\":{\\"size1x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.png\\",\\"size2x\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal%402x.png\\",\\"svg\\":\\"https://www.mollie.com/external/icons/payment-methods/ideal.svg\\"}},{\\"resource\\":\\"method\\",\\"id\\":\\"paypal\\",\\"description\\":\\"PayPal\\",\\"minimumAmount\\":{\\"value\\":\\"0.01\\",\\"currency\\":\\"EUR\\"},\\"maximumAmount\\":null,\\"image\\":{\\"size1x\\":\\"https://www.mollie.com/external/icons/payment-methods/paypal.png\\",\\"size2x\\":\\"https://www.mollie.com/external/icons/payment-methods/paypal%402x.png\\",\\"svg\\":\\"https://www.mollie.com/external/icons/payment-methods/paypal.svg\\"}}]}",
 }
 `;

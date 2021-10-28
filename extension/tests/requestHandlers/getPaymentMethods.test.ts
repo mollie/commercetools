@@ -32,7 +32,7 @@ describe('getPaymentMethods unit tests', () => {
         fields: { paymentMethodsRequest: mockedPaymentMethodsRequest },
       },
     };
-    const mockedResponse = [
+    const mockedMethodsResponse = [
       {
         resource: 'method',
         id: 'ideal',
@@ -44,13 +44,23 @@ describe('getPaymentMethods unit tests', () => {
           size2x: 'https://www.mollie.com/external/icons/payment-methods/ideal%402x.png',
           svg: 'https://www.mollie.com/external/icons/payment-methods/ideal.svg',
         },
-        status: 'pending-boarding',
-        _links: {},
       },
-    ];
-
+      {
+        resource: 'method',
+        id: 'paypal',
+        description: 'PayPal',
+        minimumAmount: { value: '0.01', currency: 'EUR' },
+        maximumAmount: null,
+        image: {
+          size1x: 'https://www.mollie.com/external/icons/payment-methods/paypal.png',
+          size2x: 'https://www.mollie.com/external/icons/payment-methods/paypal%402x.png',
+          svg: 'https://www.mollie.com/external/icons/payment-methods/paypal.svg',
+        },
+      },
+    ] as any;
+    mockedMethodsResponse.count = 2;
     const mollieClient = {
-      methods: { list: jest.fn().mockResolvedValueOnce(mockedResponse) },
+      methods: { list: jest.fn().mockResolvedValueOnce(mockedMethodsResponse) },
     } as any;
     const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
@@ -68,9 +78,28 @@ describe('getPaymentMethods unit tests', () => {
         fields: { paymentMethodsRequest: mockedPaymentMethodsRequest },
       },
     };
-    const mockedResponse = 'NO_AVAILABLE_PAYMENT_METHODS';
     const mollieClient = {
-      methods: { list: jest.fn().mockResolvedValueOnce(mockedResponse) },
+      methods: {
+        list: jest.fn().mockResolvedValueOnce([
+          {
+            count: 0,
+            links: {
+              documentation: {
+                href: 'https://docs.mollie.com/reference/v2/methods-api/list-methods',
+                type: 'text/html',
+              },
+              self: {
+                href: 'https://api.mollie.com/v2/methods',
+                type: 'application/hal+json',
+              },
+            },
+            nextPage: undefined,
+            nextPageCursor: undefined,
+            previousPage: undefined,
+            previousPageCursor: undefined,
+          },
+        ]),
+      },
     } as any;
     const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
@@ -81,7 +110,7 @@ describe('getPaymentMethods unit tests', () => {
     });
 
     const paymentMethodsResponseCTCustomField = actions?.find(a => a.action === 'setCustomField');
-    expect(paymentMethodsResponseCTCustomField?.value).toEqual(JSON.stringify('NO_AVAILABLE_PAYMENT_METHODS'));
+    expect(paymentMethodsResponseCTCustomField?.value).toEqual(JSON.stringify({ count: 0, methods: 'NO_AVAILABLE_PAYMENT_METHODS' }));
   });
 
   // Probably not needed, instead add a check on handle request to make sure we get the right CT object
