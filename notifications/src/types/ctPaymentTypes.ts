@@ -27,6 +27,7 @@ export type CTTransaction = {
   id: string;
   amount: CTMoney;
   interactionId?: string;
+  timestamp?: string;
   state: CTTransactionState;
 };
 

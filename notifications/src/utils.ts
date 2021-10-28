@@ -36,14 +36,14 @@ export const isOrderOrPayment = (resourceId: string): string => {
  */
 export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPaymentStatus: string): { shouldUpdate: boolean; newStatus: CTTransactionState } => {
   let shouldUpdate: boolean;
-  let newStatus = CTTransactionState.Initial;
+  let newStatus = mollieToCTStatusMap[PaymentStatus.open];
 
   switch (molliePaymentStatus) {
     // Success statuses
     case PaymentStatus.paid:
     case PaymentStatus.authorized:
       shouldUpdate = cTPaymentStatus === 'Success' ? false : true;
-      newStatus = CTTransactionState.Success;
+      newStatus = mollieToCTStatusMap[PaymentStatus.paid];
       break;
 
     // Failure statuses
@@ -51,7 +51,7 @@ export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPayment
     case PaymentStatus.failed:
     case PaymentStatus.expired:
       shouldUpdate = cTPaymentStatus === 'Failure' ? false : true;
-      newStatus = CTTransactionState.Failure;
+      newStatus = mollieToCTStatusMap[PaymentStatus.canceled];
       break;
 
     default:
@@ -59,6 +59,23 @@ export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPayment
       break;
   }
   return { shouldUpdate, newStatus };
+};
+
+/**
+ * Map of mollie status to CT Transaction Status
+ */
+interface StatusMap {
+  [key: string]: CTTransactionState;
+}
+
+const mollieToCTStatusMap: StatusMap = {
+  paid: CTTransactionState.Success,
+  authorized: CTTransactionState.Success,
+  canceled: CTTransactionState.Failure,
+  failed: CTTransactionState.Failure,
+  expired: CTTransactionState.Failure,
+  open: CTTransactionState.Initial,
+  pending: CTTransactionState.Pending,
 };
 
 /**
@@ -95,6 +112,48 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
     }
   }
   return changeTransactionStateUpdateActions;
+};
+
+/**
+ * @param molliePayments: array of mollie payments
+ * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
+ * @returns molliePayment
+ */
+export const existsInCtTransactionsArray = (molliePayment: Payment, ctTransactions: CTTransaction[]): boolean => {
+  if (ctTransactions.find(transaction => transaction.interactionId === molliePayment.id)) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Checks to see if there are new mollie payments that aren't present on the CT array, if not then adds an update action to create them in CT.
+ * @param ctTransactions: array of commercetools transactions
+ * @param molliePayments: array of mollie payments
+ * @returns array of addTransaction updateActions.
+ */
+
+export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], molliePayments: Payment[]): AddTransaction[] => {
+  const updateActions: AddTransaction[] = [];
+  for (let molliePayment of molliePayments) {
+    if (!existsInCtTransactionsArray(molliePayment, ctTransactions)) {
+      const addTransaction: AddTransaction = {
+        action: UpdateActionKey.AddTransaction,
+        transaction: {
+          type: CTTransactionType.Charge,
+          amount: {
+            centAmount: convertMollieToCTPaymentAmount(molliePayment.amount.value),
+            currencyCode: molliePayment.amount.currency,
+          },
+          timestamp: molliePayment.createdAt,
+          interactionId: molliePayment.id,
+          state: mollieToCTStatusMap[molliePayment.status],
+        },
+      };
+      updateActions.push(addTransaction);
+    }
+  }
+  return updateActions;
 };
 
 /**

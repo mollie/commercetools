@@ -1,5 +1,5 @@
 import { PaymentStatus, Payment } from '@mollie/api-client';
-import { CTMoney, CTTransaction, CTTransactionState } from '../src/types/ctPaymentTypes';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../src/types/ctPaymentTypes';
 import { UpdateActionKey } from '../src/types/ctUpdateActions';
 import {
   isOrderOrPayment,
@@ -8,6 +8,8 @@ import {
   getTransactionStateUpdateOrderActions,
   getPaymentStatusUpdateAction,
   convertMollieToCTPaymentAmount,
+  existsInCtTransactionsArray,
+  getAddTransactionUpdateActions,
 } from '../src/utils';
 
 describe('isOrderOrPayment', () => {
@@ -234,5 +236,71 @@ describe('getPaymentStatusUpdateAction', () => {
   it('should return void if there is no changed needed as Transaction & payment status are equivalent', () => {
     const updateAction = getPaymentStatusUpdateAction(mockAlreadyUpdatedCTTransactions, mockMolliePayment);
     expect(updateAction).toBe(undefined);
+  });
+});
+
+describe('Check if mollie payment exists in ctTransactions array', () => {
+  const mockMolliePayment = {
+    id: 'tr_12345',
+    status: 'paid',
+    amount: {
+      currency: 'EUR',
+      value: '10.00',
+    },
+  } as Payment;
+  const missingMockMolliePayment = {
+    id: 'tr_00000',
+    status: 'paid',
+    createdAt: '2021-10-20T15:10:45.000Z',
+    amount: {
+      currency: 'EUR',
+      value: '10.00',
+    },
+  } as Payment;
+
+  const mockMolliePaymentsArray = [mockMolliePayment, missingMockMolliePayment];
+
+  const mockedCTTransactionsArray = [
+    {
+      id: '5603cab8-ed6f-4d8e-a339-c4efc45ba971',
+      interactionId: 'tr_12345',
+      state: CTTransactionState.Initial,
+      amount: {
+        centAmount: 1000,
+        currencyCode: 'EUR',
+      },
+    },
+    {
+      id: '95a74202-48b5-4a5e-ae92-50820f479f4c',
+      interactionId: 'tr_45609',
+      state: CTTransactionState.Failure,
+      amount: {
+        centAmount: 1000,
+        currencyCode: 'EUR',
+      },
+    },
+  ];
+  it("Should find the mollie payment in the CT array when it's present", () => {
+    expect(existsInCtTransactionsArray(mockMolliePayment, mockedCTTransactionsArray)).toBeTruthy();
+  });
+  it("Should confirm the mollie payment isn't present in the CT array", () => {
+    expect(existsInCtTransactionsArray(missingMockMolliePayment, mockedCTTransactionsArray)).toBeFalsy();
+  });
+  it("Should return single update action if one of the mollie payments isn't present in the CT array", () => {
+    expect(getAddTransactionUpdateActions(mockedCTTransactionsArray, mockMolliePaymentsArray)).toMatchObject([
+      {
+        action: UpdateActionKey.AddTransaction,
+        transaction: {
+          type: CTTransactionType.Charge,
+          amount: {
+            centAmount: 1000,
+            currencyCode: 'EUR',
+          },
+          timestamp: '2021-10-20T15:10:45.000Z',
+          interactionId: 'tr_00000',
+          state: CTTransactionState.Success,
+        },
+      },
+    ]);
   });
 });

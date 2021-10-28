@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import fetch from 'node-fetch-commonjs';
 import createMollieClient from '@mollie/api-client';
+import { Payment } from '@mollie/api-client';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createClient } from '@commercetools/sdk-client';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
-import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment } from '../utils';
+import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
 
@@ -78,9 +79,17 @@ export default async function handleRequest(req: Request, res: Response) {
         });
       }
 
+      // TODO: refactor into one function (rename functions)
+      // Update the CT transactions array to reflect the status of the mollie payments array
       const transactionStateUpdateOrderActions = getTransactionStateUpdateOrderActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments);
       if (transactionStateUpdateOrderActions.length) {
         updateActions.push(...transactionStateUpdateOrderActions);
+      }
+
+      // If a mollie payment exists that doesn't exist on CT, add it
+      const newCtTransactions = getAddTransactionUpdateActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments as Payment[]);
+      if (newCtTransactions.length) {
+        updateActions.push(...newCtTransactions);
       }
     }
     // Payment webhook - updateActions
