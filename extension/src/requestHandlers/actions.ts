@@ -2,6 +2,7 @@ import getPaymentMethods from './getPaymentMethods';
 import createOrder from './createOrder';
 import createOrderPayment from './createOrderPayment';
 import createShipment from './createShipment';
+import updateShipment from './updateShipment';
 import { ControllerAction } from '../types/index';
 
 export default {
@@ -9,6 +10,7 @@ export default {
   createOrder,
   createOrderPayment,
   createShipment,
+  updateShipment,
 };
 
 /**
@@ -34,6 +36,10 @@ export function validateAction(body: any): ControllerAction {
 
   if (requestFields?.createShipmentRequest && !requestFields?.createShipmentResponse) {
     return ControllerAction.CreateShipment;
+  }
+
+  if (requestFields?.updateShipmentRequest && !requestFields?.updateShipmentResponse) {
+    return ControllerAction.UpdateShipment;
   }
 
   return ControllerAction.NoAction;

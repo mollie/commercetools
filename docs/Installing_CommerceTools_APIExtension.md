@@ -57,7 +57,7 @@ Body:
             },
             "name": "paymentMethodsRequest",
             "label": {
-                "en": "request"
+                "en": "Payment methods request"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -68,7 +68,7 @@ Body:
             },
             "name": "paymentMethodsResponse",
             "label": {
-                "en": "request"
+                "en": "Payment methods response"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -79,7 +79,7 @@ Body:
             },
             "name": "createOrderRequest",
             "label": {
-                "en": "request"
+                "en": "Create order request"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -90,7 +90,7 @@ Body:
             },
             "name": "createOrderResponse",
             "label": {
-                "en": "request"
+                "en": "Create order response"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -101,7 +101,7 @@ Body:
             },
             "name": "createOrderPaymentRequest",
             "label": {
-                "en": "request"
+                "en": "Create order payment request"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -112,7 +112,7 @@ Body:
             },
             "name": "createOrderPaymentResponse",
             "label": {
-                "en": "request"
+                "en": "Create order payment response"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -123,7 +123,7 @@ Body:
             },
             "name": "createShipmentRequest",
             "label": {
-                "en": "request"
+                "en": "Create shipment request"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -134,7 +134,29 @@ Body:
             },
             "name": "createShipmentResponse",
             "label": {
-                "en": "request"
+                "en": "Create shipment response"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "updateShipmentRequest",
+            "label": {
+                "en": "Update shipment request"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "updateShipmentResponse",
+            "label": {
+                "en": "Update shipment response"
             },
             "required": false,
             "inputHint": "MultiLine"

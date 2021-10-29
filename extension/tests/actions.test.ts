@@ -56,7 +56,7 @@ describe('validateAction', () => {
         obj: {
           custom: {
             fields: {
-              createShipmentRequest: '[]',
+              createShipmentRequest: '{}',
             },
           },
         },
@@ -64,6 +64,22 @@ describe('validateAction', () => {
     };
     const action = validateAction(mockReqBody);
     expect(action).toBe(ControllerAction.CreateShipment);
+  });
+
+  it('Should return updateShipment when updateShipmentRequest is present and updateShipmentResponse is not', () => {
+    const mockReqBody = {
+      resource: {
+        obj: {
+          custom: {
+            fields: {
+              updateShipmentRequest: '{}',
+            },
+          },
+        },
+      },
+    };
+    const action = validateAction(mockReqBody);
+    expect(action).toBe(ControllerAction.UpdateShipment);
   });
 
   it('Should return NoAction if request & response fields are present for all custom fields', () => {
@@ -80,6 +96,8 @@ describe('validateAction', () => {
               createOrderPaymentResponse: '{}',
               createShipmentRequest: '{}',
               createShipmentResponse: '{}',
+              updateShipmentRequest: '{}',
+              updateShipmentResponse: '{}',
             },
           },
         },
