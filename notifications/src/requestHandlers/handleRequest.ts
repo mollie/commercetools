@@ -4,6 +4,7 @@ import createMollieClient from '@mollie/api-client';
 import { Payment } from '@mollie/api-client';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
+import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createClient } from '@commercetools/sdk-client';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
@@ -34,7 +35,15 @@ const ctHttpMiddleWare = createHttpMiddleware({
   fetch,
 });
 
-const commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHttpMiddleWare] });
+let commercetoolsClient: any;
+
+// Do not enable logging middleware on Prod
+// TODO: add logging level as an environment variable
+if (process.env.NODE_ENV !== 'production') {
+  commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHttpMiddleWare, createLoggerMiddleware()] });
+} else {
+  commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHttpMiddleWare] });
+}
 
 /**
  * handleRequest
