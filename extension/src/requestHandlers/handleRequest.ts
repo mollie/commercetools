@@ -7,10 +7,14 @@ import actions, { validateAction } from './actions';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
+import { version } from '../../package.json';
 
 const debug = Debug('extension:handleRequest');
 const mollieApiKey = config.mollieApiKey;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey });
+const mollieClient = createMollieClient({
+  apiKey: mollieApiKey,
+  versionStrings: `CommercetoolsMollieExtension/${version}`,
+});
 
 export default async function handleRequest(req: Request, res: Response) {
   if (req.path !== '/') return res.status(400).end();
