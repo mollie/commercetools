@@ -74,7 +74,9 @@ One of:
 
 | Parameter (CT)          | Parameter (Mollie)     |
 | ----------------------- | ---------------------- |
-| `method: "CREDIT_CARD"` | `method: "creditcard"` |
+| `method: "creditcard,paypal"` | `method: ['creditcard', 'paypal']` |
+
+The `PaymentMethodInfo.methods` is a comma separated string of mollie payment methods, used to limit the payment methods a customer can use at checkout. If not provided, or provided as `''`, all payment methods will be available to the customer. If the payment method is not enabled in your website profile, you will receive an error.
 
 # Representation: CT create payment
 

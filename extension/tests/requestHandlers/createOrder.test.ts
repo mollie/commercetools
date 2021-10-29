@@ -1,10 +1,9 @@
-import { PaymentMethod } from '@mollie/api-client';
 import { mocked } from 'ts-jest/utils';
 import { createDateNowString, amountMapper } from '../../src/utils';
 import {
   fillOrderValues,
   extractLine,
-  CTPaymentMethodToMolliePaymentMethod,
+  formatPaymentMethods,
   getBillingAddress,
   createCtActions,
   getShippingAddress,
@@ -13,6 +12,25 @@ import {
 } from '../../src/requestHandlers/createOrder';
 
 jest.mock('../../src/utils');
+
+describe('formatPaymentMethods', () => {
+  it('should return undefined when passed no payment methods', () => {
+    const method = formatPaymentMethods(undefined);
+    expect(method).toBe('');
+  });
+  it('should return a string when passed one payment method', () => {
+    const method = formatPaymentMethods('sofort');
+    expect(method).toBe('sofort');
+  });
+  it('should return an array when passed multiple payment methods', () => {
+    const method = formatPaymentMethods('sofort,applepay,klarnapaylater,giropay');
+    expect(method).toEqual(['sofort', 'applepay', 'klarnapaylater', 'giropay']);
+  });
+  it('should return empty string when passed invalid payment method(s)', () => {
+    const method = formatPaymentMethods('apple,klarna');
+    expect(method).toEqual('');
+  });
+});
 
 describe('Create orders tests', () => {
   const mockConsoleError = jest.fn();
@@ -186,13 +204,6 @@ describe('Create orders tests', () => {
     const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' };
     await expect(fillOrderValues(mockedCreateOrderRequest)).rejects.toEqual(expectedError);
     expect(mockConsoleError).toHaveBeenCalledTimes(1);
-  });
-  it('Should return the correct mollie payment method', () => {
-    expect(CTPaymentMethodToMolliePaymentMethod('sofort')).toMatch(PaymentMethod.sofort);
-    expect(CTPaymentMethodToMolliePaymentMethod('ideal')).toMatch(PaymentMethod.ideal);
-  });
-  it('Should return empty string on incorrect payment method', () => {
-    expect(CTPaymentMethodToMolliePaymentMethod('banana')).toMatch('');
   });
   it('Should fetch the correct billing address from the request body', () => {
     const mockedBillingAddressBody = {

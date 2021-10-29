@@ -1,5 +1,5 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
-import { OrderAddress, OrderStatus } from '@mollie/api-client/dist/types/src/data/orders/data';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType, Payment } from '@mollie/api-client';
+import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTUpdatesRequestedResponse } from '../types';
 import { amountMapper, createDateNowString } from '../utils';
@@ -39,12 +39,29 @@ export function getShippingAddress(shippingAddressObject: any): OrderAddress {
   return rtnObject;
 }
 
-export function CTPaymentMethodToMolliePaymentMethod(CTPaymentMethod: string): PaymentMethod {
-  if (!(CTPaymentMethod in PaymentMethod)) {
-    return '' as PaymentMethod;
+/**
+ *
+ * @param paymentMethods comma separated string of valid mollie PaymentMethods
+ * If no valid payment methods are provided, this will return ''
+ * The 'method' parameter will not be passed as part of the createOrder request
+ * TODO: WARNING: 'voucher' and 'mybank' are not present on PaymentMethod type.
+ * This means they will not be passed to mollie
+ */
+export const formatPaymentMethods = (paymentMethods: string | undefined): PaymentMethod[] | PaymentMethod | '' => {
+  if (paymentMethods) {
+    const methods = paymentMethods.split(',');
+    const methodArray = methods
+      .map(method => {
+        return PaymentMethod[method as PaymentMethod];
+      })
+      .filter(method => method !== undefined);
+    if (methodArray.length <= 1) {
+      return methodArray.join('') as PaymentMethod;
+    }
+    return methodArray;
   }
-  return PaymentMethod[CTPaymentMethod as keyof typeof PaymentMethod];
-}
+  return '';
+};
 
 function extractAllLines(lines: any) {
   let extractedLines = [];
@@ -108,15 +125,21 @@ export function fillOrderValues(body: any): Promise<OrderCreateParams> {
       locale: deStringedOrderRequest.locale,
       redirectUrl: deStringedOrderRequest.redirectUrl,
       shopperCountryMustMatchBillingCountry: deStringedOrderRequest.shopperCountryMustMatchBillingCountry || false,
-      method: CTPaymentMethodToMolliePaymentMethod(body?.resource?.obj?.paymentMethodInfo?.method),
       expiresAt: deStringedOrderRequest.expiresAt || '',
       billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress),
       lines: extractAllLines(deStringedOrderRequest.lines),
       metadata: deStringedOrderRequest.metadata || {},
       embed: [OrderEmbed.payments],
+      payment: {
+        webhookUrl: deStringedOrderRequest.orderWebhookUrl,
+      },
     };
     if (deStringedOrderRequest.shippingAddress) {
       orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
+    }
+    const formattedMethods = formatPaymentMethods(body?.resource?.obj?.paymentMethodInfo?.method);
+    if (formattedMethods) {
+      orderValues.method = formattedMethods;
     }
     return Promise.resolve(orderValues);
   } catch (e) {
