@@ -11,13 +11,9 @@ import { CTTransaction } from '../types/ctPaymentTypes';
 import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
-import { version } from '../../package.json';
 
 const mollieApiKey = config.mollieApiKey;
-const mollieClient = createMollieClient({
-  apiKey: mollieApiKey,
-  versionStrings: `CommercetoolsMollieNotifications/${version}`,
-});
+const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
 const {
   ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
