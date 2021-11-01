@@ -19,7 +19,8 @@ const {
   ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
 } = config;
 
-const ctAuthMiddleware = createAuthMiddlewareForClientCredentialsFlow({
+const ctAuthMiddleware = 
+createAuthMiddlewareForClientCredentialsFlow({
   host: authUrl,
   projectKey,
   credentials: {
