@@ -4,6 +4,7 @@ import createOrderPayment from './createOrderPayment';
 import createShipment from './createShipment';
 import updateShipment from './updateShipment';
 import { ControllerAction } from '../types/index';
+import cancelOrder from './cancelOrder';
 
 export default {
   getPaymentMethods,
@@ -11,6 +12,7 @@ export default {
   createOrderPayment,
   createShipment,
   updateShipment,
+  cancelOrder,
 };
 
 /**
@@ -40,6 +42,10 @@ export function validateAction(body: any): ControllerAction {
 
   if (requestFields?.updateShipmentRequest && !requestFields?.updateShipmentResponse) {
     return ControllerAction.UpdateShipment;
+  }
+
+  if (requestFields?.cancelOrderRequest && !requestFields?.cancelOrderResponse) {
+    return ControllerAction.CancelOrder;
   }
 
   return ControllerAction.NoAction;
