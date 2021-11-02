@@ -5,7 +5,7 @@ import { CTUpdatesRequestedResponse } from '../types';
 export default async function cancelOrder(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     const mollieCancelOrderRes = await mollieClient.orders.cancel(ctObj.key);
-    console.log('mollieCancelOrderRes', mollieCancelOrderRes)
+    console.log('mollieCancelOrderRes', mollieCancelOrderRes);
     return {
       actions: [],
       status: 201,
