@@ -1,15 +1,12 @@
 import { MollieClient } from '@mollie/api-client';
-
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
-import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
-import { createDateNowString } from '../utils';
+import { CTUpdatesRequestedResponse } from '../types';
 
 export default async function cancelOrder(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-
-    console.log('Cancelled Triggered', ctObj)
+    const mollieCancelOrderRes = await mollieClient.orders.cancel(ctObj.key);
+    console.log('mollieCancelOrderRes', mollieCancelOrderRes)
     return {
-      // actions: ctActions,
       actions: [],
       status: 201,
     };
