@@ -1,5 +1,8 @@
 import { updatePaymentByKey } from '../../../src/requestHandlers/commercetools/updatePaymentByKey';
 import { CTPayment } from '../../../src/types/ctPaymentTypes';
+import Logger from '../../../src/logger/logger';
+
+jest.mock('../../../src/logger/logger');
 
 describe('updatePaymentByKey', () => {
   const mockProjectKey = 'test';
@@ -27,12 +30,12 @@ describe('updatePaymentByKey', () => {
   };
 
   const mockExecute = jest.fn().mockImplementation(() => mockResponseBody);
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   const mockCommerceToolsClient = {} as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
   });
   afterEach(() => {
     jest.resetAllMocks();
@@ -41,7 +44,7 @@ describe('updatePaymentByKey', () => {
     mockCommerceToolsClient.execute = mockExecute;
     const ctPayment = await updatePaymentByKey(mockPaymentKey, mockCommerceToolsClient, mockProjectKey, mockVersion, mockUpdateActions);
     expect(ctPayment).toEqual(mockCTPaymentResponse);
-    expect(mockConsoleError).not.toHaveBeenCalled();
+    expect(mockLogError).not.toHaveBeenCalled();
   });
   it('should return and log the error if an error occurs', async () => {
     const ctError = new Error('CommerceTools exception');
@@ -49,6 +52,6 @@ describe('updatePaymentByKey', () => {
     mockCommerceToolsClient.execute = mockExecuteFailure;
 
     await expect(updatePaymentByKey(mockPaymentKey, mockCommerceToolsClient, mockProjectKey, mockVersion, mockUpdateActions)).rejects.toThrow(ctError);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
