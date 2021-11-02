@@ -75,6 +75,10 @@ const processAction = async function (action: ControllerAction, body: any, molli
       result = await actions.createOrderRefund(body?.resource?.obj, mollieClient);
     // result = await actions.createOrderRefund(body, mollieClient);
 
+    case ControllerAction.CancelOrder:
+      debug(`action: ${ControllerAction.CancelOrder}`);
+      result = await actions.cancelOrder(body?.resource?.obj, mollieClient);
+      break;
     default:
       result = {
         status: 400,

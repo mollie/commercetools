@@ -6,6 +6,7 @@ import updateShipment from './updateShipment';
 import createOrderRefund from './createOrderRefund';
 import { ControllerAction } from '../types/index';
 import Logger from '../logger/logger';
+import cancelOrder from './cancelOrder';
 
 export default {
   getPaymentMethods,
@@ -14,6 +15,7 @@ export default {
   createShipment,
   updateShipment,
   createOrderRefund,
+  cancelOrder,
 };
 
 /**
@@ -24,7 +26,6 @@ export default {
  */
 export function validateAction(body: any): ControllerAction {
   const requestFields = body.resource?.obj?.custom?.fields;
-  console.log(body);
 
   if (requestFields?.paymentMethodsRequest && !requestFields?.paymentMethodsResponse) {
     return ControllerAction.GetPaymentMethods;
@@ -46,9 +47,12 @@ export function validateAction(body: any): ControllerAction {
     return ControllerAction.UpdateShipment;
   }
 
-  // if (body.custom?.fields?.createOrderRefundRequest && !body.custom?.fields?.createOrderRefundResponse) {
   if (requestFields?.createOrderRefundRequest && !requestFields?.createOrderRefundResponse) {
     return ControllerAction.CreateOrderRefund;
+  }
+
+  if (requestFields?.cancelOrderRequest && !requestFields?.cancelOrderResponse) {
+    return ControllerAction.CancelOrder;
   }
 
   return ControllerAction.NoAction;
