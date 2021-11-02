@@ -7,6 +7,7 @@ import actions, { validateAction } from './actions';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
+import { createCtActions as cancelOrderActions } from './cancelOrder';
 
 const debug = Debug('extension:handleRequest');
 const mollieApiKey = config.mollieApiKey;
@@ -72,7 +73,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       break;
     case ControllerAction.CancelOrder:
       debug(`action: ${ControllerAction.CancelOrder}`);
-      result = await actions.cancelOrder(body?.resource?.obj, mollieClient);
+      result = await actions.cancelOrder(body?.resource?.obj, mollieClient, cancelOrderActions);
       break;
     default:
       result = {

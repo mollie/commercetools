@@ -1,17 +1,44 @@
-import { MollieClient } from '@mollie/api-client';
+import { MollieClient, Order, OrderLineCancelParams } from '@mollie/api-client';
+import Logger from '../logger/logger';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
-import { CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
+import { createDateNowString } from '../utils';
 
-export default async function cancelOrder(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action[] {
+  const stringifiedCancelOrderResponse = JSON.stringify(mollieCancelOrderRes);
+  const result: Action[] = [
+    {
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        actionType: ControllerAction.CancelOrder,
+        createdAt: createDateNowString(),
+        request: ctObj?.custom?.fields?.cancelOrderRequest,
+        response: stringifiedCancelOrderResponse,
+      },
+    },
+    {
+      action: 'setCustomField',
+      name: 'cancelOrderResponse',
+      value: stringifiedCancelOrderResponse,
+    },
+  ];
+  return result;
+}
+
+export default async function cancelOrder(ctObj: any, mollieClient: MollieClient, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
     const mollieCancelOrderRes = await mollieClient.orders.cancel(ctObj.key);
-    console.log('mollieCancelOrderRes', mollieCancelOrderRes);
+    Logger.debug('mollieCancelOrderRes', mollieCancelOrderRes);
+    const ctActions = createCtActions(mollieCancelOrderRes, ctObj);
     return {
-      actions: [],
-      status: 201,
+      actions: ctActions,
+      status: 200,
     };
   } catch (error: any) {
-    console.error(error);
+    Logger.error(error);
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }
