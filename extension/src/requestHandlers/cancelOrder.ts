@@ -8,7 +8,7 @@ export default async function cancelOrder(ctObj: any, mollieClient: MollieClient
     console.log('mollieCancelOrderRes', mollieCancelOrderRes);
     return {
       actions: [],
-      status: 201,
+      status: 200,
     };
   } catch (error: any) {
     console.error(error);
