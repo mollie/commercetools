@@ -33,17 +33,6 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "mollieOrderID",
-            "label": {
-                "en": "Order ID from Mollie"
-            },
-            "required": false,
-            "inputHint": "SingleLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
             "name": "mollieOrderStatus",
             "label": {
                 "en": "Order status from Mollie"
@@ -157,6 +146,28 @@ Body:
             "name": "updateShipmentResponse",
             "label": {
                 "en": "Update shipment response"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "cancelOrderRequest",
+            "label": {
+                "en": "Cancel order request"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "cancelOrderResponse",
+            "label": {
+                "en": "Cancel order response"
             },
             "required": false,
             "inputHint": "MultiLine"
