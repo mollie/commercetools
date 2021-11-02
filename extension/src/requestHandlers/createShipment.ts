@@ -1,10 +1,8 @@
 import { MollieClient, ShipmentCreateParams, Shipment } from '@mollie/api-client';
-import Debug from 'debug';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
-
-const debug = Debug('extension:createShipment');
+import Logger from '../../src/logger/logger';
 
 export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
   try {
@@ -15,10 +13,10 @@ export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
     if (parsedShipmentRequest.lines?.length) Object.assign(shipmentParams, { lines: parsedShipmentRequest.lines });
     if (parsedShipmentRequest.tracking) Object.assign(shipmentParams, { tracking: parsedShipmentRequest.tracking });
 
-    debug('shipmentParams', shipmentParams);
+    Logger.debug('shipmentParams', shipmentParams);
     return Promise.resolve(shipmentParams);
   } catch (e) {
-    console.error(e);
+    Logger.error(e);
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' });
   }
 }
@@ -51,14 +49,14 @@ export default async function createShipment(ctObj: any, mollieClient: MollieCli
   try {
     const shipmentParams = await getShipmentParams(ctObj);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
-    debug('mollieShipmentRes', mollieShipmentRes);
+    Logger.debug('mollieShipmentRes', mollieShipmentRes);
     const ctActions = createCtActions(mollieShipmentRes, ctObj);
     return {
       actions: ctActions,
       status: 201,
     };
   } catch (error: any) {
-    console.error(error);
+    Logger.error(error);
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

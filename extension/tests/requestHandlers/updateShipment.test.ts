@@ -2,13 +2,15 @@ import { mocked } from 'ts-jest/utils';
 import { Action } from '../../src/types';
 import updateShipment, { getShipmentParams, createCtActions } from '../../src/requestHandlers/updateShipment';
 import { createDateNowString } from '../../src/utils';
+import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
+jest.mock('../../src/logger/logger');
 
 describe('getShipmentParams', () => {
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   beforeEach(() => {
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -50,9 +52,10 @@ describe('getShipmentParams', () => {
       field: 'updateShipmentRequest',
     };
     await expect(getShipmentParams(mockedCtObj)).rejects.toEqual(expectedRejectedValue);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
+
 describe('createCtActions', () => {
   beforeEach(() => {
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
@@ -99,9 +102,9 @@ describe('createCtActions', () => {
 });
 
 describe('updateShipment', () => {
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   beforeEach(() => {
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {
