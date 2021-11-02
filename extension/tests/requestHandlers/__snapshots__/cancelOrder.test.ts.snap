@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createCtActions Should create correct ct actions from request and mollies response 1`] = `
+Object {
+  "action": "addInterfaceInteraction",
+  "fields": Object {
+    "actionType": "cancelOrder",
+    "createdAt": "2021-10-08T12:12:02.625Z",
+    "request": "[]",
+    "response": "{\\"resource\\":\\"order\\",\\"id\\":\\"ord_jwtj05\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"amount\\":{\\"value\\":\\"20.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\",\\"canceledAt\\":\\"2021-11-02T12:26:44+00:00\\",\\"redirectUrl\\":\\"https://www.mollie.com/\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.694ky5\\",\\"orderId\\":\\"ord_jwtj05\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"quantityShipped\\":0,\\"quantityCanceled\\":1,\\"amountCanceled\\":{},\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\"}]}",
+  },
+  "type": Object {
+    "key": "ct-mollie-integration-interface-interaction-type",
+  },
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies response 2`] = `
+Object {
+  "action": "setCustomField",
+  "name": "cancelOrderResponse",
+  "value": "{\\"resource\\":\\"order\\",\\"id\\":\\"ord_jwtj05\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"amount\\":{\\"value\\":\\"20.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\",\\"canceledAt\\":\\"2021-11-02T12:26:44+00:00\\",\\"redirectUrl\\":\\"https://www.mollie.com/\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.694ky5\\",\\"orderId\\":\\"ord_jwtj05\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"quantityShipped\\":0,\\"quantityCanceled\\":1,\\"amountCanceled\\":{},\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\"}]}",
+}
+`;
