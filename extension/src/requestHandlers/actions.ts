@@ -3,7 +3,9 @@ import createOrder from './createOrder';
 import createOrderPayment from './createOrderPayment';
 import createShipment from './createShipment';
 import updateShipment from './updateShipment';
+import createOrderRefund from './createOrderRefund';
 import { ControllerAction } from '../types/index';
+import Logger from '../logger/logger';
 
 export default {
   getPaymentMethods,
@@ -11,6 +13,7 @@ export default {
   createOrderPayment,
   createShipment,
   updateShipment,
+  createOrderRefund,
 };
 
 /**
@@ -21,6 +24,7 @@ export default {
  */
 export function validateAction(body: any): ControllerAction {
   const requestFields = body.resource?.obj?.custom?.fields;
+  console.log(body);
 
   if (requestFields?.paymentMethodsRequest && !requestFields?.paymentMethodsResponse) {
     return ControllerAction.GetPaymentMethods;
@@ -40,6 +44,11 @@ export function validateAction(body: any): ControllerAction {
 
   if (requestFields?.updateShipmentRequest && !requestFields?.updateShipmentResponse) {
     return ControllerAction.UpdateShipment;
+  }
+
+  // if (body.custom?.fields?.createOrderRefundRequest && !body.custom?.fields?.createOrderRefundResponse) {
+  if (requestFields?.createOrderRefundRequest && !requestFields?.createOrderRefundResponse) {
+    return ControllerAction.CreateOrderRefund;
   }
 
   return ControllerAction.NoAction;

@@ -82,6 +82,22 @@ describe('validateAction', () => {
     expect(action).toBe(ControllerAction.UpdateShipment);
   });
 
+  it('Should return createOrderRefund when createOrderRefundRequest is present and createOrderRefundResponse is not', () => {
+    const mockReqBody = {
+      resource: {
+        obj: {
+          custom: {
+            fields: {
+              createOrderRefundRequest: '{}',
+            },
+          },
+        },
+      },
+    };
+    const action = validateAction(mockReqBody);
+    expect(action).toBe(ControllerAction.CreateOrderRefund);
+  });
+
   it('Should return NoAction if request & response fields are present for all custom fields', () => {
     const mockReqBody = {
       resource: {
@@ -98,6 +114,8 @@ describe('validateAction', () => {
               createShipmentResponse: '{}',
               updateShipmentRequest: '{}',
               updateShipmentResponse: '{}',
+              createOrderRefundRequest: '{}',
+              createOrderRefundResponse: '{}',
             },
           },
         },

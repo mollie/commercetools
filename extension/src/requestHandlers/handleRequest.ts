@@ -70,6 +70,11 @@ const processAction = async function (action: ControllerAction, body: any, molli
       debug(`action: ${ControllerAction.UpdateShipment}`);
       result = await actions.updateShipment(body?.resource?.obj, mollieClient, getUpdateShipmentParams, updateShipmentActions);
       break;
+    case ControllerAction.CreateOrderRefund:
+      debug(`action: ${ControllerAction.UpdateShipment}`);
+      result = await actions.createOrderRefund(body?.resource?.obj, mollieClient);
+    // result = await actions.createOrderRefund(body, mollieClient);
+
     default:
       result = {
         status: 400,
