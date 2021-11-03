@@ -9,7 +9,7 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
     const parsedOrderRefundParams = JSON.parse(ctObj?.custom?.fields?.createOrderRefundRequest);
     const orderRefundParams = {
       orderId: ctObj?.key,
-      // To add - individual order refunds
+      // TODO: Individual order line refunds, CMI 16 & CMI 89
       lines: [],
       description: parsedOrderRefundParams.description || '',
       metadata: parsedOrderRefundParams.metadata || {},
@@ -24,11 +24,11 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
 export default async function createOrderRefund(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     const orderRefundParams = await getOrderRefundParams(ctObj);
-    const mollieCreateOrderRefundRes = mollieClient.orders_refunds.create(orderRefundParams);
+    const mollieCreateOrderRefundRes = await mollieClient.orders_refunds.create(orderRefundParams);
     return {
       // To add - parse mollie response into CT actions
       actions: [],
-      status: 200,
+      status: 201,
     };
   } catch (err: any) {
     Logger.error(err);
