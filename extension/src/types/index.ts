@@ -38,7 +38,7 @@ export type CTMoney = {
 
 export type CTTransaction = {
   timestamp: string;
-  type: 'Charge';
+  type: 'Charge' | 'Refund';
   amount: CTMoney;
   interactionId?: string;
   state?: 'Initial' | 'Pending' | 'Success' | 'Failure';

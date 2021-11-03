@@ -7,6 +7,16 @@ export function createDateNowString() {
   return new Date().toISOString();
 }
 
+/**
+ *
+ * @param mollieValue e.g. "10.00"
+ * @param fractionDigits defaults to 2 in commercetools
+ * WIP - does not handle other values of fractionDigits yet
+ */
+export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigits = 2) => {
+  return Math.ceil(parseFloat(mollieValue) * Math.pow(10, fractionDigits));
+};
+
 export function amountMapper(amountPlanned: any): string {
   const { centAmount, fractionDigits } = amountPlanned;
   const divider = Math.pow(10, fractionDigits || 2);
