@@ -6,7 +6,6 @@ import { ControllerAction } from '../../src/types/index';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/requestHandlers/actions');
-jest.mock('../../src/logger/logger');
 
 describe('handleRequest', () => {
   const req = {} as Request;

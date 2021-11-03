@@ -5,7 +5,6 @@ import { createDateNowString } from '../../src/utils';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
-jest.mock('../../src/logger/logger');
 
 describe('getShipmentParams', () => {
   const mockLogError = jest.fn();
