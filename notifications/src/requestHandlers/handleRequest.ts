@@ -11,6 +11,7 @@ import { CTTransaction } from '../types/ctPaymentTypes';
 import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
+import Logger from '../logger/logger';
 
 const mollieApiKey = config.mollieApiKey;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
@@ -120,7 +121,7 @@ export default async function handleRequest(req: Request, res: Response) {
 
     res.status(200).end();
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
     res.status(400).send(error);
   }
 }

@@ -1,11 +1,14 @@
 import { loadConfig } from '../config/config';
+import Logger from '../src/logger/logger';
+
+jest.mock('../src/logger/logger');
 
 describe('Config test', () => {
   const OLD_ENV = { ...process.env };
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   beforeEach(() => {
     process.env = OLD_ENV;
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
   });
 
   afterAll(() => {
@@ -36,8 +39,8 @@ describe('Config test', () => {
     process.env.CT_MOLLIE_CONFIG = temporaryCTConfig;
 
     expect(() => loadConfig(process.env.CT_MOLLIE_CONFIG)).toThrowError();
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
-    expect(mockConsoleError).toHaveBeenCalledWith('No Mollie API Key found\nNo Commercetools configuration present\nCommercetools configuration requires missing required key(s)\n');
+    expect(mockLogError).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledWith('No Mollie API Key found\nNo Commercetools configuration present\nCommercetools configuration requires missing required key(s)\n');
   });
 
   it('Should return an error if no config is provided', async () => {
