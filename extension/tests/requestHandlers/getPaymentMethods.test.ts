@@ -2,12 +2,14 @@ import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
 import getPaymentMethods from '../../src/requestHandlers/getPaymentMethods';
 import { createDateNowString } from '../../src/utils';
+import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
 
 describe('getPaymentMethods unit tests', () => {
+  const mockLogError = jest.fn();
   beforeAll(() => {
-    console.warn = jest.fn();
+    Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterAll(() => {
@@ -113,18 +115,6 @@ describe('getPaymentMethods unit tests', () => {
     expect(paymentMethodsResponseCTCustomField?.value).toEqual(JSON.stringify({ count: 0, methods: 'NO_AVAILABLE_PAYMENT_METHODS' }));
   });
 
-  // Probably not needed, instead add a check on handle request to make sure we get the right CT object
-  // it('Should not fail without request body', async () => {
-  //   const mockedRequest = {} as Request;
-  //   const mollieClient = {
-  //     methods: { list: jest.fn().mockResolvedValueOnce([]) },
-  //   } as any;
-  //   const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
-
-  //   expect(status).toBe(200);
-  //   expect(actions).toHaveLength(2);
-  // });
-
   it('Should return error if mollieClient call fails', async () => {
     const mockedError = new Error('Test error');
     const mockedRequest = {} as Request;
@@ -134,5 +124,6 @@ describe('getPaymentMethods unit tests', () => {
     const { errors, status } = await getPaymentMethods(mockedRequest, mollieClient);
     expect(status).toBe(400);
     expect(errors).toBeInstanceOf(Array);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });

@@ -116,7 +116,7 @@ describe('createCtActions', () => {
 describe('createShipment', () => {
   const mockLogError = jest.fn();
   beforeEach(() => {
-    console.error = mockLogError;
+    Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {

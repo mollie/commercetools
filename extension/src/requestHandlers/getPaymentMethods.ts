@@ -2,6 +2,7 @@ import { MollieClient, List, Method } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, Action } from '../types';
 import { createDateNowString, methodListMapper } from '../utils';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import Logger from '../logger/logger';
 
 export default async function getPaymentMethods(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
@@ -36,7 +37,7 @@ export default async function getPaymentMethods(ctObj: any, mollieClient: Mollie
       status: 200,
     };
   } catch (error: any) {
-    console.warn(error);
+    Logger.error({ error });
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

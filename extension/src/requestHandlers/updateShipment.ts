@@ -13,11 +13,11 @@ export function getShipmentParams(ctObj: any): Promise<{ shipmentId: string; upd
       tracking: parsedShipmentRequest.tracking,
     };
 
-    Logger.debug('shipmentId', shipmentId);
-    Logger.debug('updateParams', updateParams);
+    Logger.debug({ shipmentId: shipmentId });
+    Logger.debug({ updateShipmentParams: updateParams });
     return Promise.resolve({ shipmentId, updateParams });
-  } catch (e) {
-    Logger.error(e);
+  } catch (error) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to update Mollie shipment.', field: 'updateShipmentRequest' });
   }
 }
@@ -50,7 +50,7 @@ export default async function updateShipment(ctObj: any, mollieClient: MollieCli
   try {
     const shipmentParams = await getShipmentParams(ctObj);
     const mollieShipmentRes = await mollieClient.orders_shipments.update(shipmentParams.shipmentId, shipmentParams.updateParams);
-    Logger.debug('mollieShipmentRes', mollieShipmentRes);
+    Logger.debug({ mollieShipmentRes: mollieShipmentRes });
     const ctActions = createCtActions(mollieShipmentRes, ctObj);
     return {
       actions: ctActions,
