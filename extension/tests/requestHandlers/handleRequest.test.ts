@@ -135,6 +135,11 @@ describe('processActions', () => {
     await processAction(ControllerAction.CancelOrder, {}, {} as MollieClient);
     expect(mockedCancelOrder).toBeCalledTimes(1);
   });
+  it('should call CreateOrderRefund if the action is CreateOrderRefund', async () => {
+    const mockedCreateOrderRefund = mocked(actions.createOrderRefund);
+    await processAction(ControllerAction.CreateOrderRefund, {}, {} as MollieClient);
+    expect(mockedCreateOrderRefund).toBeCalledTimes(1);
+  });
   it('should return an error if the action does not exist', async () => {
     const expectedError = {
       status: 400,
