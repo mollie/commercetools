@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
+import { version } from '../../package.json';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
 import config from '../../config/config';
 import actions, { validateAction } from './actions';
@@ -10,7 +11,8 @@ import { createCtActions as cancelOrderActions } from './cancelOrder';
 import Logger from '../logger/logger';
 
 const mollieApiKey = config.mollieApiKey;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey });
+const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
+const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 export default async function handleRequest(req: Request, res: Response) {
   if (req.path !== '/') return res.status(400).end();

@@ -6,6 +6,7 @@ import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createClient } from '@commercetools/sdk-client';
+import { version } from '../../package.json';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
 import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions } from '../utils';
@@ -14,7 +15,8 @@ import actions from './index';
 import Logger from '../logger/logger';
 
 const mollieApiKey = config.mollieApiKey;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey });
+const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
+const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 const {
   ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
