@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { Config } from './config-model';
+import Logger from '../src/logger/logger';
 
 const isConfigValid = (config: Config): { valid: boolean; message: string } => {
   const { mollieApiKey, ctConfig } = config;
@@ -35,7 +36,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     if (valid) {
       return config;
     } else {
-      console.error(message);
+      Logger.error(message);
       throw new Error(message);
     }
   } catch (e) {
