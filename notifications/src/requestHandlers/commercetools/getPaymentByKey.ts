@@ -23,7 +23,7 @@ export async function getPaymentByKey(key: string, commercetoolsClient: any, pro
     const { body: paymentObject } = response;
     return paymentObject as CTPayment;
   } catch (error) {
-    Logger.error(error);
+    Logger.error({ error });
     throw error;
   }
 }
