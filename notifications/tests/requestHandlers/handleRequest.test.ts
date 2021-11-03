@@ -5,7 +5,6 @@ import actions from '../../src/requestHandlers/index';
 import handleRequest from '../../src/requestHandlers/handleRequest';
 import Logger from '../../src/logger/logger';
 
-jest.mock('../../src/logger/logger');
 jest.mock('../../src/requestHandlers/index');
 
 describe('handleRequest', () => {

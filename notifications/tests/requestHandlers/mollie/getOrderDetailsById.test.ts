@@ -4,8 +4,6 @@ import getOrderDetailsById from '../../../src/requestHandlers/mollie/getOrderDet
 import OrdersResource from '@mollie/api-client/dist/types/src/resources/orders/OrdersResource';
 import Logger from '../../../src/logger/logger';
 
-jest.mock('../../../src/logger/logger');
-
 jest.mock('@mollie/api-client');
 
 describe('getOrderDetailsById', () => {

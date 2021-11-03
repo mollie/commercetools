@@ -4,8 +4,6 @@ import getPaymentDetailsById from '../../../src/requestHandlers/mollie/getPaymen
 import PaymentsResource from '@mollie/api-client/dist/types/src/resources/payments/PaymentsResource';
 import Logger from '../../../src/logger/logger';
 
-jest.mock('../../../src/logger/logger');
-
 jest.mock('@mollie/api-client');
 
 describe('getOrderDetailsById', () => {
