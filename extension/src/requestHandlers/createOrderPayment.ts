@@ -2,6 +2,7 @@ import { MollieClient, OrderPaymentCreateParams, Payment } from '@mollie/api-cli
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
+import Logger from '../logger/logger';
 
 export function getOrdersPaymentsParams(ctObj: any): Promise<OrderPaymentCreateParams> {
   try {
@@ -15,7 +16,7 @@ export function getOrdersPaymentsParams(ctObj: any): Promise<OrderPaymentCreateP
     if (mandateId) Object.assign(orderPaymentCreateParams, { mandateId });
     return Promise.resolve(orderPaymentCreateParams);
   } catch (e) {
-    console.error(e);
+    Logger.error(e);
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order payment.', field: 'createOrderPaymentRequest' });
   }
 }
@@ -63,7 +64,7 @@ export default async function createOrderPayment(ctObj: any, mollieClient: Molli
       status: 201,
     };
   } catch (error: any) {
-    console.error(error);
+    Logger.error(error);
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

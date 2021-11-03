@@ -1,5 +1,6 @@
 import { mocked } from 'ts-jest/utils';
 import { createDateNowString, amountMapper } from '../../src/utils';
+import Logger from '../../src/logger/logger';
 import {
   fillOrderValues,
   extractLine,
@@ -33,9 +34,9 @@ describe('formatPaymentMethods', () => {
 });
 
 describe('Create orders tests', () => {
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   beforeEach(() => {
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {
@@ -203,7 +204,7 @@ describe('Create orders tests', () => {
     };
     const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' };
     await expect(fillOrderValues(mockedCreateOrderRequest)).rejects.toEqual(expectedError);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
   it('Should fetch the correct billing address from the request body', () => {
     const mockedBillingAddressBody = {
