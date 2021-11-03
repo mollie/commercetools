@@ -15,8 +15,8 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
       metadata: parsedOrderRefundParams.metadata || {},
     };
     return Promise.resolve(orderRefundParams);
-  } catch (err) {
-    Logger.error(err);
+  } catch (error: any) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order refund payment.', field: 'createOrderRefundRequest' });
   }
 }
@@ -30,9 +30,9 @@ export default async function createOrderRefund(ctObj: any, mollieClient: Mollie
       actions: [],
       status: 201,
     };
-  } catch (err: any) {
-    Logger.error(err);
-    const errorResponse = formatMollieErrorResponse(err);
+  } catch (error: any) {
+    Logger.error({ error });
+    const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }
 }
