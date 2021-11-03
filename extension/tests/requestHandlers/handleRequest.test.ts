@@ -7,7 +7,6 @@ import { ControllerAction } from '../../src/types/index';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/requestHandlers/actions');
-jest.mock('@mollie/api-client');
 
 describe('handleRequest', () => {
   const req = {} as Request;
