@@ -1,4 +1,6 @@
 import { CTPayment } from '../../types/ctPaymentTypes';
+import Logger from '../../logger/logger';
+
 /**
  *
  * @param key
@@ -28,7 +30,7 @@ export async function updatePaymentByKey(key: string, commercetoolsClient: any, 
     const { body: paymentObject } = response;
     return paymentObject as CTPayment;
   } catch (error) {
-    console.error(error);
+    Logger.error(error);
     throw error;
   }
 }

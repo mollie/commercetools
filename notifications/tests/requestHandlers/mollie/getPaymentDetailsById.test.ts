@@ -2,11 +2,12 @@ import { MollieClient } from '@mollie/api-client';
 import { mocked } from 'ts-jest/utils';
 import getPaymentDetailsById from '../../../src/requestHandlers/mollie/getPaymentDetailsById';
 import PaymentsResource from '@mollie/api-client/dist/types/src/resources/payments/PaymentsResource';
+import Logger from '../../../src/logger/logger';
 
 jest.mock('@mollie/api-client');
 
 describe('getOrderDetailsById', () => {
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   const mockMollieClient = {} as MollieClient;
   const mockPaymentsResource = {} as PaymentsResource;
 
@@ -30,15 +31,15 @@ describe('getOrderDetailsById', () => {
   it('should fetch mollie order by id', async () => {
     const payment = await getPaymentDetailsById('tr_12345', mockMollieClient);
     expect(payment).toEqual({ id: 'tr_12345' });
-    expect(mockConsoleError).not.toHaveBeenCalled();
+    expect(mockLogError).not.toHaveBeenCalled();
   });
 
   it('should throw and log error if mollie call fails', async () => {
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
     const getPaymentFailure = jest.fn().mockRejectedValue(new Error('Mollie Error'));
     mockPaymentsResource.get = getPaymentFailure;
 
     await expect(getPaymentDetailsById('ord_12345', mockMollieClient)).rejects.toThrow(Error);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
