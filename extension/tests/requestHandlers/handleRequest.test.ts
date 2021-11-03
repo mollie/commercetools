@@ -1,4 +1,4 @@
-import createMollieClient, { MollieClient } from '@mollie/api-client';
+import { MollieClient } from '@mollie/api-client';
 import { Request, Response } from 'express';
 import { mocked } from 'ts-jest/utils';
 import actions, { validateAction } from '../../src/requestHandlers/actions';
@@ -15,7 +15,7 @@ describe('handleRequest', () => {
   const mockStatus = jest.fn().mockReturnValue(res);
   const mockSend = jest.fn().mockReturnValue(res);
   const mockEnd = jest.fn();
-  const mockLogWarn = jest.fn();
+  const mockLogError = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -24,7 +24,7 @@ describe('handleRequest', () => {
     res.send = mockSend;
     res.end = mockEnd;
     req.path = '/';
-    Logger.warn = mockLogWarn;
+    Logger.error = mockLogError;
   });
 
   afterAll(() => {
@@ -100,7 +100,7 @@ describe('handleRequest', () => {
         },
       ],
     });
-    expect(mockLogWarn).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
 
