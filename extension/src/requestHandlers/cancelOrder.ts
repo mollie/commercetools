@@ -21,7 +21,7 @@ export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action
     },
     {
       action: 'setCustomField',
-      name: 'cancelOrderResponse',
+      name: 'createCancelOrderResponse',
       value: stringifiedCancelOrderResponse,
     },
   ];
@@ -31,7 +31,7 @@ export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action
 export default async function cancelOrder(ctObj: any, mollieClient: MollieClient, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
     const mollieCancelOrderRes = await mollieClient.orders.cancel(ctObj.key);
-    Logger.debug('mollieCancelOrderRes', mollieCancelOrderRes);
+    Logger.debug(mollieCancelOrderRes);
     const ctActions = createCtActions(mollieCancelOrderRes, ctObj);
     return {
       actions: ctActions,

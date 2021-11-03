@@ -18,7 +18,7 @@ Object {
 exports[`createCtActions Should create correct ct actions from request and mollies response 2`] = `
 Object {
   "action": "setCustomField",
-  "name": "cancelOrderResponse",
+  "name": "createCancelOrderResponse",
   "value": "{\\"resource\\":\\"order\\",\\"id\\":\\"ord_jwtj05\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"amount\\":{\\"value\\":\\"20.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\",\\"canceledAt\\":\\"2021-11-02T12:26:44+00:00\\",\\"redirectUrl\\":\\"https://www.mollie.com/\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.694ky5\\",\\"orderId\\":\\"ord_jwtj05\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"quantityShipped\\":0,\\"quantityCanceled\\":1,\\"amountCanceled\\":{},\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\"}]}",
 }
 `;

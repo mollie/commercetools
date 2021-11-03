@@ -44,7 +44,7 @@ export function validateAction(body: any): ControllerAction {
     return ControllerAction.UpdateShipment;
   }
 
-  if (requestFields?.cancelOrderRequest && !requestFields?.cancelOrderResponse) {
+  if (requestFields?.createCancelOrderRequest && !requestFields?.createCancelOrderResponse) {
     return ControllerAction.CancelOrder;
   }
 

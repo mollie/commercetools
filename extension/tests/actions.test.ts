@@ -82,13 +82,13 @@ describe('validateAction', () => {
     expect(action).toBe(ControllerAction.UpdateShipment);
   });
 
-  it('Should return cancelOrder when cancelOrderRequest is present and cancelOrderResponse is not', () => {
+  it('Should return cancelOrder when createCancelOrderRequest is present and createCancelOrderResponse is not', () => {
     const mockReqBody = {
       resource: {
         obj: {
           custom: {
             fields: {
-              cancelOrderRequest: '{}',
+              createCancelOrderRequest: '{}',
             },
           },
         },
@@ -114,8 +114,8 @@ describe('validateAction', () => {
               createShipmentResponse: '{}',
               updateShipmentRequest: '{}',
               updateShipmentResponse: '{}',
-              cancelOrderRequest: '{}',
-              cancelOrderResponse: '{}',
+              createCancelOrderRequest: '{}',
+              createCancelOrderResponse: '{}',
             },
           },
         },
