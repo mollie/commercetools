@@ -15,8 +15,8 @@ export function getOrdersPaymentsParams(ctObj: any): Promise<OrderPaymentCreateP
     if (customerId) Object.assign(orderPaymentCreateParams, { customerId });
     if (mandateId) Object.assign(orderPaymentCreateParams, { mandateId });
     return Promise.resolve(orderPaymentCreateParams);
-  } catch (e) {
-    Logger.error(e);
+  } catch (error) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order payment.', field: 'createOrderPaymentRequest' });
   }
 }
@@ -64,7 +64,7 @@ export default async function createOrderPayment(ctObj: any, mollieClient: Molli
       status: 201,
     };
   } catch (error: any) {
-    Logger.error(error);
+    Logger.error({ error });
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

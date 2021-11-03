@@ -15,8 +15,8 @@ export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
 
     Logger.debug({ shipmentParams: shipmentParams });
     return Promise.resolve(shipmentParams);
-  } catch (e) {
-    Logger.error(e);
+  } catch (error) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' });
   }
 }
@@ -56,7 +56,7 @@ export default async function createShipment(ctObj: any, mollieClient: MollieCli
       status: 201,
     };
   } catch (error: any) {
-    Logger.error(error);
+    Logger.error({ error });
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

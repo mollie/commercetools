@@ -143,8 +143,8 @@ export function fillOrderValues(body: any): Promise<OrderCreateParams> {
       orderValues.method = formattedMethods;
     }
     return Promise.resolve(orderValues);
-  } catch (e) {
-    Logger.error(e);
+  } catch (error) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' });
   }
 }
@@ -207,7 +207,7 @@ export default async function createOrder(body: any, mollieClient: MollieClient)
       status: 201,
     };
   } catch (error: any) {
-    Logger.error(error);
+    Logger.error({ error });
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

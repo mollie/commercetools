@@ -37,7 +37,7 @@ export default async function getPaymentMethods(ctObj: any, mollieClient: Mollie
       status: 200,
     };
   } catch (error: any) {
-    Logger.error(error);
+    Logger.error({ error });
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }

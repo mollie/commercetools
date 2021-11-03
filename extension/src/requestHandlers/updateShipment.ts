@@ -16,8 +16,8 @@ export function getShipmentParams(ctObj: any): Promise<{ shipmentId: string; upd
     Logger.debug({ shipmentId: shipmentId });
     Logger.debug({ updateShipmentParams: updateParams });
     return Promise.resolve({ shipmentId, updateParams });
-  } catch (e) {
-    Logger.error(e);
+  } catch (error) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to update Mollie shipment.', field: 'updateShipmentRequest' });
   }
 }
