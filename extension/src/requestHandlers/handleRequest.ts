@@ -70,7 +70,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       result = await actions.updateShipment(body?.resource?.obj, mollieClient, getUpdateShipmentParams, updateShipmentActions);
       break;
     case ControllerAction.CreateOrderRefund:
-      debug(`action: ${ControllerAction.UpdateShipment}`);
+      Logger.debug(`action: ${ControllerAction.UpdateShipment}`);
       result = await actions.createOrderRefund(body?.resource?.obj, mollieClient);
       break;
     case ControllerAction.CancelOrder:
