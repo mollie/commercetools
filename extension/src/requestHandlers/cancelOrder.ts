@@ -38,7 +38,7 @@ export default async function cancelOrder(ctObj: any, mollieClient: MollieClient
       status: 200,
     };
   } catch (error: any) {
-    Logger.error(error);
+    Logger.error({ error });
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }
