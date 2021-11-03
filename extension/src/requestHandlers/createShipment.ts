@@ -13,7 +13,7 @@ export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
     if (parsedShipmentRequest.lines?.length) Object.assign(shipmentParams, { lines: parsedShipmentRequest.lines });
     if (parsedShipmentRequest.tracking) Object.assign(shipmentParams, { tracking: parsedShipmentRequest.tracking });
 
-    Logger.debug('shipmentParams', shipmentParams);
+    Logger.debug({ shipmentParams: shipmentParams });
     return Promise.resolve(shipmentParams);
   } catch (e) {
     Logger.error(e);
@@ -49,7 +49,7 @@ export default async function createShipment(ctObj: any, mollieClient: MollieCli
   try {
     const shipmentParams = await getShipmentParams(ctObj);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
-    Logger.debug('mollieShipmentRes', mollieShipmentRes);
+    Logger.debug({ mollieShipmentRes: mollieShipmentRes });
     const ctActions = createCtActions(mollieShipmentRes, ctObj);
     return {
       actions: ctActions,
