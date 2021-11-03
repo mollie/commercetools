@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { version } from '../../package.json';
 import fetch from 'node-fetch-commonjs';
 import createMollieClient from '@mollie/api-client';
 import { Payment } from '@mollie/api-client';
@@ -14,9 +15,8 @@ import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
 
-const appVersion = process.env.npm_package_version ?? 'unknown_version';
 const mollieApiKey = config.mollieApiKey;
-const mollieUserAgentString = `MollieCommercetools-notifications/${appVersion}`;
+const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 const {
@@ -25,7 +25,7 @@ const {
 
 const userAgentMiddleware = createUserAgentMiddleware({
   libraryName: 'MollieCommercetools-notification',
-  libraryVersion: appVersion,
+  libraryVersion: version,
 });
 
 const ctAuthMiddleware = createAuthMiddlewareForClientCredentialsFlow({
