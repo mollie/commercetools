@@ -40,7 +40,7 @@ export default async function handleRequest(req: Request, res: Response) {
     }
   } catch (error: any) {
     // TODO - check this does not expose PII in stacktrace
-    Logger.warn(error);
+    Logger.error({ error });
     // From Node's Error object: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
     const errorMessage = `error_name: ${error.name}, error_message: ${error.message}`;
     return res.status(400).send({
@@ -71,6 +71,10 @@ const processAction = async function (action: ControllerAction, body: any, molli
     case ControllerAction.UpdateShipment:
       Logger.debug(`action: ${ControllerAction.UpdateShipment}`);
       result = await actions.updateShipment(body?.resource?.obj, mollieClient, getUpdateShipmentParams, updateShipmentActions);
+      break;
+    case ControllerAction.CreateOrderRefund:
+      Logger.debug(`action: ${ControllerAction.CreateOrderRefund}`);
+      result = await actions.createOrderRefund(body?.resource?.obj, mollieClient);
       break;
     case ControllerAction.CancelOrder:
       Logger.debug(`action: ${ControllerAction.CancelOrder}`);

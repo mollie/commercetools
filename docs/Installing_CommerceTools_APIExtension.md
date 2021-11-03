@@ -1,6 +1,6 @@
 # Setting up the API Extension on commercetools
 
-**Work in progress** 
+**Work in progress**
 
 ## Installing API Extension
 
@@ -8,17 +8,18 @@
 
 ## Configure custom fields for your project
 
-We use Custom Fields on the Payment, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project. 
+We use Custom Fields on the Payment, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project.
 
-To do this, we make two requests to the `types` endpoint. 
+To do this, we make two requests to the `types` endpoint.
 
-N.B. this list is still work in progress and will be updated as we develop. 
+N.B. this list is still work in progress and will be updated as we develop.
 
 **(1) Payment**
 
 POST `/<project-id>/types`
 
 Body:
+
 ```
 {
     "key": "ct-mollie-integration-payment-type",
@@ -171,11 +172,33 @@ Body:
             },
             "required": false,
             "inputHint": "MultiLine"
+        },
+                {
+            "type": {
+                "name": "String"
+            },
+            "name": "createOrderRefundRequest",
+            "label": {
+                "en": "Create order refund request"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "createOrderRefundResponse",
+            "label": {
+                "en": "Create order refund response"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
         }
+
     ]
 }
 ```
-
 
 (2) Payment Interface Interaction:
 
