@@ -41,6 +41,7 @@
     "@commercetools/sdk-middleware-logger": "^2.1.1",
     "@mollie/api-client": "^3.5.1",
     "express": "^4.17.1",
-    "node-fetch-commonjs": "^3.0.3"
+    "node-fetch-commonjs": "^3.0.3",
+    "winston": "^3.3.3"
   }
 }

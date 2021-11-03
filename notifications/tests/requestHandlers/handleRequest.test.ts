@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { Payment, Order } from '@mollie/api-client';
-import { mocked } from 'ts-jest/utils';
 import { CTPayment } from '../../src/types/ctPaymentTypes';
 import actions from '../../src/requestHandlers/index';
 import handleRequest from '../../src/requestHandlers/handleRequest';
+import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/requestHandlers/index');
 
@@ -118,12 +118,12 @@ describe('handleRequest', () => {
     };
     const updatePaymentByKeyFailure = jest.fn().mockRejectedValue(new Error());
     actions.ctUpdatePaymentByKey = updatePaymentByKeyFailure;
-    const mockConsoleWarn = jest.fn();
-    console.error = mockConsoleWarn;
+    const mockLogError = jest.fn();
+    Logger.error = mockLogError;
 
     await handleRequest(req, res);
 
     expect(mockStatus).toHaveBeenLastCalledWith(400);
-    expect(mockConsoleWarn).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
