@@ -5,7 +5,6 @@ import createShipment from './createShipment';
 import updateShipment from './updateShipment';
 import createOrderRefund from './createOrderRefund';
 import { ControllerAction } from '../types/index';
-import Logger from '../logger/logger';
 import cancelOrder from './cancelOrder';
 
 export default {
