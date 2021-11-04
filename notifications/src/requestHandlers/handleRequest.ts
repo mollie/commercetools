@@ -8,7 +8,7 @@ import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createClient } from '@commercetools/sdk-client';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
-import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions } from '../utils';
+import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions, getRefundStatusUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
@@ -104,6 +104,7 @@ export default async function handleRequest(req: Request, res: Response) {
     }
     // Payment webhook - updateActions
     else {
+      // PAYMENTS
       const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
       mollieOrderId = molliePayment.orderId ?? '';
       const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
@@ -112,6 +113,12 @@ export default async function handleRequest(req: Request, res: Response) {
       const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
       if (paymentStatusUpdateAction) {
         updateActions.push(paymentStatusUpdateAction);
+      }
+      // REFUNDS
+      const refunds = molliePayment._embedded?.refunds;
+      if (refunds?.length) {
+        const refundUpdateActions = getRefundStatusUpdateActions(ctTransactions, refunds);
+        updateActions.push(...refundUpdateActions);
       }
     }
 
