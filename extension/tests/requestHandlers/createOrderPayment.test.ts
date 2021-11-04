@@ -2,13 +2,14 @@ import { mocked } from 'ts-jest/utils';
 import createOrderPayment, { getOrdersPaymentsParams, createCtActions } from '../../src/requestHandlers/createOrderPayment';
 import { Action } from '../../src/types';
 import { createDateNowString } from '../../src/utils';
+import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
 
 describe('getOrdersPaymentsParams', () => {
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   beforeEach(() => {
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {
@@ -56,7 +57,7 @@ describe('getOrdersPaymentsParams', () => {
     };
     const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order payment.', field: 'createOrderPaymentRequest' };
     await expect(getOrdersPaymentsParams(mockedCtObj)).rejects.toEqual(expectedError);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
 describe('createCtActions', () => {
@@ -92,9 +93,9 @@ describe('createCtActions', () => {
   });
 });
 describe('createOrderPayment', () => {
-  const mockConsoleError = jest.fn();
+  const mockLogError = jest.fn();
   beforeEach(() => {
-    console.error = mockConsoleError;
+    Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {

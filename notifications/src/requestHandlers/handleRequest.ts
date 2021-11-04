@@ -121,7 +121,7 @@ export default async function handleRequest(req: Request, res: Response) {
 
     res.status(200).end();
   } catch (error) {
-    Logger.error(error);
+    Logger.error({ error });
     res.status(400).send(error);
   }
 }

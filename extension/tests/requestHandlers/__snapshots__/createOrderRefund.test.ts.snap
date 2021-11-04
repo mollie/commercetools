@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createOrderRefund Should create correct ct actions from correct request and response 1`] = `
+Object {
+  "action": "addInterfaceInteraction",
+  "fields": Object {
+    "actionType": "createOrderRefund",
+    "createdAt": "2021-11-03T09:20:27+00:00",
+    "request": "{ \\"lines\\": [], \\"description\\": \\"gimme my money back\\", \\"metadata\\": {} }",
+    "response": "{\\"resource\\":\\"refund\\",\\"id\\":\\"re_dJmkemAMzM\\",\\"amount\\":{\\"value\\":\\"10.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"pending\\",\\"createdAt\\":\\"2021-11-03T09:20:27+00:00\\",\\"description\\":\\"gimme my money back\\",\\"metadata\\":{},\\"orderId\\":\\"ord_qitsrz\\",\\"paymentId\\":\\"tr_UjzkRQ4Cpq\\",\\"settlementAmount\\":{\\"value\\":\\"-10.00\\",\\"currency\\":\\"EUR\\"},\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.o2otu5\\",\\"orderId\\":\\"ord_qitsrz\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"paid\\",\\"metadata\\":{},\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-11-03T09:19:52+00:00\\"}]}",
+  },
+  "type": Object {
+    "key": "ct-mollie-integration-interface-interaction-type",
+  },
+}
+`;
+
+exports[`createOrderRefund Should create correct ct actions from correct request and response 2`] = `
+Object {
+  "action": "setCustomField",
+  "name": "createOrderRefundResponse",
+  "value": "{\\"resource\\":\\"refund\\",\\"id\\":\\"re_dJmkemAMzM\\",\\"amount\\":{\\"value\\":\\"10.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"pending\\",\\"createdAt\\":\\"2021-11-03T09:20:27+00:00\\",\\"description\\":\\"gimme my money back\\",\\"metadata\\":{},\\"orderId\\":\\"ord_qitsrz\\",\\"paymentId\\":\\"tr_UjzkRQ4Cpq\\",\\"settlementAmount\\":{\\"value\\":\\"-10.00\\",\\"currency\\":\\"EUR\\"},\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.o2otu5\\",\\"orderId\\":\\"ord_qitsrz\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"paid\\",\\"metadata\\":{},\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-11-03T09:19:52+00:00\\"}]}",
+}
+`;
+
+exports[`createOrderRefund Should create correct ct actions from correct request and response 3`] = `
+Object {
+  "action": "addTransaction",
+  "transaction": Object {
+    "amount": Object {
+      "centAmount": undefined,
+      "currencyCode": "EUR",
+    },
+    "interactionId": "ord_qitsrz",
+    "state": "Initial",
+    "timestamp": "2021-10-08T12:12:02.625Z",
+    "type": "Refund",
+  },
+}
+`;

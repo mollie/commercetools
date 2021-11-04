@@ -155,7 +155,7 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "cancelOrderRequest",
+            "name": "createCancelOrderRequest",
             "label": {
                 "en": "Cancel order request"
             },
@@ -166,7 +166,7 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "cancelOrderResponse",
+            "name": "createCancelOrderResponse",
             "label": {
                 "en": "Cancel order response"
             },

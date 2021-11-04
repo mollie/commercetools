@@ -6,7 +6,7 @@ import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
 import { convertMollieToCTPaymentAmount, createDateNowString } from '../utils';
 
 export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
-  const stringifiedRefundResponse = JSON.parse(mollieResponse);
+  const stringifiedRefundResponse = JSON.stringify(mollieResponse);
   const ctActions: Action[] = [
     {
       action: 'addInterfaceInteraction',
@@ -29,12 +29,11 @@ export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
       action: 'addTransaction',
       transaction: {
         amount: {
-          // Convert mollie amount to ct cent amount
-          centAmount: convertMollieToCTPaymentAmount(stringifiedRefundResponse.amount.value),
-          currencyCode: stringifiedRefundResponse.amount.currency,
+          centAmount: convertMollieToCTPaymentAmount(mollieResponse.amount.value),
+          currencyCode: mollieResponse.amount.currency,
         },
         type: 'Refund',
-        interactionId: stringifiedRefundResponse.orderId,
+        interactionId: mollieResponse.orderId,
         state: 'Initial',
         timestamp: createDateNowString(),
       },
@@ -55,13 +54,13 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
       metadata: parsedOrderRefundParams.metadata || {},
     };
     return Promise.resolve(orderRefundParams);
-  } catch (err) {
-    Logger.error(err);
+  } catch (error: any) {
+    Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order refund payment.', field: 'createOrderRefundRequest' });
   }
 }
 
-export default async function createOrderRefund(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrderRefund(ctObj: any, mollieClient: MollieClient, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
     const orderRefundParams = await getOrderRefundParams(ctObj);
     const mollieCreateOrderRefundRes = await mollieClient.orders_refunds.create(orderRefundParams);
