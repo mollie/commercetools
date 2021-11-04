@@ -39,7 +39,7 @@ export default async function handleRequest(req: Request, res: Response) {
     }
   } catch (error: any) {
     // TODO - check this does not expose PII in stacktrace
-    Logger.warn(error);
+    Logger.error({ error });
     // From Node's Error object: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
     const errorMessage = `error_name: ${error.name}, error_message: ${error.message}`;
     return res.status(400).send({
