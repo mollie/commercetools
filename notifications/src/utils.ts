@@ -247,10 +247,12 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
 };
 
 /**
- * getReundStatusUpdateActions
- *
+ * Process mollie refunds and match to corresponding commercetools transaction
+ * Update the existing transactions if the status has changed
+ * If there is a refund and no corresponding transaction, add it to commercetools
+ * @param ctTransactions
+ * @param mollieRefunds
  */
-
 export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mollieRefunds: Refund[]): (UpdateActionChangeTransactionState | AddTransaction)[] => {
   let updateActions: (UpdateActionChangeTransactionState | AddTransaction)[] = [];
   const refundTransactions = ctTransactions?.filter(ctTransaction => ctTransaction.type === CTTransactionType.Refund);
@@ -264,7 +266,6 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
     const matchingCTTransaction = refundTransactions.find(rt => rt.interactionId === mollieRefundId);
 
     if (matchingCTTransaction) {
-      // Should update ?
       const shouldUpdate = shouldRefundStatusUpdate(mollieRefundStatus, matchingCTTransaction.state);
       if (shouldUpdate) {
         const updateAction: UpdateActionChangeTransactionState = {
