@@ -2,7 +2,7 @@ import { MollieClient } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/refunds/orders/parameters';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
-import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { convertMollieToCTPaymentAmount, createDateNowString } from '../utils';
 
 export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
@@ -32,8 +32,8 @@ export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
           centAmount: convertMollieToCTPaymentAmount(mollieResponse.amount.value),
           currencyCode: mollieResponse.amount.currency,
         },
-        type: 'Refund',
-        interactionId: mollieResponse.orderId,
+        type: CTTransactionType.Refund,
+        interactionId: mollieResponse.id,
         state: 'Initial',
         timestamp: createDateNowString(),
       },
@@ -69,9 +69,9 @@ export default async function createOrderRefund(ctObj: any, mollieClient: Mollie
       actions: ctActions,
       status: 201,
     };
-  } catch (err: any) {
-    Logger.error(err);
-    const errorResponse = formatMollieErrorResponse(err);
+  } catch (error: any) {
+    Logger.error(error);
+    const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }
 }
