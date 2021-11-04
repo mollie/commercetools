@@ -1,4 +1,4 @@
-import { Payment, PaymentStatus, Refund } from '@mollie/api-client';
+import { Payment, PaymentStatus, Refund, RefundStatus } from '@mollie/api-client';
 import { CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
 import { UpdateActionChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
 
@@ -59,6 +59,36 @@ export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPayment
       break;
   }
   return { shouldUpdate, newStatus };
+};
+
+/**
+ * Returns true if mollie refund status has changed and the CT Transaction should be updated
+ * @param mollieRefundStatus
+ * @param ctTransactionStatus
+ */
+export const shouldRefundStatusUpdate = (mollieRefundStatus: RefundStatus, ctTransactionStatus: CTTransactionState): boolean => {
+  let shouldUpdate: boolean;
+
+  switch (mollieRefundStatus) {
+    case RefundStatus.queued:
+    case RefundStatus.pending:
+    case RefundStatus.processing:
+      shouldUpdate = ctTransactionStatus === CTTransactionState.Pending ? false : true;
+      break;
+
+    case RefundStatus.refunded:
+      shouldUpdate = ctTransactionStatus === CTTransactionState.Success ? false : true;
+      break;
+
+    case RefundStatus.failed:
+      shouldUpdate = ctTransactionStatus === CTTransactionState.Failure ? false : true;
+      break;
+
+    default:
+      shouldUpdate = false;
+      break;
+  }
+  return shouldUpdate;
 };
 
 interface StatusMap {
@@ -232,16 +262,21 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
       amount: { value: mollieValue, currency: mollieCurrency },
     } = mollieRefund;
     const matchingCTTransaction = refundTransactions.find(rt => rt.interactionId === mollieRefundId);
-    let updateAction: UpdateActionChangeTransactionState | AddTransaction;
 
     if (matchingCTTransaction) {
-      updateAction = {
-        action: UpdateActionKey.ChangeTransactionState,
-        transactionId: matchingCTTransaction?.id,
-        state: mollieRefundToCTStatusMap[mollieRefundStatus],
-      };
+      // Should update ?
+      const shouldUpdate = shouldRefundStatusUpdate(mollieRefundStatus, matchingCTTransaction.state);
+      if (shouldUpdate) {
+        const updateAction: UpdateActionChangeTransactionState = {
+          action: UpdateActionKey.ChangeTransactionState,
+          transactionId: matchingCTTransaction?.id,
+          state: mollieRefundToCTStatusMap[mollieRefundStatus],
+        };
+        updateActions.push(updateAction);
+      }
     } else {
-      updateAction = {
+      // add corresponding Transaction to CT to keep inline with mollie
+      const updateAction: AddTransaction = {
         action: UpdateActionKey.AddTransaction,
         transaction: {
           type: CTTransactionType.Refund,
@@ -253,8 +288,8 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
           state: mollieRefundToCTStatusMap[mollieRefundStatus],
         },
       };
+      updateActions.push(updateAction);
     }
-    updateActions.push(updateAction);
   });
   return updateActions;
 };

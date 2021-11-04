@@ -4,6 +4,7 @@ import { UpdateActionKey } from '../src/types/ctUpdateActions';
 import {
   isOrderOrPayment,
   shouldPaymentStatusUpdate,
+  shouldRefundStatusUpdate,
   getMatchingMolliePayment,
   getTransactionStateUpdateOrderActions,
   getPaymentStatusUpdateAction,
@@ -35,6 +36,33 @@ describe('shouldPaymentStatusUpdate', () => {
   });
   it('should return correct object when invalid parameters are provided', () => {
     expect(shouldPaymentStatusUpdate('skjdfhksjfdh', 'Failnvnvjsdnjsure')).toMatchObject({ shouldUpdate: false, newStatus: 'Initial' });
+  });
+});
+
+describe('shouldRefundStatusUpdate', () => {
+  it('should return boolean shouldUpdate based on the mollie and ct transaction states', () => {
+    const cases = [
+      // should update
+      { mollieStatus: RefundStatus.queued, ctStatus: CTTransactionState.Initial, expectedResult: true },
+      { mollieStatus: RefundStatus.pending, ctStatus: CTTransactionState.Initial, expectedResult: true },
+      { mollieStatus: RefundStatus.processing, ctStatus: CTTransactionState.Initial, expectedResult: true },
+      { mollieStatus: RefundStatus.refunded, ctStatus: CTTransactionState.Initial, expectedResult: true },
+      { mollieStatus: RefundStatus.failed, ctStatus: CTTransactionState.Initial, expectedResult: true },
+      // should not update
+      { mollieStatus: RefundStatus.queued, ctStatus: CTTransactionState.Pending, expectedResult: false },
+      { mollieStatus: RefundStatus.pending, ctStatus: CTTransactionState.Pending, expectedResult: false },
+      { mollieStatus: RefundStatus.processing, ctStatus: CTTransactionState.Pending, expectedResult: false },
+      { mollieStatus: RefundStatus.refunded, ctStatus: CTTransactionState.Success, expectedResult: false },
+      { mollieStatus: RefundStatus.failed, ctStatus: CTTransactionState.Failure, expectedResult: false },
+    ];
+
+    cases.forEach(({ mollieStatus, ctStatus, expectedResult }) => {
+      expect(shouldRefundStatusUpdate(mollieStatus, ctStatus)).toBe(expectedResult);
+    });
+  });
+
+  it('should handle incorrect input by returning shouldUpdate: false', () => {
+    expect(shouldRefundStatusUpdate('' as RefundStatus, '' as CTTransactionState)).toBeFalsy();
   });
 });
 
@@ -312,29 +340,6 @@ describe('Check if mollie payment exists in ctTransactions array', () => {
 });
 
 describe('getRefundStatusUpdateActions', () => {
-  const mockCTTransactions = [
-    {
-      id: '9800287b-5479-41c7-ac18-d34def74a2f0',
-      type: CTTransactionType.Charge,
-      amount: {
-        currencyCode: 'EUR',
-        centAmount: 2000,
-      },
-      interactionId: 'tr_w2bpfFCfVT',
-      state: CTTransactionState.Success,
-    },
-    {
-      id: 'f39e9ddc-3fcc-4e09-b50b-b3d1c8068331',
-      type: CTTransactionType.Refund,
-      amount: {
-        currencyCode: 'EUR',
-        centAmount: 2000,
-      },
-      interactionId: 're_J7sR3kwTDs',
-      state: CTTransactionState.Initial,
-    },
-  ];
-
   const mockMollieRefunds = [
     {
       id: 're_J7sR3kwTDs',
@@ -347,8 +352,32 @@ describe('getRefundStatusUpdateActions', () => {
     },
   ] as Refund[];
 
-  it('should return an update transaction state action when the mollie refund exists as a CT Transaction', () => {
-    const updateActions = getRefundStatusUpdateActions(mockCTTransactions, mockMollieRefunds);
+  it('should return an update transaction state action when the mollie refund exists as a CT Transaction, and the status has changed', () => {
+    const updateActions = getRefundStatusUpdateActions(
+      [
+        {
+          id: '9800287b-5479-41c7-ac18-d34def74a2f0',
+          type: CTTransactionType.Charge,
+          amount: {
+            currencyCode: 'EUR',
+            centAmount: 2000,
+          },
+          interactionId: 'tr_w2bpfFCfVT',
+          state: CTTransactionState.Success,
+        },
+        {
+          id: 'f39e9ddc-3fcc-4e09-b50b-b3d1c8068331',
+          type: CTTransactionType.Refund,
+          amount: {
+            currencyCode: 'EUR',
+            centAmount: 2000,
+          },
+          interactionId: 're_J7sR3kwTDs',
+          state: CTTransactionState.Initial,
+        },
+      ],
+      mockMollieRefunds,
+    );
     expect(updateActions).toHaveLength(1);
     expect(updateActions[0]).toEqual({
       action: UpdateActionKey.ChangeTransactionState,
@@ -372,5 +401,25 @@ describe('getRefundStatusUpdateActions', () => {
         state: CTTransactionState.Success,
       },
     });
+  });
+
+  it('should not return an update transaction state action when the mollie refund status and CT Transaction state are already inline', () => {
+    const updateActions = getRefundStatusUpdateActions(
+      [
+        {
+          id: 'f39e9ddc-3fcc-4e09-b50b-b3d1c8068331',
+          type: CTTransactionType.Refund,
+          amount: {
+            currencyCode: 'EUR',
+            centAmount: 2000,
+          },
+          interactionId: 're_J7sR3kwTDs',
+          state: CTTransactionState.Success,
+        },
+      ],
+      mockMollieRefunds,
+    );
+
+    expect(updateActions).toHaveLength(0);
   });
 });
