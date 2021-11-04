@@ -1,4 +1,4 @@
-import { PaymentStatus, Payment } from '@mollie/api-client';
+import { PaymentStatus, Payment, RefundStatus, Refund } from '@mollie/api-client';
 import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../src/types/ctPaymentTypes';
 import { UpdateActionKey } from '../src/types/ctUpdateActions';
 import {
@@ -10,6 +10,7 @@ import {
   convertMollieToCTPaymentAmount,
   existsInCtTransactionsArray,
   getAddTransactionUpdateActions,
+  getRefundStatusUpdateActions,
 } from '../src/utils';
 
 describe('isOrderOrPayment', () => {
@@ -307,5 +308,69 @@ describe('Check if mollie payment exists in ctTransactions array', () => {
         },
       },
     ]);
+  });
+});
+
+describe('getRefundStatusUpdateActions', () => {
+  const mockCTTransactions = [
+    {
+      id: '9800287b-5479-41c7-ac18-d34def74a2f0',
+      type: CTTransactionType.Charge,
+      amount: {
+        currencyCode: 'EUR',
+        centAmount: 2000,
+      },
+      interactionId: 'tr_w2bpfFCfVT',
+      state: CTTransactionState.Success,
+    },
+    {
+      id: 'f39e9ddc-3fcc-4e09-b50b-b3d1c8068331',
+      type: CTTransactionType.Refund,
+      amount: {
+        currencyCode: 'EUR',
+        centAmount: 2000,
+      },
+      interactionId: 're_J7sR3kwTDs',
+      state: CTTransactionState.Initial,
+    },
+  ];
+
+  const mockMollieRefunds = [
+    {
+      id: 're_J7sR3kwTDs',
+      paymentId: '',
+      amount: {
+        value: '20.00',
+        currency: 'EUR',
+      },
+      status: RefundStatus.refunded,
+    },
+  ] as Refund[];
+
+  it('should return an update transaction state action when the mollie refund exists as a CT Transaction', () => {
+    const updateActions = getRefundStatusUpdateActions(mockCTTransactions, mockMollieRefunds);
+    expect(updateActions).toHaveLength(1);
+    expect(updateActions[0]).toEqual({
+      action: UpdateActionKey.ChangeTransactionState,
+      transactionId: 'f39e9ddc-3fcc-4e09-b50b-b3d1c8068331',
+      state: CTTransactionState.Success,
+    });
+  });
+
+  it('should return an add transaction action when the mollie refund exists but the corresponding CT Transaction does not', () => {
+    const updateActions = getRefundStatusUpdateActions([], mockMollieRefunds);
+    expect(updateActions).toHaveLength(1);
+    expect(updateActions[0]).toEqual({
+      action: UpdateActionKey.AddTransaction,
+      transaction: {
+        type: CTTransactionType.Refund,
+        amount: {
+          currencyCode: 'EUR',
+          centAmount: 2000,
+        },
+        interactionId: 're_J7sR3kwTDs',
+        state: CTTransactionState.Success,
+      },
+    });
   });
 });
