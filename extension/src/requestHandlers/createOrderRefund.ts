@@ -49,7 +49,7 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
     const orderRefundParams = {
       orderId: ctObj?.key,
       // TODO: Individual order line refunds, CMI 16 & CMI 89
-      lines: [],
+      lines: parsedOrderRefundParams.lines,
       description: parsedOrderRefundParams.description || '',
       metadata: parsedOrderRefundParams.metadata || {},
     };
