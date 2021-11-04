@@ -1,4 +1,4 @@
-import { Payment, PaymentStatus } from '@mollie/api-client';
+import { Payment, PaymentStatus, Refund } from '@mollie/api-client';
 import { CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
 import { UpdateActionChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
 
@@ -61,13 +61,13 @@ export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPayment
   return { shouldUpdate, newStatus };
 };
 
-/**
- * Map of mollie status to CT Transaction Status
- */
 interface StatusMap {
   [key: string]: CTTransactionState;
 }
 
+/**
+ * Map of mollie status to CT Transaction Status
+ */
 const mollieToCTStatusMap: StatusMap = {
   paid: CTTransactionState.Success,
   authorized: CTTransactionState.Success,
@@ -76,6 +76,17 @@ const mollieToCTStatusMap: StatusMap = {
   expired: CTTransactionState.Failure,
   open: CTTransactionState.Initial,
   pending: CTTransactionState.Pending,
+};
+
+/**
+ * Map of mollie refund status to CT Transaction Status
+ */
+const mollieRefundToCTStatusMap: StatusMap = {
+  refunded: CTTransactionState.Success,
+  failed: CTTransactionState.Failure,
+  queued: CTTransactionState.Pending,
+  pending: CTTransactionState.Pending,
+  processing: CTTransactionState.Pending,
 };
 
 /**
@@ -203,4 +214,47 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
     };
     return updateAction;
   }
+};
+
+/**
+ * getReundStatusUpdateActions
+ *
+ */
+
+export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mollieRefunds: Refund[]): (UpdateActionChangeTransactionState | AddTransaction)[] => {
+  let updateActions: (UpdateActionChangeTransactionState | AddTransaction)[] = [];
+  const refundTransactions = ctTransactions.filter(ctTransaction => ctTransaction.type === CTTransactionType.Refund);
+
+  mollieRefunds.forEach(mollieRefund => {
+    const {
+      id: mollieRefundId,
+      status: mollieRefundStatus,
+      amount: { value: mollieValue, currency: mollieCurrency },
+    } = mollieRefund;
+    const matchingCTTransaction = refundTransactions.find(rt => rt.interactionId === mollieRefundId);
+    let updateAction: UpdateActionChangeTransactionState | AddTransaction;
+
+    if (matchingCTTransaction) {
+      updateAction = {
+        action: UpdateActionKey.ChangeTransactionState,
+        transactionId: matchingCTTransaction?.id,
+        state: mollieRefundToCTStatusMap[mollieRefundStatus],
+      };
+    } else {
+      updateAction = {
+        action: UpdateActionKey.AddTransaction,
+        transaction: {
+          type: CTTransactionType.Refund,
+          amount: {
+            currencyCode: mollieCurrency,
+            centAmount: convertMollieToCTPaymentAmount(mollieValue),
+          },
+          interactionId: mollieRefundId,
+          state: mollieRefundToCTStatusMap[status],
+        },
+      };
+    }
+    updateActions.push(updateAction);
+  });
+  return updateActions;
 };

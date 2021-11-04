@@ -186,6 +186,7 @@ describe('getPaymentStatusUpdateAction', () => {
         centAmount: 1000,
         currencyCode: 'EUR',
       },
+      type: CTTransactionType.Charge,
     },
     {
       id: '95a74202-48b5-4a5e-ae92-50820f479f4c',
@@ -195,6 +196,7 @@ describe('getPaymentStatusUpdateAction', () => {
         centAmount: 1000,
         currencyCode: 'EUR',
       },
+      type: CTTransactionType.Charge,
     },
   ];
 
@@ -207,6 +209,7 @@ describe('getPaymentStatusUpdateAction', () => {
         centAmount: 1000,
         currencyCode: 'EUR',
       },
+      type: CTTransactionType.Charge,
     },
   ];
   it('should return an update action if the payment status on mollie has changed', () => {
@@ -269,6 +272,7 @@ describe('Check if mollie payment exists in ctTransactions array', () => {
         centAmount: 1000,
         currencyCode: 'EUR',
       },
+      type: CTTransactionType.Charge,
     },
     {
       id: '95a74202-48b5-4a5e-ae92-50820f479f4c',
@@ -278,6 +282,7 @@ describe('Check if mollie payment exists in ctTransactions array', () => {
         centAmount: 1000,
         currencyCode: 'EUR',
       },
+      type: CTTransactionType.Charge,
     },
   ];
   it("Should find the mollie payment in the CT array when it's present", () => {
