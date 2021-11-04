@@ -7,6 +7,7 @@ import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions }
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
 import { createCtActions as cancelOrderActions } from './cancelOrder';
+import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
 
 const mollieApiKey = config.mollieApiKey;
@@ -72,7 +73,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       break;
     case ControllerAction.CreateOrderRefund:
       Logger.debug(`action: ${ControllerAction.CreateOrderRefund}`);
-      result = await actions.createOrderRefund(body?.resource?.obj, mollieClient);
+      result = await actions.createOrderRefund(body?.resource?.obj, mollieClient, createOrderRefundActions);
       break;
     case ControllerAction.CancelOrder:
       Logger.debug(`action: ${ControllerAction.CancelOrder}`);

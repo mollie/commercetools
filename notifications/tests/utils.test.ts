@@ -81,7 +81,7 @@ describe('getTransactionStateUpdateOrderActions', () => {
     {
       id: '01ab9f97-45a3-4d64-92ae-d60e50533af3',
       timestamp: '2021-10-20T15:10:45.000Z',
-      type: 'Charge',
+      type: CTTransactionType.Charge,
       amount: {
         type: 'centPrecision',
         currencyCode: 'EUR',
@@ -118,7 +118,7 @@ describe('getTransactionStateUpdateOrderActions', () => {
       {
         id: '01ab9f97-45a3-4d64-92ae-d60e50533af3',
         timestamp: '2021-10-20T15:10:45.000Z',
-        type: 'Charge',
+        type: CTTransactionType.Charge,
         amount: {
           type: 'centPrecision',
           currencyCode: 'EUR',
@@ -228,7 +228,7 @@ describe('getPaymentStatusUpdateAction', () => {
           centAmount: 1000,
         },
         state: 'Success',
-        type: 'Charge',
+        type: CTTransactionType.Charge,
       },
     });
   });
