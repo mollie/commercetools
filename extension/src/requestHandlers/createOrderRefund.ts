@@ -49,16 +49,17 @@ export function extractLinesCtToMollie(ctLines: any): any {
     const singleMollieLine = {
       id: singleCtLine.id,
     };
-    if (singleCtLine.quantity) Object.assign(singleMollieLine, ctLines.quantity);
-    if (singleCtLine.amount) {
+    const { quantity, amount } = singleCtLine;
+    if (quantity) Object.assign(singleMollieLine, { quantity });
+    if (amount) {
       const amountObject = {
-        value: amountMapper({ centAmount: singleCtLine.amount.centAmount }),
-        currency: singleCtLine.amount.currencyCode,
+        // TODO - update with amountMapper
+        value: (amount.centAmount / 100).toFixed(2),
+        currency: amount.currencyCode,
       };
       Object.assign(singleMollieLine, { amount: amountObject });
     }
     mollieLines.push(singleMollieLine);
-    Logger.info(singleMollieLine);
   }
   return mollieLines;
 }
