@@ -1,4 +1,5 @@
 import { MethodsListParams } from '@mollie/api-client';
+import Logger from './logger/logger';
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
@@ -17,10 +18,11 @@ export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigi
   return Math.ceil(parseFloat(mollieValue) * Math.pow(10, fractionDigits));
 };
 
-export function amountMapper(amountPlanned: any): string {
-  const { centAmount, fractionDigits } = amountPlanned;
-  const divider = Math.pow(10, fractionDigits || 2);
-  const mollieAmount = (centAmount / divider).toFixed(2);
+export function convertCTToMolliePayment(ctValue: number, fractionDigits = 2): string {
+  Logger.info(ctValue);
+  console.log('ALKSJHFASKJFHAKJS');
+  const divider = Math.pow(10, fractionDigits);
+  const mollieAmount = (ctValue / divider).toFixed(2);
   return mollieAmount;
 }
 
@@ -29,11 +31,14 @@ export function methodListMapper(ctObj: any): MethodsListParams {
   if (!ctObj.amountPlanned) {
     return {};
   }
-  const mollieAmount = amountMapper(ctObj.amountPlanned);
+  const mollieAmount = {
+    value: convertCTToMolliePayment(ctObj.amountPlanned.centAmount),
+    currency: ctObj.amountPlanned.currencyCode,
+  };
 
   const mObject: MethodsListParams = {
     amount: {
-      value: mollieAmount,
+      value: mollieAmount.value,
       currency: ctObj.amountPlanned.currencyCode,
     },
     // Resource is hardcoded, for the time being we only support Orders API
