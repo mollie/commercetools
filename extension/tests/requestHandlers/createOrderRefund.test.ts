@@ -1,7 +1,7 @@
 import { mocked } from 'ts-jest/utils';
 import Logger from '../../src/logger/logger';
 import { createDateNowString } from '../../src/utils';
-import createOrderRefund, { createCtActions, getOrderRefundParams } from '../../src/requestHandlers/createOrderRefund';
+import createOrderRefund, { createCtActions, getOrderRefundParams, extractLinesCtToMollie } from '../../src/requestHandlers/createOrderRefund';
 import { Action, ControllerAction, CTTransactionType } from '../../src/types';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 
@@ -166,5 +166,28 @@ describe('createOrderRefund', () => {
     };
     const testedOrderParamsResponse = await getOrderRefundParams(mockedCtRequestObject);
     expect(testedOrderParamsResponse).toMatchObject(mockedOrderParamsResponse);
+  });
+  it('Should convert a commercetools-formatted order line to a mollie-formatted order line', () => {
+    const mockedCtOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+        quantity: 3,
+        amount: {
+          centAmount: 1000,
+          currencyCode: 'EUR',
+        },
+      },
+    ];
+    const mockedMollieOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+        quantity: 3,
+        amount: {
+          value: '10.00',
+          currency: 'EUR',
+        },
+      },
+    ];
+    expect(extractLinesCtToMollie(mockedCtOrderLines)).toMatchObject(mockedMollieOrderLines);
   });
 });
