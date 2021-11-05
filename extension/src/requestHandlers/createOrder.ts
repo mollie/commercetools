@@ -73,7 +73,7 @@ function extractAllLines(lines: any) {
 }
 
 export function isDiscountAmountValid(inputObject: any): boolean {
-  if (inputObject && inputObject.currency && inputObject.value) {
+  if (inputObject && inputObject.currencyCode && inputObject.centAmount) {
     return true;
   }
   return false;
@@ -107,7 +107,10 @@ export function extractLine(line: any) {
     metadata: line.metadata ? line.metadata : {},
   };
   if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
-    extractedLine.discountAmount = line.discountAmount;
+    extractedLine.discountAmount = {
+      currency: line.discountAmount.currencyCode,
+      value: amountMapper({ centAmount: line.discountAmount.centAmount }),
+    };
   }
   return extractedLine;
 }

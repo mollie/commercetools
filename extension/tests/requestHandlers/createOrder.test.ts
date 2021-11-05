@@ -323,6 +323,6 @@ describe('Create orders tests', () => {
     expect(getShippingAddress(mockedShippingAddressBody)).toMatchObject(mockedExpectedResponse);
   });
   it('Should validate the discount amount object', () => {
-    expect(isDiscountAmountValid({ currency: 'EUR', value: 2000 })).toBeTruthy();
+    expect(isDiscountAmountValid({ currencyCode: 'EUR', centAmount: 2000 })).toBeTruthy();
   });
 });
