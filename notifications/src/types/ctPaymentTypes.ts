@@ -25,6 +25,7 @@ export type CTPayment = {
 
 export type CTTransaction = {
   id: string;
+  type: CTTransactionType;
   amount: CTMoney;
   interactionId?: string;
   timestamp?: string;
@@ -34,8 +35,8 @@ export type CTTransaction = {
 export type CTTransactionDraft = {
   type: CTTransactionType;
   amount: CTMoney;
-  timestamp?: string;
   interactionId?: string;
+  timestamp?: string;
   state?: CTTransactionState;
 };
 
