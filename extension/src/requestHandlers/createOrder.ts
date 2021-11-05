@@ -80,8 +80,8 @@ export function isDiscountAmountValid(inputObject: any): boolean {
 }
 
 export function extractLine(line: any) {
-  const unitPriceValueString = convertCTToMolliePayment(line.price.value.centAmount);
-  const totalPriceValueString = convertCTToMolliePayment(line.totalPrice.centAmount * line.quantity);
+  const unitPriceValueString = convertCTToMolliePayment(line.price.value.centAmount, line.price.value.fractionDigits);
+  const totalPriceValueString = convertCTToMolliePayment(line.totalPrice.centAmount * line.quantity, line.price.value.fractionDigits);
   const extractedLine: any = {
     // Name as english for the time being
     name: line.name.en,

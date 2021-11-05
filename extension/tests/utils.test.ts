@@ -35,7 +35,7 @@ describe('Utils unit test', () => {
       };
       const expectedOptions = {
         amount: {
-          value: '1009.87',
+          value: '10.10',
           currency: 'EUR',
         },
         locale: 'nl_NL',

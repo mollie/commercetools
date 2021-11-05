@@ -1,5 +1,4 @@
 import { MethodsListParams } from '@mollie/api-client';
-import Logger from './logger/logger';
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
@@ -19,8 +18,6 @@ export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigi
 };
 
 export function convertCTToMolliePayment(ctValue: number, fractionDigits = 2): string {
-  Logger.info(ctValue);
-  console.log('ALKSJHFASKJFHAKJS');
   const divider = Math.pow(10, fractionDigits);
   const mollieAmount = (ctValue / divider).toFixed(2);
   return mollieAmount;
@@ -32,7 +29,7 @@ export function methodListMapper(ctObj: any): MethodsListParams {
     return {};
   }
   const mollieAmount = {
-    value: convertCTToMolliePayment(ctObj.amountPlanned.centAmount),
+    value: convertCTToMolliePayment(ctObj.amountPlanned.centAmount, ctObj.amountPlanned.fractionDigits),
     currency: ctObj.amountPlanned.currencyCode,
   };
 

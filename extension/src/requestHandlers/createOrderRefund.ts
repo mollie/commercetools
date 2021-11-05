@@ -52,11 +52,8 @@ export function extractLinesCtToMollie(ctLines: any): any {
     const { quantity, amount } = singleCtLine;
     if (quantity) Object.assign(singleMollieLine, { quantity });
     if (amount) {
-      console.log(amount.centAmount);
       const amountObject = {
-        // TODO - update with amountMapper
         value: convertCTToMolliePayment(amount.centAmount),
-        // value: (amount.centAmount / 100).toFixed(2),
         currency: amount.currencyCode,
       };
       Object.assign(singleMollieLine, { amount: amountObject });
@@ -71,7 +68,6 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
     const parsedOrderRefundParams = JSON.parse(ctObj?.custom?.fields?.createOrderRefundRequest);
     const orderRefundParams = {
       orderId: ctObj?.key,
-      // TODO: Individual order line refunds, CMI 16 & CMI 89
       lines: extractLinesCtToMollie(parsedOrderRefundParams.lines),
       description: parsedOrderRefundParams.description || '',
       metadata: parsedOrderRefundParams.metadata || {},
