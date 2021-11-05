@@ -254,7 +254,7 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
  * @param mollieRefunds
  */
 export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mollieRefunds: Refund[]): (UpdateActionChangeTransactionState | AddTransaction)[] => {
-  let updateActions: (UpdateActionChangeTransactionState | AddTransaction)[] = [];
+  const updateActions: (UpdateActionChangeTransactionState | AddTransaction)[] = [];
   const refundTransactions = ctTransactions?.filter(ctTransaction => ctTransaction.type === CTTransactionType.Refund);
 
   mollieRefunds.forEach(mollieRefund => {
@@ -270,7 +270,7 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
       if (shouldUpdate) {
         const updateAction: UpdateActionChangeTransactionState = {
           action: UpdateActionKey.ChangeTransactionState,
-          transactionId: matchingCTTransaction?.id,
+          transactionId: matchingCTTransaction.id,
           state: mollieRefundToCTStatusMap[mollieRefundStatus],
         };
         updateActions.push(updateAction);
