@@ -2,7 +2,6 @@
   "name": "mollie-commercetools-notification-module",
   "version": "0.0.1",
   "description": "",
-  "main": "build/src/server.js",
   "scripts": {
     "build": "node_modules/typescript/bin/tsc",
     "start": "node build/src/server.js",
