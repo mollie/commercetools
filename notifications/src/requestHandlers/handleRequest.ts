@@ -46,9 +46,7 @@ const ctHttpMiddleWare = createHttpMiddleware({
 
 let commercetoolsClient: any;
 
-// Do not enable logging middleware on Prod
-// TODO: add logging level as an environment variable
-if (process.env.NODE_ENV !== 'production') {
+if (Logger.level === 'http' || Logger.level === 'verbose' || Logger.level === 'debug') {
   commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, createLoggerMiddleware()] });
 } else {
   commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
