@@ -1,6 +1,6 @@
 import { MollieClient, OrderPaymentCreateParams, Payment } from '@mollie/api-client';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
-import { Action, CTUpdatesRequestedResponse } from '../types';
+import { Action, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../logger/logger';
 
@@ -45,7 +45,7 @@ export function createCtActions(orderPaymentResponse: Payment, ctObj: any): Acti
       action: 'addTransaction',
       transaction: {
         timestamp: orderPaymentResponse.createdAt,
-        type: 'Charge',
+        type: CTTransactionType.Charge,
         amount: ctObj.amountPlanned,
         interactionId: orderPaymentResponse.id,
       },

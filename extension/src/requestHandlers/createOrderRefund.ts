@@ -2,7 +2,46 @@ import { MollieClient } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/refunds/orders/parameters';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
-import { CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import { convertMollieToCTPaymentAmount, createDateNowString } from '../utils';
+
+export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
+  const stringifiedRefundResponse = JSON.stringify(mollieResponse);
+  const ctActions: Action[] = [
+    {
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        actionType: ControllerAction.CreateOrderRefund,
+        createdAt: mollieResponse.createdAt,
+        request: ctObj?.custom?.fields?.createOrderRefundRequest,
+        response: stringifiedRefundResponse,
+      },
+    },
+    {
+      action: 'setCustomField',
+      name: 'createOrderRefundResponse',
+      value: stringifiedRefundResponse,
+    },
+    {
+      action: 'addTransaction',
+      transaction: {
+        amount: {
+          centAmount: convertMollieToCTPaymentAmount(mollieResponse.amount.value),
+          currencyCode: mollieResponse.amount.currency,
+        },
+        type: CTTransactionType.Refund,
+        interactionId: mollieResponse.id,
+        state: 'Initial',
+        timestamp: createDateNowString(),
+      },
+    },
+  ];
+
+  return ctActions;
+}
 
 export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
   try {
@@ -10,7 +49,7 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
     const orderRefundParams = {
       orderId: ctObj?.key,
       // TODO: Individual order line refunds, CMI 16 & CMI 89
-      lines: [],
+      lines: parsedOrderRefundParams.lines,
       description: parsedOrderRefundParams.description || '',
       metadata: parsedOrderRefundParams.metadata || {},
     };
@@ -21,17 +60,17 @@ export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
   }
 }
 
-export default async function createOrderRefund(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrderRefund(ctObj: any, mollieClient: MollieClient, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
     const orderRefundParams = await getOrderRefundParams(ctObj);
     const mollieCreateOrderRefundRes = await mollieClient.orders_refunds.create(orderRefundParams);
+    const ctActions = createCtActions(mollieCreateOrderRefundRes, ctObj);
     return {
-      // To add - parse mollie response into CT actions
-      actions: [],
+      actions: ctActions,
       status: 201,
     };
   } catch (error: any) {
-    Logger.error({ error });
+    Logger.error(error);
     const errorResponse = formatMollieErrorResponse(error);
     return errorResponse;
   }
