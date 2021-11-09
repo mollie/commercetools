@@ -141,11 +141,9 @@ describe('processActions', () => {
     expect(mockedCreateOrderRefund).toBeCalledTimes(1);
   });
   it('should return status 200 and empty actions, (for now), if the action is createCustomRefund', async () => {
+    const mockedCreateCustomRefund = mocked(actions.createCustomRefund);
     const result = await processAction(ControllerAction.CreateCustomRefund, {}, {} as MollieClient);
-    expect(result).toEqual({
-      status: 200,
-      actions: [],
-    });
+    expect(mockedCreateCustomRefund).toBeCalledTimes(1);
   });
   it('should return an error if the action does not exist', async () => {
     const expectedError = {

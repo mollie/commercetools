@@ -4,6 +4,7 @@ import createOrderPayment from './createOrderPayment';
 import createShipment from './createShipment';
 import updateShipment from './updateShipment';
 import createOrderRefund from './createOrderRefund';
+import { createCustomRefund } from './createCustomRefund';
 import { ControllerAction } from '../types/index';
 import cancelOrder from './cancelOrder';
 
@@ -14,6 +15,7 @@ export default {
   createShipment,
   updateShipment,
   createOrderRefund,
+  createCustomRefund,
   cancelOrder,
 };
 

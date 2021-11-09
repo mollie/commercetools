@@ -79,10 +79,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       break;
     case ControllerAction.CreateCustomRefund:
       Logger.debug(`action: ${ControllerAction.CreateCustomRefund}`);
-      result = {
-        status: 200,
-        actions: [],
-      };
+      result = await actions.createCustomRefund(body?.resource?.obj, mollieClient);
       break;
     case ControllerAction.CancelOrder:
       Logger.debug(`action: ${ControllerAction.CancelOrder}`);
