@@ -325,4 +325,7 @@ describe('Create orders tests', () => {
   it('Should validate the discount amount object', () => {
     expect(isDiscountAmountValid({ currencyCode: 'EUR', centAmount: 2000 })).toBeTruthy();
   });
+  it('Should invalidate the wrong discount amount object', () => {
+    expect(isDiscountAmountValid({ centAmount: 2000 })).toBeFalsy();
+  });
 });
