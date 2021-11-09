@@ -50,6 +50,10 @@ export function validateAction(body: any): ControllerAction {
     return ControllerAction.CreateOrderRefund;
   }
 
+  if (requestFields?.createSetAmountRefundRequest && !requestFields?.createSetAmountRefundResponse) {
+    return ControllerAction.CreateSetAmountRefund;
+  }
+
   if (requestFields?.createCancelOrderRequest && !requestFields?.createCancelOrderResponse) {
     return ControllerAction.CancelOrder;
   }
