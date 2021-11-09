@@ -109,7 +109,7 @@ export function extractLine(line: any) {
   if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
     extractedLine.discountAmount = {
       currency: line.discountAmount.currencyCode,
-      value: amountMapper({ centAmount: line.discountAmount.centAmount }),
+      value: convertCTToMolliePayment(line.discountAmount.centAmount),
     };
   }
   return extractedLine;
