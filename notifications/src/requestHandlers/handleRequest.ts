@@ -63,9 +63,16 @@ export default async function handleRequest(req: Request, res: Response) {
     path,
     method,
   } = req;
+
   // Only accept '/' endpoint
-  if (path !== '/') return res.status(400).end();
-  if (method !== 'POST') return res.status(405).end();
+  if (path !== '/') {
+    Logger.http(`Path ${path} not allowed`);
+    return res.status(400).end();
+  }
+  if (method !== 'POST') {
+    Logger.http(`Method ${method} not allowed`);
+    return res.status(405).end();
+  }
 
   try {
     // Receive webhook trigger from Mollie with order or payment ID

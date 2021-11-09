@@ -16,8 +16,12 @@ const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 export default async function handleRequest(req: Request, res: Response) {
-  if (req.path !== '/') return res.status(400).end();
+  if (req.path !== '/') {
+    Logger.http(`Path ${req.path} not allowed`);
+    return res.status(400).end();
+  }
   if (req.method !== 'POST') {
+    Logger.http(`Method ${req.method} not allowed`);
     return res.status(405).end();
   }
   // TODO - authentication check - CMI-95,96,97
