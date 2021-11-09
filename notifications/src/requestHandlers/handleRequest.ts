@@ -1,24 +1,32 @@
 import { Request, Response } from 'express';
+import { version } from '../../package.json';
 import fetch from 'node-fetch-commonjs';
 import createMollieClient from '@mollie/api-client';
 import { Payment } from '@mollie/api-client';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
+import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
-import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions } from '../utils';
+import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions, getRefundStatusUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
 
 const mollieApiKey = config.mollieApiKey;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey });
+const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
+const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 const {
   ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
 } = config;
+
+const userAgentMiddleware = createUserAgentMiddleware({
+  libraryName: 'MollieCommercetools-notification',
+  libraryVersion: version,
+});
 
 const ctAuthMiddleware = createAuthMiddlewareForClientCredentialsFlow({
   host: authUrl,
@@ -38,12 +46,10 @@ const ctHttpMiddleWare = createHttpMiddleware({
 
 let commercetoolsClient: any;
 
-// Do not enable logging middleware on Prod
-// TODO: add logging level as an environment variable
-if (process.env.NODE_ENV !== 'production') {
-  commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHttpMiddleWare, createLoggerMiddleware()] });
+if (Logger.level === 'http' || Logger.level === 'verbose' || Logger.level === 'debug') {
+  commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, createLoggerMiddleware()] });
 } else {
-  commercetoolsClient = createClient({ middlewares: [ctAuthMiddleware, ctHttpMiddleWare] });
+  commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
 }
 
 /**
@@ -104,6 +110,7 @@ export default async function handleRequest(req: Request, res: Response) {
     }
     // Payment webhook - updateActions
     else {
+      // PAYMENTS
       const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
       mollieOrderId = molliePayment.orderId ?? '';
       const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
@@ -112,6 +119,12 @@ export default async function handleRequest(req: Request, res: Response) {
       const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
       if (paymentStatusUpdateAction) {
         updateActions.push(paymentStatusUpdateAction);
+      }
+      // REFUNDS
+      const refunds = molliePayment._embedded?.refunds;
+      if (refunds?.length) {
+        const refundUpdateActions = getRefundStatusUpdateActions(ctTransactions, refunds);
+        updateActions.push(...refundUpdateActions);
       }
     }
 
