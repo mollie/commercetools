@@ -60,20 +60,11 @@ describe('handleRequest', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     req.path = '/';
+    req.method = 'POST';
 
     res.status = mockStatus;
     res.send = mockSend;
     res.end = mockEnd;
-  });
-
-  it('should return 400 is webhook is triggered with an invalid resource id', async () => {
-    req.body = {
-      id: '00000',
-    };
-    await handleRequest(req, res);
-
-    expect(mockStatus).toHaveBeenLastCalledWith(400);
-    expect(mockSend).toHaveBeenLastCalledWith('ID 00000 is invalid');
   });
 
   it('order webhook flow - should return 200 and make calls to updatePaymentByKey', async () => {
@@ -110,6 +101,34 @@ describe('handleRequest', () => {
 
     expect(mockStatus).toHaveBeenLastCalledWith(200);
     expect(mockEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 400 if webhook is called with a path that is not /', async () => {
+    req.path = '/another-path';
+
+    await handleRequest(req, res);
+
+    expect(mockStatus).toHaveBeenLastCalledWith(400);
+    expect(mockEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 405 if webhook is called with a method other than POST', async () => {
+    req.method = 'DELETE';
+
+    await handleRequest(req, res);
+
+    expect(mockStatus).toHaveBeenLastCalledWith(405);
+    expect(mockEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 400 is webhook is triggered with an invalid resource id', async () => {
+    req.body = {
+      id: '00000',
+    };
+    await handleRequest(req, res);
+
+    expect(mockStatus).toHaveBeenLastCalledWith(400);
+    expect(mockSend).toHaveBeenLastCalledWith('ID 00000 is invalid');
   });
 
   it('should return 400 if an error occurs', async () => {
