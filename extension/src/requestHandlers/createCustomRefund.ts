@@ -4,7 +4,17 @@ import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorRes
 import Logger from '../logger/logger';
 import { CTUpdatesRequestedResponse } from '../types';
 
-export async function createSetAmountRefund(ctObject: any, mollieClient: MollieClient, params: any): Promise<CTUpdatesRequestedResponse> {
+const extractParameters = (ctObject: any): CreateParameters => {
+  return {
+    paymentId: '1000',
+    amount: {
+      currency: 'EUR',
+      value: '10.00',
+    },
+  };
+};
+
+export async function createCustomRefund(ctObject: any, mollieClient: MollieClient, params: any): Promise<CTUpdatesRequestedResponse> {
   try {
     return {
       status: 201,

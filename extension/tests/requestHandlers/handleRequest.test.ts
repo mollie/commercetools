@@ -140,8 +140,8 @@ describe('processActions', () => {
     await processAction(ControllerAction.CreateOrderRefund, {}, {} as MollieClient);
     expect(mockedCreateOrderRefund).toBeCalledTimes(1);
   });
-  it('should return status 200 and empty actions, (for now), if the action is CreateSetAmountRefund', async () => {
-    const result = await processAction(ControllerAction.CreateSetAmountRefund, {}, {} as MollieClient);
+  it('should return status 200 and empty actions, (for now), if the action is createCustomRefund', async () => {
+    const result = await processAction(ControllerAction.CreateCustomRefund, {}, {} as MollieClient);
     expect(result).toEqual({
       status: 200,
       actions: [],

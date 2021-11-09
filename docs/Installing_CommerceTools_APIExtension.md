@@ -199,7 +199,7 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createSetAmountRefundRequest",
+            "name": "createCustomRefundRequest",
             "label": {
                 "en": "Create set amount refund request"
             },
@@ -210,7 +210,7 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createSetAmountRefundResponse",
+            "name": "createCustomRefundResponse",
             "label": {
                 "en": "Create set amount refund response"
             },
