@@ -61,9 +61,11 @@ export default async function handleRequest(req: Request, res: Response) {
   const {
     body: { id },
     path,
+    method,
   } = req;
   // Only accept '/' endpoint
-  if (path !== '/') return res.sendStatus(400);
+  if (path !== '/') return res.status(400).end();
+  if (method !== 'POST') return res.status(405).end();
 
   try {
     // Receive webhook trigger from Mollie with order or payment ID
