@@ -28,13 +28,15 @@ To create an order on Mollie, we need to have a minimum number of parameters on 
 | `name: { en: "apple" }`                                                  | `name: apple `                                                            | YES      |
 | `quantity: 1`                                                            | `quantity: 1 `                                                            | YES      |
 | `type: [OrderLineType]`                                                  | `type: [OrderLineType] `                                                  | NO       |
-| `discountAmount: { value: { currencyCode: "EUR", centAmount: "0000" } }` | `discountAmount: { value: { currencyCode: "EUR", centAmount: "0000" } } ` | NO       |
+| `discountAmount: { value: { currencyCode: "EUR", centAmount: 1000 } }`   | `discountAmount: { value: { currency: "EUR", value: "10.00" } } `  ¤      | NO       |
 | `sku: SKU12345`                                                          | `sku: SKU12345 `                                                          | NO       |
 | `imageUrl: "https://image-url.com/"`                                     | `imageUrl: "https://image-url.com/" `                                     | NO       |
 | `productUrl: "https://image-url.com/"`                                   | `productUrl: "https://image-url.com/" `                                   | NO       |
 | `metadata: { extraData: "some extra stuff" }`                            | `metadata: { extraData: "some extra stuff" }`                             | NO       |
 | `price: { value: { currencyCode: "EUR", centAmount: "1000" } }`          | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
 | `totalPrice: { value: { currencyCode: "EUR", centAmount: "1000" } }`     | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
+
+¤ For more information on how to pass this, see mollie's [handling discounts](https://docs.mollie.com/orders/handling-discounts) documentation.
 
 # billingAddress/shippingAddress object (inside createPaymentRequest object)
 
