@@ -73,7 +73,7 @@ function extractAllLines(lines: any) {
 }
 
 export function isDiscountAmountValid(inputObject: any): boolean {
-  if (inputObject && inputObject.currencyCode && inputObject.centAmount) {
+  if (inputObject?.currencyCode && inputObject?.centAmount) {
     return true;
   }
   return false;
