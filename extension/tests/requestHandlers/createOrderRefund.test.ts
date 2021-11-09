@@ -194,4 +194,20 @@ describe('Extract ct to mollie lines', () => {
     ];
     expect(extractLinesCtToMollie(mockedCtOrderLines)).toMatchObject(mockedMollieOrderLines);
   });
+
+  it('Should return a mollie-formatted line without quantity and amount when these are not present on the incoming commercetools-formatted line', () => {
+    mocked(convertCTToMolliePayment).mockReturnValueOnce('10.00');
+
+    const mockedCtOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+      },
+    ];
+    const mockedMollieOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+      },
+    ];
+    expect(extractLinesCtToMollie(mockedCtOrderLines)).toMatchObject(mockedMollieOrderLines);
+  });
 });
