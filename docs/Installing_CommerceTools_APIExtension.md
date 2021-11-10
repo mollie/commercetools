@@ -173,7 +173,7 @@ Body:
             "required": false,
             "inputHint": "MultiLine"
         },
-                {
+        {
             "type": {
                 "name": "String"
             },
@@ -191,6 +191,28 @@ Body:
             "name": "createOrderRefundResponse",
             "label": {
                 "en": "Create order refund response"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "createCustomRefundRequest",
+            "label": {
+                "en": "Create custom refund request"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "createCustomRefundResponse",
+            "label": {
+                "en": "Create custom refund response"
             },
             "required": false,
             "inputHint": "MultiLine"

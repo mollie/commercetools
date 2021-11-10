@@ -97,6 +97,23 @@ describe('validateAction', () => {
     const action = validateAction(mockReqBody);
     expect(action).toBe(ControllerAction.CreateOrderRefund);
   });
+
+  it('Should return createCustomRefund when createCustomRefundRequest is present and createCustomRefundResponse is not', () => {
+    const mockReqBody = {
+      resource: {
+        obj: {
+          custom: {
+            fields: {
+              createCustomRefundRequest: '{}',
+            },
+          },
+        },
+      },
+    };
+    const action = validateAction(mockReqBody);
+    expect(action).toBe(ControllerAction.CreateCustomRefund);
+  });
+
   it('Should return cancelOrder when createCancelOrderRequest is present and createCancelOrderResponse is not', () => {
     const mockReqBody = {
       resource: {
