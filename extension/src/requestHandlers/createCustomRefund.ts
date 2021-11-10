@@ -6,7 +6,6 @@ import { CTUpdatesRequestedResponse } from '../types';
 import { amountMapper } from '../utils';
 
 /**
- *
  * @param ctObject
  * ctObject contains createCustomRefundRequest custom field
  * Parse the stringified JSON and extract paymentId, amount etc. for mollie call
