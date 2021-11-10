@@ -3,7 +3,7 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/pa
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
 import { CTUpdatesRequestedResponse } from '../types';
-import { amountMapper } from '../utils';
+import { convertCTToMollieAmountValue } from '../utils';
 
 /**
  * @param ctObject
@@ -18,7 +18,7 @@ const extractParameters = (ctObject: any): Promise<CreateParameters> => {
       paymentId: molliePaymentId,
       amount: {
         currency: amount?.currencyCode,
-        value: amountMapper({ centAmount: amount?.centAmount }), // update when new method is in develop
+        value: convertCTToMollieAmountValue(amount?.centAmount), // update when new method is in develop
       },
     };
     if (description) Object.assign(refundParameters, { description });
