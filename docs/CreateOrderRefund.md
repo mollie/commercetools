@@ -1,9 +1,10 @@
 # Order Refund
 
-This functionality is to refund the entire amount of either:
+This functionality is used to refund:
 
-- a single item/multiple items on a single line
-- all lines
+- the whole order
+- certain order lines
+- a single or multiple items on a single order line
 
 This calls mollie's [create order refund endpoint](https://docs.mollie.com/reference/v2/refunds-api/create-order-refund)
 
@@ -69,7 +70,11 @@ Here is an example of a commercetools payment, which has been paid. Some parts h
 }
 ```
 
-In order to create an order refund request on, for example, the single 'orange' item in this order, we need to update the commercetools payment to set the custom field `createOrderRefundRequest`:
+In order to create an order refund request, we need to update the commercetools payment to set the custom field `createOrderRefundRequest`.
+
+Here are some examples of creating an order refund request.
+
+Refunding the whole order:
 
 ```
 {
@@ -78,13 +83,43 @@ In order to create an order refund request on, for example, the single 'orange' 
         {
             "action": "setCustomField",
             "name": "createOrderRefundRequest",
-            "value": "{ \"lines\": [{ \"id\": \"odl_1.896lgp\", \"quantity\": 1, \"amount\": { \"centAmount\": 2000, \"currencyCode\": \"EUR\" } }], \"description\": null, \"metadata\": {} }"
+            "value": "{ \"lines\": [], \"description\": \"Refunding the whole order\", \"metadata\": {} }"
         }
     ]
 }
 ```
 
-The line id corresponds to the mollie order line ID.
+Refunding a single order line:
+
+```
+{
+    "version": 12,
+    "actions": [
+        {
+            "action": "setCustomField",
+            "name": "createOrderRefundRequest",
+            "value": "{ \"lines\": [{ \"id\": \"odl_1.896lgp\"], \"metadata\": {\"refundId\":\"RF_281\"} }"
+        }
+    ]
+}
+```
+
+Refunding a single item on a line ('amount' parameter is only relevant if the original item had a 'discountAmount' field that was above 0):
+
+```
+{
+    "version": 12,
+    "actions": [
+        {
+            "action": "setCustomField",
+            "name": "createOrderRefundRequest",
+            "value": "{ \"lines\": [{ \"id\": \"odl_1.896lgp\", \"quantity\": 1, \"amount\": { \"centAmount\": 2000, \"currencyCode\": \"EUR\" } }] }"
+        }
+    ]
+}
+```
+
+The line id within lines corresponds to the mollie order line ID.
 
 In order to refund an entire order, leave 'lines' as an empty array - [].
 
@@ -98,4 +133,25 @@ If it was successful, when we check the commercetools payment, we can now see th
             "createOrderRefundResponse": ...
             ...
 }
+```
+
+As well as this, a new Transaction, of type Refund is created against the Payment:
+
+```
+"transactions": [
+    ...
+    {
+        "id": "523658fb-da53-4a30-a458-e122967f1f37",
+        "timestamp": "2021-11-10T13:32:03.046Z",
+        "type": "Refund",
+        "amount": {
+            "type": "centPrecision",
+            "currencyCode": "EUR",
+            "centAmount": 2000,
+            "fractionDigits": 2
+        },
+        "interactionId": "re_7TP4HebtFH",
+        "state": "Initial"
+    },
+    ...
 ```
