@@ -14,7 +14,7 @@ import { amountMapper } from '../utils';
 const extractParameters = (ctObject: any): Promise<CreateParameters> => {
   try {
     const parsedRequest = JSON.parse(ctObject?.custom?.fields?.createCustomRefundRequest);
-    const { id: molliePaymentId, amount, description, metadata } = parsedRequest;
+    const { interactionId: molliePaymentId, amount, description, metadata } = parsedRequest;
     const refundParameters: CreateParameters = {
       paymentId: molliePaymentId,
       amount: {

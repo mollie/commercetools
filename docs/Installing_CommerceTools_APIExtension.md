@@ -201,7 +201,7 @@ Body:
             },
             "name": "createCustomRefundRequest",
             "label": {
-                "en": "Create set amount refund request"
+                "en": "Create custom refund request"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -212,7 +212,7 @@ Body:
             },
             "name": "createCustomRefundResponse",
             "label": {
-                "en": "Create set amount refund response"
+                "en": "Create custom refund response"
             },
             "required": false,
             "inputHint": "MultiLine"

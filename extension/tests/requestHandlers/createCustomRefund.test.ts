@@ -20,8 +20,9 @@ describe('createCustomRefund', () => {
       },
     },
   };
-  const createCustomRefundRequest = '{ "id": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 } }';
-  const createCustomRefundRequestWithDescriptionAndMetadata = '{ "id": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 }, "description": "refund", "metadata": { "code": "HA_789"}}';
+  const createCustomRefundRequest = '{ "interactionId": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 } }';
+  const createCustomRefundRequestWithDescriptionAndMetadata =
+    '{ "interactionId": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 }, "description": "refund", "metadata": { "code": "HA_789"}}';
 
   const mockCreate = jest.fn().mockImplementationOnce(() => mockRefund);
   beforeEach(() => {

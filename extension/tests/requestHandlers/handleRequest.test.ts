@@ -24,6 +24,7 @@ describe('handleRequest', () => {
     res.send = mockSend;
     res.end = mockEnd;
     req.path = '/';
+    req.method = 'POST';
     Logger.error = mockLogError;
   });
 
@@ -41,6 +42,15 @@ describe('handleRequest', () => {
     expect(mockSend).toHaveBeenCalledWith({ actions: [{ action: 'update' }] });
   });
 
+  it('should return status 200 if when the action is NoAction', async () => {
+    mocked(validateAction).mockReturnValueOnce(ControllerAction.NoAction);
+
+    await handleRequest(req, res);
+
+    expect(mockStatus).toHaveBeenCalledWith(200);
+    expect(mockEnd).toHaveBeenCalledTimes(1);
+  });
+
   it('should return status 400 if the request path is not /', async () => {
     req.path = '/something';
 
@@ -50,12 +60,12 @@ describe('handleRequest', () => {
     expect(mockEnd).toHaveBeenCalledTimes(1);
   });
 
-  it('should return status 200 if when the action is NoAction', async () => {
-    mocked(validateAction).mockReturnValueOnce(ControllerAction.NoAction);
+  it('should return status 405 Method Not Allowed if the request method is not POST', async () => {
+    req.method = 'DELETE';
 
     await handleRequest(req, res);
 
-    expect(mockStatus).toHaveBeenCalledWith(200);
+    expect(mockStatus).toHaveBeenCalledWith(405);
     expect(mockEnd).toHaveBeenCalledTimes(1);
   });
 
