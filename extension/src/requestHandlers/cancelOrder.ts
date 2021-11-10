@@ -7,10 +7,10 @@ import { createDateNowString } from '../utils';
 export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams> {
   try {
     const parsedCancelOrderRequest = JSON.parse(ctObj?.custom?.fields?.createCancelOrderRequest);
-    Logger.debug({ parsedCancelOrderRequest: parsedCancelOrderRequest })
+    Logger.debug({ parsedCancelOrderRequest: parsedCancelOrderRequest });
     const cancelOrderParams = {
       orderId: ctObj?.key,
-      lines: parsedCancelOrderRequest
+      lines: parsedCancelOrderRequest,
     };
 
     return Promise.resolve(cancelOrderParams);
@@ -47,9 +47,7 @@ export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action
 export default async function cancelOrder(ctObj: any, mollieClient: MollieClient, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
     const cancelOrderParams = await getCancelOrderParams(ctObj);
-    const mollieCancelOrderRes = cancelOrderParams.lines.length ?
-      await mollieClient.orders_lines.cancel(cancelOrderParams) :
-      await mollieClient.orders.cancel(ctObj.key);
+    const mollieCancelOrderRes = cancelOrderParams.lines.length ? await mollieClient.orders_lines.cancel(cancelOrderParams) : await mollieClient.orders.cancel(ctObj.key);
     Logger.debug(mollieCancelOrderRes);
     const ctActions = createCtActions(mollieCancelOrderRes, ctObj);
     return {
