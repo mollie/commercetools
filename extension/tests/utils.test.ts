@@ -1,6 +1,8 @@
+import { ControllerAction } from '../src/types';
+import { mocked } from 'ts-jest/utils';
 import * as ut from '../src/utils';
 
-describe('Utils unit test', () => {
+describe('Utils unit tests', () => {
   describe('methodListMapper', () => {
     it('Should return empty object if no amountPlanned / use as list all', async () => {
       const mollieOptions = ut.methodListMapper({});
@@ -66,6 +68,27 @@ describe('Utils unit test', () => {
       expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
       expect(mollieOptions).toHaveProperty('include', 'pricing');
       expect(mollieOptions.billingCountry).toBeUndefined();
+    });
+  });
+
+  describe('createResponseUpdateActions', () => {
+    beforeEach(() => {
+      jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+    it('should return expected update actions based on the controlleraction', () => {
+      const actions = ut.createResponseUpdateActions(
+        '{"interactionId": "tr_wfW2KPHKrb", "amount": { "currencyCode": "EUR", "centAmount": 1800 }}',
+        { id: 're_7897892', orderId: 'ord_1234' },
+        ControllerAction.CreateCustomRefund,
+        'createCustomRefundResponse',
+      );
+      expect(actions).toHaveLength(2);
+      actions.forEach(action => {
+        expect(action).toMatchSnapshot();
+      });
     });
   });
 });

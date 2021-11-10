@@ -24,7 +24,7 @@ describe('createCustomRefund', () => {
   const createCustomRefundRequestWithDescriptionAndMetadata =
     '{ "interactionId": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 }, "description": "refund", "metadata": { "code": "HA_789"}}';
 
-  const mockCreate = jest.fn().mockImplementationOnce(() => mockRefund);
+  const mockCreate = jest.fn().mockImplementation(() => mockRefund);
   beforeEach(() => {
     jest.clearAllMocks();
     Logger.error = mockLogError;
@@ -34,6 +34,7 @@ describe('createCustomRefund', () => {
     jest.clearAllMocks();
   });
 
+  // 2xx
   it('should successfully call mollie create payment refund and return stub 201 response', async () => {
     mockCtObject.custom.fields.createCustomRefundRequest = createCustomRefundRequest;
     const response = await createCustomRefund(mockCtObject, mockMollieClient);
@@ -57,9 +58,37 @@ describe('createCustomRefund', () => {
     expect(response.status).toEqual(201);
   });
 
+  // 4xx
   it('should throw error if the incoming ctObject does not contain valid createCustomRefundRequest JSON', async () => {
     mockCtObject.custom.fields.createCustomRefundRequest = '';
     const response = await createCustomRefund(mockCtObject, mockMollieClient);
     expect(response.status).toBe(400);
+  });
+
+  it('should throw error if the incoming createCustomRefundRequest does not contain required fields', async () => {
+    mockCtObject.custom.fields.createCustomRefundRequest = '{ "interactionId": "ord_78932"}';
+    const response = await createCustomRefund(mockCtObject, mockMollieClient);
+    expect(mockCreate).not.toHaveBeenCalled();
+    expect(mockLogError).toHaveBeenCalledTimes(2);
+    expect(response.status).toBe(400);
+  });
+
+  it('should throw error if the call to mollie fails', async () => {
+    mockPaymentRefunds.create = jest.fn().mockRejectedValueOnce(() => new Error('Mollie error'));
+    mockCtObject.custom.fields.createCustomRefundRequest = '';
+
+    const { status, errors = [] } = await createCustomRefund(mockCtObject, mockMollieClient);
+
+    expect(status).toBe(400);
+    expect(errors[0]).toEqual({
+      code: 'General',
+      extensionExtraInfo: {
+        field: undefined,
+        links: undefined,
+        title: undefined,
+      },
+      message: 'Server Error. Please see logs for more details',
+    });
+    expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });

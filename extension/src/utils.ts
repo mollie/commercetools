@@ -1,4 +1,5 @@
 import { MethodsListParams } from '@mollie/api-client';
+import { Action, ControllerAction } from './types';
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
@@ -58,3 +59,34 @@ export function methodListMapper(ctObj: any): MethodsListParams {
 
   return mObject;
 }
+
+/**
+ *
+ * @param ctCustomField
+ * @param mollieResponse
+ * Create generic update actions that are required for all journeys.
+ * Each should set the custom field response and add an interfaceInteraction.
+ * TODO: move to utils and use the same method across all endpoints.
+ */
+export const createResponseUpdateActions = (ctCustomField: string, mollieResponse: any, actionType: ControllerAction, customField: string): Action[] => {
+  const actions = [
+    {
+      action: 'setCustomField',
+      name: customField,
+      value: JSON.stringify(mollieResponse),
+    },
+    {
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        actionType,
+        createdAt: createDateNowString(),
+        request: ctCustomField,
+        response: JSON.stringify(mollieResponse),
+      },
+    },
+  ];
+  return actions;
+};
