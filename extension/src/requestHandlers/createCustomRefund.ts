@@ -26,7 +26,7 @@ const extractParameters = (ctObject: any): Promise<CreateParameters> => {
     return Promise.resolve(refundParameters);
   } catch (error) {
     Logger.error(error);
-    return Promise.reject({ status: 400, title: 'Could not extract valid parameters to create Mollie payment refund. This must contain id, amount', field: 'createCustomRefundRequest' });
+    return Promise.reject({ status: 400, title: 'Could not extract valid parameters to create Mollie payment refund. This must contain interactionId, amount', field: 'createCustomRefundRequest' });
   }
 };
 
@@ -37,7 +37,13 @@ export async function createCustomRefund(ctObject: any, mollieClient: MollieClie
     Logger.debug(response);
     return {
       status: 201,
-      actions: [],
+      actions: [
+        {
+          action: 'setCustomField',
+          name: 'createCustomRefundResponse',
+          value: 'Placeholder - to prevent API extension being triggered by Notifications',
+        },
+      ],
     };
   } catch (error) {
     Logger.error(error);

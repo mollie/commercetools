@@ -39,10 +39,7 @@ describe('createCustomRefund', () => {
     const response = await createCustomRefund(mockCtObject, mockMollieClient);
 
     expect(mockCreate).toHaveBeenLastCalledWith({ paymentId: 'tr_12345', amount: { currency: 'EUR', value: '15.47' } });
-    expect(response).toEqual({
-      status: 201,
-      actions: [],
-    });
+    expect(response.status).toEqual(201);
   });
 
   it('should successfully call mollie create payment refund with description and metadata if provided', async () => {
@@ -57,10 +54,7 @@ describe('createCustomRefund', () => {
         code: 'HA_789',
       },
     });
-    expect(response).toEqual({
-      status: 201,
-      actions: [],
-    });
+    expect(response.status).toEqual(201);
   });
 
   it('should throw error if the incoming ctObject does not contain valid createCustomRefundRequest JSON', async () => {
