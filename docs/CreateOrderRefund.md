@@ -89,3 +89,13 @@ The line id corresponds to the mollie order line ID.
 In order to refund an entire order, leave 'lines' as an empty array - [].
 
 NB - if refunding an order again on the same payment, the `createOrderRefundResponse` field must be set to `null`
+
+If it was successful, when we check the commercetools payment, we can now see the `createOrderRefundResponse` has been updated to reflect the refund:
+
+```
+"fields": {
+            "mollieOrderStatus": "paid",
+            "createOrderRefundResponse": ...
+            ...
+}
+```
