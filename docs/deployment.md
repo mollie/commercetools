@@ -4,17 +4,38 @@
 
 ## Environment variable
 
-commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure below.
+Commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure.
+
+Here is a table to show which environment variables are necessary, and which are optional:
+
+| Env variable name  | Required | Notes                                                 |
+| ------------------ | -------- | ----------------------------------------------------- |
+| `PORT`             | NO       | Defaults to 3000 (extension) and 3001 (notifications) |
+| `mollieApiKey`     | YES      |                                                       |
+| `CT_MOLLIE_CONFIG` | YES      | Contains the below variables, wrapped in an object    |
+| `projectKey`       | YES      | Part of CT_MOLLIE_CONFIG JSON object                  |
+| `clientId`         | YES      | Part of CT_MOLLIE_CONFIG JSON object                  |
+| `clientSecret`     | YES      | Part of CT_MOLLIE_CONFIG JSON object                  |
+| `authUrl`          | YES      | Part of CT_MOLLIE_CONFIG JSON object                  |
+| `host`             | YES      | Part of CT_MOLLIE_CONFIG JSON object                  |
+| `scopes`           | NO       | Part of CT_MOLLIE_CONFIG JSON object                  |
+
+Below is an example of how these should be formatted:
 
 ```json
 {
-    "port": 3000,
-    "mollieApiKey": "mollieApiKey",
-    ...
+  "PORT": 3050,
+  "mollieApiKey": "mollieApiKey",
+  "CT_MOLLIE_CONFIG": {
+    "projectKey": "example_project_key",
+    "clientId": "example_client_id",
+    "clientSecret": "example_client_secret",
+    "authUrl": "example_auth_url",
+    "host": "example_host",
+    "scopes": "example_scopes"
+  }
 }
 ```
-
-_N.B. Environment variables deployment subject to change as we're developing_
 
 ## AWS Lambda
 
@@ -44,10 +65,14 @@ Add the following global variables into the config file:
 
 ## Docker
 
-To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container with:
+To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:
 `docker build -t ct-mollie-extension:latest .`
 
-After the docker image has build, you could run it with a command like the following to start the container:
+The port number will default to 3000 (extension module) and 3001 (notifications module). It can also be passed as an argument to the build command like so:
+`docker build -t ct-mollie-extension:latest --build-arg PORT=3050 .`
+NB if this port is provided in both the environment and as a `--build-arg`, the `--build-arg` will take priority.
+
+After the docker image has built, you could run it with a command like the following to start the container:
 `docker run -e CT_MOLLIE_CONFIG=xxxxxx --name ct-mollie-extension ct-mollie-extension:latest`
 
 When finished, to stop the container, run:

@@ -28,7 +28,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
 
     // Allow missing parts of config and fill in with defaults
     const config: Config = {
-      port: envConfig.port || 3001,
+      port: process.env.PORT || 3001,
       ...envConfig,
     };
 
