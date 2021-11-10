@@ -4,6 +4,22 @@ import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorRes
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 
+export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams> {
+  try {
+    const parsedCancelOrderRequest = JSON.parse(ctObj?.custom?.fields?.createCancelOrderRequest);
+    Logger.debug({ parsedCancelOrderRequest: parsedCancelOrderRequest })
+    const cancelOrderParams = {
+      orderId: ctObj?.key,
+      lines: parsedCancelOrderRequest
+    };
+
+    return Promise.resolve(cancelOrderParams);
+  } catch (error) {
+    Logger.error({ error });
+    return Promise.reject({ status: 400, title: 'Could not make parameters required to cancel Mollie order.', field: 'createCancelOrderRequest' });
+  }
+}
+
 export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action[] {
   const stringifiedCancelOrderResponse = JSON.stringify(mollieCancelOrderRes);
   const result: Action[] = [
@@ -15,7 +31,7 @@ export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action
       fields: {
         actionType: ControllerAction.CancelOrder,
         createdAt: createDateNowString(),
-        request: ctObj?.custom?.fields?.cancelOrderRequest,
+        request: ctObj?.custom?.fields?.createCancelOrderRequest,
         response: stringifiedCancelOrderResponse,
       },
     },
@@ -30,7 +46,10 @@ export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action
 
 export default async function cancelOrder(ctObj: any, mollieClient: MollieClient, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
-    const mollieCancelOrderRes = await mollieClient.orders.cancel(ctObj.key);
+    const cancelOrderParams = await getCancelOrderParams(ctObj);
+    const mollieCancelOrderRes = cancelOrderParams.lines.length ?
+      await mollieClient.orders_lines.cancel(cancelOrderParams) :
+      await mollieClient.orders.cancel(ctObj.key);
     Logger.debug(mollieCancelOrderRes);
     const ctActions = createCtActions(mollieCancelOrderRes, ctObj);
     return {

@@ -17,7 +17,7 @@ describe('createCtActions', () => {
     const mockedCtObject = {
       custom: {
         fields: {
-          cancelOrderRequest: '[]',
+          createCancelOrderRequest: '[]',
         },
       },
     };
@@ -71,7 +71,7 @@ describe('cancelOrder', () => {
       key: 'ord_jwtj05',
       custom: {
         fields: {
-          cancelOrderRequest: '[]',
+          createCancelOrderRequest: '[]',
         },
       },
     };
@@ -113,7 +113,7 @@ describe('cancelOrder', () => {
     expect(cancelOrderRes.status).toBe(200);
   });
   it('Should return commercetools formated error if one of the functions fails', async () => {
-    const mockedError = { status: 400, title: 'The order cannot be canceled from state: canceled', field: 'cancelOrderRequest' };
+    const mockedError = { status: 400, title: 'The order cannot be canceled from state: canceled', field: 'createCancelOrderRequest' };
     const createCtActions = jest.fn();
     const mollieClient = { orders: { cancel: jest.fn().mockRejectedValueOnce(mockedError) } } as any;
 
