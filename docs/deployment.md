@@ -66,11 +66,11 @@ Add the following global variables into the config file:
 ## Docker
 
 To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:
-`docker build -t ct-mollie-extension:latest .`
+`docker build -t ct-mollie-extension:latest --build-arg CT_MOLLIE_CONFIG="{...}" .`
+Note that the environment variables that are required should be passed with the --build-arg flag.
 
 The port number will default to 3000 (extension module) and 3001 (notifications module). It can also be passed as an argument to the build command like so:
 `docker build -t ct-mollie-extension:latest --build-arg PORT=3050 .`
-NB if this port is provided in both the environment and as a `--build-arg`, the `--build-arg` will take priority.
 
 After the docker image has built, you could run it with a command like the following to start the container:
 `docker run -e CT_MOLLIE_CONFIG=xxxxxx --name ct-mollie-extension ct-mollie-extension:latest`
