@@ -83,6 +83,7 @@ describe('createCustomRefund', () => {
     expect(errors[0]).toEqual({
       code: 'General',
       extensionExtraInfo: {
+        mollieStatusCode: 500,
         field: undefined,
         links: undefined,
         title: undefined,

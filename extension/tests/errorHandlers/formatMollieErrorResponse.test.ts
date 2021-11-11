@@ -67,10 +67,10 @@ describe('formatMollieErrorResponse', () => {
       message: 'A duplicate refund has been detected',
       links: {
         documentation: {
-            href: "https://docs.mollie.com/overview/handling-errors",
-            type: "text/html"
-        }
-    }
+          href: 'https://docs.mollie.com/overview/handling-errors',
+          type: 'text/html',
+        },
+      },
     };
     const { status: status409, errors: errors409 } = formatMollieErrorResponse(mockError409);
     expect(status409).toBe(400);

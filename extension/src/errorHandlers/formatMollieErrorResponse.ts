@@ -3,6 +3,7 @@ import { CTError, CTUpdatesRequestedResponse } from '../types';
 // This is based on MollieApiError interface from Mollie's SDK
 const getExtraInfo = (error: any) => {
   return {
+    mollieStatusCode: error.status ?? 500,
     links: error?.links,
     title: error?.title,
     field: error?.field,
@@ -54,11 +55,11 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
       break;
 
     case status === 409:
-        formattedError = {
-          code: 'InvalidOperation',
-          message: error.message,
-          extensionExtraInfo: getExtraInfo(error),
-        }
+      formattedError = {
+        code: 'InvalidOperation',
+        message: error.message,
+        extensionExtraInfo: getExtraInfo(error),
+      };
       break;
 
     case status >= 400 && status < 500:
