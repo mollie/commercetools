@@ -1,4 +1,6 @@
 import { MethodsListParams } from '@mollie/api-client';
+import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import { CTMoney } from './types';
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
@@ -22,6 +24,13 @@ export function amountMapper(amountPlanned: any): string {
   const divider = Math.pow(10, fractionDigits || 2);
   const mollieAmount = (centAmount / divider).toFixed(2);
   return mollieAmount;
+}
+
+export function makeMollieAmount({ centAmount, fractionDigits, currencyCode }: CTMoney): Amount {
+  return {
+    value: amountMapper({ centAmount, fractionDigits }),
+    currency: currencyCode
+  }
 }
 
 export function methodListMapper(ctObj: any): MethodsListParams {

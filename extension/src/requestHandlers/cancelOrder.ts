@@ -2,15 +2,25 @@ import { MollieClient, Order, OrderLineCancelParams } from '@mollie/api-client';
 import Logger from '../logger/logger';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
-import { createDateNowString } from '../utils';
+import { createDateNowString, makeMollieAmount } from '../utils';
+
+function makeMollieLineAmounts(ctLines: any) {
+  return ctLines.map((line: any) => {
+    if (line.amount) {
+      line.amount = makeMollieAmount(line.amount)
+    }
+    return line
+  })
+}
 
 export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams> {
   try {
     const parsedCancelOrderRequest = JSON.parse(ctObj?.custom?.fields?.createCancelOrderRequest);
-    Logger.debug({ parsedCancelOrderRequest: parsedCancelOrderRequest });
+    const mollieAdjustedLines = makeMollieLineAmounts(parsedCancelOrderRequest)
+    Logger.debug({ mollieAdjustedLines: mollieAdjustedLines });
     const cancelOrderParams = {
       orderId: ctObj?.key,
-      lines: parsedCancelOrderRequest,
+      lines: mollieAdjustedLines,
     };
 
     return Promise.resolve(cancelOrderParams);
