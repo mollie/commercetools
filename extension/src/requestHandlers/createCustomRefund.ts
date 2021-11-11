@@ -18,7 +18,7 @@ const extractParameters = (ctObject: any): Promise<CreateParameters> => {
       paymentId: molliePaymentId,
       amount: {
         currency: amount?.currencyCode,
-        value: convertCTToMollieAmountValue(amount?.centAmount), // update when new method is in develop
+        value: convertCTToMollieAmountValue(amount?.centAmount),
       },
     };
     if (description) Object.assign(refundParameters, { description });

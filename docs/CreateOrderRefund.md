@@ -74,7 +74,7 @@ In order to create an order refund request, we need to update the commercetools 
 
 Here are some examples of creating an order refund request.
 
-Refunding the whole order:
+To refund an entire order, leave 'lines' as an empty array:
 
 ```
 {
@@ -119,9 +119,7 @@ Refunding a single item on a line ('amount' parameter is only relevant if the or
 }
 ```
 
-The line id within lines corresponds to the mollie order line ID.
-
-In order to refund an entire order, leave 'lines' as an empty array - [].
+The id within lines corresponds to the mollie order line ID.
 
 NB - if refunding an order again on the same payment, the `createOrderRefundResponse` field must be set to `null`
 
@@ -135,7 +133,7 @@ If it was successful, when we check the commercetools payment, we can now see th
 }
 ```
 
-As well as this, a new Transaction, of type Refund is created against the Payment:
+As well as this, a new Transaction of type 'Refund' is created against the Payment:
 
 ```
 "transactions": [
