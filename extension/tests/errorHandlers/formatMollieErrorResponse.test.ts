@@ -60,6 +60,24 @@ describe('formatMollieErrorResponse', () => {
     expect(errors404).toMatchSnapshot();
   });
 
+  it("should return ERRRR when error's status is 409", () => {
+    const mockError409 = {
+      status: 409,
+      title: 'Conflict',
+      message: 'A duplicate refund has been detected',
+      links: {
+        documentation: {
+            href: "https://docs.mollie.com/overview/handling-errors",
+            type: "text/html"
+        }
+    }
+    };
+    const { status: status409, errors: errors409 } = formatMollieErrorResponse(mockError409);
+    expect(status409).toBe(400);
+    expect(errors409?.length).toBe(1);
+    expect(errors409).toMatchSnapshot();
+  });
+
   it("should return a general 4xx error when the error's status is 4xx, but not 400, 401 or 403", () => {
     const mockError402 = {
       status: 402,

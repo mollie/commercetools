@@ -53,6 +53,14 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
       };
       break;
 
+    case status === 409:
+        formattedError = {
+          code: 'InvalidOperation',
+          message: error.message,
+          extensionExtraInfo: getExtraInfo(error),
+        }
+      break;
+
     case status >= 400 && status < 500:
       formattedError = {
         code: 'SyntaxError',

@@ -19,6 +19,25 @@ Array [
 ]
 `;
 
+exports[`formatMollieErrorResponse should return ERRRR when error's status is 409 1`] = `
+Array [
+  Object {
+    "code": "InvalidOperation",
+    "extensionExtraInfo": Object {
+      "field": undefined,
+      "links": Object {
+        "documentation": Object {
+          "href": "https://docs.mollie.com/overview/handling-errors",
+          "type": "text/html",
+        },
+      },
+      "title": "Conflict",
+    },
+    "message": "A duplicate refund has been detected",
+  },
+]
+`;
+
 exports[`formatMollieErrorResponse should return Forbidden when error's status is 403 or 4O1 1`] = `
 Array [
   Object {
