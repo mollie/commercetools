@@ -3,7 +3,7 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/re
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
 import { Action, ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
-import { convertMollieToCTPaymentAmount, createDateNowString } from '../utils';
+import { convertMollieToCTPaymentAmount, createDateNowString, convertCTToMollieAmountValue } from '../utils';
 
 export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
   const stringifiedRefundResponse = JSON.stringify(mollieResponse);
@@ -43,13 +43,32 @@ export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
   return ctActions;
 }
 
+export function extractLinesCtToMollie(ctLines: any): any {
+  const mollieLines = [];
+  for (let singleCtLine of ctLines) {
+    const singleMollieLine = {
+      id: singleCtLine.id,
+    };
+    const { quantity, amount } = singleCtLine;
+    if (quantity) Object.assign(singleMollieLine, { quantity });
+    if (amount) {
+      const amountObject = {
+        value: convertCTToMollieAmountValue(amount.centAmount),
+        currency: amount.currencyCode,
+      };
+      Object.assign(singleMollieLine, { amount: amountObject });
+    }
+    mollieLines.push(singleMollieLine);
+  }
+  return mollieLines;
+}
+
 export function getOrderRefundParams(ctObj: any): Promise<CreateParameters> {
   try {
     const parsedOrderRefundParams = JSON.parse(ctObj?.custom?.fields?.createOrderRefundRequest);
     const orderRefundParams = {
       orderId: ctObj?.key,
-      // TODO: Individual order line refunds, CMI 16 & CMI 89
-      lines: parsedOrderRefundParams.lines,
+      lines: extractLinesCtToMollie(parsedOrderRefundParams.lines),
       description: parsedOrderRefundParams.description || '',
       metadata: parsedOrderRefundParams.metadata || {},
     };
