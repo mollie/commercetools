@@ -48,7 +48,7 @@ Below is an example of how these should be formatted:
 
 ### Log levels
 
-There are 6 different levels of logging available - if none are selected, the level will default to 'info':
+There are 6 different levels of logging available - if this isn't provided in the environment, the level will default to 'info':
 
 - error (only errors will display)
 - warn
@@ -59,7 +59,7 @@ There are 6 different levels of logging available - if none are selected, the le
 
 ### Log transports
 
-Log transports are where the logs are written to:
+Log transports are where the logs are written to. If this isn't provided in the environment, it will default to 'terminal':
 
 - file (written to a file inside logs/ directory)
 - terminal (written to STDOUT)
