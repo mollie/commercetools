@@ -66,7 +66,7 @@ export function methodListMapper(ctObj: any): MethodsListParams {
  * @param mollieResponse
  * Create generic update actions that are required for all journeys.
  * Each should set the custom field response and add an interfaceInteraction.
- * TODO: move to utils and use the same method across all endpoints.
+ * TODO: Refactor to use this method across all endpoints.
  */
 export const createResponseUpdateActions = (ctCustomField: string, mollieResponse: any, actionType: ControllerAction, customField: string): Action[] => {
   const actions = [

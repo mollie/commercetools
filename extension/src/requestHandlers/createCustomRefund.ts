@@ -8,7 +8,7 @@ import { amountMapper, createDateNowString, createResponseUpdateActions } from '
 /**
  * @param ctObject
  * ctObject contains createCustomRefundRequest custom field
- * Parse the stringified JSON and extract paymentId, amount etc. for mollie call
+ * Parse the stringified JSON and extract parameters required to call the mollie endpoint
  */
 const extractParameters = (customRefundRequest: any): Promise<CreateParameters> => {
   try {
@@ -41,7 +41,7 @@ const extractParameters = (customRefundRequest: any): Promise<CreateParameters> 
  * @param mollieClient
  * Creates a refund using the refunds API instead of the Orders API
  * This is used when the merchant wishes to refund an arbitrary amount,
- * rather than parial or whole line, or order
+ * rather than partial or full line, or the whole order
  */
 export async function createCustomRefund(ctObject: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
