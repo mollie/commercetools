@@ -46,7 +46,6 @@ let transports = [];
 
 // Configure transports used with LOG_TRANSPORTS env var
 // This can be 'terminal', 'file' or 'all'
-// TODO: implement this env var in our config
 switch (process.env.LOG_TRANSPORTS) {
   case 'all':
     transports.push(

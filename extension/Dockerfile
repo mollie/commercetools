@@ -11,9 +11,7 @@ COPY config ./config
 
 # Expect a variable for port number when running the dockerfile, eg `--build-arg PORT=3050`, but default to 3000
 ARG PORT
-ARG CT_MOLLIE_CONFIG
 ENV PORT=${PORT:-3000}
-ENV CT_MOLLIE_CONFIG=$CT_MOLLIE_CONFIG
 
 # Install node modules and build assets, remove dev dependencies
 RUN npm ci && npm run build && npm prune --production
