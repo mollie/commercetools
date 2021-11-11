@@ -3,7 +3,7 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/pa
 import { ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
-import { amountMapper, createDateNowString, createResponseUpdateActions } from '../utils';
+import { amountMapper, createDateNowString, makeActions } from '../utils';
 
 /**
  * @param ctObject
@@ -52,20 +52,24 @@ export async function createCustomRefund(ctObject: any, mollieClient: MollieClie
     const { id: mollieRefundId } = response;
 
     // Create update actions
-    const updateActions = createResponseUpdateActions(ctObject?.custom?.fields?.createCustomRefundRequest, response, ControllerAction.CreateCustomRefund, 'createCustomRefundResponse');
-    updateActions.push({
-      action: 'addTransaction',
-      transaction: {
-        interactionId: mollieRefundId,
-        amount: {
-          centAmount: parsedRequest.amount.centAmount,
-          currencyCode: parsedRequest.amount.currencyCode,
-          fractionDigits: parsedRequest.amount?.fractionDigits ?? 2,
+    const updateActions = [];
+    updateActions.push(
+      makeActions.setCustomField('createCustomRefundResponse', JSON.stringify(response)),
+      makeActions.addInterfaceInteraction(ControllerAction.CreateCustomRefund, ctObject?.custom?.fields?.createCustomRefundRequest, JSON.stringify(response)),
+      {
+        action: 'addTransaction',
+        transaction: {
+          interactionId: mollieRefundId,
+          amount: {
+            centAmount: parsedRequest.amount.centAmount,
+            currencyCode: parsedRequest.amount.currencyCode,
+            fractionDigits: parsedRequest.amount?.fractionDigits ?? 2,
+          },
+          type: CTTransactionType.Refund,
+          timestamp: createDateNowString(),
         },
-        type: CTTransactionType.Refund,
-        timestamp: createDateNowString(),
       },
-    });
+    );
 
     // Return correct status and updates for CT
     return {

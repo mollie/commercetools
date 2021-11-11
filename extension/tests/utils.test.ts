@@ -1,8 +1,15 @@
 import { ControllerAction } from '../src/types';
-import { mocked } from 'ts-jest/utils';
 import * as ut from '../src/utils';
 
 describe('Utils unit tests', () => {
+  beforeAll(() => {
+    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
   describe('methodListMapper', () => {
     it('Should return empty object if no amountPlanned / use as list all', async () => {
       const mollieOptions = ut.methodListMapper({});
@@ -71,23 +78,31 @@ describe('Utils unit tests', () => {
     });
   });
 
-  describe('createResponseUpdateActions', () => {
-    beforeEach(() => {
-      jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
+  describe('makeActions', () => {
+    const makeActions = ut.makeActions;
+
+    it('should return setCustomField action with correct values', () => {
+      const setCustomField = makeActions.setCustomField('mollieOrderStatus', 'created');
+      expect(setCustomField).toEqual({
+        action: 'setCustomField',
+        name: 'mollieOrderStatus',
+        value: 'created',
+      });
     });
-    afterEach(() => {
-      jest.resetAllMocks();
-    });
-    it('should return expected update actions based on the controlleraction', () => {
-      const actions = ut.createResponseUpdateActions(
-        '{"interactionId": "tr_wfW2KPHKrb", "amount": { "currencyCode": "EUR", "centAmount": 1800 }}',
-        { id: 're_7897892', orderId: 'ord_1234' },
-        ControllerAction.CreateCustomRefund,
-        'createCustomRefundResponse',
-      );
-      expect(actions).toHaveLength(2);
-      actions.forEach(action => {
-        expect(action).toMatchSnapshot();
+
+    it('should return addInterfaceInteraction with correct values', () => {
+      const addInterfaceInteraction = makeActions.addInterfaceInteraction(ControllerAction.GetPaymentMethods, '{}', '"count": 5, "methods": [ "creditcard"]');
+      expect(addInterfaceInteraction).toEqual({
+        action: 'addInterfaceInteraction',
+        type: {
+          key: 'ct-mollie-integration-interface-interaction-type',
+        },
+        fields: {
+          actionType: ControllerAction.GetPaymentMethods,
+          createdAt: '2021-11-10T14:02:45.858Z',
+          request: '{}',
+          response: '"count": 5, "methods": [ "creditcard"]',
+        },
       });
     });
   });

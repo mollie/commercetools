@@ -62,31 +62,41 @@ export function methodListMapper(ctObj: any): MethodsListParams {
 
 /**
  *
- * @param ctCustomField
- * @param mollieResponse
- * Create generic update actions that are required for all journeys.
- * Each should set the custom field response and add an interfaceInteraction.
- * TODO: Refactor to use this method across all endpoints.
+ * @param customFieldName
+ * @param customFieldValue
+ * If the customFieldValue is an API response, JSON Stringify it before passing it
  */
-export const createResponseUpdateActions = (ctCustomField: string, mollieResponse: any, actionType: ControllerAction, customField: string): Action[] => {
-  const actions = [
-    {
-      action: 'setCustomField',
-      name: customField,
-      value: JSON.stringify(mollieResponse),
+const setCustomField = (customFieldName: string, customFieldValue: string) => {
+  return {
+    action: 'setCustomField',
+    name: customFieldName,
+    value: customFieldValue,
+  };
+};
+
+/**
+ *
+ * @param actionType ControllerAction
+ * @param requestValue
+ * @param responseValue
+ * If the responseValue is an API response, JSON Stringify it before passing it
+ */
+const addInterfaceInteraction = (actionType: ControllerAction, requestValue: string, responseValue: string) => {
+  return {
+    action: 'addInterfaceInteraction',
+    type: {
+      key: 'ct-mollie-integration-interface-interaction-type',
     },
-    {
-      action: 'addInterfaceInteraction',
-      type: {
-        key: 'ct-mollie-integration-interface-interaction-type',
-      },
-      fields: {
-        actionType,
-        createdAt: createDateNowString(),
-        request: ctCustomField,
-        response: JSON.stringify(mollieResponse),
-      },
+    fields: {
+      actionType,
+      createdAt: createDateNowString(),
+      request: requestValue,
+      response: responseValue,
     },
-  ];
-  return actions;
+  };
+};
+
+export const makeActions = {
+  setCustomField,
+  addInterfaceInteraction,
 };
