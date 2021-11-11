@@ -29,8 +29,8 @@ export function amountMapper(amountPlanned: any): string {
 export function makeMollieAmount({ centAmount, fractionDigits, currencyCode }: CTMoney): Amount {
   return {
     value: amountMapper({ centAmount, fractionDigits }),
-    currency: currencyCode
-  }
+    currency: currencyCode,
+  };
 }
 
 export function methodListMapper(ctObj: any): MethodsListParams {

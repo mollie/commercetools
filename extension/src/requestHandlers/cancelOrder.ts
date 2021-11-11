@@ -7,16 +7,16 @@ import { createDateNowString, makeMollieAmount } from '../utils';
 function makeMollieLineAmounts(ctLines: any) {
   return ctLines.map((line: any) => {
     if (line.amount) {
-      line.amount = makeMollieAmount(line.amount)
+      line.amount = makeMollieAmount(line.amount);
     }
-    return line
-  })
+    return line;
+  });
 }
 
 export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams> {
   try {
     const parsedCancelOrderRequest = JSON.parse(ctObj?.custom?.fields?.createCancelOrderRequest);
-    const mollieAdjustedLines = makeMollieLineAmounts(parsedCancelOrderRequest)
+    const mollieAdjustedLines = makeMollieLineAmounts(parsedCancelOrderRequest);
     Logger.debug({ mollieAdjustedLines: mollieAdjustedLines });
     const cancelOrderParams = {
       orderId: ctObj?.key,
