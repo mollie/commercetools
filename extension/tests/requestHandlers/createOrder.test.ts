@@ -1,5 +1,5 @@
 import { mocked } from 'ts-jest/utils';
-import { createDateNowString, amountMapper } from '../../src/utils';
+import { createDateNowString, convertCTToMollieAmountValue } from '../../src/utils';
 import Logger from '../../src/logger/logger';
 import {
   fillOrderValues,
@@ -43,7 +43,7 @@ describe('Create orders tests', () => {
     jest.clearAllMocks();
   });
   it('Should extract line from CT data', () => {
-    mocked(amountMapper)
+    mocked(convertCTToMollieAmountValue)
       .mockReturnValueOnce('10.00') // extractLine:unitPriceValueString
       .mockReturnValueOnce('12.00') // extractLine:totalPriceValueString
       .mockReturnValueOnce('0.00'); // extractLine:vatAmount.value
@@ -124,7 +124,7 @@ describe('Create orders tests', () => {
     expect(extractLine(mockedCTLine)).toMatchObject(mockedMollieLine);
   });
   it('Should fill out an order on mollie from CT', async () => {
-    mocked(amountMapper)
+    mocked(convertCTToMollieAmountValue)
       .mockReturnValueOnce('10.00') // fillOrderValues:amountConverted
       .mockReturnValueOnce('10.00') // extractLine:unitPriceValueString
       .mockReturnValueOnce('10.00') // extractLine:totalPriceValueString

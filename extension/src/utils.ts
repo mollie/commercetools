@@ -17,11 +17,10 @@ export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigi
   return Math.ceil(parseFloat(mollieValue) * Math.pow(10, fractionDigits));
 };
 
-export function amountMapper(amountPlanned: any): string {
-  const { centAmount, fractionDigits } = amountPlanned;
-  const divider = Math.pow(10, fractionDigits || 2);
-  const mollieAmount = (centAmount / divider).toFixed(2);
-  return mollieAmount;
+export function convertCTToMollieAmountValue(ctValue: number, fractionDigits = 2): string {
+  const divider = Math.pow(10, fractionDigits);
+  const mollieAmountValue = (ctValue / divider).toFixed(2);
+  return mollieAmountValue;
 }
 
 export function methodListMapper(ctObj: any): MethodsListParams {
@@ -29,11 +28,9 @@ export function methodListMapper(ctObj: any): MethodsListParams {
   if (!ctObj.amountPlanned) {
     return {};
   }
-  const mollieAmount = amountMapper(ctObj.amountPlanned);
-
   const mObject: MethodsListParams = {
     amount: {
-      value: mollieAmount,
+      value: convertCTToMollieAmountValue(ctObj.amountPlanned.centAmount, ctObj.amountPlanned.fractionDigits),
       currency: ctObj.amountPlanned.currencyCode,
     },
     // Resource is hardcoded, for the time being we only support Orders API

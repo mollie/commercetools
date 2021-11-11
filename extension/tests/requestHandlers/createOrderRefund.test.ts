@@ -1,7 +1,7 @@
 import { mocked } from 'ts-jest/utils';
 import Logger from '../../src/logger/logger';
-import { createDateNowString } from '../../src/utils';
-import createOrderRefund, { createCtActions, getOrderRefundParams } from '../../src/requestHandlers/createOrderRefund';
+import { createDateNowString, convertCTToMollieAmountValue } from '../../src/utils';
+import createOrderRefund, { createCtActions, getOrderRefundParams, extractLinesCtToMollie } from '../../src/requestHandlers/createOrderRefund';
 import { Action, ControllerAction, CTTransactionType } from '../../src/types';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 
@@ -166,5 +166,48 @@ describe('createOrderRefund', () => {
     };
     const testedOrderParamsResponse = await getOrderRefundParams(mockedCtRequestObject);
     expect(testedOrderParamsResponse).toMatchObject(mockedOrderParamsResponse);
+  });
+});
+describe('Extract ct to mollie lines', () => {
+  it('Should convert a commercetools-formatted order line to a mollie-formatted order line', () => {
+    mocked(convertCTToMollieAmountValue).mockReturnValueOnce('10.00');
+
+    const mockedCtOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+        quantity: 3,
+        amount: {
+          centAmount: 1000,
+          currencyCode: 'EUR',
+        },
+      },
+    ];
+    const mockedMollieOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+        quantity: 3,
+        amount: {
+          value: '10.00',
+          currency: 'EUR',
+        },
+      },
+    ];
+    expect(extractLinesCtToMollie(mockedCtOrderLines)).toMatchObject(mockedMollieOrderLines);
+  });
+
+  it('Should return a mollie-formatted line without quantity and amount when these are not present on the incoming commercetools-formatted line', () => {
+    mocked(convertCTToMollieAmountValue).mockReturnValueOnce('10.00');
+
+    const mockedCtOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+      },
+    ];
+    const mockedMollieOrderLines = [
+      {
+        id: 'odl_1.49ejqh',
+      },
+    ];
+    expect(extractLinesCtToMollie(mockedCtOrderLines)).toMatchObject(mockedMollieOrderLines);
   });
 });
