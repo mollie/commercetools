@@ -1,6 +1,6 @@
 import { MethodsListParams } from '@mollie/api-client';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { CTMoney } from './types';
+import { ControllerAction, CTMoney } from './types';
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
@@ -64,3 +64,44 @@ export function methodListMapper(ctObj: any): MethodsListParams {
 
   return mObject;
 }
+
+/**
+ *
+ * @param customFieldName
+ * @param customFieldValue
+ * If the customFieldValue is an API response, JSON Stringify it before passing it
+ */
+const setCustomField = (customFieldName: string, customFieldValue: string) => {
+  return {
+    action: 'setCustomField',
+    name: customFieldName,
+    value: customFieldValue,
+  };
+};
+
+/**
+ *
+ * @param actionType ControllerAction
+ * @param requestValue
+ * @param responseValue
+ * If the responseValue is an API response, JSON Stringify it before passing it
+ */
+const addInterfaceInteraction = (actionType: ControllerAction, requestValue: string, responseValue: string) => {
+  return {
+    action: 'addInterfaceInteraction',
+    type: {
+      key: 'ct-mollie-integration-interface-interaction-type',
+    },
+    fields: {
+      actionType,
+      createdAt: createDateNowString(),
+      request: requestValue,
+      response: responseValue,
+    },
+  };
+};
+
+export const makeActions = {
+  setCustomField,
+  addInterfaceInteraction,
+};
