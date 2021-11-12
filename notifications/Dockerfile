@@ -10,12 +10,7 @@ COPY src ./src
 COPY config ./config
 COPY typings ./typings
 
-# Expect a variable for port number when running the dockerfile, eg `--build-arg PORT=3050`, but default to 3001
-ARG PORT
-ENV PORT=${PORT:-3001}
-
 # Install node modules and build assets, remove dev dependencies
 RUN npm ci && npm run build && npm prune --production
 
-EXPOSE $PORT
 CMD ["npm", "start"]

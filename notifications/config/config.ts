@@ -1,18 +1,17 @@
 import _ from 'lodash';
 import { Config } from './config-model';
-import Logger from '../src/logger/logger';
 
 const isConfigValid = (config: Config): { valid: boolean; message: string } => {
-  const { mollieApiKey, ctConfig } = config;
+  const { mollie, commercetools } = config;
   let message = '';
 
-  if (!mollieApiKey) {
+  if (!mollie?.apiKey) {
     message = message + 'No Mollie API Key found\n';
   }
-  if (!config.ctConfig) {
+  if (!config.commercetools) {
     message = message + 'No Commercetools configuration present\n';
   }
-  if (!ctConfig?.host || !ctConfig?.clientId || !ctConfig?.clientSecret || !ctConfig?.authUrl || !ctConfig?.projectKey) {
+  if (!commercetools?.host || !commercetools?.clientId || !commercetools?.clientSecret || !commercetools?.authUrl || !commercetools?.projectKey) {
     message = message + 'Commercetools configuration requires missing required key(s)\n';
   }
   return {
@@ -28,7 +27,11 @@ export function loadConfig(ctMollieConfig: string | undefined) {
 
     // Allow missing parts of config and fill in with defaults
     const config: Config = {
-      port: process.env.PORT || 3001,
+      service: {
+        port: envConfig.service?.port || 3001,
+        logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
+        logTransports: envConfig.service?.logTransports || 'terminal',
+      },
       ...envConfig,
     };
 
@@ -36,7 +39,6 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     if (valid) {
       return config;
     } else {
-      Logger.error(message);
       throw new Error(message);
     }
   } catch (e) {
