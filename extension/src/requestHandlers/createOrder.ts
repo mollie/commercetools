@@ -43,16 +43,23 @@ export function getShippingAddress(shippingAddressObject: any): OrderAddress {
 /**
  *
  * @param paymentMethods comma separated string of valid mollie PaymentMethods
- * If no valid payment methods are provided, this will return ''
- * The 'method' parameter will not be passed as part of the createOrder request
- * TODO: WARNING: 'voucher' and 'mybank' are not present on PaymentMethod type.
- * This means they will not be passed to mollie
+ * If no valid payment methods are provided, this will return '' and
+ * the 'method' parameter will not be passed as part of the createOrder request
+ *
+ * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
+ * in V3.6 or V4 of the mollie node SDK.
+ *
+ * Until then, we cast 'voucher'/'mybank' as PaymentMethod and track this in Issue #34
+ * https://github.com/mollie/commercetools/issues/34
  */
 export const formatPaymentMethods = (paymentMethods: string | undefined): PaymentMethod[] | PaymentMethod | '' => {
   if (paymentMethods) {
     const methods = paymentMethods.split(',');
     const methodArray = methods
       .map(method => {
+        if (method === 'voucher' || method === 'mybank') {
+          return method as PaymentMethod;
+        }
         return PaymentMethod[method as PaymentMethod];
       })
       .filter(method => method !== undefined);
