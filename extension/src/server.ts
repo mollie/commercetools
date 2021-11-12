@@ -3,7 +3,7 @@ import app from './app';
 import config from '../config/config';
 import Logger from './logger/logger';
 
-const port = config.port;
+const port = config.service.port;
 
 const _exit = _.once(() => {
   Logger.info('Closing http server.');

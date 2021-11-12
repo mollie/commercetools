@@ -1,4 +1,5 @@
 import winston from 'winston';
+import config from '../../config/config';
 // TODO: add google cloud logging with credentials correctly setup
 
 const levels = {
@@ -12,7 +13,7 @@ const levels = {
 
 // Define severity level based on LOG_LEVEL env
 function level(): string {
-  return process.env.LOG_LEVEL || 'info';
+  return config.service.logLevel;
 }
 
 const colors = {
@@ -44,9 +45,9 @@ const terminalFormat = winston.format.combine(
 
 let transports = [];
 
-// Configure transports used with LOG_TRANSPORTS env var
+// Configure transports used with logTransports config
 // This can be 'terminal', 'file' or 'all'
-switch (process.env.LOG_TRANSPORTS) {
+switch (config.service.logTransports) {
   case 'all':
     transports.push(
       new winston.transports.Console({
@@ -68,7 +69,7 @@ switch (process.env.LOG_TRANSPORTS) {
       }),
     );
     break;
-  // Default to 'terminal' if LOG_TRANSPORTS not provided
+  // Default to 'terminal' if logTransports not provided
   default:
     transports.push(
       new winston.transports.Console({
