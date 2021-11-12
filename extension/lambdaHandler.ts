@@ -1,6 +1,4 @@
-// import { Request, Response } from 'express';
 import ServerlessHttp from 'serverless-http';
-import handleRequest from './src/requestHandlers/handleRequest';
 import app from './src/app';
 
 const handler = ServerlessHttp(app);
