@@ -50,7 +50,7 @@ describe('Create orders tests', () => {
     mocked(convertCTToMollieAmountValue)
       .mockReturnValueOnce('10.00') // extractLine:unitPriceValueString
       .mockReturnValueOnce('0.00') // extractLine:vatAmount.value
-      .mockReturnValueOnce('10.00'); // extractLine:totalPriceValueString
+      .mockReturnValueOnce('10.00'); // extractLine:totalPriceCT
     const mockedCTLine = {
       id: '18920',
       productId: '90020',
@@ -129,7 +129,7 @@ describe('Create orders tests', () => {
       .mockReturnValueOnce('11.00') // extractLine:unitPriceValueString
       .mockReturnValueOnce('0.00') // extractLine:vatAmount.value
       .mockReturnValueOnce('11.00') // extractLine:discountValue
-      .mockReturnValueOnce('11.00'); // extractLine:totalPriceValueString
+      .mockReturnValueOnce('11.00'); // extractLine:totalPriceCT
     const mockedCTLine = {
       id: '18920',
       productId: '90020',
@@ -212,7 +212,7 @@ describe('Create orders tests', () => {
       .mockReturnValueOnce('10.00') // fillOrderValues:amountConverted
       .mockReturnValueOnce('10.00') // extractLine:unitPriceValueString
       .mockReturnValueOnce('0.00') // extractLine:vatAmount.value
-      .mockReturnValueOnce('10.00'); // extractLine:totalPriceValueString
+      .mockReturnValueOnce('10.00'); // extractLine:totalPriceCT
     const mockedCreateOrderRequestFields =
       '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"shippingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"vatRate":"0", "vatAmount": { "currencyCode": "EUR", "centAmount": 0 },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
     const mockedCreateOrderRequest = {

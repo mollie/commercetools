@@ -120,11 +120,11 @@ export function extractLine(line: any) {
   }
 
   // Calculate total line price
-  const totalPrice = line.price.value.centAmount * line.quantity - discountCentAmount;
-  const totalPriceString = convertCTToMollieAmountValue(totalPrice, line?.price?.value?.fractionDigits);
+  const totalPriceCT = line.price.value.centAmount * line.quantity - discountCentAmount;
+  const totalAmountMollieString = convertCTToMollieAmountValue(totalPriceCT, line?.price?.value?.fractionDigits);
   extractedLine.totalAmount = {
     currency: line.price.value.currencyCode,
-    value: totalPriceString,
+    value: totalAmountMollieString,
   };
 
   return extractedLine;
