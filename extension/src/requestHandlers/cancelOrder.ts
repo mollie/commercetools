@@ -17,7 +17,6 @@ export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams>
   try {
     const parsedCancelOrderRequest = JSON.parse(ctObj?.custom?.fields?.createCancelOrderRequest);
     const mollieAdjustedLines = makeMollieLineAmounts(parsedCancelOrderRequest);
-    Logger.debug({ mollieAdjustedLines: mollieAdjustedLines });
     const cancelOrderParams = {
       orderId: ctObj?.key,
       lines: mollieAdjustedLines,
