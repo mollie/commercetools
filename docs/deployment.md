@@ -8,20 +8,22 @@ Commercetools Mollie integration requires 1 environment variable to start. This 
 
 Here is a table to show which environment variables are necessary, and which are optional:
 
-| Env variable name  | Required | Notes                                                                                                       |
-| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
-| `PORT`             | NO       | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
-| `LOG_LEVEL`        | NO       | Specifies how verbose logs should be. Options are listed below.                                             |
-| `LOG_TRANSPORTS`   | NO       | Specifies where the logs are written to/stored. Options listed below                                        |
-| `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                       |
-| `ctConfig`         | YES      | Contains commercetools-specific project variables                                                           |
-| `mollieApiKey`     | YES      | API key for interacting with mollie                                                                         |
-| `projectKey`       | YES      | Commercetools project key                                                                                   |
-| `clientId`         | YES      | Commercetools client id, unique to the client                                                               |
-| `clientSecret`     | YES      | Commercetools client secret, unique to the client                                                           |
-| `authUrl`          | YES      | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
-| `host`             | YES      | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
-| `scopes`           | NO       | Constrains endpoints the client has access to in commercetools                                              |
+| Env variable name  | Required                   | Notes                                                                                                       |
+| ------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `CT_MOLLIE_CONFIG` | YES                        | Contains the commercetools & mollie project variables                                                       |
+| `mollie`           | YES                        | Contains Mollie-specific project variables                                                                  |
+|   `apiKey`         | YES                        | API key for interacting with mollie                                                                         |
+| `commercetools`    | YES (Notifications module) | Contains commercetools-specific project variables                                                           |
+|   `projectKey`     | YES                        | Commercetools project key                                                                                   |
+|   `clientId`       | YES                        | Commercetools client id, unique to the client                                                               |
+|   `clientSecret`   | YES                        | Commercetools client secret, unique to the client                                                           |
+|   `authUrl`        | YES                        | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
+|   `host`           | YES                        | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
+|   `scopes`         | NO                         | Constrains endpoints the client has access to in commercetools                                              |
+| `service`          | NO                         | Contains service-specific project variables                                                                 |
+|   `port`           | NO                         | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
+|   `logLevel`       | NO                         | Specifies how verbose logs should be. Options are listed below.                                             |
+|   `logTransports`  | NO                         | Specifies where the logs are written to/stored. Options listed below                                        |
 
 <!-- Notes - describe env, not structure in json -->
 
@@ -29,18 +31,22 @@ Below is an example of how these should be formatted:
 
 ```json
 {
-  "PORT": 3050,
-  "LOG_LEVEL": "info",
-  "LOG_TRANSPORTS": "all",
   "CT_MOLLIE_CONFIG": {
-    "mollieApiKey": "mollieApiKey",
-    "ctConfig": {
+    "mollie": {
+      "apiKey": "mollieApiKey",
+    },
+    "commercetools": {
       "projectKey": "example_project_key",
       "clientId": "example_client_id",
       "clientSecret": "example_client_secret",
       "authUrl": "example_auth_url",
       "host": "example_host",
       "scopes": "example_scopes"
+    },
+    "service": {
+      "port": 3050,
+      "logLevel": "info",
+      "logTransports": "terminal",
     }
   }
 }
@@ -96,8 +102,7 @@ Add the following global variables into the config file:
 To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:
 `docker build -t ct-mollie-extension:latest .`
 
-The port number will default to 3000 (extension module) and 3001 (notifications module). It can also be passed as an argument to the build command like so:
-`docker build -t ct-mollie-extension:latest --build-arg PORT=3050 .`
+The port number will default to 3000 (extension module) and 3001 (notifications module). Depending on how you run it, you might need to map the docker port to your system port.
 
 After the docker image has built, you can now run your docker image with the following command:
 `docker run -e CT_MOLLIE_CONFIG="{...}" ct-mollie-extension:latest`
