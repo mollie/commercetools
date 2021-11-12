@@ -31,6 +31,10 @@ describe('formatPaymentMethods', () => {
     const method = formatPaymentMethods('apple,klarna');
     expect(method).toEqual('');
   });
+  it('should return correct PaymentMethods when voucher or mybank is present', () => {
+    const method = formatPaymentMethods('voucher,paysafecard,applepay,mybank,payfriend');
+    expect(method).toEqual(['voucher', 'paysafecard', 'applepay', 'mybank']);
+  });
 });
 
 describe('Create orders tests', () => {

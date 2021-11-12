@@ -1,4 +1,4 @@
-import { MollieClient, Refund } from '@mollie/api-client';
+import { MollieClient } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/payments/refunds/parameters';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
