@@ -1,7 +1,7 @@
 import { mocked } from 'ts-jest/utils';
-import { Action } from '../../src/types';
+import { Action, ControllerAction } from '../../src/types';
 import cancelOrder, { createCtActions } from '../../src/requestHandlers/cancelOrder';
-import { createDateNowString } from '../../src/utils';
+import { makeActions, createDateNowString } from '../../src/utils';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
@@ -50,6 +50,23 @@ describe('createCtActions', () => {
         },
       ],
     };
+    mocked(makeActions.addInterfaceInteraction).mockReturnValue({
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        actionType: ControllerAction.CancelOrder,
+        createdAt: '2021-10-08T12:12:02.625Z',
+        request: '[]',
+        response: JSON.stringify(mockedCancelOrderResponse),
+      },
+    });
+    mocked(makeActions.setCustomField).mockReturnValue({
+      action: 'setCustomField',
+      name: 'createCancelOrderResponse',
+      value: JSON.stringify(mockedCancelOrderResponse),
+    });
     const ctActions = createCtActions(mockedCancelOrderResponse, mockedCtObject);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
