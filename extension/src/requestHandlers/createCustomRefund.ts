@@ -17,7 +17,7 @@ const extractParameters = (customRefundRequest: any): Promise<CreateParameters> 
 
     // Check for required fields, throw error if not present
     if (!molliePaymentId || !amount?.centAmount || !amount?.currencyCode) {
-      throw new Error(`Required fields missing from createCustomRefundRequest. Must contain interactionId, amount`);
+      throw new Error();
     }
     // Create refund parameters
     const refundParameters: CreateParameters = {

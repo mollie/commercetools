@@ -60,7 +60,7 @@ describe('formatMollieErrorResponse', () => {
     expect(errors404).toMatchSnapshot();
   });
 
-  it("should return ERRRR when error's status is 409", () => {
+  it("should return InvalidOperation when error's status is 409", () => {
     const mockError409 = {
       status: 409,
       title: 'Conflict',
