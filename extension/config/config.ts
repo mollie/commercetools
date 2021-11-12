@@ -6,13 +6,13 @@ export function loadConfig(ctMollieConfig: string | undefined) {
 
     const config: Config = {
       mollie: {
-        apiKey: envConfig.mollie.apiKey
+        apiKey: envConfig.mollie.apiKey,
       },
       service: {
         port: envConfig.service?.port || 3000,
         logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
         logTransports: envConfig.service?.logTransports || 'terminal',
-      }
+      },
     };
     return config;
   } catch (e) {
