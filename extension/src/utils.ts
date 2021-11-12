@@ -27,7 +27,7 @@ export function convertCTToMollieAmountValue(ctValue: number, fractionDigits = 2
 
 export function makeMollieAmount({ centAmount, fractionDigits, currencyCode }: CTMoney): Amount {
   return {
-    value: amountMapper({ centAmount, fractionDigits }),
+    value: convertCTToMollieAmountValue(centAmount, fractionDigits),
     currency: currencyCode,
   };
 }
