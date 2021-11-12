@@ -1,5 +1,6 @@
 import { MethodsListParams } from '@mollie/api-client';
-import { Action, ControllerAction } from './types';
+import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import { ControllerAction, CTMoney } from './types';
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
@@ -22,6 +23,13 @@ export function convertCTToMollieAmountValue(ctValue: number, fractionDigits = 2
   const divider = Math.pow(10, fractionDigits);
   const mollieAmountValue = (ctValue / divider).toFixed(2);
   return mollieAmountValue;
+}
+
+export function makeMollieAmount({ centAmount, fractionDigits, currencyCode }: CTMoney): Amount {
+  return {
+    value: convertCTToMollieAmountValue(centAmount, fractionDigits),
+    currency: currencyCode,
+  };
 }
 
 export function methodListMapper(ctObj: any): MethodsListParams {
