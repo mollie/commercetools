@@ -2,7 +2,7 @@ import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, Orde
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
-import { amountMapper, createDateNowString } from '../utils';
+import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
 
 enum MollieLineCategoryType {
@@ -80,8 +80,8 @@ export function isDiscountAmountValid(inputObject: any): boolean {
 }
 
 export function extractLine(line: any) {
-  const unitPriceValueString = amountMapper({ centAmount: line.price.value.centAmount });
-  const totalPriceValueString = amountMapper({ centAmount: line.totalPrice.centAmount * line.quantity });
+  const unitPriceValueString = convertCTToMollieAmountValue(line.price.value.centAmount, line.price.value.fractionDigits);
+  const totalPriceValueString = convertCTToMollieAmountValue(line.totalPrice.centAmount * line.quantity, line.price.value.fractionDigits);
   const extractedLine: any = {
     // Name as english for the time being
     name: line.name.en,
@@ -97,7 +97,7 @@ export function extractLine(line: any) {
     vatRate: convertCTTaxRateToMollieTaxRate(line.vatRate),
     vatAmount: {
       currency: line.vatAmount.currencyCode,
-      value: amountMapper({ centAmount: line.vatAmount.centAmount }),
+      value: convertCTToMollieAmountValue(line.vatAmount.centAmount),
     },
     type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
     category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
@@ -109,7 +109,7 @@ export function extractLine(line: any) {
   if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
     extractedLine.discountAmount = {
       currency: line.discountAmount.currencyCode,
-      value: amountMapper({ centAmount: line.discountAmount.centAmount }),
+      value: convertCTToMollieAmountValue(line.discountAmount.centAmount),
     };
   }
   return extractedLine;
@@ -118,7 +118,7 @@ export function extractLine(line: any) {
 export function fillOrderValues(body: any): Promise<OrderCreateParams> {
   try {
     const deStringedOrderRequest = JSON.parse(body?.resource?.obj?.custom?.fields?.createOrderRequest);
-    const amountConverted = amountMapper({ centAmount: body?.resource?.obj?.amountPlanned?.centAmount });
+    const amountConverted = convertCTToMollieAmountValue(body?.resource?.obj?.amountPlanned?.centAmount);
     const orderValues: OrderCreateParams = {
       amount: {
         value: amountConverted,
