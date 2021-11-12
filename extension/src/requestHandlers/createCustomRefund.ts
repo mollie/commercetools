@@ -1,24 +1,30 @@
-import { MollieClient, Refund } from '@mollie/api-client';
+import { MollieClient } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/payments/refunds/parameters';
+import { ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
-import { CTUpdatesRequestedResponse } from '../types';
+import { createDateNowString, makeActions } from '../utils';
 import { convertCTToMollieAmountValue } from '../utils';
 
 /**
  * @param ctObject
  * ctObject contains createCustomRefundRequest custom field
- * Parse the stringified JSON and extract paymentId, amount etc. for mollie call
+ * Parse the stringified JSON and extract parameters required to call the mollie endpoint
  */
-const extractParameters = (ctObject: any): Promise<CreateParameters> => {
+const extractParameters = (customRefundRequest: any): Promise<CreateParameters> => {
   try {
-    const parsedRequest = JSON.parse(ctObject?.custom?.fields?.createCustomRefundRequest);
-    const { interactionId: molliePaymentId, amount, description, metadata } = parsedRequest;
+    const { interactionId: molliePaymentId, amount, description, metadata } = customRefundRequest;
+
+    // Check for required fields, throw error if not present
+    if (!molliePaymentId || !amount?.centAmount || !amount?.currencyCode) {
+      throw new Error();
+    }
+    // Create refund parameters
     const refundParameters: CreateParameters = {
       paymentId: molliePaymentId,
       amount: {
         currency: amount?.currencyCode,
-        value: convertCTToMollieAmountValue(amount?.centAmount),
+        value: convertCTToMollieAmountValue(amount?.centAmount, amount?.fractionDigits),
       },
     };
     if (description) Object.assign(refundParameters, { description });
@@ -30,20 +36,46 @@ const extractParameters = (ctObject: any): Promise<CreateParameters> => {
   }
 };
 
+/**
+ *
+ * @param ctObject
+ * @param mollieClient
+ * Creates a refund using the refunds API instead of the Orders API
+ * This is used when the merchant wishes to refund an arbitrary amount,
+ * rather than partial or full line, or the whole order
+ */
 export async function createCustomRefund(ctObject: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    const createRefundParameters = await extractParameters(ctObject);
+    // Parse JSON and call mollie's create payment refund endpoint
+    const parsedRequest = JSON.parse(ctObject?.custom?.fields?.createCustomRefundRequest);
+    const createRefundParameters = await extractParameters(parsedRequest);
     const response = await mollieClient.payments_refunds.create(createRefundParameters);
-    Logger.debug(response);
+    const { id: mollieRefundId } = response;
+
+    // Create update actions
+    const updateActions = [];
+    updateActions.push(
+      makeActions.setCustomField('createCustomRefundResponse', JSON.stringify(response)),
+      makeActions.addInterfaceInteraction(ControllerAction.CreateCustomRefund, ctObject?.custom?.fields?.createCustomRefundRequest, JSON.stringify(response)),
+      {
+        action: 'addTransaction',
+        transaction: {
+          interactionId: mollieRefundId,
+          amount: {
+            centAmount: parsedRequest.amount.centAmount,
+            currencyCode: parsedRequest.amount.currencyCode,
+            fractionDigits: parsedRequest.amount?.fractionDigits ?? 2,
+          },
+          type: CTTransactionType.Refund,
+          timestamp: createDateNowString(),
+        },
+      },
+    );
+
+    // Return correct status and updates for CT
     return {
       status: 201,
-      actions: [
-        {
-          action: 'setCustomField',
-          name: 'createCustomRefundResponse',
-          value: 'Placeholder - to prevent API extension being triggered by Notifications',
-        },
-      ],
+      actions: updateActions,
     };
   } catch (error) {
     Logger.error(error);
