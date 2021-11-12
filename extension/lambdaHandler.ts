@@ -1,13 +1,9 @@
-import { createMollieClient } from '@mollie/api-client';
-import config from './config/config';
+// import { Request, Response } from 'express';
+import ServerlessHttp from 'serverless-http';
+import handleRequest from './src/requestHandlers/handleRequest';
+import app from './src/app';
 
-const mollieClient = createMollieClient({ apiKey: config.mollieApiKey });
-
-exports.handler = async () => {
-  // Methods for the Payments API
-  let methods = await mollieClient.methods.all();
-
-  // Methods for the Orders API
-  methods = await mollieClient.methods.all({ resource: 'orders' });
-  return methods;
+const handler = ServerlessHttp(app);
+exports.handler = async (event: any, context: any) => {
+  return await handler(event, context);
 };
