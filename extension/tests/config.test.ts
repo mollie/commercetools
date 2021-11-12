@@ -1,25 +1,37 @@
 import { loadConfig } from '../config/config';
 
 describe('Config test', () => {
-  it('Should return config object with some defaults (port)', async () => {
+  it('Should return correct config object including default settings', async () => {
     const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
       mollie: { apiKey: 'testMollieApiKey' },
     });
+    const expectedConfig = {
+      mollie: { apiKey: 'testMollieApiKey' },
+      service: {
+        port: 3000,
+        logLevel: 'info',
+        logTransports: 'terminal',
+      },
+    };
     const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
-    expect(config).toHaveProperty('service');
-    expect(config).toHaveProperty('mollie');
-    expect(config.service.port).toBe(3000);
+    expect(config).toEqual(expectedConfig);
   });
 
-  it('Should return provided env config, extended with missing default config', async () => {
+  it('Should return config with correct service properties', async () => {
     const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
       mollie: { apiKey: 'testMollieApiKey' },
       service: { port: 2000 },
     });
+    const expectedConfig = {
+      mollie: { apiKey: 'testMollieApiKey' },
+      service: {
+        port: 2000,
+        logLevel: 'info',
+        logTransports: 'terminal',
+      },
+    };
     const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
-    expect(config).toHaveProperty('mollie');
-    expect(config).toHaveProperty('service');
-    expect(config.service.port).toBe(2000);
+    expect(config).toEqual(expectedConfig);
   });
 
   it('Should return an error if no config is provided', async () => {
