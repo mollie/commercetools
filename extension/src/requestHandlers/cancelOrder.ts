@@ -4,7 +4,7 @@ import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorRes
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
 import { makeActions, makeMollieAmount } from '../utils';
 
-function makeMollieLineAmounts(ctLines: any) {
+export function makeMollieLineAmounts(ctLines: any) {
   return ctLines.map((line: any) => {
     if (line.amount) {
       line.amount = makeMollieAmount(line.amount);

@@ -1,10 +1,51 @@
 import { mocked } from 'ts-jest/utils';
 import { Action, ControllerAction } from '../../src/types';
-import cancelOrder, { createCtActions } from '../../src/requestHandlers/cancelOrder';
-import { makeActions, createDateNowString } from '../../src/utils';
+import cancelOrder, { createCtActions, makeMollieLineAmounts } from '../../src/requestHandlers/cancelOrder';
+import { makeActions, createDateNowString, makeMollieAmount } from '../../src/utils';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
+
+describe('makeMollieLineAmounts', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('Should transorm commercetools money to mollie amount object on lines', () => {
+    mocked(makeMollieAmount).mockReturnValue({
+      currency: "EUR",
+      value: '18.00'
+    });
+    const mockedLines = [{
+      id: '1',
+      amount: {
+        fractionDigits: 2,
+        currencyCode: "EUR",
+        centAmount: 1800
+      }
+    }]
+    const expectedResult = [{
+      id: '1',
+      amount: {
+        currency: "EUR",
+        value: '18.00'
+      }
+    }]
+    const transformedLineAmounts = makeMollieLineAmounts(mockedLines)
+    expect(transformedLineAmounts).toEqual(expectedResult)
+  })
+  it('Should not fail if no amounts are present', () => {
+    const mockedLines = [{
+      id: '1',
+      name: 'apple',
+    }]
+    const expectedResult = [{
+      id: '1',
+      name: 'apple',
+    }]
+    const transformedLineAmounts = makeMollieLineAmounts(mockedLines)
+    expect(transformedLineAmounts).toEqual(expectedResult)
+  })
+})
 
 describe('createCtActions', () => {
   beforeEach(() => {
