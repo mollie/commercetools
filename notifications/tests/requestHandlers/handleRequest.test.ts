@@ -56,7 +56,6 @@ describe('handleRequest', () => {
   const mockStatus = jest.fn().mockReturnValue(res);
   const mockSend = jest.fn().mockReturnValue(res);
   const mockEnd = jest.fn();
-  const mockLogWarn = jest.fn();
   const mockLogError = jest.fn();
 
   beforeEach(() => {
@@ -67,7 +66,6 @@ describe('handleRequest', () => {
     res.status = mockStatus;
     res.send = mockSend;
     res.end = mockEnd;
-    Logger.warn = mockLogWarn;
     Logger.error = mockLogError;
   });
 
@@ -137,7 +135,7 @@ describe('handleRequest', () => {
     };
     await handleRequest(req, res);
 
-    expect(mockLogWarn).toHaveBeenLastCalledWith('ID 00000 is invalid');
+    expect(mockLogError).toHaveBeenLastCalledWith('ID 00000 is invalid');
     expect(mockStatus).toHaveBeenLastCalledWith(200);
     expect(mockEnd).toHaveBeenCalledTimes(1);
   });
