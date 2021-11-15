@@ -144,8 +144,7 @@ export default async function handleRequest(req: Request, res: Response) {
 
     res.status(200).end();
   } catch (error: any) {
-    const { status, code, message } = error;
-    Logger.error({ status, code, message });
+    Logger.error({ error });
     res.status(200).end();
   }
 }
