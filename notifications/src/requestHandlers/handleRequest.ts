@@ -78,7 +78,7 @@ export default async function handleRequest(req: Request, res: Response) {
     // Receive webhook trigger from Mollie with order or payment ID
     const resourceType = isOrderOrPayment(id);
     if (resourceType === 'invalid') {
-      Logger.warn(`ID ${id} is invalid`);
+      Logger.error(`ID ${id} is invalid`);
       return res.status(200).end();
     }
 
