@@ -143,8 +143,9 @@ export default async function handleRequest(req: Request, res: Response) {
     await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion ?? 1, updateActions);
 
     res.status(200).end();
-  } catch (error) {
-    Logger.error({ error });
+  } catch (error: any) {
+    const { status, code, message } = error;
+    Logger.error({ status, code, message });
     res.status(200).end();
   }
 }
