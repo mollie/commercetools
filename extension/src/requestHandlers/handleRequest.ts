@@ -11,7 +11,7 @@ import { createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
 
-const mollieApiKey = config.mollieApiKey;
+const mollieApiKey = config.mollie.apiKey;
 const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 

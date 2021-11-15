@@ -2,19 +2,74 @@
 
 **Work in progress**
 
-## Environment variable
+## Environment variables
 
-commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure below.
+Commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure.
+
+Here is a table to show which environment variables are necessary, and which are optional:
+
+| Env variable name  | Required                   | Notes                                                                                                       |
+| ------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `CT_MOLLIE_CONFIG` | YES                        | Contains the commercetools & mollie project variables                                                       |
+| `mollie`           | YES                        | Contains Mollie-specific project variables                                                                  |
+|   `apiKey`         | YES                        | API key for interacting with mollie                                                                         |
+| `commercetools`    | YES (Notifications module) | Contains commercetools-specific project variables                                                           |
+|   `projectKey`     | YES                        | Commercetools project key                                                                                   |
+|   `clientId`       | YES                        | Commercetools client id, unique to the client                                                               |
+|   `clientSecret`   | YES                        | Commercetools client secret, unique to the client                                                           |
+|   `authUrl`        | YES                        | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
+|   `host`           | YES                        | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
+|   `scopes`         | NO                         | Constrains endpoints the client has access to in commercetools                                              |
+| `service`          | NO                         | Contains service-specific project variables                                                                 |
+|   `port`           | NO                         | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
+|   `logLevel`       | NO                         | Specifies how verbose logs should be. Options are listed below.                                             |
+|   `logTransports`  | NO                         | Specifies where the logs are written to/stored. Options listed below                                        |
+
+<!-- Notes - describe env, not structure in json -->
+
+Below is an example of how these should be formatted:
 
 ```json
 {
-    "port": 3000,
-    "mollieApiKey": "mollieApiKey",
-    ...
+  "CT_MOLLIE_CONFIG": {
+    "mollie": {
+      "apiKey": "mollieApiKey",
+    },
+    "commercetools": {
+      "projectKey": "example_project_key",
+      "clientId": "example_client_id",
+      "clientSecret": "example_client_secret",
+      "authUrl": "example_auth_url",
+      "host": "example_host",
+      "scopes": "example_scopes"
+    },
+    "service": {
+      "port": 3050,
+      "logLevel": "info",
+      "logTransports": "terminal",
+    }
+  }
 }
 ```
 
-_N.B. Environment variables deployment subject to change as we're developing_
+### Log levels
+
+There are 6 different levels of logging available - if this isn't provided in the environment, the level will default to 'info':
+
+- error (only errors will display)
+- warn
+- info
+- http
+- verbose
+- debug (the most explicit type of logging, should be used only for testing and not for production)
+
+### Log transports
+
+Log transports are where the logs are written to. If this isn't provided in the environment, it will default to 'terminal':
+
+- file (written to a file inside logs/ directory)
+- terminal (written to STDOUT)
+- all (written to both file and terminal)
 
 ## AWS Lambda
 
@@ -44,11 +99,14 @@ Add the following global variables into the config file:
 
 ## Docker
 
-To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container with:
+To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:
 `docker build -t ct-mollie-extension:latest .`
 
-After the docker image has build, you could run it with a command like the following to start the container:
-`docker run -e CT_MOLLIE_CONFIG=xxxxxx --name ct-mollie-extension ct-mollie-extension:latest`
+The port number will default to 3000 (extension module) and 3001 (notifications module). Depending on how you run it, you might need to map the docker port to your system port.
+
+After the docker image has built, you can now run your docker image with the following command:
+`docker run -e CT_MOLLIE_CONFIG="{...}" ct-mollie-extension:latest`
+Note that the environment variables that are required should be passed with the --env or -e flag. The environment variables can be found at the top of this document.
 
 When finished, to stop the container, run:
 `docker stop ct-mollie-extension`

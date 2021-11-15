@@ -15,12 +15,12 @@ import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
 
-const mollieApiKey = config.mollieApiKey;
+const mollieApiKey = config.mollie.apiKey;
 const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 const {
-  ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
+  commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes },
 } = config;
 
 const userAgentMiddleware = createUserAgentMiddleware({
