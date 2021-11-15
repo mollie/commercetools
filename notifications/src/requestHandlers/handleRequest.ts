@@ -78,7 +78,8 @@ export default async function handleRequest(req: Request, res: Response) {
     // Receive webhook trigger from Mollie with order or payment ID
     const resourceType = isOrderOrPayment(id);
     if (resourceType === 'invalid') {
-      return res.status(400).send(`ID ${id} is invalid`);
+      Logger.warn(`ID ${id} is invalid`);
+      return res.status(200).end();
     }
 
     // Order or Payment flow will populate the updated actions
@@ -144,6 +145,6 @@ export default async function handleRequest(req: Request, res: Response) {
     res.status(200).end();
   } catch (error) {
     Logger.error({ error });
-    res.status(400).send(error);
+    res.status(200).end();
   }
 }

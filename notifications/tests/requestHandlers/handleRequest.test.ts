@@ -56,6 +56,8 @@ describe('handleRequest', () => {
   const mockStatus = jest.fn().mockReturnValue(res);
   const mockSend = jest.fn().mockReturnValue(res);
   const mockEnd = jest.fn();
+  const mockLogWarn = jest.fn();
+  const mockLogError = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -65,6 +67,12 @@ describe('handleRequest', () => {
     res.status = mockStatus;
     res.send = mockSend;
     res.end = mockEnd;
+    Logger.warn = mockLogWarn;
+    Logger.error = mockLogError;
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
   });
 
   it('order webhook flow - should return 200 and make calls to updatePaymentByKey', async () => {
@@ -83,6 +91,7 @@ describe('handleRequest', () => {
 
     expect(mockStatus).toHaveBeenLastCalledWith(200);
     expect(mockEnd).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(0);
   });
 
   it('payment webhook flow - should return 200 and make calls to updatePaymentByKey', async () => {
@@ -101,6 +110,7 @@ describe('handleRequest', () => {
 
     expect(mockStatus).toHaveBeenLastCalledWith(200);
     expect(mockEnd).toHaveBeenCalledTimes(1);
+    expect(mockLogError).toHaveBeenCalledTimes(0);
   });
 
   it('should return 400 if webhook is called with a path that is not /', async () => {
@@ -121,28 +131,27 @@ describe('handleRequest', () => {
     expect(mockEnd).toHaveBeenCalledTimes(1);
   });
 
-  it('should return 400 is webhook is triggered with an invalid resource id', async () => {
+  it('should log 400 when webhook is triggered with an invalid resource id and return 200', async () => {
     req.body = {
       id: '00000',
     };
     await handleRequest(req, res);
 
-    expect(mockStatus).toHaveBeenLastCalledWith(400);
-    expect(mockSend).toHaveBeenLastCalledWith('ID 00000 is invalid');
+    expect(mockLogWarn).toHaveBeenLastCalledWith('ID 00000 is invalid');
+    expect(mockStatus).toHaveBeenLastCalledWith(200);
+    expect(mockEnd).toHaveBeenCalledTimes(1);
   });
 
-  it('should return 400 if an error occurs', async () => {
+  it('should log if an error occurs and return 200', async () => {
     req.body = {
       id: mockPaymentId,
     };
     const updatePaymentByKeyFailure = jest.fn().mockRejectedValue(new Error());
     actions.ctUpdatePaymentByKey = updatePaymentByKeyFailure;
-    const mockLogError = jest.fn();
-    Logger.error = mockLogError;
 
     await handleRequest(req, res);
 
-    expect(mockStatus).toHaveBeenLastCalledWith(400);
+    expect(mockStatus).toHaveBeenLastCalledWith(200);
     expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 });
