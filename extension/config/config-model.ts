@@ -7,4 +7,11 @@ export interface Config {
     logLevel: 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug';
     logTransports?: 'all' | 'file' | 'terminal';
   };
+  commercetools: {
+    authentication: {
+      isBasicAuth: boolean;
+      username?: string;
+      password?: string;
+    };
+  };
 }

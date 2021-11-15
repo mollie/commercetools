@@ -3,6 +3,7 @@ import { version } from '../../package.json';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
 import config from '../../config/config';
+import { checkAuthorizationHeader } from '../authentication/authenticationHandler';
 import actions, { validateAction } from './actions';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
@@ -24,7 +25,12 @@ export default async function handleRequest(req: Request, res: Response) {
     Logger.http(`Method ${req.method} not allowed`);
     return res.status(405).end();
   }
-  // TODO - authentication check - CMI-95,96,97
+  // Auth
+  const { isValid, message } = checkAuthorizationHeader(req.headers);
+  if (!isValid) {
+    Logger.error(message);
+    res.status(401).end();
+  }
   try {
     const action = validateAction(req.body);
     if (action === ControllerAction.NoAction) {

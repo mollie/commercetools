@@ -13,6 +13,13 @@ export function loadConfig(ctMollieConfig: string | undefined) {
         logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
         logTransports: envConfig.service?.logTransports || 'terminal',
       },
+      commercetools: {
+        authentication: {
+          isBasicAuth: envConfig.commercetools?.authentication?.isBasicAuth || false,
+          username: envConfig.commercetools?.authentication?.username,
+          password: envConfig.commercetools?.authentication?.password,
+        },
+      },
     };
     return config;
   } catch (e) {
