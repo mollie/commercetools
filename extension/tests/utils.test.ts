@@ -58,7 +58,7 @@ describe('Utils', () => {
       expect(mollieOptions).toEqual(expectedOptions);
     });
 
-    it('Should properly parse includes and not have ', async () => {
+    it('Should properly parse includes and not have unprovided fields', async () => {
       const ctObj = {
         amountPlanned: {
           currencyCode: 'EUR',
