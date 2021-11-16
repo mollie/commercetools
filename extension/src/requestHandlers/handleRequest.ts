@@ -29,7 +29,7 @@ export default async function handleRequest(req: Request, res: Response) {
   const { isValid, message } = checkAuthorizationHeader(req.headers);
   if (!isValid) {
     Logger.error(message);
-    res.status(401).end();
+    res.status(400).end();
   }
   try {
     const action = validateAction(req.body);
