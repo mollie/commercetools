@@ -6,8 +6,7 @@ export default async function getOrderDetailsById(orderId: string, mollieClient:
     const order = await mollieClient.orders.get(orderId, { embed: [OrderEmbed.payments] });
     return order;
   } catch (error) {
-    // Log full error at debug level
-    Logger.debug({ error });
+    Logger.debug('Error in getOrderDetailsById');
     throw error;
   }
 }

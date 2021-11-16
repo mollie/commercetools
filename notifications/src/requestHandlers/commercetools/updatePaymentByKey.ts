@@ -30,7 +30,6 @@ export async function updatePaymentByKey(key: string, commercetoolsClient: any, 
     const { body: paymentObject } = response;
     return paymentObject as CTPayment;
   } catch (error) {
-    // Log full error at debug level
     Logger.debug('Error in updatePaymentByKey');
     throw error;
   }

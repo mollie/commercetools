@@ -24,7 +24,6 @@ export async function getPaymentByKey(key: string, commercetoolsClient: any, pro
     const { body: paymentObject } = response;
     return paymentObject as CTPayment;
   } catch (error) {
-    // Log full error at debug level
     Logger.debug('Error in getPaymentByKey');
     throw error;
   }
