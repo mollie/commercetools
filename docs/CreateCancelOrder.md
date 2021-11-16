@@ -89,7 +89,7 @@ To cancel an entire order, provide an empty array:
 }
 ```
 
-Cancelling a single order line:
+Cancelling a single order line ('quantity' parameter is optional if you want to cancel part of the order line):
 
 ```json
 {
@@ -127,7 +127,7 @@ If it was successful, when we check the commercetools payment, we can now see th
 
 ```json
 "fields": {
-            "mollieOrderStatus": "cancelled",
+            "mollieOrderStatus": "canceled",
             "createCancelOrderResponse": /*...*/
             /*...*/
 }
