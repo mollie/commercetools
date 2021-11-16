@@ -4,9 +4,11 @@ import { mocked } from 'ts-jest/utils';
 import actions, { validateAction } from '../../src/requestHandlers/actions';
 import handleRequest, { processAction } from '../../src/requestHandlers/handleRequest';
 import { ControllerAction } from '../../src/types/index';
+import { checkAuthorizationHeader } from '../../src/authentication/authenticationHandler';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/requestHandlers/actions');
+jest.mock('../../src/authentication/authenticationHandler');
 
 describe('handleRequest', () => {
   const req = {} as Request;
@@ -26,6 +28,12 @@ describe('handleRequest', () => {
     req.path = '/';
     req.method = 'POST';
     Logger.error = mockLogError;
+    mocked(checkAuthorizationHeader).mockImplementation(() => {
+      return {
+        isValid: true,
+        message: '',
+      };
+    });
   });
 
   afterAll(() => {
@@ -67,6 +75,21 @@ describe('handleRequest', () => {
 
     expect(mockStatus).toHaveBeenCalledWith(405);
     expect(mockEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 400 and an error array with "Unauthorized" if the header check fails', async () => {
+    mocked(checkAuthorizationHeader).mockReturnValueOnce({
+      isValid: false,
+      message: 'Authorization header is invalid',
+    });
+
+    await handleRequest(req, res);
+
+    expect(mockLogError).toHaveBeenLastCalledWith('Authorization header is invalid');
+    expect(mockStatus).toHaveBeenLastCalledWith(400);
+    expect(mockSend).toHaveBeenLastCalledWith({
+      errors: [{ code: 'Unauthorized', message: 'Authorization header is invalid' }],
+    });
   });
 
   it('should return status 400 and an array of formatted errors if an error happens whilst processing actions', async () => {

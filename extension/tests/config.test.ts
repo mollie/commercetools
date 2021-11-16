@@ -12,6 +12,13 @@ describe('Config test', () => {
         logLevel: 'info',
         logTransports: 'terminal',
       },
+      commercetools: {
+        authentication: {
+          isBasicAuth: false,
+          username: undefined,
+          password: undefined,
+        },
+      },
     };
     const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
     expect(config).toEqual(expectedConfig);
@@ -28,6 +35,13 @@ describe('Config test', () => {
         port: 2000,
         logLevel: 'info',
         logTransports: 'terminal',
+      },
+      commercetools: {
+        authentication: {
+          isBasicAuth: false,
+          username: undefined,
+          password: undefined,
+        },
       },
     };
     const config = loadConfig(CT_MOLLIE_TEST_CONFIG);

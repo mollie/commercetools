@@ -2,29 +2,30 @@ import { Request } from 'express';
 import config from '../../config/config';
 
 export const checkAuthorizationHeader = (headers: Request['headers']) => {
-  const response = {
+  let response = {
     isValid: true,
     message: '',
   };
   const isAuthEnabled = isBasicAuthEnabled();
-  if (isAuthEnabled) {
-    const authHeader = getAuthorizationHeader(headers);
-    if (!authHeader) {
-      return {
+  const authHeader = getAuthorizationHeader(headers);
+
+  switch (true) {
+    case !isAuthEnabled:
+      break;
+    case !authHeader:
+      response = {
         isValid: false,
         message: 'No authorization header present',
       };
-    } else {
-      const isValidHeader = isAuthorizationHeaderValid(authHeader);
-      if (isValidHeader) {
-        return response;
-      } else {
-        return {
-          isValid: false,
-          message: 'Authorization header is invalid',
-        };
-      }
-    }
+      break;
+    case authHeader && !isAuthorizationHeaderValid(authHeader):
+      response = {
+        isValid: false,
+        message: 'Authorization header is invalid',
+      };
+      break;
+    default:
+      break;
   }
   return response;
 };
@@ -42,7 +43,7 @@ const isBasicAuthEnabled = () => {
   return isBasicAuth;
 };
 
-const isAuthorizationHeaderValid = (authHeaderString: string) => {
+export const isAuthorizationHeaderValid = (authHeaderString: string) => {
   const {
     commercetools: {
       authentication: { username: storedUsername, password: storedPassword },
@@ -50,7 +51,7 @@ const isAuthorizationHeaderValid = (authHeaderString: string) => {
   } = config;
 
   const encodedToken = authHeaderString.split('Basic ');
-  const decodedToken = Buffer.from(encodedToken[1], 'base64').toString();
+  const decodedToken = Buffer.from(encodedToken[1] ?? '', 'base64').toString();
   const credentials = decodedToken.split(':');
 
   const incomingUsername = credentials[0];
