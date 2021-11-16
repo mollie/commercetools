@@ -32,6 +32,15 @@ export function makeMollieAmount({ centAmount, fractionDigits, currencyCode }: C
   };
 }
 
+export function makeMollieLineAmounts(ctLines: any) {
+  return ctLines.map((line: any) => {
+    if (line.amount) {
+      line.amount = makeMollieAmount(line.amount);
+    }
+    return line;
+  });
+}
+
 export function methodListMapper(ctObj: any): MethodsListParams {
   // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
   if (!ctObj.amountPlanned) {

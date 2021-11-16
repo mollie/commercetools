@@ -1,7 +1,7 @@
 import { ControllerAction } from '../src/types';
 import * as ut from '../src/utils';
 
-describe('Utils unit tests', () => {
+describe('Utils', () => {
   beforeAll(() => {
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
   });
@@ -75,6 +75,48 @@ describe('Utils unit tests', () => {
       expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
       expect(mollieOptions).toHaveProperty('include', 'pricing');
       expect(mollieOptions.billingCountry).toBeUndefined();
+    });
+  });
+
+  describe('makeMollieLineAmounts', () => {
+    it('Should transform commercetools money to mollie amount object on lines', () => {
+      const mockedLines = [
+        {
+          id: '1',
+          amount: {
+            fractionDigits: 2,
+            currencyCode: 'EUR',
+            centAmount: 1800,
+          },
+        },
+      ];
+      const expectedResult = [
+        {
+          id: '1',
+          amount: {
+            currency: 'EUR',
+            value: '18.00',
+          },
+        },
+      ];
+      const transformedLineAmounts = ut.makeMollieLineAmounts(mockedLines);
+      expect(transformedLineAmounts).toEqual(expectedResult);
+    });
+    it('Should not fail if no amounts are present', () => {
+      const mockedLines = [
+        {
+          id: '1',
+          name: 'apple',
+        },
+      ];
+      const expectedResult = [
+        {
+          id: '1',
+          name: 'apple',
+        },
+      ];
+      const transformedLineAmounts = ut.makeMollieLineAmounts(mockedLines);
+      expect(transformedLineAmounts).toEqual(expectedResult);
     });
   });
 
