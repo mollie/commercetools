@@ -88,7 +88,6 @@ export function isDiscountAmountValid(inputObject: any): boolean {
 
 export function extractLine(line: any) {
   const unitPriceValueString = convertCTToMollieAmountValue(line.price.value.centAmount, line.price.value.fractionDigits);
-  const totalPriceValueString = convertCTToMollieAmountValue(line.totalPrice.centAmount * line.quantity, line.price.value.fractionDigits);
   const extractedLine: any = {
     // Name as english for the time being
     name: line.name.en,
@@ -96,10 +95,6 @@ export function extractLine(line: any) {
     unitPrice: {
       currency: line.price.value.currencyCode,
       value: unitPriceValueString,
-    },
-    totalAmount: {
-      currency: line.totalPrice.currencyCode,
-      value: totalPriceValueString,
     },
     vatRate: convertCTTaxRateToMollieTaxRate(line.vatRate),
     vatAmount: {
@@ -113,12 +108,25 @@ export function extractLine(line: any) {
     productUrl: line.productUrl ? line.productUrl : '',
     metadata: line.metadata ? line.metadata : {},
   };
+
+  // Handle discounts
+  let discountCentAmount = 0;
   if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
+    discountCentAmount = line.discountAmount.centAmount;
     extractedLine.discountAmount = {
       currency: line.discountAmount.currencyCode,
       value: convertCTToMollieAmountValue(line.discountAmount.centAmount),
     };
   }
+
+  // Calculate total line price
+  const totalPriceCT = line.price.value.centAmount * line.quantity - discountCentAmount;
+  const totalAmountMollieString = convertCTToMollieAmountValue(totalPriceCT, line?.price?.value?.fractionDigits);
+  extractedLine.totalAmount = {
+    currency: line.price.value.currencyCode,
+    value: totalAmountMollieString,
+  };
+
   return extractedLine;
 }
 
