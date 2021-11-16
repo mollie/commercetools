@@ -1,7 +1,7 @@
 import { mocked } from 'ts-jest/utils';
 import { Action, ControllerAction } from '../../src/types';
 import cancelOrder, { createCtActions, getCancelOrderParams } from '../../src/requestHandlers/cancelOrder';
-import { makeActions, createDateNowString, makeMollieAmount, makeMollieLineAmounts } from '../../src/utils';
+import { makeActions, createDateNowString, makeMollieLineAmounts } from '../../src/utils';
 import Logger from '../../src/logger/logger';
 
 jest.mock('../../src/utils');
@@ -24,12 +24,12 @@ describe('getCancelOrderParams', () => {
         },
       },
     };
-    const expectedCreateShipmentParams = {
+    const expectedCreateCancelOrderParams = {
       orderId: 'ord_3uwvfd',
       lines: [{ id: 'odl_1.n3xdt3', quantity: 1, amount: { currency: 'EUR', value: '4.20' } }],
     };
 
-    await expect(getCancelOrderParams(mockedCtObj)).resolves.toEqual(expectedCreateShipmentParams);
+    await expect(getCancelOrderParams(mockedCtObj)).resolves.toEqual(expectedCreateCancelOrderParams);
   });
 
   it('Should return 400 and error message if creating the parameters throws an error', async () => {
