@@ -37,7 +37,7 @@ describe('getCancelOrderParams', () => {
       key: 'ord_3uwvfd',
       custom: {
         fields: {
-          createCancelOrderRequest: '',
+          createCancelOrderRequest: 'unparsableJson',
         },
       },
     };
