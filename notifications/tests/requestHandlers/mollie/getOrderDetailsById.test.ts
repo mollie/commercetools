@@ -7,7 +7,7 @@ import Logger from '../../../src/logger/logger';
 jest.mock('@mollie/api-client');
 
 describe('getOrderDetailsById', () => {
-  const mockLogError = jest.fn();
+  const mockLogDebug = jest.fn();
   const mockMollieClient = {} as MollieClient;
   const mockOrdersResource = {} as OrdersResource;
 
@@ -23,6 +23,7 @@ describe('getOrderDetailsById', () => {
     const mockGetOrder = jest.fn().mockImplementationOnce(() => mockOrder);
     mockOrdersResource.get = mockGetOrder;
     mocked(mockOrdersResource.get).mockResolvedValueOnce(mockOrder);
+    Logger.debug = mockLogDebug;
   });
 
   afterEach(() => {
@@ -31,15 +32,14 @@ describe('getOrderDetailsById', () => {
   it('should fetch mollie order by id', async () => {
     const order = await getOrderDetailsById('ord_12345', mockMollieClient);
     expect(order).toEqual({ id: 'ord_12345' });
-    expect(mockLogError).not.toHaveBeenCalled();
+    expect(mockLogDebug).not.toHaveBeenCalled();
   });
 
-  it('should throw and log error if mollie call fails', async () => {
-    Logger.error = mockLogError;
+  it('should log full error (at debug level) then throw the error if mollie call fails', async () => {
     const getOrderFailure = jest.fn().mockRejectedValue(new Error('Mollie Error'));
     mockOrdersResource.get = getOrderFailure;
 
     await expect(getOrderDetailsById('ord_12345', mockMollieClient)).rejects.toThrow(Error);
-    expect(mockLogError).toHaveBeenCalledTimes(1);
+    expect(mockLogDebug).toHaveBeenCalledTimes(1);
   });
 });

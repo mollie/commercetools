@@ -15,12 +15,12 @@ import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
 
-const mollieApiKey = config.mollieApiKey;
+const mollieApiKey = config.mollie.apiKey;
 const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
 const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
 
 const {
-  ctConfig: { projectKey, clientId, clientSecret, host, authUrl, scopes },
+  commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes },
 } = config;
 
 const userAgentMiddleware = createUserAgentMiddleware({
@@ -78,7 +78,8 @@ export default async function handleRequest(req: Request, res: Response) {
     // Receive webhook trigger from Mollie with order or payment ID
     const resourceType = isOrderOrPayment(id);
     if (resourceType === 'invalid') {
-      return res.status(400).send(`ID ${id} is invalid`);
+      Logger.error(`ID ${id} is invalid`);
+      return res.status(200).end();
     }
 
     // Order or Payment flow will populate the updated actions
@@ -142,8 +143,8 @@ export default async function handleRequest(req: Request, res: Response) {
     await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion ?? 1, updateActions);
 
     res.status(200).end();
-  } catch (error) {
+  } catch (error: any) {
     Logger.error({ error });
-    res.status(400).send(error);
+    res.status(200).end();
   }
 }

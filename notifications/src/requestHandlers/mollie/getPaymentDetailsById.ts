@@ -6,7 +6,7 @@ export default async function getPaymentDetailsById(paymentId: string, mollieCli
     const payment = await mollieClient.payments.get(paymentId, { embed: [PaymentEmbed.refunds, PaymentEmbed.chargebacks] });
     return payment;
   } catch (error) {
-    Logger.error({ error });
+    Logger.debug('Error in getPaymentDetailsById');
     throw error;
   }
 }

@@ -9,9 +9,7 @@ COPY tsconfig.json ./
 COPY src ./src
 COPY config ./config
 
-# Install node modules and build assets
-RUN npm install && npm run build
+# Install node modules and build assets, remove dev dependencies
+RUN npm ci && npm run build && npm prune --production
 
-# Default port exposure (TODO: use var from config)
-EXPOSE 3000
 CMD ["npm", "start"]

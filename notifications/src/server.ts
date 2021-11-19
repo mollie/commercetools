@@ -3,10 +3,10 @@ import app from './app';
 import config from '../config/config';
 import Logger from './logger/logger';
 
-const port = config.port;
+const port = config.service.port;
 
 const _exit = _.once(() => {
-  Logger.info('\nClosing http server.');
+  Logger.info('Closing http server.');
   server.close(() => {
     Logger.info('Http server closed.');
   });

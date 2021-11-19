@@ -2,14 +2,17 @@ import { Config } from './config-model';
 
 export function loadConfig(ctMollieConfig: string | undefined) {
   try {
-    // Parse env config, don't allow running without config
     const envConfig = JSON.parse(ctMollieConfig || '');
 
-    // Allow missing parts of config and fill in with defaults
     const config: Config = {
-      port: envConfig.port || 3000,
-      mollieApiKey: envConfig.mollieApiKey,
-      ...envConfig,
+      mollie: {
+        apiKey: envConfig.mollie.apiKey,
+      },
+      service: {
+        port: envConfig.service?.port || 3000,
+        logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
+        logTransports: envConfig.service?.logTransports || 'terminal',
+      },
     };
     return config;
   } catch (e) {
