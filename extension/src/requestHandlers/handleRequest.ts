@@ -11,11 +11,15 @@ import { getCancelOrderParams, createCtActions as cancelOrderActions } from './c
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
 
-const mollieApiKey = config.mollie.apiKey;
-const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
+export function initialiseMollieClient(): MollieClient {
+  const mollieApiKey = config.mollie.apiKey;
+  const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
+  const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
+  return mollieClient;
+}
 
 export default async function handleRequest(req: Request, res: Response) {
+  const mollieClient = initialiseMollieClient();
   if (req.path !== '/') {
     Logger.http(`Path ${req.path} not allowed`);
     return res.status(400).end();
