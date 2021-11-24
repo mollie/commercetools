@@ -1,5 +1,7 @@
 import { validateAction } from './src/requestHandlers/actions';
-import { initialiseMollieClient, processAction } from './src/requestHandlers/handleRequest';
+import { processAction } from './src/requestHandlers/handleRequest';
+import { initialiseMollieClient } from './src/client/utils';
+import Logger from './src/logger/logger';
 
 exports.handler = async (event: any) => {
   try {
@@ -19,7 +21,7 @@ exports.handler = async (event: any) => {
     const action = validateAction(body);
     const { actions, errors } = await processAction(action, body, initialiseMollieClient());
     if (errors?.length) {
-      console.debug('Process action errors');
+      Logger.debug('Process action errors');
       return {
         responseType: 'FailedValidation',
         errors,
@@ -27,11 +29,11 @@ exports.handler = async (event: any) => {
     } else {
       return {
         responseType: 'UpdateRequest',
-        errors,
         actions,
       };
     }
   } catch (error: any) {
+    Logger.error({ error });
     return {
       responseType: 'FailedValidation',
       errors: [

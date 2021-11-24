@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { version } from '../../package.json';
-import createMollieClient, { MollieClient } from '@mollie/api-client';
+import { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
-import config from '../../config/config';
 import actions, { validateAction } from './actions';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
@@ -10,13 +8,7 @@ import { getShipmentParams as getUpdateShipmentParams, createCtActions as update
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
-
-export function initialiseMollieClient(): MollieClient {
-  const mollieApiKey = config.mollie.apiKey;
-  const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
-  const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
-  return mollieClient;
-}
+import { initialiseMollieClient } from '../client/utils';
 
 export default async function handleRequest(req: Request, res: Response) {
   const mollieClient = initialiseMollieClient();
