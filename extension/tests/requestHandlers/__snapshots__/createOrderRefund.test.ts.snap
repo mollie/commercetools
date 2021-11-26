@@ -7,7 +7,7 @@ Object {
     "actionType": "createOrderRefund",
     "createdAt": "2021-11-03T09:20:27+00:00",
     "request": "{ \\"lines\\": [], \\"description\\": \\"Order refund requested\\", \\"metadata\\": {} }",
-    "response": "{\\"resource\\":\\"refund\\",\\"id\\":\\"re_dJmkemAMzM\\",\\"amount\\":{\\"value\\":\\"10.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"pending\\",\\"createdAt\\":\\"2021-11-03T09:20:27+00:00\\",\\"description\\":\\"Order refund requested\\",\\"metadata\\":{},\\"orderId\\":\\"ord_qitsrz\\",\\"paymentId\\":\\"tr_UjzkRQ4Cpq\\",\\"settlementAmount\\":{\\"value\\":\\"-10.00\\",\\"currency\\":\\"EUR\\"},\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.o2otu5\\",\\"orderId\\":\\"ord_qitsrz\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"paid\\",\\"metadata\\":{},\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-11-03T09:19:52+00:00\\"}]}",
+    "response": "{\\"resource\\":\\"refund\\",\\"id\\":\\"re_dJmkemAMzM\\",\\"amount\\":{\\"value\\":\\"10.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"pending\\",\\"createdAt\\":\\"2021-11-03T09:20:27+00:00\\",\\"description\\":\\"Order refund requested\\",\\"metadata\\":{},\\"orderId\\":\\"ord_qitsrz\\",\\"paymentId\\":\\"tr_UjzkRQ4Cpq\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.o2otu5\\",\\"orderId\\":\\"ord_qitsrz\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"paid\\",\\"metadata\\":{},\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-11-03T09:19:52+00:00\\"}]}",
   },
   "type": Object {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -19,7 +19,7 @@ exports[`createOrderRefund Should create correct ct actions from correct request
 Object {
   "action": "setCustomField",
   "name": "createOrderRefundResponse",
-  "value": "{\\"resource\\":\\"refund\\",\\"id\\":\\"re_dJmkemAMzM\\",\\"amount\\":{\\"value\\":\\"10.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"pending\\",\\"createdAt\\":\\"2021-11-03T09:20:27+00:00\\",\\"description\\":\\"Order refund requested\\",\\"metadata\\":{},\\"orderId\\":\\"ord_qitsrz\\",\\"paymentId\\":\\"tr_UjzkRQ4Cpq\\",\\"settlementAmount\\":{\\"value\\":\\"-10.00\\",\\"currency\\":\\"EUR\\"},\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.o2otu5\\",\\"orderId\\":\\"ord_qitsrz\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"paid\\",\\"metadata\\":{},\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-11-03T09:19:52+00:00\\"}]}",
+  "value": "{\\"resource\\":\\"refund\\",\\"id\\":\\"re_dJmkemAMzM\\",\\"amount\\":{\\"value\\":\\"10.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"pending\\",\\"createdAt\\":\\"2021-11-03T09:20:27+00:00\\",\\"description\\":\\"Order refund requested\\",\\"metadata\\":{},\\"orderId\\":\\"ord_qitsrz\\",\\"paymentId\\":\\"tr_UjzkRQ4Cpq\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.o2otu5\\",\\"orderId\\":\\"ord_qitsrz\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"paid\\",\\"metadata\\":{},\\"isCancelable\\":false,\\"quantity\\":1,\\"vatRate\\":\\"20.00\\",\\"createdAt\\":\\"2021-11-03T09:19:52+00:00\\"}]}",
 }
 `;
 
@@ -27,10 +27,7 @@ exports[`createOrderRefund Should create correct ct actions from correct request
 Object {
   "action": "addTransaction",
   "transaction": Object {
-    "amount": Object {
-      "centAmount": undefined,
-      "currencyCode": "EUR",
-    },
+    "amount": undefined,
     "interactionId": "re_dJmkemAMzM",
     "state": "Initial",
     "timestamp": "2021-10-08T12:12:02.625Z",

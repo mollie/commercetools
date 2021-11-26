@@ -1,4 +1,5 @@
 import { PaymentStatus, Payment, RefundStatus, Refund } from '@mollie/api-client';
+import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../src/types/ctPaymentTypes';
 import { UpdateActionKey } from '../src/types/ctUpdateActions';
 import {
@@ -8,7 +9,7 @@ import {
   getMatchingMolliePayment,
   getTransactionStateUpdateOrderActions,
   getPaymentStatusUpdateAction,
-  convertMollieToCTPaymentAmount,
+  convertMollieAmountToCTMoney,
   existsInCtTransactionsArray,
   getAddTransactionUpdateActions,
   getRefundStatusUpdateActions,
@@ -182,8 +183,16 @@ describe('convertMollieToCTPaymentAmount', () => {
       { mollieAmount: '19.99', expectedCentAmount: 1999 },
     ];
     testCases.forEach(({ mollieAmount, expectedCentAmount }) => {
-      expect(convertMollieToCTPaymentAmount(mollieAmount)).toBe(expectedCentAmount);
+      expect(convertMollieAmountToCTMoney({ value: mollieAmount, currency: 'EUR' } as Amount)).toStrictEqual({
+        currencyCode: 'EUR',
+        centAmount: expectedCentAmount,
+        fractionDigits: 2,
+        type: 'centPrecision',
+      });
     });
+  });
+  it('should return correct centAmount with currency without digits', () => {
+    expect(convertMollieAmountToCTMoney({ value: '1050.00', currency: 'ISK' } as Amount)).toStrictEqual({ currencyCode: 'ISK', centAmount: 1050, fractionDigits: 0, type: 'centPrecision' });
   });
 });
 
@@ -258,6 +267,8 @@ describe('getPaymentStatusUpdateAction', () => {
         amount: {
           currencyCode: 'EUR',
           centAmount: 1000,
+          fractionDigits: 2,
+          type: 'centPrecision',
         },
         state: 'Success',
         type: CTTransactionType.Charge,
@@ -300,9 +311,11 @@ describe('Check if mollie payment exists in ctTransactions array', () => {
       amount: {
         centAmount: 1000,
         currencyCode: 'EUR',
+        fractionDigits: 2,
+        type: 'centPrecision',
       },
       type: CTTransactionType.Charge,
-    },
+    } as CTTransaction,
     {
       id: '95a74202-48b5-4a5e-ae92-50820f479f4c',
       interactionId: 'tr_45609',
@@ -310,9 +323,11 @@ describe('Check if mollie payment exists in ctTransactions array', () => {
       amount: {
         centAmount: 1000,
         currencyCode: 'EUR',
+        fractionDigits: 2,
+        type: 'centPrecision',
       },
       type: CTTransactionType.Charge,
-    },
+    } as CTTransaction,
   ];
   it("Should find the mollie payment in the CT array when it's present", () => {
     expect(existsInCtTransactionsArray(mockMolliePayment, mockedCTTransactionsArray)).toBeTruthy();
@@ -396,6 +411,8 @@ describe('getRefundStatusUpdateActions', () => {
         amount: {
           currencyCode: 'EUR',
           centAmount: 2000,
+          fractionDigits: 2,
+          type: 'centPrecision',
         },
         interactionId: 're_J7sR3kwTDs',
         state: CTTransactionState.Success,
@@ -412,6 +429,8 @@ describe('getRefundStatusUpdateActions', () => {
           amount: {
             currencyCode: 'EUR',
             centAmount: 2000,
+            fractionDigits: 2,
+            type: 'centPrecision',
           },
           interactionId: 're_J7sR3kwTDs',
           state: CTTransactionState.Success,

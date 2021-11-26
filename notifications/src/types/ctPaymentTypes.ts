@@ -41,8 +41,10 @@ export type CTTransactionDraft = {
 };
 
 export type CTMoney = {
-  centAmount: number;
+  type?: 'centPrecision';
   currencyCode: string;
+  centAmount: number;
+  fractionDigits?: number;
 };
 
 // https://docs.commercetools.com/api/projects/payments#transactionstate

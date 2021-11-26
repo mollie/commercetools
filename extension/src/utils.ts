@@ -10,14 +10,20 @@ export function createDateNowString() {
 }
 
 /**
- *
- * @param mollieValue e.g. "10.00"
- * @param fractionDigits defaults to 2 in commercetools
- * WIP - does not handle other values of fractionDigits yet
+ * Converts a Mollie payment object to a commercetools money object
+ * @param mollieAmount e.g. { value: "100", currency: "EUR" }
  */
-export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigits = 2) => {
-  return Math.ceil(parseFloat(mollieValue) * Math.pow(10, fractionDigits));
-};
+export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
+  // List of currencies that don't support decimals
+  const anomalyCurrencies = ['TWD', 'ISK', 'JPY'];
+  const fractionDigits = mollieAmount.currency in anomalyCurrencies ? 0 : 2;
+  return {
+    type: 'centPrecision',
+    currencyCode: mollieAmount.currency,
+    centAmount: Math.ceil(parseFloat(mollieAmount.value) * Math.pow(10, fractionDigits)),
+    fractionDigits,
+  };
+}
 
 export function convertCTToMollieAmountValue(ctValue: number, fractionDigits = 2): string {
   const divider = Math.pow(10, fractionDigits);

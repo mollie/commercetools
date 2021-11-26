@@ -1,5 +1,6 @@
 import { Payment, PaymentStatus, Refund, RefundStatus } from '@mollie/api-client';
-import { CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
+import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
 import { UpdateActionChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
 
 export const isOrderOrPayment = (resourceId: string): string => {
@@ -182,10 +183,7 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
         action: UpdateActionKey.AddTransaction,
         transaction: {
           type: CTTransactionType.Charge,
-          amount: {
-            centAmount: convertMollieToCTPaymentAmount(molliePayment.amount.value),
-            currencyCode: molliePayment.amount.currency,
-          },
+          amount: convertMollieAmountToCTMoney(molliePayment.amount),
           timestamp: molliePayment.createdAt,
           interactionId: molliePayment.id,
           state: mollieToCTStatusMap[molliePayment.status],
@@ -198,14 +196,20 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
 };
 
 /**
- *
- * @param mollieValue e.g. "10.00"
- * @param fractionDigits defaults to 2 in commercetools
- * WIP - does not handle other values of fractionDigits yet
+ * Converts a Mollie payment object to a commercetools money object
+ * @param mollieAmount e.g. { value: "100", currency: "EUR" }
  */
-export const convertMollieToCTPaymentAmount = (mollieValue: string, fractionDigits = 2) => {
-  return Math.ceil(parseFloat(mollieValue) * Math.pow(10, fractionDigits));
-};
+export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
+  // List of currencies that don't support decimals
+  const anomalyCurrencies = ['TWD', 'ISK', 'JPY'];
+  const fractionDigits = anomalyCurrencies.includes(mollieAmount.currency) ? 0 : 2;
+  return {
+    type: 'centPrecision',
+    currencyCode: mollieAmount.currency,
+    centAmount: Math.ceil(parseFloat(mollieAmount.value) * Math.pow(10, fractionDigits)),
+    fractionDigits,
+  };
+}
 
 /**
  *
@@ -223,10 +227,7 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
     const addTransaction: AddTransaction = {
       action: UpdateActionKey.AddTransaction,
       transaction: {
-        amount: {
-          currencyCode: molliePayment.amount.currency,
-          centAmount: convertMollieToCTPaymentAmount(molliePayment.amount.value),
-        },
+        amount: convertMollieAmountToCTMoney(molliePayment.amount),
         state: newStatus,
         type: CTTransactionType.Charge,
       },
@@ -258,11 +259,7 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
   const refundTransactions = ctTransactions?.filter(ctTransaction => ctTransaction.type === CTTransactionType.Refund);
 
   mollieRefunds.forEach(mollieRefund => {
-    const {
-      id: mollieRefundId,
-      status: mollieRefundStatus,
-      amount: { value: mollieValue, currency: mollieCurrency },
-    } = mollieRefund;
+    const { id: mollieRefundId, status: mollieRefundStatus } = mollieRefund;
     const matchingCTTransaction = refundTransactions.find(rt => rt.interactionId === mollieRefundId);
 
     if (matchingCTTransaction) {
@@ -281,10 +278,8 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
         action: UpdateActionKey.AddTransaction,
         transaction: {
           type: CTTransactionType.Refund,
-          amount: {
-            currencyCode: mollieCurrency,
-            centAmount: convertMollieToCTPaymentAmount(mollieValue),
-          },
+
+          amount: convertMollieAmountToCTMoney(mollieRefund.amount),
           interactionId: mollieRefundId,
           state: mollieRefundToCTStatusMap[mollieRefundStatus],
         },
