@@ -36,7 +36,7 @@ describe('handleRequest', () => {
 
   it('should return a list of actions and status 200 when processed action returns successfully', async () => {
     mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
-    mocked(ut.checkPaymentInterface).mockReturnValueOnce(true);
+    mocked(ut.isMoliePaymentInterface).mockReturnValueOnce(true);
     mocked(actions.getPaymentMethods).mockResolvedValue({ status: 200, actions: [{ action: 'update' }] });
 
     await handleRequest(req, res);
@@ -56,7 +56,7 @@ describe('handleRequest', () => {
 
   it('should return status 200 if payment interface is not mollie', async () => {
     mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
-    mocked(ut.checkPaymentInterface).mockReturnValueOnce(false);
+    mocked(ut.isMoliePaymentInterface).mockReturnValueOnce(false);
 
     await handleRequest(req, res);
 
@@ -84,7 +84,7 @@ describe('handleRequest', () => {
 
   it('should return status 400 and an array of formatted errors if an error happens whilst processing actions', async () => {
     mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
-    mocked(ut.checkPaymentInterface).mockReturnValueOnce(true);
+    mocked(ut.isMoliePaymentInterface).mockReturnValueOnce(true);
     mocked(actions.getPaymentMethods).mockResolvedValue({
       status: 400,
       errors: [
@@ -112,7 +112,7 @@ describe('handleRequest', () => {
     const mockError = new Error('Something went wrong');
     mockError.name = 'Big error';
     mocked(validateAction).mockReturnValueOnce(ControllerAction.GetPaymentMethods);
-    mocked(ut.checkPaymentInterface).mockReturnValueOnce(true);
+    mocked(ut.isMoliePaymentInterface).mockReturnValueOnce(true);
     mocked(actions.getPaymentMethods).mockRejectedValue({ name: 'Big error', message: 'Something went wrong' });
 
     await handleRequest(req, res);
