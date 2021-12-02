@@ -11,8 +11,9 @@
     "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "prettier --check ./src ./tests ./config ./**/*.md",
-    "lint:fix": "prettier --write ./src ./tests ./config ./**/*.md"
+    "test:component": "jest --testPathPattern=component-tests",
+    "lint": "prettier --check ./component-tests ./src ./tests ./config ./**/*.md",
+    "lint:fix": "prettier --write ./component-tests ./src ./tests ./config ./**/*.md"
   },
   "keywords": [],
   "author": "Mollie",
@@ -23,7 +24,9 @@
     "@types/lodash": "^4.14.175",
     "@types/node": "^16.10.1",
     "@types/supertest": "^2.0.11",
+    "axios": "^0.24.0",
     "jest": "^27.2.1",
+    "nock": "^13.2.1",
     "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.12",
     "prettier": "^2.4.1",
