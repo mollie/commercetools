@@ -1,5 +1,5 @@
-import { ControllerAction } from '../src/types';
-import * as ut from '../src/utils';
+import { ControllerAction } from '../../src/types';
+import * as ut from '../../src/utils';
 
 describe('Utils', () => {
   beforeAll(() => {

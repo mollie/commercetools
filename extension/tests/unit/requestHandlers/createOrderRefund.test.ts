@@ -1,11 +1,10 @@
 import { mocked } from 'ts-jest/utils';
-import Logger from '../../src/logger/logger';
-import { createDateNowString, convertCTToMollieAmountValue } from '../../src/utils';
-import createOrderRefund, { createCtActions, getOrderRefundParams, extractLinesCtToMollie } from '../../src/requestHandlers/createOrderRefund';
-import { Action, ControllerAction, CTTransactionType } from '../../src/types';
-import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import Logger from '../../../src/logger/logger';
+import { createDateNowString, convertCTToMollieAmountValue } from '../../../src/utils';
+import createOrderRefund, { createCtActions, getOrderRefundParams, extractLinesCtToMollie } from '../../../src/requestHandlers/createOrderRefund';
+import { Action, ControllerAction, CTTransactionType } from '../../../src/types';
 
-jest.mock('../../src/utils');
+jest.mock('../../../src/utils');
 
 describe('createOrderRefund', () => {
   const mockLogError = jest.fn();

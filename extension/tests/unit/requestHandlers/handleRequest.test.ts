@@ -1,12 +1,12 @@
 import { MollieClient } from '@mollie/api-client';
 import { Request, Response } from 'express';
 import { mocked } from 'ts-jest/utils';
-import actions, { validateAction } from '../../src/requestHandlers/actions';
-import handleRequest, { processAction } from '../../src/requestHandlers/handleRequest';
-import { ControllerAction } from '../../src/types/index';
-import Logger from '../../src/logger/logger';
+import actions, { validateAction } from '../../../src/requestHandlers/actions';
+import handleRequest, { processAction } from '../../../src/requestHandlers/handleRequest';
+import { ControllerAction } from '../../../src/types/index';
+import Logger from '../../../src/logger/logger';
 
-jest.mock('../../src/requestHandlers/actions');
+jest.mock('../../../src/requestHandlers/actions');
 
 describe('handleRequest', () => {
   const req = {} as Request;

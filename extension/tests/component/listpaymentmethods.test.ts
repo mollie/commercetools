@@ -1,6 +1,6 @@
 import nock from 'nock';
 import request from 'supertest';
-import app from '../src/app';
+import app from '../../src/app';
 import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse } from './mockResponses/mollieData/listpaymentmethods.data';
 
 describe('List Payment Methods', () => {
