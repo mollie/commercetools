@@ -11,10 +11,11 @@ export function createDateNowString() {
 
 /**
  * Converts a Mollie payment object to a commercetools money object
+ * Doesn't handle non-negative amounts from mollie
  * @param mollieAmount e.g. { value: "100", currency: "EUR" }
  */
 export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
-  // Get the fraction digits (aka values after the decimal points)
+  // Get the fraction digits (aka number of decimal places)
   const fractionDigits = mollieAmount.value.split('.')[1] ? mollieAmount.value.split('.')[1].length : 0;
   return {
     type: 'centPrecision',
