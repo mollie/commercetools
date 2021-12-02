@@ -74,6 +74,12 @@ export function methodListMapper(ctObj: any): MethodsListParams {
   return mObject;
 }
 
+export function checkPaymentInterface(ctObj: any): Boolean {
+  const normalizedInterface = ctObj.paymentMethodInfo?.paymentInterface.toLowerCase()
+  console.log('normalizedInterface', normalizedInterface)
+  return normalizedInterface === 'mollie' ? true : false
+}
+
 /**
  *
  * @param customFieldName
