@@ -183,12 +183,13 @@ describe('convertMollieToCTPaymentAmount', () => {
       { mollieAmount: '19.99', expectedCentAmount: 1999 },
     ];
     testCases.forEach(({ mollieAmount, expectedCentAmount }) => {
-      expect(convertMollieAmountToCTMoney({ value: mollieAmount, currency: 'EUR' } as Amount)).toStrictEqual({
+      const expectedResult = {
         currencyCode: 'EUR',
         centAmount: expectedCentAmount,
         fractionDigits: 2,
         type: 'centPrecision',
-      });
+      };
+      expect(convertMollieAmountToCTMoney({ value: mollieAmount, currency: 'EUR' } as Amount)).toStrictEqual(expectedResult);
     });
   });
   it('should return correct centAmount with currency without digits', () => {
