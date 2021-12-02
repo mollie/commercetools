@@ -200,9 +200,8 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
  * @param mollieAmount e.g. { value: "100", currency: "EUR" }
  */
 export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
-  // List of currencies that don't support decimals
-  const anomalyCurrencies = ['TWD', 'ISK', 'JPY'];
-  const fractionDigits = anomalyCurrencies.includes(mollieAmount.currency) ? 0 : 2;
+  // Get the fraction digits (aka values after the decimal points)
+  const fractionDigits = mollieAmount.value.split('.')[1] ? mollieAmount.value.split('.')[1].length : 0;
   return {
     type: 'centPrecision',
     currencyCode: mollieAmount.currency,

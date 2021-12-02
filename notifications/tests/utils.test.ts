@@ -192,7 +192,7 @@ describe('convertMollieToCTPaymentAmount', () => {
     });
   });
   it('should return correct centAmount with currency without digits', () => {
-    expect(convertMollieAmountToCTMoney({ value: '1050.00', currency: 'ISK' } as Amount)).toStrictEqual({ currencyCode: 'ISK', centAmount: 1050, fractionDigits: 0, type: 'centPrecision' });
+    expect(convertMollieAmountToCTMoney({ value: '1050', currency: 'ISK' } as Amount)).toStrictEqual({ currencyCode: 'ISK', centAmount: 1050, fractionDigits: 0, type: 'centPrecision' });
   });
 });
 
