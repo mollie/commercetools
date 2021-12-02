@@ -33,8 +33,7 @@ export default async function handleRequest(req: Request, res: Response) {
       return res.status(200).end();
     }
 
-    const isMollieInterface = isMoliePaymentInterface(req.body?.resource?.obj);
-    if (!isMollieInterface) {
+    if (!isMoliePaymentInterface(req.body?.resource?.obj)) {
       Logger.debug('Payment interface is not Mollie, ending request');
       return res.status(200).end();
     }
