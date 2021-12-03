@@ -15,7 +15,7 @@ export function createDateNowString() {
  */
 export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
   // Get the fraction digits (aka number of decimal places)
-  const fractionDigits = mollieAmount.value.split('.')[1] ? mollieAmount.value.split('.')[1].length : 0;
+  const fractionDigits = mollieAmount.value.split('.')[1]?.length ?? 0;
   const convertedMollieAmountValue = parseFloat(mollieAmount.value) * Math.pow(10, fractionDigits);
   return {
     type: 'centPrecision',
