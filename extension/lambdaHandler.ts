@@ -26,6 +26,8 @@ exports.handler = async (event: any) => {
         responseType: 'FailedValidation',
         errors,
       };
+    } else if (!actions) {
+      return {};
     } else {
       return {
         responseType: 'UpdateRequest',
