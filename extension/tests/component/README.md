@@ -2,7 +2,7 @@
 
 To test full journeys, we use component tests.
 
-These simulate a commercetools Payment object coming into our app and asser that the correct response, update actions (or errors) have been returned.
+These simulate a commercetools Payment object coming into our app and assert that the correct response, update actions (or errors) have been returned.
 
 ![Diagram showing component vs acceptance tests](./component_testing.png)
 
