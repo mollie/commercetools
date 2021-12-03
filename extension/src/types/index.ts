@@ -54,7 +54,7 @@ export enum ControllerAction {
   UpdateShipment = 'updateShipment',
   CancelOrder = 'cancelOrder',
   NoAction = 'noAction',
-  Error = 'error'
+  Error = 'error',
 }
 
 export enum CTTransactionType {

@@ -1,5 +1,5 @@
 import { PaymentMethod } from '@mollie/api-client';
-import { hasValidPaymentMethod, isListPaymentMethods, isPayLater, determineAction } from '../../src/requestHandlers/determineAction';
+import { hasValidPaymentMethod, isListPaymentMethods, isPayLater, determineAction, handlePayNowFlow, CTPayment, handlePayLaterFlow } from '../../src/requestHandlers/determineAction';
 import { ControllerAction } from '../../src/types';
 
 describe('isListPaymentMethods', () => {
@@ -77,6 +77,7 @@ describe('isPayLater', () => {
 });
 
 describe('determineAction', () => {
+  // Payment Methods
   it('should return GetPaymentMethods action if the correct custom fields are set', () => {
     const mockPaymentObject = {
       paymentMethodInfo: {
@@ -91,5 +92,399 @@ describe('determineAction', () => {
 
     const action = determineAction(mockPaymentObject);
     expect(action).toBe(ControllerAction.GetPaymentMethods);
+  });
+
+  // Create Order
+
+  // Create Shipment
+
+  // Cancel Order
+});
+
+describe.only('handlePayLaterFlow', () => {
+  // No action
+  it('should return no action when transaction should not trigger anything in mollie', () => {
+    const authorizationPending = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Pending',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(authorizationPending as CTPayment)).toBe(ControllerAction.NoAction);
+  });
+  // Error
+  it('should return error action when invalid combination of transactions is passed', () => {
+    const chargeWhenAuthorizationPending = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Pending',
+        },
+        {
+          type: 'Charge',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(chargeWhenAuthorizationPending as CTPayment)).toBe(ControllerAction.Error);
+
+    const cancelWhenAuthorizationHasFailed = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Failure',
+        },
+        {
+          type: 'CancelAuthorization',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(cancelWhenAuthorizationHasFailed as CTPayment)).toBe(ControllerAction.Error);
+
+    const chargeWhenAuthorizationHasFailed = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Failure',
+        },
+        {
+          type: 'Charge',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(chargeWhenAuthorizationHasFailed as CTPayment)).toBe(ControllerAction.Error);
+
+    const chargeWithoutAuthorization = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(chargeWithoutAuthorization as CTPayment)).toBe(ControllerAction.Error);
+
+    const authorizationCreatedInPendingState = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Pending',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(authorizationCreatedInPendingState as CTPayment)).toBe(ControllerAction.Error);
+  });
+  // Create Order
+  it('should return create order action when correct combination of transactions is sent', () => {
+    const initialAuthorization = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(initialAuthorization as CTPayment)).toBe(ControllerAction.CreateOrder);
+  });
+  // Create Shipment
+  it('should return create shipment action when correct combination of transactions is sent', () => {
+    const successfulAuthorizationAndInitialCharge = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(successfulAuthorizationAndInitialCharge as CTPayment)).toBe(ControllerAction.CreateShipment);
+
+    const successfulAuthorizationAndMultipleCharges = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(successfulAuthorizationAndMultipleCharges as CTPayment)).toBe(ControllerAction.CreateShipment);
+
+    const chargeWhenRefundAlsoPresent = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Pending',
+        },
+        {
+          type: 'Charge',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(chargeWhenRefundAlsoPresent as CTPayment)).toBe(ControllerAction.CreateShipment);
+  });
+  // Cancel Order / Order Line
+  it('should return CancelOrder action when correct transactions are passed', () => {
+    const cancelPendingAuthorization = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Pending',
+        },
+        {
+          type: 'CancelAuthorization',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(cancelPendingAuthorization as CTPayment)).toBe(ControllerAction.CancelOrder);
+
+    const cancelSuccessfulAuthorization = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'CancelAuthorization',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(cancelSuccessfulAuthorization as CTPayment)).toBe(ControllerAction.CancelOrder);
+  });
+  // Create Refund
+  it('should return Refund action when correct transactions are passed', () => {
+    const refundWithSuccessfulCharge = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(refundWithSuccessfulCharge as CTPayment)).toBe(ControllerAction.CreateCustomRefund);
+
+    const multipleRefunds = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(multipleRefunds as CTPayment)).toBe(ControllerAction.CreateCustomRefund);
+
+    // Imagine an order created, some lines cancelled, then it was all shipped.
+    // Now we want to create a refund
+    const refundWhereACancelAuthorizationIsAlsoPresent = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'CancelAuthorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(refundWhereACancelAuthorizationIsAlsoPresent as CTPayment)).toBe(ControllerAction.CreateCustomRefund);
+  });
+});
+
+describe('handlePayNowFlow', () => {
+  // No action - Default
+  it('should return no action no changes or API calls should be triggered', () => {
+    const paymentPending = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Pending',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(paymentPending as CTPayment)).toBe(ControllerAction.NoAction);
+
+    const refundPending = {
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Pending',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(refundPending as CTPayment)).toBe(ControllerAction.NoAction);
+  });
+  // Error
+  it('should return error action when an incorrect combination of Transactions is presented', () => {
+    const authorizationPayment = {
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Intial',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(authorizationPayment as CTPayment)).toBe(ControllerAction.Error);
+
+    const cancelAuthorizationPayment = {
+      transactions: [
+        {
+          type: 'CancelAuthorization',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(cancelAuthorizationPayment as CTPayment)).toBe(ControllerAction.Error);
+
+    const refundWithoutCharge = {
+      transactions: [
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(refundWithoutCharge as CTPayment)).toBe(ControllerAction.Error);
+
+    const pendingChargeWithoutKey = {
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Pending',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(pendingChargeWithoutKey as CTPayment)).toBe(ControllerAction.Error);
+  });
+  // Create Order
+  it('should return create order action when the correct combination of Transactions is presented', () => {
+    const initialChargePayment = {
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(initialChargePayment as CTPayment)).toBe(ControllerAction.CreateOrder);
+  });
+  // Cancel Order
+  it('should return cancel order action when the correct combination of Transactions is presented', () => {
+    const refundAndPendingChargePayment = {
+      key: 'ord_12345',
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Pending',
+        },
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+
+    expect(handlePayNowFlow(refundAndPendingChargePayment as CTPayment)).toBe(ControllerAction.CancelOrder);
+  });
+  // Refund Order
+  it('should return refund action when the correct combination of Transactions is presented', () => {
+    const oneRefundAgainstPayment = {
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(oneRefundAgainstPayment as CTPayment)).toBe(ControllerAction.CreateCustomRefund);
+
+    const multipleRefundsAgainstPayment = {
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Success',
+        },
+        {
+          type: 'Refund',
+          state: 'Failure',
+        },
+        {
+          type: 'Refund',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayNowFlow(multipleRefundsAgainstPayment as CTPayment)).toBe(ControllerAction.CreateCustomRefund);
   });
 });

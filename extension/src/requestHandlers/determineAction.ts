@@ -1,5 +1,5 @@
 import { PaymentMethod } from '@mollie/api-client';
-import { ControllerAction } from '../types';
+import { ControllerAction, CTTransaction, CTTransactionType, CTMoney } from '../types';
 
 export const isListPaymentMethods = (paymentObject: any) => {
   const customFields = paymentObject?.custom?.fields;
@@ -37,16 +37,19 @@ export const isPayLater = (method: PaymentMethod) => {
   return payLaterEnums.includes(method);
 };
 
+export type CTPayment = {
+  amountPlanned: CTMoney;
+  transactions?: CTTransaction[];
+  key?: string;
+};
+
 /**
  *
  * @param paymentObject commercetools paymentObject, (from body.resource.obj)
  *
- * Returns either a ControllerAction or error
+ * Returns either a ControllerAction
  */
 export const determineAction = (paymentObject: any): ControllerAction | any => {
-  // Is it mollie ?
-  // --> Import the method from CMI30 - should this be here or higher?
-
   // Is it listpaymentmethods?
   const shouldGetPaymentMethods = isListPaymentMethods(paymentObject);
   if (shouldGetPaymentMethods) {
@@ -63,54 +66,95 @@ export const determineAction = (paymentObject: any): ControllerAction | any => {
 
     if (!hasValidPaymentMethod(method)) {
       // return error
-      return;
+      return ControllerAction.Error;
     } else {
       if (isPayLater(method)) {
-        // Y - Paylater - Switch
+        return handlePayLaterFlow(paymentObject);
       } else {
-        const action = handlePayNowFlow(paymentObject);
-        return action;
+        return handlePayNowFlow(paymentObject);
       }
     }
   }
 };
 
-export const handlePayLaterFlow = (paymentObject: any) => {
-  const {
-    transactions,
-    custom: { fields: customFields },
-  } = paymentObject;
-};
+export const handlePayLaterFlow = (paymentObject: CTPayment): ControllerAction => {
+  const { key, transactions } = paymentObject;
 
-export const handlePayNowFlow = (paymentObject: any) => {
-  const {
-    transactions,
-  } = paymentObject;
+  const authorizationTransactions: CTTransaction[] = [];
+  const cancelAuthorizationTransactions: CTTransaction[] = [];
+  const chargeTransactions: CTTransaction[] = [];
+  const refundTransactions: CTTransaction[] = [];
 
-  // Check for invalid transaction types
-  const authorizationTransactions = transactions.filter((transaction: any) => transaction.type === 'Authorization' || transaction.type === 'CancelAuthorization');
-
-  const initialChargeTransactions: any = [];
-  const pendingChargeTransactions: any = [];
-  const successChargeTransactions: any = []; 
-  
-  const chargeTransactions = transactions.filter((transaction: any) => transaction.type === 'Charge');
-  chargeTransactions.forEach((transaction: any) => {
-    if(transaction.state === 'Initial') initialChargeTransactions.push(transaction);
-    if(transaction.state === 'Pending') pendingChargeTransactions.push(transaction);
-    if(transaction.state === 'Success') successChargeTransactions.push(transaction);
+  transactions?.forEach(transaction => {
+    if (transaction.type === CTTransactionType.Authorization) authorizationTransactions.push(transaction);
+    if (transaction.type === CTTransactionType.CancelAuthorization) cancelAuthorizationTransactions.push(transaction);
+    if (transaction.type === CTTransactionType.Charge) chargeTransactions.push(transaction);
+    if (transaction.type === CTTransactionType.Refund) refundTransactions.push(transaction);
   });
-  
-  const refundTransactions = transactions.filter((transaction: any) => transaction.type === 'Refund');
-  const initialRefundTransactions = refundTransactions.filter((transaction: any) => transaction.state === 'Initial');
 
   let action;
-  // console.log((!successChargeTransactions.length && !!refundTransactions.length))
+  switch (true) {
+    // Error
+    case (!cancelAuthorizationTransactions.length || !chargeTransactions.length || !refundTransactions.length) && authorizationTransactions.length === 0:
+    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Success').length && !!chargeTransactions.length:
+      action = ControllerAction.Error;
+      break;
+    // Create order
+    case authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
+      action = ControllerAction.CreateOrder;
+      break;
+    // Create shipment
+    case key &&
+      authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length === 1 &&
+      chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Initial'):
+      action = ControllerAction.CreateShipment;
+      break;
+    // Cancel Authorization
+    case authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Failure').length >= 1 &&
+      cancelAuthorizationTransactions.filter(cancelTransaction => cancelTransaction.state === 'Initial'):
+      action = ControllerAction.CancelOrder;
+      break;
+    // Create Refund
+    case authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length === 1 &&
+      chargeTransactions?.filter(chargeTransaction => chargeTransaction.state === 'Success').length >= 1 &&
+      refundTransactions?.filter(refundTransaction => refundTransaction.state === 'Initial'):
+      action = ControllerAction.CreateCustomRefund;
+      break;
+    default:
+      action = ControllerAction.NoAction;
+  }
+  return action;
+};
+
+export const handlePayNowFlow = (paymentObject: CTPayment) => {
+  const { key, transactions } = paymentObject;
+
+  // Check for invalid transaction types
+  const authorizationTransactions = transactions?.filter(transaction => transaction.type === CTTransactionType.Authorization || transaction.type === CTTransactionType.CancelAuthorization) ?? [];
+
+  const initialChargeTransactions: CTTransaction[] = [];
+  const pendingChargeTransactions: CTTransaction[] = [];
+  const successChargeTransactions: CTTransaction[] = [];
+
+  const chargeTransactions = transactions?.filter((transaction: any) => transaction.type === 'Charge') ?? [];
+  chargeTransactions?.forEach((transaction: any) => {
+    if (transaction.state === 'Initial') initialChargeTransactions.push(transaction);
+    if (transaction.state === 'Pending') pendingChargeTransactions.push(transaction);
+    if (transaction.state === 'Success') successChargeTransactions.push(transaction);
+  });
+
+  const refundTransactions = transactions?.filter((transaction: any) => transaction.type === 'Refund') ?? [];
+  const initialRefundTransactions = refundTransactions?.filter((transaction: any) => transaction.state === 'Initial');
+
+  let action;
+  // CHECK FOR PAYMENT KEY TOO
   switch (true) {
     // Error cases
-    case (!!authorizationTransactions.length):
-    case (!successChargeTransactions.length && !!refundTransactions.length):
-    case (initialChargeTransactions.length > 1 || pendingChargeTransactions.length > 1):
+    case !!authorizationTransactions.length:
+    case !!refundTransactions.length && !chargeTransactions.length:
+    // case (!successChargeTransactions.length && !!refundTransactions.length):
+    case initialChargeTransactions.length > 1 || pendingChargeTransactions.length > 1:
+    case !!pendingChargeTransactions.length && !key:
       action = ControllerAction.Error;
       break;
     // Create Order
@@ -122,7 +166,7 @@ export const handlePayNowFlow = (paymentObject: any) => {
       action = ControllerAction.CreateCustomRefund;
       break;
     // Cancel Order
-    case (initialChargeTransactions.length === 1 || pendingChargeTransactions.length === 1) && !successChargeTransactions.length: 
+    case (initialChargeTransactions.length === 1 || pendingChargeTransactions.length === 1) && !successChargeTransactions.length && !!initialRefundTransactions.length:
       action = ControllerAction.CancelOrder;
       break;
     default:
