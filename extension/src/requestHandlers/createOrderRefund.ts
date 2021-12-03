@@ -3,7 +3,7 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/re
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
 import { Action, ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
-import { convertMollieToCTPaymentAmount, createDateNowString, convertCTToMollieAmountValue } from '../utils';
+import { createDateNowString, convertCTToMollieAmountValue, convertMollieAmountToCTMoney } from '../utils';
 
 export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
   const stringifiedRefundResponse = JSON.stringify(mollieResponse);
@@ -28,10 +28,7 @@ export function createCtActions(mollieResponse: any, ctObj: any): Action[] {
     {
       action: 'addTransaction',
       transaction: {
-        amount: {
-          centAmount: convertMollieToCTPaymentAmount(mollieResponse.amount.value),
-          currencyCode: mollieResponse.amount.currency,
-        },
+        amount: convertMollieAmountToCTMoney(mollieResponse.amount),
         type: CTTransactionType.Refund,
         interactionId: mollieResponse.id,
         state: 'Initial',
