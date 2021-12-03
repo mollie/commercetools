@@ -121,7 +121,7 @@ describe('Utils', () => {
   });
 
   describe('isMoliePaymentInterface', () => {
-    it('should return true if payment interface is mollie', () => {
+    it('must return true when payment interface is mollie', () => {
       const mockedCtObject = {
         paymentMethodInfo: {
           paymentInterface: 'Mollie',
