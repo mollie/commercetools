@@ -10,6 +10,7 @@ import { getShipmentParams as getUpdateShipmentParams, createCtActions as update
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
+import { isMoliePaymentInterface } from '../utils';
 
 const mollieApiKey = config.mollie.apiKey;
 const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
@@ -29,6 +30,11 @@ export default async function handleRequest(req: Request, res: Response) {
     const action = validateAction(req.body);
     if (action === ControllerAction.NoAction) {
       Logger.debug('No action, ending request');
+      return res.status(200).end();
+    }
+
+    if (!isMoliePaymentInterface(req.body?.resource?.obj)) {
+      Logger.debug('Payment interface is not Mollie, ending request');
       return res.status(200).end();
     }
 

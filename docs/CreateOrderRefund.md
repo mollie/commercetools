@@ -18,7 +18,7 @@ To trigger an order refund, the `createOrderRefundRequest` field must be set on 
 
 Here is an example of a commercetools payment, which has been paid. Some parts have been left out for the sake of brevity:
 
-```
+```json
 {
     "id": "53e4f484-511d-40fd-8901-69b21983ae75",
     "version": 8,
@@ -30,10 +30,12 @@ Here is an example of a commercetools payment, which has been paid. Some parts h
         "centAmount": 3700,
         "fractionDigits": 2
     },
-    "paymentMethodInfo": {},
+    "paymentMethodInfo": {
+        "paymentInterface": "mollie"
+    },
     "custom": {
         "fields": {
-            "createOrderRequest": ...
+            "createOrderRequest": "{}",
             "mollieOrderStatus": "paid"
         }
     },
@@ -62,8 +64,8 @@ Here is an example of a commercetools payment, which has been paid. Some parts h
             "fields": {
                 "actionType": "createOrder",
                 "createdAt": "2021-11-10T13:16:19.901Z",
-                "request": ...
-                "response": ...
+                "request": "{}",
+                "response": "{}",
             }
         }
     ]
