@@ -15,25 +15,15 @@ exports.handler = async (event: any) => {
     } = config;
     const commercetoolsClient = initialiseCommercetoolsClient();
 
-    type UpdateActionValidType = UpdateActionChangeTransactionState | UpdateActionSetCustomField | AddTransaction;
-    type Id = any;
-    let updateActions: UpdateActionValidType[] = [];
-    let id: Id;
+    const resourceType = isOrderOrPayment(body.id);
+    let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField | AddTransaction)[] = [];
     let mollieOrderId;
     let ctPaymentVersion;
-    let resourceTypeToAction = new Map<string, (id: any, ctPaymentVersion: any) => Promise<[UpdateActionValidType[], Id]>>();
-    async function handleOrderWebhook(id: any, ctPaymentVersion: any): Promise<[UpdateActionValidType[], Id]> {
-      return Promise.resolve([[], '']);
+    if (resourceType == 'order') {
+      handleOrderWebhook(body.id, ctPaymentVersion, updateActions);
+    } else {
+      handlePaymentWebhook(body.id, ctPaymentVersion, updateActions, mollieOrderId);
     }
-    async function handlePaymentWebhook(id: any, ctPaymentVersion: any): Promise<[UpdateActionValidType[], Id]> {
-      return Promise.resolve([[], '']);
-    }
-    resourceTypeToAction.set('order', handleOrderWebhook);
-    resourceTypeToAction.set('payment?', handlePaymentWebhook);
-
-    let resourceType = 'order';
-    [updateActions, id] = await resourceTypeToAction.get(resourceType)!('id', 'ctPaymentVersion');
-
     const ctKey = resourceType === 'order' ? body.id : mollieOrderId;
     await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion ?? 1, updateActions);
     return;
