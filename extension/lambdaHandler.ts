@@ -2,6 +2,8 @@ import { validateAction } from './src/requestHandlers/actions';
 import { processAction } from './src/requestHandlers/handleRequest';
 import { initialiseMollieClient } from './src/client/utils';
 import Logger from './src/logger/logger';
+import { ControllerAction } from './src/types';
+import { isMoliePaymentInterface } from './src/utils';
 
 exports.handler = async (event: any) => {
   try {
@@ -18,7 +20,17 @@ exports.handler = async (event: any) => {
         ],
       };
     }
+    const noActionObject = {
+      responseType: 'UpdateRequest',
+      actions: [],
+    };
+    if (!isMoliePaymentInterface(body)) {
+      return noActionObject;
+    }
     const action = validateAction(body);
+    if (action == ControllerAction.NoAction) {
+      return noActionObject;
+    }
     const { actions, errors } = await processAction(action, body, initialiseMollieClient());
     if (errors?.length) {
       Logger.debug('Process action errors');
@@ -26,8 +38,6 @@ exports.handler = async (event: any) => {
         responseType: 'FailedValidation',
         errors,
       };
-    } else if (!actions) {
-      return {};
     } else {
       return {
         responseType: 'UpdateRequest',
