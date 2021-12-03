@@ -22,10 +22,15 @@ describe('List Payment Methods', () => {
       },
     },
   };
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   it('should return 200 and update action containing the count and methods available on mollie', async () => {
     // Set up nock
 
-    const scope = nock('https://api.mollie.com/v2')
+    const availablePaymentMethodsScope = nock('https://api.mollie.com/v2')
       .get(/methods*/)
       .reply(200, paymentMethodsAvailableResponse);
 
@@ -47,11 +52,12 @@ describe('List Payment Methods', () => {
 
     expect(value.count).toBe(2);
     expect(value.methods).toHaveLength(2);
+    expect(availablePaymentMethodsScope.isDone()).toBeTruthy();
   });
 
   it('should return 200 and update action containing "no methods found" if there are no available payment methods on mollie', async () => {
     // Set up nock
-    const scope = nock('https://api.mollie.com/v2')
+    const noAvailablePaymentMethodsScope = nock('https://api.mollie.com/v2')
       .get(/methods*/)
       .reply(200, noPaymentMethodsAvailableResponse);
 
@@ -74,5 +80,6 @@ describe('List Payment Methods', () => {
       count: 0,
       methods: 'NO_AVAILABLE_PAYMENT_METHODS',
     });
+    expect(noAvailablePaymentMethodsScope.isDone()).toBeTruthy();
   });
 });
