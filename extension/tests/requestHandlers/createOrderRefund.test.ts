@@ -34,7 +34,6 @@ describe('createOrderRefund', () => {
       metadata: {},
       orderId: 'ord_qitsrz',
       paymentId: 'tr_UjzkRQ4Cpq',
-      settlementAmount: { value: '-10.00', currency: 'EUR' },
       lines: [
         {
           resource: 'orderline',
@@ -82,7 +81,6 @@ describe('createOrderRefund', () => {
       metadata: {},
       orderId: 'ord_qitsrz',
       paymentId: 'tr_UjzkRQ4Cpq',
-      settlementAmount: { value: '-10.00', currency: 'EUR' },
       lines: [
         {
           resource: 'orderline',
