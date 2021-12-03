@@ -1,7 +1,7 @@
 import { MollieClient, Refund } from '@mollie/api-client';
 import PaymentsRefundsResource from '@mollie/api-client/dist/types/src/resources/payments/refunds/PaymentRefundsResource';
-import Logger from '../../src/logger/logger';
-import { createCustomRefund } from '../../src/requestHandlers/createCustomRefund';
+import Logger from '../../../src/logger/logger';
+import { createCustomRefund } from '../../../src/requestHandlers/createCustomRefund';
 
 describe('createCustomRefund', () => {
   const mockLogError = jest.fn();
