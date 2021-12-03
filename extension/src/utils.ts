@@ -11,16 +11,17 @@ export function createDateNowString() {
 
 /**
  * Converts a Mollie payment object to a commercetools money object
- * Doesn't handle non-negative amounts from mollie
- * @param mollieAmount e.g. { value: "100", currency: "EUR" }
+ * @param mollieAmount e.g. { value: "100.00", currency: "EUR" }
  */
 export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
   // Get the fraction digits (aka number of decimal places)
   const fractionDigits = mollieAmount.value.split('.')[1] ? mollieAmount.value.split('.')[1].length : 0;
+  const convertedMollieAmountValue = parseFloat(mollieAmount.value) * Math.pow(10, fractionDigits);
   return {
     type: 'centPrecision',
     currencyCode: mollieAmount.currency,
-    centAmount: Math.ceil(parseFloat(mollieAmount.value) * Math.pow(10, fractionDigits)),
+    // If the value is negative, round down, else round up
+    centAmount: convertedMollieAmountValue > 0 ? Math.ceil(convertedMollieAmountValue) : Math.floor(convertedMollieAmountValue),
     fractionDigits,
   };
 }

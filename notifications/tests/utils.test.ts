@@ -178,9 +178,9 @@ describe('convertMollieToCTPaymentAmount', () => {
   it('should return correct centAmount from mollie payment amount', () => {
     const testCases = [
       { mollieAmount: '10.00', expectedCentAmount: 1000 },
-      { mollieAmount: '15.00', expectedCentAmount: 1500 },
+      { mollieAmount: '-15.00', expectedCentAmount: -1500 },
       { mollieAmount: '0.50', expectedCentAmount: 50 },
-      { mollieAmount: '19.99', expectedCentAmount: 1999 },
+      { mollieAmount: '-19.99', expectedCentAmount: -1999 },
     ];
     testCases.forEach(({ mollieAmount, expectedCentAmount }) => {
       const expectedResult = {
