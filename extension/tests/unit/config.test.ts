@@ -1,4 +1,4 @@
-import { loadConfig } from '../config/config';
+import { loadConfig } from '../../config/config';
 
 describe('Config test', () => {
   it('Should return correct config object including default settings', async () => {

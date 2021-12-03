@@ -1,5 +1,5 @@
-import { validateAction } from '../src/requestHandlers/actions';
-import { ControllerAction } from '../src/types/index';
+import { validateAction } from '../../src/requestHandlers/actions';
+import { ControllerAction } from '../../src/types/index';
 
 describe('validateAction', () => {
   it('Should return getPaymentMethods when payment is created or updated', () => {

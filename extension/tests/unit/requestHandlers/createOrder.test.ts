@@ -1,6 +1,6 @@
 import { mocked } from 'ts-jest/utils';
-import { createDateNowString, convertCTToMollieAmountValue } from '../../src/utils';
-import Logger from '../../src/logger/logger';
+import { createDateNowString, convertCTToMollieAmountValue } from '../../../src/utils';
+import Logger from '../../../src/logger/logger';
 import {
   fillOrderValues,
   extractLine,
@@ -10,9 +10,9 @@ import {
   getShippingAddress,
   isDiscountAmountValid,
   convertCTTaxRateToMollieTaxRate,
-} from '../../src/requestHandlers/createOrder';
+} from '../../../src/requestHandlers/createOrder';
 
-jest.mock('../../src/utils');
+jest.mock('../../../src/utils');
 
 describe('formatPaymentMethods', () => {
   it('should return undefined when passed no payment methods', () => {

@@ -1,10 +1,10 @@
 import { mocked } from 'ts-jest/utils';
-import createOrderPayment, { getOrdersPaymentsParams, createCtActions } from '../../src/requestHandlers/createOrderPayment';
-import { Action } from '../../src/types';
-import { createDateNowString } from '../../src/utils';
-import Logger from '../../src/logger/logger';
+import createOrderPayment, { getOrdersPaymentsParams, createCtActions } from '../../../src/requestHandlers/createOrderPayment';
+import { Action } from '../../../src/types';
+import { createDateNowString } from '../../../src/utils';
+import Logger from '../../../src/logger/logger';
 
-jest.mock('../../src/utils');
+jest.mock('../../../src/utils');
 
 describe('getOrdersPaymentsParams', () => {
   const mockLogError = jest.fn();
