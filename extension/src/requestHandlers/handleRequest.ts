@@ -9,6 +9,7 @@ import { getCancelOrderParams, createCtActions as cancelOrderActions } from './c
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
 import { initialiseMollieClient } from '../client/utils';
+import { isMoliePaymentInterface } from '../utils';
 
 export default async function handleRequest(req: Request, res: Response) {
   const mollieClient = initialiseMollieClient();
@@ -25,6 +26,11 @@ export default async function handleRequest(req: Request, res: Response) {
     const action = validateAction(req.body);
     if (action === ControllerAction.NoAction) {
       Logger.debug('No action, ending request');
+      return res.status(200).end();
+    }
+
+    if (!isMoliePaymentInterface(req.body?.resource?.obj)) {
+      Logger.debug('Payment interface is not Mollie, ending request');
       return res.status(200).end();
     }
 

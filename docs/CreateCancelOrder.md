@@ -30,7 +30,9 @@ Here is an example of a commercetools payment, which has been paid. Some parts h
         "centAmount": 3700,
         "fractionDigits": 2
     },
-    "paymentMethodInfo": {},
+    "paymentMethodInfo": {
+        "paymentInterface": "mollie"
+    },
     "custom": {
         "fields": {
             "createOrderRequest": /*...*/,
