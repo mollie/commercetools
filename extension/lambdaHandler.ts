@@ -3,7 +3,7 @@ import { processAction } from './src/requestHandlers/handleRequest';
 import { initialiseMollieClient } from './src/client/utils';
 import Logger from './src/logger/logger';
 import { ControllerAction } from './src/types';
-import { isMoliePaymentInterface } from './src/utils';
+import { isMolliePaymentInterface } from './src/utils';
 
 exports.handler = async (event: any) => {
   try {
@@ -24,11 +24,11 @@ exports.handler = async (event: any) => {
       responseType: 'UpdateRequest',
       actions: [],
     };
-    if (!isMoliePaymentInterface(body)) {
+    if (!isMolliePaymentInterface(requestObject)) {
       return noActionObject;
     }
     const action = validateAction(body);
-    if (action == ControllerAction.NoAction) {
+    if (action === ControllerAction.NoAction) {
       return noActionObject;
     }
     const { actions, errors } = await processAction(action, body, initialiseMollieClient());
