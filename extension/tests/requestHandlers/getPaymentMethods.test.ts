@@ -27,7 +27,7 @@ describe('getPaymentMethods unit tests', () => {
     expect(mollieClient.methods.list).toBeCalled();
   });
 
-  it('Should return status and two update actions for commercetools', async () => {
+  it('Should return status and one update action for commercetools', async () => {
     const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedRequest = {
       custom: {
@@ -67,7 +67,7 @@ describe('getPaymentMethods unit tests', () => {
     const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
     expect(status).toBe(200);
-    expect(actions).toHaveLength(2);
+    expect(actions).toHaveLength(1);
     actions?.forEach(action => {
       expect(action).toMatchSnapshot();
     });
@@ -106,7 +106,7 @@ describe('getPaymentMethods unit tests', () => {
     const { actions, status } = await getPaymentMethods(mockedRequest, mollieClient);
 
     expect(status).toBe(200);
-    expect(actions).toHaveLength(2);
+    expect(actions).toHaveLength(1);
     actions?.forEach(action => {
       expect(action).toMatchSnapshot();
     });
