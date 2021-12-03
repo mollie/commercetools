@@ -46,26 +46,21 @@ export type CTPayment = {
 /**
  *
  * @param paymentObject commercetools paymentObject, (from body.resource.obj)
- *
- * Returns either a ControllerAction
+ * @returns ControllerAction
  */
 export const determineAction = (paymentObject: any): ControllerAction | any => {
-  // Is it listpaymentmethods?
+  // Merchant wants to list payment methods
   const shouldGetPaymentMethods = isListPaymentMethods(paymentObject);
   if (shouldGetPaymentMethods) {
     return ControllerAction.GetPaymentMethods;
   }
 
-  // Are there transactions ? OKAY - we're into the main event or NO return nought
-  const shouldProcessTransaction = !!paymentObject.transactions.length;
-  if (!shouldProcessTransaction) {
+  // If transactions are present, merchant is trying to create or update a mollie order
+  if (!paymentObject.transactions.length) {
     return ControllerAction.NoAction;
   } else {
-    // We carry on...
     const method = paymentObject?.paymentMethodInfo?.method;
-
     if (!hasValidPaymentMethod(method)) {
-      // return error
       return ControllerAction.Error;
     } else {
       if (isPayLater(method)) {
