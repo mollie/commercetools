@@ -1,56 +1,18 @@
 import { Request, Response } from 'express';
-import { version } from '../../package.json';
-import fetch from 'node-fetch-commonjs';
-import createMollieClient from '@mollie/api-client';
 import { Payment } from '@mollie/api-client';
-import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
-import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
-import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
-import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
-import { createClient } from '@commercetools/sdk-client';
 import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
 import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions, getRefundStatusUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
+import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client/utils';
 
-const mollieApiKey = config.mollie.apiKey;
-const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
-
+const mollieClient = initialiseMollieClient();
+const commercetoolsClient = initialiseCommercetoolsClient();
 const {
-  commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes },
+  commercetools: { projectKey },
 } = config;
-
-const userAgentMiddleware = createUserAgentMiddleware({
-  libraryName: 'MollieCommercetools-notification',
-  libraryVersion: version,
-});
-
-const ctAuthMiddleware = createAuthMiddlewareForClientCredentialsFlow({
-  host: authUrl,
-  projectKey,
-  credentials: {
-    clientId,
-    clientSecret,
-  },
-  scopes,
-  fetch,
-});
-
-const ctHttpMiddleWare = createHttpMiddleware({
-  host,
-  fetch,
-});
-
-let commercetoolsClient: any;
-
-if (Logger.level === 'http' || Logger.level === 'verbose' || Logger.level === 'debug') {
-  commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, createLoggerMiddleware()] });
-} else {
-  commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
-}
 
 /**
  * handleRequest
@@ -89,53 +51,11 @@ export default async function handleRequest(req: Request, res: Response) {
 
     // Order webhook - updateActions
     if (resourceType === 'order') {
-      const order = await actions.mGetOrderDetailsById(id, mollieClient);
-      const mollieOrderStatus = order.status;
-      const molliePayments = order._embedded?.payments;
-
-      const ctPayment = await actions.ctGetPaymentByKey(id, commercetoolsClient, projectKey);
-      ctPaymentVersion = ctPayment.version;
-      const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
-
-      if (mollieOrderStatus !== ctOrderStatus) {
-        updateActions.push({
-          action: UpdateActionKey.SetCustomField,
-          name: 'mollieOrderStatus',
-          value: mollieOrderStatus,
-        });
-      }
-
-      // TODO: refactor into one function (rename functions)
-      // Update the CT transactions array to reflect the status of the mollie payments array
-      const transactionStateUpdateOrderActions = getTransactionStateUpdateOrderActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments);
-      if (transactionStateUpdateOrderActions.length) {
-        updateActions.push(...transactionStateUpdateOrderActions);
-      }
-
-      // If a mollie payment exists that doesn't exist on CT, add it
-      const newCtTransactions = getAddTransactionUpdateActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments as Payment[]);
-      if (newCtTransactions.length) {
-        updateActions.push(...newCtTransactions);
-      }
+      await handleOrderWebhook(id, ctPaymentVersion, updateActions);
     }
     // Payment webhook - updateActions
     else {
-      // PAYMENTS
-      const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
-      mollieOrderId = molliePayment.orderId ?? '';
-      const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
-      ctPaymentVersion = ctPayment.version;
-      const ctTransactions = ctPayment.transactions || [];
-      const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
-      if (paymentStatusUpdateAction) {
-        updateActions.push(paymentStatusUpdateAction);
-      }
-      // REFUNDS
-      const refunds = molliePayment._embedded?.refunds;
-      if (refunds?.length) {
-        const refundUpdateActions = getRefundStatusUpdateActions(ctTransactions, refunds);
-        updateActions.push(...refundUpdateActions);
-      }
+      await handlePaymentWebhook(id, ctPaymentVersion, updateActions, mollieOrderId);
     }
 
     // Update the CT Payment
@@ -146,5 +66,54 @@ export default async function handleRequest(req: Request, res: Response) {
   } catch (error: any) {
     Logger.error({ error });
     res.status(200).end();
+  }
+}
+
+export async function handleOrderWebhook(id: any, ctPaymentVersion: any, updateActions: any) {
+  const order = await actions.mGetOrderDetailsById(id, mollieClient);
+  const mollieOrderStatus = order.status;
+  const molliePayments = order._embedded?.payments;
+
+  const ctPayment = await actions.ctGetPaymentByKey(id, commercetoolsClient, projectKey);
+  ctPaymentVersion = ctPayment.version;
+  const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
+
+  if (mollieOrderStatus !== ctOrderStatus) {
+    updateActions.push({
+      action: UpdateActionKey.SetCustomField,
+      name: 'mollieOrderStatus',
+      value: mollieOrderStatus,
+    });
+  }
+
+  // TODO: refactor into one function (rename functions)
+  // Update the CT transactions array to reflect the status of the mollie payments array
+  const transactionStateUpdateOrderActions = getTransactionStateUpdateOrderActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments);
+  if (transactionStateUpdateOrderActions.length) {
+    updateActions.push(...transactionStateUpdateOrderActions);
+  }
+
+  // If a mollie payment exists that doesn't exist on CT, add it
+  const newCtTransactions = getAddTransactionUpdateActions(ctPayment.transactions || ([] as CTTransaction[]), molliePayments as Payment[]);
+  if (newCtTransactions.length) {
+    updateActions.push(...newCtTransactions);
+  }
+}
+
+export async function handlePaymentWebhook(id: any, ctPaymentVersion: any, updateActions: any, mollieOrderId: any) {
+  const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
+  mollieOrderId = molliePayment.orderId ?? '';
+  const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
+  ctPaymentVersion = ctPayment.version;
+  const ctTransactions = ctPayment.transactions || [];
+  const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
+  if (paymentStatusUpdateAction) {
+    updateActions.push(paymentStatusUpdateAction);
+  }
+  // REFUNDS
+  const refunds = molliePayment._embedded?.refunds;
+  if (refunds?.length) {
+    const refundUpdateActions = getRefundStatusUpdateActions(ctTransactions, refunds);
+    updateActions.push(...refundUpdateActions);
   }
 }

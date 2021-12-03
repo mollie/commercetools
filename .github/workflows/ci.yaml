@@ -21,8 +21,11 @@ jobs:
       - name: Linting
         run: npm run lint
 
-      - name: Test
+      - name: Unit Test
         run: npm run test
+
+      - name: Component Test
+        run: npm run test:component
 
       - name: Build
         run: npm run build

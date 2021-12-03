@@ -1,7 +1,6 @@
+import { ControllerAction } from '../../src/types';
+import * as ut from '../../src/utils';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { ControllerAction } from '../src/types';
-import * as ut from '../src/utils';
-import { convertMollieAmountToCTMoney } from '../src/utils';
 
 describe('Utils', () => {
   beforeAll(() => {
@@ -192,15 +191,15 @@ describe('convertMollieToCTPaymentAmount', () => {
         fractionDigits: 2,
         type: 'centPrecision',
       };
-      expect(convertMollieAmountToCTMoney({ value: mollieAmount, currency: 'EUR' } as Amount)).toStrictEqual(expectedResult);
+      expect(ut.convertMollieAmountToCTMoney({ value: mollieAmount, currency: 'EUR' } as Amount)).toStrictEqual(expectedResult);
       const expectedResult2 = { currencyCode: 'USD', centAmount: -9, fractionDigits: 1, type: 'centPrecision' };
-      expect(convertMollieAmountToCTMoney({ value: '-0.9', currency: 'USD' } as Amount)).toStrictEqual(expectedResult2);
+      expect(ut.convertMollieAmountToCTMoney({ value: '-0.9', currency: 'USD' } as Amount)).toStrictEqual(expectedResult2);
       const expectedResult3 = { currencyCode: 'USD', centAmount: -995, fractionDigits: 6, type: 'centPrecision' };
-      expect(convertMollieAmountToCTMoney({ value: '-0.000995', currency: 'USD' } as Amount)).toStrictEqual(expectedResult3);
+      expect(ut.convertMollieAmountToCTMoney({ value: '-0.000995', currency: 'USD' } as Amount)).toStrictEqual(expectedResult3);
     });
   });
   it('should return correct centAmount with currency without digits', () => {
     const expectedResult = { currencyCode: 'ISK', centAmount: 1050, fractionDigits: 0, type: 'centPrecision' };
-    expect(convertMollieAmountToCTMoney({ value: '1050', currency: 'ISK' } as Amount)).toStrictEqual(expectedResult);
+    expect(ut.convertMollieAmountToCTMoney({ value: '1050', currency: 'ISK' } as Amount)).toStrictEqual(expectedResult);
   });
 });

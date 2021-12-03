@@ -1,13 +1,59 @@
-import { createMollieClient } from '@mollie/api-client';
-import config from './config/config';
+import { validateAction } from './src/requestHandlers/actions';
+import { processAction } from './src/requestHandlers/handleRequest';
+import { initialiseMollieClient } from './src/client/utils';
+import Logger from './src/logger/logger';
+import { ControllerAction } from './src/types';
+import { isMoliePaymentInterface } from './src/utils';
 
-const mollieClient = createMollieClient({ apiKey: config.mollie.apiKey });
-
-exports.handler = async () => {
-  // Methods for the Payments API
-  let methods = await mollieClient.methods.all();
-
-  // Methods for the Orders API
-  methods = await mollieClient.methods.all({ resource: 'orders' });
-  return methods;
+exports.handler = async (event: any) => {
+  try {
+    const body = event.body ? JSON.parse(event.body) : event;
+    const requestObject = body?.resource?.obj;
+    if (!requestObject) {
+      return {
+        responseType: 'FailedValidation',
+        errors: [
+          {
+            code: 'InvalidInput',
+            message: `Invalid event body`,
+          },
+        ],
+      };
+    }
+    const noActionObject = {
+      responseType: 'UpdateRequest',
+      actions: [],
+    };
+    if (!isMoliePaymentInterface(body)) {
+      return noActionObject;
+    }
+    const action = validateAction(body);
+    if (action == ControllerAction.NoAction) {
+      return noActionObject;
+    }
+    const { actions, errors } = await processAction(action, body, initialiseMollieClient());
+    if (errors?.length) {
+      Logger.debug('Process action errors');
+      return {
+        responseType: 'FailedValidation',
+        errors,
+      };
+    } else {
+      return {
+        responseType: 'UpdateRequest',
+        actions,
+      };
+    }
+  } catch (error: any) {
+    Logger.error({ error });
+    return {
+      responseType: 'FailedValidation',
+      errors: [
+        {
+          code: 'InvalidInput',
+          message: `${error.message}`,
+        },
+      ],
+    };
+  }
 };

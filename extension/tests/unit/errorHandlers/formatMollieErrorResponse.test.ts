@@ -1,4 +1,4 @@
-import { formatMollieErrorResponse } from '../../src/errorHandlers/formatMollieErrorResponse';
+import { formatMollieErrorResponse } from '../../../src/errorHandlers/formatMollieErrorResponse';
 
 describe('formatMollieErrorResponse', () => {
   it("should return Forbidden when error's status is 403 or 4O1", () => {

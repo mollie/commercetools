@@ -1,10 +1,10 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
-import getPaymentMethods from '../../src/requestHandlers/getPaymentMethods';
-import { createDateNowString } from '../../src/utils';
-import Logger from '../../src/logger/logger';
+import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
+import { createDateNowString } from '../../../src/utils';
+import Logger from '../../../src/logger/logger';
 
-jest.mock('../../src/utils');
+jest.mock('../../../src/utils');
 
 describe('getPaymentMethods unit tests', () => {
   const mockLogError = jest.fn();
