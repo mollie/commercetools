@@ -13,7 +13,7 @@
     "test:watch": "jest --testPathPattern=unit --watch",
     "test:component": "jest --testPathPattern=component",
     "lint": "prettier --check ./src ./tests ./config ./**/*.md",
-    "lint:fix": "prettier --write ./component-tests ./src ./tests ./config ./**/*.md"
+    "lint:fix": "prettier --write ./src ./tests ./config ./**/*.md"
   },
   "keywords": [],
   "author": "Mollie",

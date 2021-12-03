@@ -120,6 +120,31 @@ describe('Utils', () => {
     });
   });
 
+  describe('isMoliePaymentInterface', () => {
+    it('must return true when payment interface is mollie', () => {
+      const mockedCtObject = {
+        paymentMethodInfo: {
+          paymentInterface: 'Mollie',
+        },
+      };
+      expect(ut.isMoliePaymentInterface(mockedCtObject)).toBe(true);
+    });
+    it('should return false if payment interface is not mollie', () => {
+      const mockedCtObject = {
+        paymentMethodInfo: {
+          paymentInterface: 'NotMollie',
+        },
+      };
+      expect(ut.isMoliePaymentInterface(mockedCtObject)).toBe(false);
+    });
+    it('should return false if payment interface is not set', () => {
+      const mockedCtObject = {
+        paymentMethodInfo: {},
+      };
+      expect(ut.isMoliePaymentInterface(mockedCtObject)).toBe(false);
+    });
+  });
+
   describe('makeActions', () => {
     const makeActions = ut.makeActions;
 
