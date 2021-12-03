@@ -7,6 +7,9 @@ describe('List Payment Methods', () => {
   const mockCTPaymentObj = {
     resource: {
       obj: {
+        paymentMethodInfo: {
+          paymentInterface: 'mollie',
+        },
         amountPlanned: {
           currencyCode: 'EUR',
           centAmount: 50000,
