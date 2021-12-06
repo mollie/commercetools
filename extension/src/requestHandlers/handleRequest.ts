@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { version } from '../../package.json';
-import createMollieClient, { MollieClient } from '@mollie/api-client';
+import { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
-import config from '../../config/config';
 import actions, { validateAction } from './actions';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
@@ -10,13 +8,11 @@ import { getShipmentParams as getUpdateShipmentParams, createCtActions as update
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
-import { isMoliePaymentInterface } from '../utils';
-
-const mollieApiKey = config.mollie.apiKey;
-const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
-const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
+import { initialiseMollieClient } from '../client/utils';
+import { isMolliePaymentInterface } from '../utils';
 
 export default async function handleRequest(req: Request, res: Response) {
+  const mollieClient = initialiseMollieClient();
   if (req.path !== '/') {
     Logger.http(`Path ${req.path} not allowed`);
     return res.status(400).end();
@@ -33,7 +29,7 @@ export default async function handleRequest(req: Request, res: Response) {
       return res.status(200).end();
     }
 
-    if (!isMoliePaymentInterface(req.body?.resource?.obj)) {
+    if (!isMolliePaymentInterface(req.body?.resource?.obj)) {
       Logger.debug('Payment interface is not Mollie, ending request');
       return res.status(200).end();
     }
