@@ -1,8 +1,41 @@
-import { MollieClient, List, Method } from '@mollie/api-client';
+import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, Action } from '../types';
-import { methodListMapper } from '../utils';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
+import { convertCTToMollieAmountValue } from '../utils';
+
+export function methodListMapper(ctObj: any): MethodsListParams {
+  // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
+  if (!ctObj.amountPlanned) {
+    return {};
+  }
+  const mObject: MethodsListParams = {
+    amount: {
+      value: convertCTToMollieAmountValue(parseFloat(ctObj.amountPlanned.centAmount), ctObj.amountPlanned.fractionDigits),
+      currency: ctObj.amountPlanned.currencyCode,
+    },
+    // Resource is hardcoded, for the time being we only support Orders API
+    resource: 'orders',
+  };
+
+  if (ctObj.custom?.fields?.paymentMethodsRequest) {
+    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
+    const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
+    const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
+
+    Object.assign(
+      mObject,
+      locale && { locale: locale },
+      include && { include: include },
+      includeWallets && { includeWallets: includeWallets },
+      billingCountry && { billingCountry: billingCountry },
+      sequenceType && { sequenceType: sequenceType },
+      orderLineCategories && { orderLineCategories: orderLineCategories },
+    );
+  }
+
+  return mObject;
+}
 
 export default async function getPaymentMethods(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {

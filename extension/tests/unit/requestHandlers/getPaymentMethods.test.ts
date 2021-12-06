@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
-import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
-import { createDateNowString } from '../../../src/utils';
+import getPaymentMethods, { methodListMapper } from '../../../src/requestHandlers/getPaymentMethods';
+import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/utils');
@@ -125,5 +125,75 @@ describe('getPaymentMethods unit tests', () => {
     expect(status).toBe(400);
     expect(errors).toBeInstanceOf(Array);
     expect(mockLogError).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('methodListMapper', () => {
+  it('Should return empty object if no amountPlanned / use as list all', async () => {
+    const mollieOptions = methodListMapper({});
+    expect(mollieOptions).toMatchObject({});
+  });
+
+  it('Should return properly formated amount for mollie', async () => {
+    mocked(convertCTToMollieAmountValue).mockReturnValue('12.34');
+    const ctObj = {
+      amountPlanned: {
+        currencyCode: 'USD',
+        centAmount: 1234,
+      },
+    };
+
+    const mollieOptions = methodListMapper(ctObj);
+    expect(mollieOptions.amount).toHaveProperty('value', '12.34');
+    expect(mollieOptions.amount).toHaveProperty('currency', 'USD');
+  });
+
+  it('Should return properly formated custom fields for mollie', async () => {
+    mocked(convertCTToMollieAmountValue).mockReturnValue('10.10');
+    const ctObj = {
+      amountPlanned: {
+        currencyCode: 'EUR',
+        centAmount: 100987,
+        fractionDigits: 4,
+      },
+      custom: {
+        fields: {
+          paymentMethodsRequest: '{"locale":"nl_NL","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal","issuers":false,"pricing":false}',
+        },
+      },
+    };
+    const expectedOptions = {
+      amount: {
+        value: '10.10',
+        currency: 'EUR',
+      },
+      locale: 'nl_NL',
+      billingCountry: 'NL',
+      includeWallets: 'applepay',
+      orderLineCategories: 'eco,meal',
+      resource: 'orders',
+    };
+
+    const mollieOptions = methodListMapper(ctObj);
+    expect(mollieOptions).toEqual(expectedOptions);
+  });
+
+  it('Should properly parse includes and not have unprovided fields', async () => {
+    const ctObj = {
+      amountPlanned: {
+        currencyCode: 'EUR',
+        centAmount: 1000,
+      },
+      custom: {
+        fields: {
+          paymentMethodsRequest: '{"locale":"nl_NL","issuers":false,"pricing":true}',
+        },
+      },
+    };
+
+    const mollieOptions = methodListMapper(ctObj);
+    expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
+    expect(mollieOptions).toHaveProperty('include', 'pricing');
+    expect(mollieOptions.billingCountry).toBeUndefined();
   });
 });
