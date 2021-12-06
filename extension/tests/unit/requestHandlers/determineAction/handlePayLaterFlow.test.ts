@@ -4,7 +4,7 @@ import { ControllerAction } from '../../../../src/types';
 
 describe('handlePayLaterFlow - Error Cases', () => {
   describe('should return no action and errorMessage:', () => {
-    it('when a charge transaction is created when the Authorizaiton transaction is still pending - cannot capture unauthorized funds', () => {
+    it('when a charge transaction is created when the Authorization transaction is still pending - cannot capture unauthorized funds', () => {
       const chargeWhenAuthorizationPending = {
         key: 'ord_1234',
         transactions: [
@@ -22,7 +22,7 @@ describe('handlePayLaterFlow - Error Cases', () => {
       expect(action).toBe(ControllerAction.NoAction);
       expect(errorMessage).toBe('Cannot create a capture without a successful Authorization');
     });
-    it('when a charge transaction is created when the Authorizaiton transaction has failed - cannot capture unauthorized funds', () => {
+    it('when a charge transaction is created when the Authorization transaction has failed - cannot capture unauthorized funds', () => {
       const chargeWhenAuthorizationHasFailed = {
         key: 'ord_1234',
         transactions: [
