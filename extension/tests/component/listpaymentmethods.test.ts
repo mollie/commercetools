@@ -43,7 +43,7 @@ describe('List Payment Methods', () => {
     // Parse and check the update action
     const parsedActions = JSON.parse(text);
     const { actions } = parsedActions;
-    // expect(actions).toHaveLength(1); // currently fails - need to remove interfaceInteraction
+    expect(actions).toHaveLength(1);
 
     const { name, value: stringifiedValue } = actions.find((action: any) => action.action === 'setCustomField');
     expect(name).toBe('paymentMethodsResponse');
@@ -70,7 +70,7 @@ describe('List Payment Methods', () => {
     // Parse and check the update action
     const parsedActions = JSON.parse(text);
     const { actions } = parsedActions;
-    // expect(actions).toHaveLength(1); // currently fails - need to remove interfaceInteraction
+    expect(actions).toHaveLength(1);
 
     const { name, value: stringifiedValue } = actions.find((action: any) => action.action === 'setCustomField');
     expect(name).toBe('paymentMethodsResponse');
