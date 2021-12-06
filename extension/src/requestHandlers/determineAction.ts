@@ -1,7 +1,7 @@
 import { PaymentMethod } from '@mollie/api-client';
-import { ControllerAction, CTTransaction, CTTransactionType, CTMoney } from '../types';
+import { ControllerAction, CTTransaction, CTTransactionType, CTPayment } from '../types';
 
-export const isListPaymentMethods = (paymentObject: any) => {
+const isListPaymentMethods = (paymentObject: any) => {
   const customFields = paymentObject?.custom?.fields;
   return customFields?.paymentMethodsRequest && !customFields?.paymentMethodsResponse;
 };
@@ -21,7 +21,7 @@ export const isListPaymentMethods = (paymentObject: any) => {
  * N.B. this may be updated to handle issuers (i.e. for vouchers, iDEAL) later on
  *
  */
-export const hasValidPaymentMethod = (method: string | undefined) => {
+const hasValidPaymentMethod = (method: string | undefined) => {
   if (!method) {
     return false;
   } else {
@@ -32,15 +32,9 @@ export const hasValidPaymentMethod = (method: string | undefined) => {
   }
 };
 
-export const isPayLater = (method: PaymentMethod) => {
+const isPayLater = (method: PaymentMethod) => {
   const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
   return payLaterEnums.includes(method);
-};
-
-export type CTPayment = {
-  amountPlanned: CTMoney;
-  transactions?: CTTransaction[];
-  key?: string;
 };
 
 /**
@@ -48,20 +42,34 @@ export type CTPayment = {
  * @param paymentObject commercetools paymentObject, (from body.resource.obj)
  * @returns ControllerAction
  */
-export const determineAction = (paymentObject: any): ControllerAction | any => {
+
+//  Return object with Controller Action & errorMessage
+// If error --> no action + errorMessage
+// in handleRequest, if message present, return 400 and the message to the merchant
+export const determineAction = (paymentObject: any): { action: ControllerAction; errorMessage: string } => {
+  let errorMessage = '';
   // Merchant wants to list payment methods
   const shouldGetPaymentMethods = isListPaymentMethods(paymentObject);
   if (shouldGetPaymentMethods) {
-    return ControllerAction.GetPaymentMethods;
+    return {
+      action: ControllerAction.GetPaymentMethods,
+      errorMessage,
+    };
   }
 
   // If transactions are present, merchant is trying to create or update a mollie order
   if (!paymentObject.transactions.length) {
-    return ControllerAction.NoAction;
+    return {
+      action: ControllerAction.NoAction,
+      errorMessage,
+    };
   } else {
     const method = paymentObject?.paymentMethodInfo?.method;
     if (!hasValidPaymentMethod(method)) {
-      return ControllerAction.Error;
+      return {
+        action: ControllerAction.Error,
+        errorMessage: 'Invalid payment method. Payment method must be set in order to make and manage payment transactions',
+      };
     } else {
       if (isPayLater(method)) {
         return handlePayLaterFlow(paymentObject);
@@ -72,7 +80,9 @@ export const determineAction = (paymentObject: any): ControllerAction | any => {
   }
 };
 
-export const handlePayLaterFlow = (paymentObject: CTPayment): ControllerAction => {
+// Break up the error cases so that different error messages can get set
+export const handlePayLaterFlow = (paymentObject: CTPayment): { action: ControllerAction; errorMessage: string } => {
+  let errorMessage = '';
   const { key, transactions } = paymentObject;
 
   const authorizationTransactions: CTTransaction[] = [];
@@ -89,15 +99,19 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): ControllerAction =
 
   let action;
   switch (true) {
-    // Error
+    // Error cases
     case (!!cancelAuthorizationTransactions.length || !!chargeTransactions.length || !!refundTransactions.length) && authorizationTransactions.length === 0:
-
+      return {
+        action: ControllerAction.NoAction,
+        errorMessage: 'Cannot add a refund, cancel or charge without an Authorization transaction',
+      };
     case !!authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Success').length && !!chargeTransactions.length:
 
     case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Failure').length && !!cancelAuthorizationTransactions.length:
 
     case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Pending').length && !key:
-      action = ControllerAction.Error;
+      errorMessage = 'No you cant do that';
+      action = ControllerAction.NoAction;
       break;
 
     // Create order
@@ -127,10 +141,11 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): ControllerAction =
     default:
       action = ControllerAction.NoAction;
   }
-  return action;
+  return { action, errorMessage };
 };
 
-export const handlePayNowFlow = (paymentObject: CTPayment) => {
+export const handlePayNowFlow = (paymentObject: CTPayment): { action: ControllerAction; errorMessage: string } => {
+  let errorMessage = '';
   const { key, transactions } = paymentObject;
 
   // Check for invalid transaction types
@@ -159,7 +174,8 @@ export const handlePayNowFlow = (paymentObject: CTPayment) => {
     // case (!successChargeTransactions.length && !!refundTransactions.length):
     case initialChargeTransactions.length > 1 || pendingChargeTransactions.length > 1:
     case !!pendingChargeTransactions.length && !key:
-      action = ControllerAction.Error;
+      action = ControllerAction.NoAction;
+      errorMessage = 'woops';
       break;
     // Create Order
     case initialChargeTransactions.length === 1 && !successChargeTransactions.length && !pendingChargeTransactions.length:
@@ -176,5 +192,5 @@ export const handlePayNowFlow = (paymentObject: CTPayment) => {
     default:
       action = ControllerAction.NoAction;
   }
-  return action;
+  return { action, errorMessage };
 };
