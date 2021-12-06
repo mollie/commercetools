@@ -4,7 +4,7 @@ import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorRes
 import Logger from '../logger/logger';
 import { convertCTToMollieAmountValue } from '../utils';
 
-export function methodListMapper(ctObj: any): MethodsListParams {
+export function extractMethodListParameters(ctObj: any): MethodsListParams {
   // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
   if (!ctObj.amountPlanned) {
     return {};
@@ -39,7 +39,7 @@ export function methodListMapper(ctObj: any): MethodsListParams {
 
 export default async function getPaymentMethods(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    const mollieOptions = methodListMapper(ctObj);
+    const mollieOptions = extractMethodListParameters(ctObj);
     const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
     const responseMethods = JSON.stringify({
       count: methods.count,

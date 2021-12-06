@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
-import getPaymentMethods, { methodListMapper } from '../../../src/requestHandlers/getPaymentMethods';
+import getPaymentMethods, { extractMethodListParameters } from '../../../src/requestHandlers/getPaymentMethods';
 import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
@@ -128,9 +128,9 @@ describe('getPaymentMethods unit tests', () => {
   });
 });
 
-describe('methodListMapper', () => {
+describe('extractMethodListParameters', () => {
   it('Should return empty object if no amountPlanned / use as list all', async () => {
-    const mollieOptions = methodListMapper({});
+    const mollieOptions = extractMethodListParameters({});
     expect(mollieOptions).toMatchObject({});
   });
 
@@ -143,7 +143,7 @@ describe('methodListMapper', () => {
       },
     };
 
-    const mollieOptions = methodListMapper(ctObj);
+    const mollieOptions = extractMethodListParameters(ctObj);
     expect(mollieOptions.amount).toHaveProperty('value', '12.34');
     expect(mollieOptions.amount).toHaveProperty('currency', 'USD');
   });
@@ -174,7 +174,7 @@ describe('methodListMapper', () => {
       resource: 'orders',
     };
 
-    const mollieOptions = methodListMapper(ctObj);
+    const mollieOptions = extractMethodListParameters(ctObj);
     expect(mollieOptions).toEqual(expectedOptions);
   });
 
@@ -191,7 +191,7 @@ describe('methodListMapper', () => {
       },
     };
 
-    const mollieOptions = methodListMapper(ctObj);
+    const mollieOptions = extractMethodListParameters(ctObj);
     expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
     expect(mollieOptions).toHaveProperty('include', 'pricing');
     expect(mollieOptions.billingCountry).toBeUndefined();
