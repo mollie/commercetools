@@ -1,4 +1,4 @@
-import { determineAction } from '../../../../src/requestHandlers/determineAction';
+import { determineAction } from '../../../../src/requestHandlers/determineAction/determineAction';
 import { ControllerAction } from '../../../../src/types';
 
 describe('determineAction', () => {

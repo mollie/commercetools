@@ -1,10 +1,10 @@
 import { CTPayment } from '../../../../src/types/index';
-import { handlePayLaterFlow } from '../../../../src/requestHandlers/determineAction';
+import { handlePayLaterFlow } from '../../../../src/requestHandlers/determineAction/handlePayLaterFlow';
 import { ControllerAction } from '../../../../src/types';
 
 describe('handlePayLaterFlow - Error Cases', () => {
-  describe('should return no action and errorMessage when:', () => {
-    it('a charge transaction is created when the Authorizaiton transaction is still pending - cannot capture unauthorized funds', () => {
+  describe('should return no action and errorMessage:', () => {
+    it('when a charge transaction is created when the Authorizaiton transaction is still pending - cannot capture unauthorized funds', () => {
       const chargeWhenAuthorizationPending = {
         key: 'ord_1234',
         transactions: [
@@ -18,10 +18,11 @@ describe('handlePayLaterFlow - Error Cases', () => {
           },
         ],
       };
-      const { action } = handlePayLaterFlow(chargeWhenAuthorizationPending as CTPayment);
+      const { action, errorMessage } = handlePayLaterFlow(chargeWhenAuthorizationPending as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot create a capture without a successful Authorization');
     });
-    it('a charge transaction is created when the Authorizaiton transaction has failed - cannot capture unauthorized funds', () => {
+    it('when a charge transaction is created when the Authorizaiton transaction has failed - cannot capture unauthorized funds', () => {
       const chargeWhenAuthorizationHasFailed = {
         key: 'ord_1234',
         transactions: [
@@ -37,8 +38,9 @@ describe('handlePayLaterFlow - Error Cases', () => {
       };
       const { action, errorMessage } = handlePayLaterFlow(chargeWhenAuthorizationHasFailed as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot create a capture without a successful Authorization');
     });
-    it('a CancelAuthorization transaction is created when the Authorization transaction has failed - cannot cancel unauthorized funds', () => {
+    it('when a CancelAuthorization transaction is created when the Authorization transaction has failed - cannot cancel unauthorized funds', () => {
       const cancelWhenAuthorizationHasFailed = {
         key: 'ord_1234',
         transactions: [
@@ -52,10 +54,11 @@ describe('handlePayLaterFlow - Error Cases', () => {
           },
         ],
       };
-      const { action } = handlePayLaterFlow(cancelWhenAuthorizationHasFailed as CTPayment);
+      const { action, errorMessage } = handlePayLaterFlow(cancelWhenAuthorizationHasFailed as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot cancel a failed Authorization');
     });
-    it('a Charge transaction is created and there is no Authorization transaction - cannot capture unauthorized funds', () => {
+    it('when a Charge transaction is created and there is no Authorization transaction - cannot capture unauthorized funds', () => {
       const chargeWithoutAuthorization = {
         key: 'ord_1234',
         transactions: [
@@ -67,8 +70,9 @@ describe('handlePayLaterFlow - Error Cases', () => {
       };
       const { action, errorMessage } = handlePayLaterFlow(chargeWithoutAuthorization as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot add a refund, cancel or charge transaction without an Authorization transaction');
     });
-    it('an Authorization transaction is created in "Pending" state - this state is reserved for the API extension, to indicate that the payment service has accepted the transaction', () => {
+    it('when an Authorization transaction is created in "Pending" state - this state is reserved for the API extension, to indicate that the payment service has accepted the transaction', () => {
       const authorizationCreatedInPendingState = {
         transactions: [
           {
@@ -79,6 +83,7 @@ describe('handlePayLaterFlow - Error Cases', () => {
       };
       const { action, errorMessage } = handlePayLaterFlow(authorizationCreatedInPendingState as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot create a Transaction in state "Pending". This state is reserved to indicate the transaction has been accepted by the payment service provider');
     });
   });
 });

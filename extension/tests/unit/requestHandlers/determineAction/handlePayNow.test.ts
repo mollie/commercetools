@@ -1,9 +1,9 @@
 import { CTPayment } from '../../../../src/types/index';
-import { handlePayLaterFlow, handlePayNowFlow } from '../../../../src/requestHandlers/determineAction';
+import { handlePayNowFlow } from '../../../../src/requestHandlers/determineAction/handlePayNowFlow';
 import { ControllerAction } from '../../../../src/types';
 
-describe('handlePayNowFlow', () => {
-  describe('Error Cases - should return NoAction and errorMessage', () => {
+describe('handlePayNowFlow - Error Cases', () => {
+  describe('should return NoAction and errorMessage:', () => {
     it('when an Authorization transaction type is created on a Payment with a "pay now" method', () => {
       const authorizationPayment = {
         transactions: [
@@ -13,8 +13,9 @@ describe('handlePayNowFlow', () => {
           },
         ],
       };
-      const { action, errorMessage } = handlePayLaterFlow(authorizationPayment as CTPayment);
+      const { action, errorMessage } = handlePayNowFlow(authorizationPayment as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Authorization and CancelAuthorization transactions are invalid for pay now methods');
     });
     it('when an CancelAuthorization transaction type is created on a Payment with a "pay now" method', () => {
       const cancelAuthorizationPayment = {
@@ -25,8 +26,9 @@ describe('handlePayNowFlow', () => {
           },
         ],
       };
-      const { action, errorMessage } = handlePayLaterFlow(cancelAuthorizationPayment as CTPayment);
+      const { action, errorMessage } = handlePayNowFlow(cancelAuthorizationPayment as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Authorization and CancelAuthorization transactions are invalid for pay now methods');
     });
     it('when a Refund transaction is created and there is no Charge transaction', () => {
       const refundWithoutCharge = {
@@ -37,8 +39,9 @@ describe('handlePayNowFlow', () => {
           },
         ],
       };
-      const { action, errorMessage } = handlePayLaterFlow(refundWithoutCharge as CTPayment);
+      const { action, errorMessage } = handlePayNowFlow(refundWithoutCharge as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot create a Refund with no Charge');
     });
     it('when a Charge is created in a "Pending" state (the Pending state should only be set by the API extension as it means that the transaction was accepted by the payment service provider)', () => {
       const pendingChargeWithoutKey = {
@@ -49,11 +52,14 @@ describe('handlePayNowFlow', () => {
           },
         ],
       };
-      const { action, errorMessage } = handlePayLaterFlow(pendingChargeWithoutKey as CTPayment);
+      const { action, errorMessage } = handlePayNowFlow(pendingChargeWithoutKey as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot create a Transaction in state "Pending". This state is reserved to indicate the transaction has been accepted by the payment service provider');
     });
   });
+});
 
+describe('handlePayNowFlow - actions', () => {
   describe('NoAction', () => {
     it('should return no action when there is a Pending Charge transaction the Payment key is set - this means the order has been created in mollie and is awaiting customer payment', () => {
       const paymentPending = {
@@ -95,8 +101,8 @@ describe('handlePayNowFlow', () => {
         ],
       };
 
-      const { action, errorMessage } = handlePayLaterFlow(initialChargePayment as CTPayment);
-      expect(action).toBe(ControllerAction.NoAction);
+      const { action } = handlePayNowFlow(initialChargePayment as CTPayment);
+      expect(action).toBe(ControllerAction.CreateOrder);
     });
   });
 
