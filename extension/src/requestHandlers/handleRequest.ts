@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
-import actions, { validateAction } from './actions';
+import actions from './actions';
+import { determineAction } from './determineAction/determineAction';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
@@ -23,7 +24,18 @@ export default async function handleRequest(req: Request, res: Response) {
   }
   // TODO - authentication check - CMI-95,96,97
   try {
-    const action = validateAction(req.body);
+    const { action, errorMessage } = determineAction(req.body?.resource?.obj);
+    if (errorMessage) {
+      Logger.debug(errorMessage);
+      return res.status(400).send({
+        errors: [
+          {
+            code: 'InvalidInput',
+            message: errorMessage,
+          },
+        ],
+      });
+    }
     if (action === ControllerAction.NoAction) {
       Logger.debug('No action, ending request');
       return res.status(200).end();
