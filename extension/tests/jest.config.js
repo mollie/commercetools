@@ -1,8 +1,9 @@
 module.exports = {
-  roots: ['<rootDir>'],
+  rootDir: '../.',
+  roots: ['<rootDir>/tests'],
   testMatch: ['**/?(*.)+(test).+(ts|js)'],
   transform: {
     '^.+\\.(ts)$': 'ts-jest',
   },
-  setupFiles: ['<rootDir>/setEnvVars.js'],
+  setupFiles: ['<rootDir>/tests/setEnvVars.js'],
 };
