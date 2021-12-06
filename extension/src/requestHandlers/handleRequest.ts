@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { MollieClient } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, ControllerAction } from '../types/index';
+import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors } from '../types/index';
 import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
+import { formatExtensionErrorResponse } from '../errorHandlers/formatExtensionErrorResponse';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
@@ -27,14 +28,8 @@ export default async function handleRequest(req: Request, res: Response) {
     const { action, errorMessage } = determineAction(req.body?.resource?.obj);
     if (errorMessage) {
       Logger.debug(errorMessage);
-      return res.status(400).send({
-        errors: [
-          {
-            code: 'InvalidInput',
-            message: errorMessage,
-          },
-        ],
-      });
+      const { status, errors } = formatExtensionErrorResponse(CTEnumErrors.InvalidInput, errorMessage);
+      return res.status(status).send({ errors });
     }
     if (action === ControllerAction.NoAction) {
       Logger.debug('No action, ending request');
@@ -104,7 +99,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
         status: 400,
         errors: [
           {
-            code: 'InvalidOperation',
+            code: CTEnumErrors.InvalidOperation,
             message: 'Error processing request, please check request and try again',
           },
         ],

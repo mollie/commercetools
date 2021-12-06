@@ -4,12 +4,14 @@ import { mocked } from 'ts-jest/utils';
 import actions from '../../../src/requestHandlers/actions';
 import handleRequest, { processAction } from '../../../src/requestHandlers/handleRequest';
 import { determineAction } from '../../../src/requestHandlers/determineAction/determineAction';
-import { ControllerAction } from '../../../src/types/index';
+import { formatExtensionErrorResponse } from '../../../src/errorHandlers/formatExtensionErrorResponse';
+import { ControllerAction, CTEnumErrors } from '../../../src/types/index';
 import * as ut from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/requestHandlers/actions');
 jest.mock('../../../src/requestHandlers/determineAction/determineAction');
+jest.mock('../../../src/errorHandlers/formatExtensionErrorResponse');
 jest.mock('../../../src/utils');
 
 describe('handleRequest', () => {
@@ -89,6 +91,15 @@ describe('handleRequest', () => {
       action: ControllerAction.NoAction,
       errorMessage: 'Invalid paymentMethodInfo.method cash. Payment method must be set in order to make and manage payment transactions',
     });
+    mocked(formatExtensionErrorResponse).mockReturnValueOnce({
+      status: 400,
+      errors: [
+        {
+          code: CTEnumErrors.InvalidInput,
+          message: 'Invalid paymentMethodInfo.method cash. Payment method must be set in order to make and manage payment transactions',
+        },
+      ],
+    });
 
     await handleRequest(req, res);
 
@@ -110,7 +121,7 @@ describe('handleRequest', () => {
       status: 400,
       errors: [
         {
-          code: 'Unauthorized',
+          code: CTEnumErrors.Unauthorized,
           message: 'API Key error',
         },
       ],
@@ -122,7 +133,7 @@ describe('handleRequest', () => {
     expect(mockSend).toHaveBeenCalledWith({
       errors: [
         {
-          code: 'Unauthorized',
+          code: CTEnumErrors.Unauthorized,
           message: 'API Key error',
         },
       ],
@@ -141,7 +152,7 @@ describe('handleRequest', () => {
     expect(mockSend).toHaveBeenCalledWith({
       errors: [
         {
-          code: 'General',
+          code: CTEnumErrors.General,
           message: 'error_name: Big error, error_message: Something went wrong',
         },
       ],
