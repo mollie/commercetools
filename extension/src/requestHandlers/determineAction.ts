@@ -90,29 +90,38 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): ControllerAction =
   let action;
   switch (true) {
     // Error
-    case (!cancelAuthorizationTransactions.length || !chargeTransactions.length || !refundTransactions.length) && authorizationTransactions.length === 0:
+    case (!!cancelAuthorizationTransactions.length || !!chargeTransactions.length || !!refundTransactions.length) && authorizationTransactions.length === 0:
+
     case !!authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Success').length && !!chargeTransactions.length:
+
+    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Failure').length && !!cancelAuthorizationTransactions.length:
+
+    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Pending').length && !key:
       action = ControllerAction.Error;
       break;
+
     // Create order
-    case authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
+    case !key && authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
       action = ControllerAction.CreateOrder;
       break;
+
     // Create shipment
     case key &&
       authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length === 1 &&
-      chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Initial'):
+      !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Initial').length:
       action = ControllerAction.CreateShipment;
       break;
+
     // Cancel Authorization
     case authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Failure').length >= 1 &&
-      cancelAuthorizationTransactions.filter(cancelTransaction => cancelTransaction.state === 'Initial'):
+      !!cancelAuthorizationTransactions.filter(cancelTransaction => cancelTransaction.state === 'Initial').length:
       action = ControllerAction.CancelOrder;
       break;
+
     // Create Refund
     case authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length === 1 &&
       chargeTransactions?.filter(chargeTransaction => chargeTransaction.state === 'Success').length >= 1 &&
-      refundTransactions?.filter(refundTransaction => refundTransaction.state === 'Initial'):
+      refundTransactions?.filter(refundTransaction => refundTransaction.state === 'Initial').length >= 1:
       action = ControllerAction.CreateCustomRefund;
       break;
     default:

@@ -95,13 +95,76 @@ describe('determineAction', () => {
   });
 
   // Create Order
+  it('should return Create Order action when there is an Initial Authorization transaction and method is pay later', () => {
+    const mockPaymentObject = {
+      paymentMethodInfo: {
+        paymentInterface: 'mollie',
+        method: 'klarnasliceit',
+      },
+      custom: {
+        fields: {
+          paymentMethodsRequest: 'local:de_DE',
+          paymentMethodsResponse: '"count":5,"methods":[{}]',
+        },
+      },
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Initial',
+        },
+      ],
+    };
+
+    const action = determineAction(mockPaymentObject);
+    expect(action).toBe(ControllerAction.CreateOrder);
+  });
+
+  it('should return Create Order action when there is an Initial Charge transaction and method is pay now', () => {
+    const mockPaymentObject = {
+      paymentMethodInfo: {
+        paymentInterface: 'mollie',
+        method: 'paypal',
+      },
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Initial',
+        },
+      ],
+    };
+
+    const action = determineAction(mockPaymentObject);
+    expect(action).toBe(ControllerAction.CreateOrder);
+  });
 
   // Create Shipment
+  // Check - can you ship a pay now ?
+  it('should return Create Shipment action when there is a successful authorization followed by an iniital charge transaction and method is pay later', () => {
+    const mockPaymentObject = {
+      paymentMethodInfo: {
+        paymentInterface: 'mollie',
+        method: 'klarnasliceit',
+      },
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Success',
+        },
+        {
+          type: 'Charge',
+          state: 'Initial',
+        },
+      ],
+    };
 
-  // Cancel Order
+    const action = determineAction(mockPaymentObject);
+    expect(action).toBe(ControllerAction.CreateShipment);
+  });
 });
 
-describe.only('handlePayLaterFlow', () => {
+describe('handlePayLaterFlow', () => {
   // No action
   it('should return no action when transaction should not trigger anything in mollie', () => {
     const authorizationPending = {
@@ -189,7 +252,7 @@ describe.only('handlePayLaterFlow', () => {
       transactions: [
         {
           type: 'Authorization',
-          state: 'Intial',
+          state: 'Initial',
         },
       ],
     };
@@ -198,6 +261,7 @@ describe.only('handlePayLaterFlow', () => {
   // Create Shipment
   it('should return create shipment action when correct combination of transactions is sent', () => {
     const successfulAuthorizationAndInitialCharge = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
@@ -205,13 +269,14 @@ describe.only('handlePayLaterFlow', () => {
         },
         {
           type: 'Charge',
-          state: 'Intial',
+          state: 'Initial',
         },
       ],
     };
     expect(handlePayLaterFlow(successfulAuthorizationAndInitialCharge as CTPayment)).toBe(ControllerAction.CreateShipment);
 
     const successfulAuthorizationAndMultipleCharges = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
@@ -223,13 +288,14 @@ describe.only('handlePayLaterFlow', () => {
         },
         {
           type: 'Charge',
-          state: 'Intial',
+          state: 'Initial',
         },
       ],
     };
     expect(handlePayLaterFlow(successfulAuthorizationAndMultipleCharges as CTPayment)).toBe(ControllerAction.CreateShipment);
 
     const chargeWhenRefundAlsoPresent = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
@@ -245,7 +311,7 @@ describe.only('handlePayLaterFlow', () => {
         },
         {
           type: 'Charge',
-          state: 'Intial',
+          state: 'Initial',
         },
       ],
     };
@@ -253,21 +319,8 @@ describe.only('handlePayLaterFlow', () => {
   });
   // Cancel Order / Order Line
   it('should return CancelOrder action when correct transactions are passed', () => {
-    const cancelPendingAuthorization = {
-      transactions: [
-        {
-          type: 'Authorization',
-          state: 'Pending',
-        },
-        {
-          type: 'CancelAuthorization',
-          state: 'Initial',
-        },
-      ],
-    };
-    expect(handlePayLaterFlow(cancelPendingAuthorization as CTPayment)).toBe(ControllerAction.CancelOrder);
-
     const cancelSuccessfulAuthorization = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
@@ -280,10 +333,26 @@ describe.only('handlePayLaterFlow', () => {
       ],
     };
     expect(handlePayLaterFlow(cancelSuccessfulAuthorization as CTPayment)).toBe(ControllerAction.CancelOrder);
+
+    const cancelPendingAuthorization = {
+      key: 'ord_1234',
+      transactions: [
+        {
+          type: 'Authorization',
+          state: 'Pending',
+        },
+        {
+          type: 'CancelAuthorization',
+          state: 'Initial',
+        },
+      ],
+    };
+    expect(handlePayLaterFlow(cancelPendingAuthorization as CTPayment)).toBe(ControllerAction.CancelOrder);
   });
   // Create Refund
   it('should return Refund action when correct transactions are passed', () => {
     const refundWithSuccessfulCharge = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
@@ -302,6 +371,7 @@ describe.only('handlePayLaterFlow', () => {
     expect(handlePayLaterFlow(refundWithSuccessfulCharge as CTPayment)).toBe(ControllerAction.CreateCustomRefund);
 
     const multipleRefunds = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
@@ -326,6 +396,7 @@ describe.only('handlePayLaterFlow', () => {
     // Imagine an order created, some lines cancelled, then it was all shipped.
     // Now we want to create a refund
     const refundWhereACancelAuthorizationIsAlsoPresent = {
+      key: 'ord_1234',
       transactions: [
         {
           type: 'Authorization',
