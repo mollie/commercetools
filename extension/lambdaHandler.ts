@@ -1,6 +1,6 @@
 import { validateAction } from './src/requestHandlers/actions';
 import { processAction } from './src/requestHandlers/handleRequest';
-import { initialiseMollieClient } from './src/client/utils';
+import { initialiseMollieClient } from './src/client';
 import Logger from './src/logger/logger';
 import { ControllerAction } from './src/types';
 import { isMolliePaymentInterface } from './src/utils';

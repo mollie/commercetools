@@ -8,7 +8,7 @@ import { getShipmentParams as getUpdateShipmentParams, createCtActions as update
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
-import { initialiseMollieClient } from '../client/utils';
+import { initialiseMollieClient } from '../client';
 import { isMolliePaymentInterface } from '../utils';
 
 export default async function handleRequest(req: Request, res: Response) {
