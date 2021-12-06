@@ -81,7 +81,7 @@ export function methodListMapper(ctObj: any): MethodsListParams {
   return mObject;
 }
 
-export function isMoliePaymentInterface(ctObj: any): Boolean {
+export function isMolliePaymentInterface(ctObj: any): Boolean {
   if (!ctObj.paymentMethodInfo?.paymentInterface) return false;
   const normalizedInterface = ctObj.paymentMethodInfo?.paymentInterface.toLowerCase();
   return normalizedInterface === 'mollie' ? true : false;
