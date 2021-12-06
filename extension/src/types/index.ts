@@ -36,6 +36,12 @@ export type CTMoney = {
   fractionDigits?: number;
 };
 
+export type CTPayment = {
+  amountPlanned: CTMoney;
+  transactions?: CTTransaction[];
+  key?: string;
+};
+
 export type CTTransaction = {
   timestamp: string;
   type: CTTransactionType;
@@ -54,6 +60,7 @@ export enum ControllerAction {
   UpdateShipment = 'updateShipment',
   CancelOrder = 'cancelOrder',
   NoAction = 'noAction',
+  Error = 'error',
 }
 
 export enum CTTransactionType {
