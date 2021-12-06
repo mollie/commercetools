@@ -96,5 +96,7 @@ describe('List Payment Methods', () => {
     const errors = JSON.parse(text).errors;
     expect(errors).toHaveLength(1);
     expect(errors[0].extensionExtraInfo.field).toEqual('amount.currency');
+
+    expect(amountCurrencyMissingScope.isDone()).toBeTruthy();
   });
 });
