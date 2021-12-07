@@ -4,7 +4,6 @@ import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
-import { createApiBuilderFromCtpClient, ApiRoot, } from '@commercetools/platform-sdk'
 
 import config from '../../config/config';
 import { version } from '../../package.json';
@@ -33,7 +32,6 @@ export function initialiseCommercetoolsClient(): any {
       clientId,
       clientSecret,
     },
-    // scopes: [`view_orders:${projectKey}`],
     scopes,
     fetch,
   });
@@ -43,9 +41,6 @@ export function initialiseCommercetoolsClient(): any {
     fetch,
   });
 
-  const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
-  // const commercetoolsApi: ApiRoot = createApiBuilderFromCtpClient(commercetoolsClient)
-
-  return commercetoolsClient
-  // return commercetoolsApi
+  const commercetoolsApi = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
+  return { commercetoolsApi, projectKey }
 }

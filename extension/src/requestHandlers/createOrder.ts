@@ -214,47 +214,27 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
   return Promise.resolve(result);
 }
 
-export default async function createOrder(body: any, mollieClient: MollieClient, commercetoolsApi: any): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrder(body: any, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+  const paymentId = body?.resource?.obj?.id
+  const { commercetoolsApi, projectKey } = commercetoolsClient
   try {
-    // commercetoolsApi
-    //   .withProjectKey({
-    //     projectKey: 'mollie_int_dec',
-    //   })
-    //   .get()
-    //   .execute()
-    //   .then((x: any) => {
-    //     console.log('xHEREE', x)
-    //     /*...*/
-    //   })
-    //   .catch((err: any) => console.error('BAAAAAAAD', err))
-
-    // const cartOfPayment = await commercetoolsApi
-    //   .withProjectKey({ projectKey: 'mollie_int_december' })
-    //   .carts()
-    //   .get()
-    //   .execute()
-
-    // console.log('cartOfPayment', cartOfPayment)
-
     const getCartByPaymentOptions = {
-      uri: `/mollie_int_december/carts`,
+      uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     };
-    console.log('getCartByPaymentOptions', getCartByPaymentOptions)
-    const carts = await commercetoolsApi.execute(getCartByPaymentOptions);
-    console.log('carts', carts)
+    const cartByPayment = await commercetoolsApi.execute(getCartByPaymentOptions);
+    console.log('cartByPayment', cartByPayment.body.results[0])
 
     // TODO: refactor to not pass the whole body..
-    // const orderParams = await fillOrderValues(body);
-    // const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
-    // const ctActions = await createCtActions(mollieCreatedOrder, body?.resource?.obj);
+    const orderParams = await fillOrderValues(body);
+    const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
+    const ctActions = await createCtActions(mollieCreatedOrder, body?.resource?.obj);
     return {
-      // actions: ctActions,
-      actions: [],
+      actions: ctActions,
       status: 201,
     };
   } catch (error: any) {
