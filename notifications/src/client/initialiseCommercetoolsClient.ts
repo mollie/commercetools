@@ -1,5 +1,4 @@
 import fetch from 'node-fetch-commonjs';
-import createMollieClient, { MollieClient } from '@mollie/api-client';
 import config from '../../config/config';
 import { version } from '../../package.json';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
@@ -8,13 +7,6 @@ import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
 import Logger from '../logger/logger';
-
-export function initialiseMollieClient(): MollieClient {
-  const mollieApiKey = config.mollie.apiKey;
-  const mollieUserAgentString = `MollieCommercetools-notifications/${version}`;
-  const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
-  return mollieClient;
-}
 
 export function initialiseCommercetoolsClient(): any {
   const {
