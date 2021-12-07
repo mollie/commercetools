@@ -8,7 +8,7 @@ import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods
 
 jest.mock('../../../src/utils');
 
-describe('getPaymentMethods unit tests', () => {
+describe('GetPaymentMethods', () => {
   const mockLogError = jest.fn();
   beforeAll(() => {
     Logger.error = mockLogError;
@@ -130,8 +130,7 @@ describe('getPaymentMethods unit tests', () => {
   });
 });
 
-describe.only('Get Payment Methods - Check the parameters', () => {
-  // Set up the mock mollie client
+describe('Get Payment Methods - extractMethodListParameters', () => {
   const mockMollieClient = {} as MollieClient;
   const mockMethodsResource = {} as MethodsResource;
   mockMollieClient.methods = mockMethodsResource;
