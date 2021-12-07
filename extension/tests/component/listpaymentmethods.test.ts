@@ -83,6 +83,30 @@ describe('List Payment Methods', () => {
     expect(noAvailablePaymentMethodsScope.isDone()).toBeTruthy();
   });
 
+  it('Should be able to handle an incorrectly formatted request', async () => {
+    const wrongFormatMockCTPaymentObj = {
+      resource: {
+        obj: {
+          paymentMethodInfo: {
+            paymentInterface: 'mollie',
+          },
+          amountPlanned: {
+            currencyCode: 'EUR',
+            centAmount: 50000,
+          },
+          custom: {
+            fields: {
+              paymentMethodsRequest: '{"locaaaaaaaal":"NL"}',
+            },
+          },
+        },
+      },
+    };
+    const res = await request(app).post('/').send(wrongFormatMockCTPaymentObj);
+    const { status } = res;
+    expect(status).toBe(400);
+  });
+
   it('Should be able to handle a generic 500 error from mollie', async () => {
     const genericMollieServerErrorScope = nock('https://api.mollie.com/v2')
       .get(/methods*/)
