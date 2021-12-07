@@ -1,6 +1,13 @@
 import { loadConfig } from '../../config/config';
 
 describe('Config test', () => {
+  const mockLogError = jest.fn();
+  beforeEach(() => {
+    console.error = mockLogError;
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('Should return correct config object including default settings', async () => {
     const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
       mollie: { apiKey: 'testMollieApiKey' },
