@@ -130,14 +130,14 @@ export function extractLine(line: any) {
   return extractedLine;
 }
 
-export function fillOrderValues(body: any): Promise<OrderCreateParams> {
+export function fillOrderValues(ctObj: any): Promise<OrderCreateParams> {
   try {
-    const deStringedOrderRequest = JSON.parse(body?.resource?.obj?.custom?.fields?.createOrderRequest);
-    const amountConverted = convertCTToMollieAmountValue(body?.resource?.obj?.amountPlanned?.centAmount);
+    const deStringedOrderRequest = JSON.parse(ctObj.custom?.fields?.createOrderRequest);
+    const amountConverted = convertCTToMollieAmountValue(ctObj.amountPlanned?.centAmount);
     const orderValues: OrderCreateParams = {
       amount: {
         value: amountConverted,
-        currency: body?.resource?.obj?.amountPlanned?.currencyCode,
+        currency: ctObj.amountPlanned?.currencyCode,
       },
       orderNumber: deStringedOrderRequest.orderNumber.toString(),
       webhookUrl: deStringedOrderRequest.orderWebhookUrl,
@@ -156,7 +156,7 @@ export function fillOrderValues(body: any): Promise<OrderCreateParams> {
     if (deStringedOrderRequest.shippingAddress) {
       orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
     }
-    const formattedMethods = formatPaymentMethods(body?.resource?.obj?.paymentMethodInfo?.method);
+    const formattedMethods = formatPaymentMethods(ctObj.paymentMethodInfo?.method);
     if (formattedMethods) {
       orderValues.method = formattedMethods;
     }
@@ -214,8 +214,8 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
   return Promise.resolve(result);
 }
 
-export default async function createOrder(body: any, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
-  const paymentId = body?.resource?.obj?.id
+export default async function createOrder(ctObj: any, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+  const paymentId = ctObj?.id
   const { commercetoolsApi, projectKey } = commercetoolsClient
   try {
     const getCartByPaymentOptions = {
@@ -229,10 +229,9 @@ export default async function createOrder(body: any, mollieClient: MollieClient,
     const cartByPayment = await commercetoolsApi.execute(getCartByPaymentOptions);
     console.log('cartByPayment', cartByPayment.body.results[0])
 
-    // TODO: refactor to not pass the whole body..
-    const orderParams = await fillOrderValues(body);
+    const orderParams = await fillOrderValues(ctObj);
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
-    const ctActions = await createCtActions(mollieCreatedOrder, body?.resource?.obj);
+    const ctActions = await createCtActions(mollieCreatedOrder, ctObj);
     return {
       actions: ctActions,
       status: 201,

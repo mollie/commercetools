@@ -63,7 +63,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       break;
     case ControllerAction.CreateOrder:
       Logger.debug(`action: ${ControllerAction.CreateOrder}`);
-      result = await actions.createOrder(body, mollieClient, commercetoolsClient);
+      result = await actions.createOrder(body?.resource?.obj, mollieClient, commercetoolsClient);
       break;
     case ControllerAction.CreateOrderPayment:
       Logger.debug(`action: ${ControllerAction.CreateOrderPayment}`);

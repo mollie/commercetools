@@ -59,7 +59,6 @@ describe('Config test', () => {
       },
     };
     const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
-    console.log('configTESTTT', config)
     expect(config).toEqual(expectedConfig);
   });
 
