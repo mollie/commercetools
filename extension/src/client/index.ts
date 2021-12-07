@@ -33,7 +33,8 @@ export function initialiseCommercetoolsClient(): any {
       clientId,
       clientSecret,
     },
-    scopes: [`manage_orders:${projectKey}`],
+    // scopes: [`view_orders:${projectKey}`],
+    scopes,
     fetch,
   });
 
@@ -43,7 +44,8 @@ export function initialiseCommercetoolsClient(): any {
   });
 
   const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
-  const commercetoolsApi: ApiRoot = createApiBuilderFromCtpClient(commercetoolsClient)
+  // const commercetoolsApi: ApiRoot = createApiBuilderFromCtpClient(commercetoolsClient)
 
-  return commercetoolsApi
+  return commercetoolsClient
+  // return commercetoolsApi
 }
