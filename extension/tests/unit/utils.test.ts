@@ -135,3 +135,19 @@ describe('convertMollieToCTPaymentAmount', () => {
     expect(ut.convertMollieAmountToCTMoney({ value: '1050', currency: 'ISK' } as Amount)).toStrictEqual(expectedResult);
   });
 });
+
+describe('convert CT to mollie amount value', () => {
+  it('should convert ct to mollie amount value', () => {
+    const testCases = [
+      { expectedMollieAmount: '10.00', centAmount: 1000, fractionDigits: 2 },
+      { expectedMollieAmount: '10.10', centAmount: 100987, fractionDigits: 4 },
+      { expectedMollieAmount: '-15.00', centAmount: -15, fractionDigits: 0 },
+      { expectedMollieAmount: '0.50', centAmount: 5, fractionDigits: 1 },
+      { expectedMollieAmount: '-19.99', centAmount: -1999, fractionDigits: 2 },
+      { expectedMollieAmount: '0.01', centAmount: 1 },
+    ];
+    testCases.forEach(({ expectedMollieAmount, centAmount, fractionDigits }) => {
+      expect(ut.convertCTToMollieAmountValue(centAmount, fractionDigits)).toStrictEqual(expectedMollieAmount);
+    });
+  });
+});

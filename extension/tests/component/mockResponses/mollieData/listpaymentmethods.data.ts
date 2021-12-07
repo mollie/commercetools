@@ -122,11 +122,9 @@ export const noPaymentMethodsAvailableResponse = {
   },
 };
 
-export const amountCurrencyMissingResponse = {
-  status: 400,
-  title: 'Bad Request',
-  detail: 'The currency is missing from the amount',
-  field: 'amount.currency',
+export const genericMollieErrorResponse = {
+  status: 500,
+  title: 'Internal Server Error',
   _links: {
     documentation: {
       href: 'https://docs.mollie.com/overview/handling-errors',

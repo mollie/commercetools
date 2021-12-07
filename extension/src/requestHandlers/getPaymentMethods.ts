@@ -4,7 +4,7 @@ import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorRes
 import Logger from '../logger/logger';
 import { convertCTToMollieAmountValue } from '../utils';
 
-export function extractMethodListParameters(ctObj: any): MethodsListParams {
+function extractMethodListParameters(ctObj: any): MethodsListParams {
   // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
   if (!ctObj.amountPlanned) {
     return {};

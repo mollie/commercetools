@@ -1,8 +1,10 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
-import getPaymentMethods, { extractMethodListParameters } from '../../../src/requestHandlers/getPaymentMethods';
+import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
 import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
+import { MollieClient } from '@mollie/api-client';
+import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
 
 jest.mock('../../../src/utils');
 
@@ -128,72 +130,78 @@ describe('getPaymentMethods unit tests', () => {
   });
 });
 
-describe('extractMethodListParameters', () => {
-  it('Should return empty object if no amountPlanned / use as list all', async () => {
-    const mollieOptions = extractMethodListParameters({});
-    expect(mollieOptions).toMatchObject({});
+describe('Get Payment Methods - Check the parameters', () => {
+  // Set up the mock mollie client
+  const mockMollieClient = {} as MollieClient;
+  const mockMethodsResource = {} as MethodsResource;
+  mockMollieClient.methods = mockMethodsResource;
+  const mockMethodsResponse: any = [{ method: 'creditcard' }];
+  mockMethodsResponse.count = 1;
+  const mockList = jest.fn().mockResolvedValue(() => mockMethodsResponse);
+
+  beforeEach(() => {
+    mockMethodsResource.list = mockList;
+    mocked(convertCTToMollieAmountValue).mockReturnValue('11.00');
   });
 
-  it('Should return properly formated amount for mollie', async () => {
-    mocked(convertCTToMollieAmountValue).mockReturnValue('12.34');
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
+  it('Should call mollie with correct locale', async () => {
+    const expectedMockListOptions = {
+      amount: {
+        currency: 'USD',
+        value: '11.00',
+      },
+      resource: 'orders',
+      locale: 'en_US',
+    };
+
     const ctObj = {
       amountPlanned: {
         currencyCode: 'USD',
-        centAmount: 1234,
-      },
-    };
-
-    const mollieOptions = extractMethodListParameters(ctObj);
-    expect(mollieOptions.amount).toHaveProperty('value', '12.34');
-    expect(mollieOptions.amount).toHaveProperty('currency', 'USD');
-  });
-
-  it('Should return properly formated custom fields for mollie', async () => {
-    mocked(convertCTToMollieAmountValue).mockReturnValue('10.10');
-    const ctObj = {
-      amountPlanned: {
-        currencyCode: 'EUR',
-        centAmount: 100987,
-        fractionDigits: 4,
+        centAmount: 1100,
       },
       custom: {
         fields: {
-          paymentMethodsRequest: '{"locale":"nl_NL","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal","issuers":false,"pricing":false}',
+          paymentMethodsRequest: '{"locale":"en_US"}',
         },
       },
     };
-    const expectedOptions = {
+
+    await getPaymentMethods(ctObj, mockMollieClient);
+
+    expect(mockList).toHaveBeenLastCalledWith(expectedMockListOptions);
+  });
+
+  it('Should call mollie with properly formatted custom fields', async () => {
+    const expectedMockListOptions = {
       amount: {
-        value: '10.10',
         currency: 'EUR',
+        value: '11.00',
       },
+      resource: 'orders',
       locale: 'nl_NL',
       billingCountry: 'NL',
-      includeWallets: 'applepay',
       orderLineCategories: 'eco,meal',
-      resource: 'orders',
+      include: 'issuers,',
     };
 
-    const mollieOptions = extractMethodListParameters(ctObj);
-    expect(mollieOptions).toEqual(expectedOptions);
-  });
-
-  it('Should properly parse includes and not have unprovided fields', async () => {
     const ctObj = {
       amountPlanned: {
         currencyCode: 'EUR',
-        centAmount: 1000,
+        centAmount: 1100,
       },
       custom: {
         fields: {
-          paymentMethodsRequest: '{"locale":"nl_NL","issuers":false,"pricing":true}',
+          paymentMethodsRequest: '{"locale":"nl_NL","billingCountry":"NL","orderLineCategories":"eco,meal","issuers":true,"pricing":false}',
         },
       },
     };
 
-    const mollieOptions = extractMethodListParameters(ctObj);
-    expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
-    expect(mollieOptions).toHaveProperty('include', 'pricing');
-    expect(mollieOptions.billingCountry).toBeUndefined();
+    await getPaymentMethods(ctObj, mockMollieClient);
+
+    expect(mockList).toHaveBeenLastCalledWith(expectedMockListOptions);
   });
 });

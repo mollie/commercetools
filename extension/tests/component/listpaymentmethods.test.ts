@@ -1,7 +1,7 @@
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../src/app';
-import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse, amountCurrencyMissingResponse } from './mockResponses/mollieData/listpaymentmethods.data';
+import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse, genericMollieErrorResponse } from './mockResponses/mollieData/listpaymentmethods.data';
 
 describe('List Payment Methods', () => {
   const mockCTPaymentObj = {
@@ -22,9 +22,6 @@ describe('List Payment Methods', () => {
       },
     },
   };
-
-  const noCurrencyCodeMockCTPaymentObj = { ...mockCTPaymentObj };
-  noCurrencyCodeMockCTPaymentObj.resource.obj.amountPlanned.currencyCode = '';
 
   afterEach(() => {
     nock.cleanAll();
@@ -85,18 +82,20 @@ describe('List Payment Methods', () => {
     });
     expect(noAvailablePaymentMethodsScope.isDone()).toBeTruthy();
   });
-  it('Should return 400 and errors[] for a badly formatted request', async () => {
-    const amountCurrencyMissingScope = nock('https://api.mollie.com/v2')
+
+  it('Should be able to handle a generic 500 error from mollie', async () => {
+    const genericMollieServerErrorScope = nock('https://api.mollie.com/v2')
       .get(/methods*/)
-      .reply(400, amountCurrencyMissingResponse);
-    const res = await request(app).post('/').send(noCurrencyCodeMockCTPaymentObj);
-    const { status, error, text } = res;
+      .reply(500, genericMollieErrorResponse);
+
+    const res = await request(app).post('/').send(mockCTPaymentObj);
+    const { status, text } = res;
     expect(status).toBe(400);
 
     const errors = JSON.parse(text).errors;
     expect(errors).toHaveLength(1);
-    expect(errors[0].extensionExtraInfo.field).toEqual('amount.currency');
+    expect(errors[0].extensionExtraInfo.mollieStatusCode).toBe(500);
 
-    expect(amountCurrencyMissingScope.isDone()).toBeTruthy();
+    expect(genericMollieServerErrorScope.isDone()).toBeTruthy();
   });
 });
