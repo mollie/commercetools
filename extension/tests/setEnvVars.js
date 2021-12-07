@@ -1,14 +1,14 @@
 const testConfig = JSON.stringify({
-  mollie: { 
-    apiKey: 'testMollieApiKey'
-  }, 
+  mollie: {
+    apiKey: 'testMollieApiKey',
+  },
   commercetools: {
-    projectKey  : 'test',
-    clientId    : '123456789',
+    projectKey: 'test',
+    clientId: '123456789',
     clientSecret: 'abcdefghi',
-    authUrl     : 'https://auth.dummy.com',
-    host        : 'https://api.dummy.com',
-  }
-})
+    authUrl: 'https://auth.dummy.com',
+    host: 'https://api.dummy.com',
+  },
+});
 
-process.env.CT_MOLLIE_CONFIG = testConfig
+process.env.CT_MOLLIE_CONFIG = testConfig;

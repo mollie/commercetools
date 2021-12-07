@@ -10,7 +10,7 @@ describe('Config test', () => {
         clientSecret: 'abcdefghi',
         authUrl: 'https://auth.dummy.com',
         host: 'https://api.dummy.com',
-      }
+      },
     });
     const expectedConfig = {
       mollie: { apiKey: 'testMollieApiKey' },

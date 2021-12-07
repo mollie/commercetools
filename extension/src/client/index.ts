@@ -42,5 +42,5 @@ export function initialiseCommercetoolsClient(): any {
   });
 
   const commercetoolsApi = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
-  return { commercetoolsApi, projectKey }
+  return { commercetoolsApi, projectKey };
 }

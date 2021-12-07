@@ -215,8 +215,8 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
 }
 
 export default async function createOrder(ctObj: any, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
-  const paymentId = ctObj?.id
-  const { commercetoolsApi, projectKey } = commercetoolsClient
+  const paymentId = ctObj?.id;
+  const { commercetoolsApi, projectKey } = commercetoolsClient;
   try {
     const getCartByPaymentOptions = {
       uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
@@ -227,7 +227,7 @@ export default async function createOrder(ctObj: any, mollieClient: MollieClient
       },
     };
     const cartByPayment = await commercetoolsApi.execute(getCartByPaymentOptions);
-    console.log('cartByPayment', cartByPayment.body.results[0])
+    console.log('cartByPayment', cartByPayment.body.results[0]);
 
     const orderParams = await fillOrderValues(ctObj);
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
