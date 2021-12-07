@@ -24,12 +24,12 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     const envConfig = JSON.parse(ctMollieConfig || '');
 
     const config: Config = {
+      ...envConfig,
       service: {
         port: envConfig.service?.port || 3000,
         logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
         logTransports: envConfig.service?.logTransports || 'terminal',
       },
-      ...envConfig,
     };
 
     const { valid, message } = isConfigValid(config);
