@@ -1,5 +1,5 @@
 import config from './config/config';
-import { initialiseCommercetoolsClient } from './src/client/utils';
+import { initialiseCommercetoolsClient, initialiseMollieClient } from './src/client/index';
 import Logger from './src/logger/logger';
 import { handleOrderWebhook, handlePaymentWebhook } from './src/requestHandlers/handleRequest';
 import actions from './src/requestHandlers/index';
