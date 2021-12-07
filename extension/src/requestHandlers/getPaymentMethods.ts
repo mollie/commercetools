@@ -18,21 +18,19 @@ function extractMethodListParameters(ctObj: any): MethodsListParams {
     resource: 'orders',
   };
 
-  if (ctObj.custom?.fields?.paymentMethodsRequest) {
-    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
-    const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
-    const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
+  const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
+  const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
+  const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
 
-    Object.assign(
-      mObject,
-      locale && { locale: locale },
-      include && { include: include },
-      includeWallets && { includeWallets: includeWallets },
-      billingCountry && { billingCountry: billingCountry },
-      sequenceType && { sequenceType: sequenceType },
-      orderLineCategories && { orderLineCategories: orderLineCategories },
-    );
-  }
+  Object.assign(
+    mObject,
+    locale && { locale: locale },
+    include && { include: include },
+    includeWallets && { includeWallets: includeWallets },
+    billingCountry && { billingCountry: billingCountry },
+    sequenceType && { sequenceType: sequenceType },
+    orderLineCategories && { orderLineCategories: orderLineCategories },
+  );
 
   return mObject;
 }

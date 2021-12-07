@@ -1,7 +1,8 @@
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../src/app';
-import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse, genericMollieErrorResponse } from './mockResponses/mollieData/listpaymentmethods.data';
+import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse } from './mockResponses/mollieData/listpaymentmethods.data';
+import Logger from '../../src/logger/logger';
 
 describe('List Payment Methods', () => {
   const mockCTPaymentObj = {
@@ -83,7 +84,10 @@ describe('List Payment Methods', () => {
     expect(noAvailablePaymentMethodsScope.isDone()).toBeTruthy();
   });
 
-  it('Should be able to handle an incorrectly formatted request', async () => {
+  it('Should return status 400 and formatted error if passed an incorrectly formatted value for paymentMethodsRequest', async () => {
+    // overwrite logger to prevent unneccesary warnings being printed to the console when testing
+    Logger.error = jest.fn();
+
     const wrongFormatMockCTPaymentObj = {
       resource: {
         obj: {
@@ -96,30 +100,28 @@ describe('List Payment Methods', () => {
           },
           custom: {
             fields: {
-              paymentMethodsRequest: '{"locaaaaaaaal":"NL"}',
+              paymentMethodsRequest: '{"badlyforatted_json":}',
             },
           },
         },
       },
     };
     const res = await request(app).post('/').send(wrongFormatMockCTPaymentObj);
-    const { status } = res;
-    expect(status).toBe(400);
-  });
-
-  it('Should be able to handle a generic 500 error from mollie', async () => {
-    const genericMollieServerErrorScope = nock('https://api.mollie.com/v2')
-      .get(/methods*/)
-      .reply(500, genericMollieErrorResponse);
-
-    const res = await request(app).post('/').send(mockCTPaymentObj);
     const { status, text } = res;
     expect(status).toBe(400);
 
-    const errors = JSON.parse(text).errors;
-    expect(errors).toHaveLength(1);
-    expect(errors[0].extensionExtraInfo.mollieStatusCode).toBe(500);
+    const parsedErrors = JSON.parse(text);
+    const { errors } = parsedErrors;
 
-    expect(genericMollieServerErrorScope.isDone()).toBeTruthy();
+    // This will change when we move away from using formatMollieErrorResponse
+    // to formatExtensionErrorResponse when error doesn't orginate from API
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({
+      code: 'General',
+      message: 'Server Error. Please see logs for more details',
+      extensionExtraInfo: {
+        mollieStatusCode: 500,
+      },
+    });
   });
 });

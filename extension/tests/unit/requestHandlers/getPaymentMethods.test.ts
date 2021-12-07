@@ -130,7 +130,7 @@ describe('getPaymentMethods unit tests', () => {
   });
 });
 
-describe('Get Payment Methods - Check the parameters', () => {
+describe.only('Get Payment Methods - Check the parameters', () => {
   // Set up the mock mollie client
   const mockMollieClient = {} as MollieClient;
   const mockMethodsResource = {} as MethodsResource;
@@ -146,6 +146,51 @@ describe('Get Payment Methods - Check the parameters', () => {
 
   afterAll(() => {
     jest.resetAllMocks();
+  });
+
+  it('should return empty object if the amount is not present', async () => {
+    const expectedMockListOptions = {};
+
+    const ctObj = {
+      custom: {
+        fields: {
+          paymentMethodsRequest: '{}',
+        },
+      },
+    };
+
+    await getPaymentMethods(ctObj, mockMollieClient);
+
+    expect(mockList).toHaveBeenLastCalledWith(expectedMockListOptions);
+  });
+
+  it('should handle and call with correct sequence type, wallets, issuers and pricing', async () => {
+    const expectedMockListOptions = {
+      amount: {
+        currency: 'EUR',
+        value: '11.00',
+      },
+      resource: 'orders',
+      include: 'pricing',
+      includeWallets: true,
+      sequenceType: 'first',
+    };
+
+    const ctObj = {
+      amountPlanned: {
+        currencyCode: 'EUR',
+        centAmount: 1100,
+      },
+      custom: {
+        fields: {
+          paymentMethodsRequest: '{"issuers":false,"pricing":true,"includeWallets":true,"sequenceType":"first"}',
+        },
+      },
+    };
+
+    await getPaymentMethods(ctObj, mockMollieClient);
+
+    expect(mockList).toHaveBeenLastCalledWith(expectedMockListOptions);
   });
 
   it('Should call mollie with correct locale', async () => {
@@ -175,7 +220,7 @@ describe('Get Payment Methods - Check the parameters', () => {
     expect(mockList).toHaveBeenLastCalledWith(expectedMockListOptions);
   });
 
-  it('Should call mollie with properly formatted custom fields', async () => {
+  it('Should call mollie with properly formatted custom fields including billing country and orderline categories', async () => {
     const expectedMockListOptions = {
       amount: {
         currency: 'EUR',
