@@ -1,4 +1,4 @@
-import { CTError, CTUpdatesRequestedResponse } from '../types';
+import { CTError, CTUpdatesRequestedResponse, CTEnumErrors } from '../types';
 
 // This is based on MollieApiError interface from Mollie's SDK
 const getExtraInfo = (error: any) => {
@@ -24,7 +24,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
     case status === 401:
     case status === 403:
       formattedError = {
-        code: 'Unauthorized',
+        code: CTEnumErrors.Unauthorized,
         message: 'Forbidden or Unauthorized - Request to Mollie API failed',
         extensionExtraInfo: getExtraInfo(error),
       };
@@ -32,7 +32,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
 
     case status === 400:
       formattedError = {
-        code: 'SyntaxError',
+        code: CTEnumErrors.SyntaxError,
         message: 'Request formatted incorrectly or missing information',
         extensionExtraInfo: getExtraInfo(error),
       };
@@ -40,7 +40,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
 
     case status === 422:
       formattedError = {
-        code: 'SemanticError',
+        code: CTEnumErrors.SemanticError,
         message: error.message,
         extensionExtraInfo: getExtraInfo(error),
       };
@@ -48,7 +48,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
 
     case status === 404:
       formattedError = {
-        code: 'ObjectNotFound',
+        code: CTEnumErrors.ObjectNotFound,
         message: error.message,
         extensionExtraInfo: getExtraInfo(error),
       };
@@ -56,7 +56,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
 
     case status === 409:
       formattedError = {
-        code: 'InvalidOperation',
+        code: CTEnumErrors.InvalidOperation,
         message: error.message,
         extensionExtraInfo: getExtraInfo(error),
       };
@@ -64,7 +64,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
 
     case status >= 400 && status < 500:
       formattedError = {
-        code: 'SyntaxError',
+        code: CTEnumErrors.SyntaxError,
         message: `Request error - ${error.status} code returned from Mollie`,
         extensionExtraInfo: getExtraInfo(error),
       };
@@ -72,7 +72,7 @@ export const formatMollieErrorResponse = (error: any): CTUpdatesRequestedRespons
     default:
       //5xx
       formattedError = {
-        code: 'General',
+        code: CTEnumErrors.General,
         message: 'Server Error. Please see logs for more details',
         extensionExtraInfo: getExtraInfo(error),
       };

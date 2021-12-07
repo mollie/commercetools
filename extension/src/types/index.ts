@@ -1,3 +1,15 @@
+// This is not exhaustive
+// If you use another commercetools error response code, add it to this enum
+export enum CTEnumErrors {
+  General = 'General',
+  InvalidInput = 'InvalidInput',
+  InvalidOperation = 'InvalidOperation',
+  Unauthorized = 'Unauthorized',
+  SyntaxError = 'SyntaxError',
+  SemanticError = 'SemanticError',
+  ObjectNotFound = 'ObjectNotFound',
+}
+
 export type CTUpdatesRequestedResponse = {
   status: number;
   actions?: Action[];
@@ -24,7 +36,7 @@ export type Action = {
 };
 
 export type CTError = {
-  code: string;
+  code: CTEnumErrors;
   message: string;
   extensionExtraInfo?: Object;
 };
@@ -34,6 +46,12 @@ export type CTMoney = {
   currencyCode: string;
   centAmount: number;
   fractionDigits?: number;
+};
+
+export type CTPayment = {
+  amountPlanned: CTMoney;
+  transactions?: CTTransaction[];
+  key?: string;
 };
 
 export type CTTransaction = {
@@ -54,6 +72,7 @@ export enum ControllerAction {
   UpdateShipment = 'updateShipment',
   CancelOrder = 'cancelOrder',
   NoAction = 'noAction',
+  Error = 'error',
 }
 
 export enum CTTransactionType {
