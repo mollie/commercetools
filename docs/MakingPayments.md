@@ -138,7 +138,7 @@ To capture the funds, add a "Charge" transaction to the Payment. There must alre
 
 This can be done for the whole amount, or only part. 
 
-For whole, add a "CancelAuthorization" transaction for the whole amount of the order. For example: 
+For whole, add a "Charge" transaction for the whole amount of the order. For example: 
 ```
 {
     amountPlanned: {
@@ -207,7 +207,8 @@ Add a "Refund" transaction onto the Payment object. This can be for the whole, o
 }
 ```
 
-If the original Charge transaction is still pending, then the API extension call mollie to attempt to _cancel_ the payment. If this is not a cancelable payment method, it will expire within a certain timeframe. 
+If the original Charge transaction is still pending, then the API extension will make a call to mollie to attempt to _cancel_ the payment. Only some payment types are cancelable. If the payment method is not cancelable, you will receive an error message saying so. 
+Non-cancelable payment methods will simply expire after a certain timeframe. You can see this when the transaction state is updated to "Failure". 
 
 ### Pay later methods
 
