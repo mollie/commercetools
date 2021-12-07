@@ -8,11 +8,13 @@ import { getShipmentParams as getUpdateShipmentParams, createCtActions as update
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
-import { initialiseMollieClient } from '../client';
+import { initialiseMollieClient, initialiseCommercetoolsClient } from '../client';
 import { isMolliePaymentInterface } from '../utils';
 
+const commercetoolsClient = initialiseCommercetoolsClient();
+const mollieClient = initialiseMollieClient();
+
 export default async function handleRequest(req: Request, res: Response) {
-  const mollieClient = initialiseMollieClient();
   if (req.path !== '/') {
     Logger.http(`Path ${req.path} not allowed`);
     return res.status(400).end();
@@ -61,7 +63,7 @@ const processAction = async function (action: ControllerAction, body: any, molli
       break;
     case ControllerAction.CreateOrder:
       Logger.debug(`action: ${ControllerAction.CreateOrder}`);
-      result = await actions.createOrder(body, mollieClient);
+      result = await actions.createOrder(body, mollieClient, commercetoolsClient);
       break;
     case ControllerAction.CreateOrderPayment:
       Logger.debug(`action: ${ControllerAction.CreateOrderPayment}`);

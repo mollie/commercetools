@@ -1,5 +1,11 @@
+import fetch from 'node-fetch-commonjs';
 import createMollieClient, { MollieClient } from '@mollie/api-client';
-import { ClientBuilder, Client, AuthMiddlewareOptions, HttpMiddlewareOptions } from '@commercetools/sdk-client-v2';
+import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
+import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
+import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
+import { createClient } from '@commercetools/sdk-client';
+import { createApiBuilderFromCtpClient, ApiRoot, } from '@commercetools/platform-sdk'
+
 import config from '../../config/config';
 import { version } from '../../package.json';
 
@@ -10,32 +16,34 @@ export function initialiseMollieClient(): MollieClient {
   return mollieClient;
 }
 
-export function initialiseCommercetoolsClient(): Client {
+export function initialiseCommercetoolsClient(): any {
   const {
     commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes },
   } = config;
 
-  const authMiddlewareOptions: AuthMiddlewareOptions = {
+  const userAgentMiddleware = createUserAgentMiddleware({
+    libraryName: 'MollieCommercetools-notification',
+    libraryVersion: version,
+  });
+
+  const ctAuthMiddleware = createAuthMiddlewareForClientCredentialsFlow({
     host: authUrl,
     projectKey,
     credentials: {
       clientId,
       clientSecret,
     },
-    scopes,
+    scopes: [`manage_orders:${projectKey}`],
     fetch,
-  };
+  });
 
-  const httpMiddlewareOptions: HttpMiddlewareOptions = {
+  const ctHttpMiddleWare = createHttpMiddleware({
     host,
     fetch,
-  };
+  });
 
-  const client: Client = new ClientBuilder()
-    .withClientCredentialsFlow(authMiddlewareOptions)
-    .withHttpMiddleware(httpMiddlewareOptions)
-    .withUserAgentMiddleware()
-    .build();
+  const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
+  const commercetoolsApi: ApiRoot = createApiBuilderFromCtpClient(commercetoolsClient)
 
-  return client;
+  return commercetoolsApi
 }

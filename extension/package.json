@@ -37,11 +37,16 @@
   },
   "dependencies": {
     "@azure/functions": "^1.2.3",
-    "@commercetools/sdk-client-v2": "^0.2.0",
+    "@commercetools/platform-sdk": "^1.20.0",
+    "@commercetools/sdk-client": "^2.1.2",
+    "@commercetools/sdk-middleware-auth": "^6.1.4",
+    "@commercetools/sdk-middleware-http": "^6.0.11",
+    "@commercetools/sdk-middleware-user-agent": "^2.1.5",
     "@mollie/api-client": "^3.5.1",
     "@types/morgan": "^1.9.3",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
+    "node-fetch-commonjs": "^3.1.1",
     "winston": "^3.3.3"
   }
 }
