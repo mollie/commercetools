@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getPaymentMethods unit tests Should return NO_PAYMENT_METHODS when methods returned are empty 1`] = `
+exports[`GetPaymentMethods Should return NO_PAYMENT_METHODS when methods returned are empty 1`] = `
 Object {
   "action": "setCustomField",
   "name": "paymentMethodsResponse",
@@ -8,7 +8,7 @@ Object {
 }
 `;
 
-exports[`getPaymentMethods unit tests Should return status and one update action for commercetools 1`] = `
+exports[`GetPaymentMethods Should return status and one update action for commercetools 1`] = `
 Object {
   "action": "setCustomField",
   "name": "paymentMethodsResponse",
