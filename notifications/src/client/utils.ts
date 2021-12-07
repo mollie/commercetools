@@ -49,4 +49,5 @@ export function initialiseCommercetoolsClient(): any {
   } else {
     commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
   }
+  return commercetoolsClient;
 }
