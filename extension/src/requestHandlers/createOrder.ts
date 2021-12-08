@@ -1,9 +1,12 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType, Payment } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import { Action, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
+import config from '../../config/config';
+
+const { commercetools: { projectKey } } = config
 
 enum MollieLineCategoryType {
   meal = 'meal',
@@ -216,7 +219,6 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
 
 export default async function createOrder(ctObj: any, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
   const paymentId = ctObj?.id;
-  const { commercetoolsApi, projectKey } = commercetoolsClient;
   try {
     const getCartByPaymentOptions = {
       uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
@@ -226,7 +228,7 @@ export default async function createOrder(ctObj: any, mollieClient: MollieClient
         'Content-Type': 'application/json',
       },
     };
-    const cartByPayment = await commercetoolsApi.execute(getCartByPaymentOptions);
+    const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
     console.log('cartByPayment', cartByPayment.body.results[0]);
 
     const orderParams = await fillOrderValues(ctObj);

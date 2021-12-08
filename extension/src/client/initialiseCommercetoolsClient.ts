@@ -33,6 +33,6 @@ export default function initialiseCommercetoolsClient(): any {
     fetch,
   });
 
-  const commercetoolsApi = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
-  return { commercetoolsApi, projectKey };
+  const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
+  return commercetoolsClient
 }
