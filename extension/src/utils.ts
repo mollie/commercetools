@@ -1,4 +1,3 @@
-import { MethodsListParams } from '@mollie/api-client';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { Action, ControllerAction, CTMoney } from './types';
 /**
@@ -46,39 +45,6 @@ export function makeMollieLineAmounts(ctLines: any) {
     }
     return line;
   });
-}
-
-export function methodListMapper(ctObj: any): MethodsListParams {
-  // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
-  if (!ctObj.amountPlanned) {
-    return {};
-  }
-  const mObject: MethodsListParams = {
-    amount: {
-      value: convertCTToMollieAmountValue(ctObj.amountPlanned.centAmount, ctObj.amountPlanned.fractionDigits),
-      currency: ctObj.amountPlanned.currencyCode,
-    },
-    // Resource is hardcoded, for the time being we only support Orders API
-    resource: 'orders',
-  };
-
-  if (ctObj.custom?.fields?.paymentMethodsRequest) {
-    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
-    const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
-    const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
-
-    Object.assign(
-      mObject,
-      locale && { locale: locale },
-      include && { include: include },
-      includeWallets && { includeWallets: includeWallets },
-      billingCountry && { billingCountry: billingCountry },
-      sequenceType && { sequenceType: sequenceType },
-      orderLineCategories && { orderLineCategories: orderLineCategories },
-    );
-  }
-
-  return mObject;
 }
 
 export function isMolliePaymentInterface(ctObj: any): Boolean {
