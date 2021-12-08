@@ -34,5 +34,5 @@ export default function initialiseCommercetoolsClient(): any {
   });
 
   const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
-  return commercetoolsClient
+  return commercetoolsClient;
 }

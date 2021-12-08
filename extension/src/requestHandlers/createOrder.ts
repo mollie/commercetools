@@ -6,7 +6,9 @@ import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
 
-const { commercetools: { projectKey } } = config
+const {
+  commercetools: { projectKey },
+} = config;
 
 enum MollieLineCategoryType {
   meal = 'meal',
