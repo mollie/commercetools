@@ -25,19 +25,21 @@ export default async function handleRequest(req: Request, res: Response) {
   }
   // TODO - authentication check - CMI-95,96,97
   try {
-    const { action, errorMessage } = determineAction(req.body?.resource?.obj);
-    if (errorMessage) {
-      Logger.debug(errorMessage);
-      const { status, errors } = formatExtensionErrorResponse(CTEnumErrors.InvalidInput, errorMessage);
-      return res.status(status).send({ errors });
-    }
-    if (action === ControllerAction.NoAction) {
-      Logger.debug('No action, ending request');
+    const ctPaymentObject = req.body?.resource?.obj;
+    if (!isMolliePaymentInterface(ctPaymentObject)) {
+      Logger.debug('Payment interface is not Mollie, ending request');
       return res.status(200).end();
     }
 
-    if (!isMolliePaymentInterface(req.body?.resource?.obj)) {
-      Logger.debug('Payment interface is not Mollie, ending request');
+    const { action, errorMessage } = determineAction(ctPaymentObject);
+    if (errorMessage) {
+      Logger.debug(errorMessage);
+      const { status, errors } = formatExtensionErrorResponse(CTEnumErrors.InvalidInput, errorMessage);
+      return res.status(status).send({ errors: errors });
+    }
+
+    if (action === ControllerAction.NoAction) {
+      Logger.debug('No action, ending request');
       return res.status(200).end();
     }
 
