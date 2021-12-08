@@ -11,74 +11,6 @@ describe('Utils', () => {
     jest.resetAllMocks();
   });
 
-  describe('methodListMapper', () => {
-    it('Should return empty object if no amountPlanned / use as list all', async () => {
-      const mollieOptions = ut.methodListMapper({});
-      expect(mollieOptions).toMatchObject({});
-    });
-
-    it('Should return properly formated amount for mollie', async () => {
-      const ctObj = {
-        amountPlanned: {
-          currencyCode: 'USD',
-          centAmount: 1234,
-        },
-      };
-
-      const mollieOptions = ut.methodListMapper(ctObj);
-      expect(mollieOptions.amount).toHaveProperty('value', '12.34');
-      expect(mollieOptions.amount).toHaveProperty('currency', 'USD');
-    });
-
-    it('Should return properly formated custom fields for mollie', async () => {
-      const ctObj = {
-        amountPlanned: {
-          currencyCode: 'EUR',
-          centAmount: 100987,
-          fractionDigits: 4,
-        },
-        custom: {
-          fields: {
-            paymentMethodsRequest: '{"locale":"nl_NL","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal","issuers":false,"pricing":false}',
-          },
-        },
-      };
-      const expectedOptions = {
-        amount: {
-          value: '10.10',
-          currency: 'EUR',
-        },
-        locale: 'nl_NL',
-        billingCountry: 'NL',
-        includeWallets: 'applepay',
-        orderLineCategories: 'eco,meal',
-        resource: 'orders',
-      };
-
-      const mollieOptions = ut.methodListMapper(ctObj);
-      expect(mollieOptions).toEqual(expectedOptions);
-    });
-
-    it('Should properly parse includes and not have unprovided fields', async () => {
-      const ctObj = {
-        amountPlanned: {
-          currencyCode: 'EUR',
-          centAmount: 1000,
-        },
-        custom: {
-          fields: {
-            paymentMethodsRequest: '{"locale":"nl_NL","issuers":false,"pricing":true}',
-          },
-        },
-      };
-
-      const mollieOptions = ut.methodListMapper(ctObj);
-      expect(mollieOptions).toHaveProperty('locale', 'nl_NL');
-      expect(mollieOptions).toHaveProperty('include', 'pricing');
-      expect(mollieOptions.billingCountry).toBeUndefined();
-    });
-  });
-
   describe('makeMollieLineAmounts', () => {
     it('Should transform commercetools money to mollie amount object on lines', () => {
       const mockedLines = [
@@ -201,5 +133,21 @@ describe('convertMollieToCTPaymentAmount', () => {
   it('should return correct centAmount with currency without digits', () => {
     const expectedResult = { currencyCode: 'ISK', centAmount: 1050, fractionDigits: 0, type: 'centPrecision' };
     expect(ut.convertMollieAmountToCTMoney({ value: '1050', currency: 'ISK' } as Amount)).toStrictEqual(expectedResult);
+  });
+});
+
+describe('convert CT to mollie amount value', () => {
+  it('should convert ct to mollie amount value', () => {
+    const testCases = [
+      { expectedMollieAmount: '10.00', centAmount: 1000, fractionDigits: 2 },
+      { expectedMollieAmount: '10.10', centAmount: 100987, fractionDigits: 4 },
+      { expectedMollieAmount: '-15.00', centAmount: -15, fractionDigits: 0 },
+      { expectedMollieAmount: '0.50', centAmount: 5, fractionDigits: 1 },
+      { expectedMollieAmount: '-19.99', centAmount: -1999, fractionDigits: 2 },
+      { expectedMollieAmount: '0.01', centAmount: 1 },
+    ];
+    testCases.forEach(({ expectedMollieAmount, centAmount, fractionDigits }) => {
+      expect(ut.convertCTToMollieAmountValue(centAmount, fractionDigits)).toStrictEqual(expectedMollieAmount);
+    });
   });
 });

@@ -1,7 +1,8 @@
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../src/app';
-import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse } from './mockResponses/mollieData/listpaymentmethods.data';
+import { paymentMethodsAvailableResponse, noPaymentMethodsAvailableResponse } from './mockResponses/mollieData/listPaymentMethods.data';
+import Logger from '../../src/logger/logger';
 
 describe('List Payment Methods', () => {
   const mockCTPaymentObj = {
@@ -43,7 +44,7 @@ describe('List Payment Methods', () => {
     // Parse and check the update action
     const parsedActions = JSON.parse(text);
     const { actions } = parsedActions;
-    // expect(actions).toHaveLength(1); // currently fails - need to remove interfaceInteraction
+    expect(actions).toHaveLength(1);
 
     const { name, value: stringifiedValue } = actions.find((action: any) => action.action === 'setCustomField');
     expect(name).toBe('paymentMethodsResponse');
@@ -70,7 +71,7 @@ describe('List Payment Methods', () => {
     // Parse and check the update action
     const parsedActions = JSON.parse(text);
     const { actions } = parsedActions;
-    // expect(actions).toHaveLength(1); // currently fails - need to remove interfaceInteraction
+    expect(actions).toHaveLength(1);
 
     const { name, value: stringifiedValue } = actions.find((action: any) => action.action === 'setCustomField');
     expect(name).toBe('paymentMethodsResponse');
@@ -81,5 +82,46 @@ describe('List Payment Methods', () => {
       methods: 'NO_AVAILABLE_PAYMENT_METHODS',
     });
     expect(noAvailablePaymentMethodsScope.isDone()).toBeTruthy();
+  });
+
+  it('Should return status 400 and formatted error if passed an incorrectly formatted value for paymentMethodsRequest', async () => {
+    // overwrite logger to prevent unneccesary warnings being printed to the console when testing
+    Logger.error = jest.fn();
+
+    const wrongFormatMockCTPaymentObj = {
+      resource: {
+        obj: {
+          paymentMethodInfo: {
+            paymentInterface: 'mollie',
+          },
+          amountPlanned: {
+            currencyCode: 'EUR',
+            centAmount: 50000,
+          },
+          custom: {
+            fields: {
+              paymentMethodsRequest: '{"badlyformatted_json":}',
+            },
+          },
+        },
+      },
+    };
+    const res = await request(app).post('/').send(wrongFormatMockCTPaymentObj);
+    const { status, text } = res;
+    expect(status).toBe(400);
+
+    const parsedErrors = JSON.parse(text);
+    const { errors } = parsedErrors;
+
+    // This will change when we move away from using formatMollieErrorResponse
+    // to formatExtensionErrorResponse when error doesn't orginate from API
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({
+      code: 'General',
+      message: 'Server Error. Please see logs for more details',
+      extensionExtraInfo: {
+        mollieStatusCode: 500,
+      },
+    });
   });
 });
