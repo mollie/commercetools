@@ -52,6 +52,12 @@ export type CTPayment = {
   amountPlanned: CTMoney;
   transactions?: CTTransaction[];
   key?: string;
+  custom?: {
+    fields?: {
+      paymentMethodsRequest?: string;
+      paymentMethodsResponse?: string;
+    };
+  };
 };
 
 export type CTTransaction = {

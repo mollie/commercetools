@@ -1,24 +1,24 @@
 import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, Action } from '../types';
+import { CTUpdatesRequestedResponse, Action, CTPayment } from '../types';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
 import { convertCTToMollieAmountValue, makeActions } from '../utils';
 
-function extractMethodListParameters(ctObj: any): MethodsListParams {
+function extractMethodListParameters(ctObj: CTPayment): MethodsListParams {
   // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
   if (!ctObj.amountPlanned) {
     return {};
   }
   const mObject: MethodsListParams = {
     amount: {
-      value: convertCTToMollieAmountValue(parseFloat(ctObj.amountPlanned.centAmount), ctObj.amountPlanned.fractionDigits),
+      value: convertCTToMollieAmountValue(ctObj.amountPlanned.centAmount, ctObj.amountPlanned.fractionDigits),
       currency: ctObj.amountPlanned.currencyCode,
     },
     // Resource is hardcoded, for the time being we only support Orders API
     resource: 'orders',
   };
 
-  const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
+  const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest as string);
   const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
   const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
 
@@ -35,7 +35,7 @@ function extractMethodListParameters(ctObj: any): MethodsListParams {
   return mObject;
 }
 
-export default async function getPaymentMethods(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function getPaymentMethods(ctObj: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     const mollieOptions = extractMethodListParameters(ctObj);
     const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
