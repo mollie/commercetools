@@ -117,10 +117,10 @@ describe('List Payment Methods', () => {
     // to formatExtensionErrorResponse when error doesn't orginate from API
     expect(errors).toHaveLength(1);
     expect(errors[0]).toEqual({
-      code: 'General',
-      message: 'Server Error. Please see logs for more details',
+      code: 'InvalidInput',
+      message: 'Unexpected token } in JSON at position 23',
       extensionExtraInfo: {
-        mollieStatusCode: 500,
+        field: 'custom.fields.paymentMethodsRequest',
       },
     });
   });

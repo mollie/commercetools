@@ -139,15 +139,52 @@ describe('GetPaymentMethods', () => {
     expect(paymentMethodsResponseCTCustomField?.value).toEqual(JSON.stringify({ count: 0, methods: 'NO_AVAILABLE_PAYMENT_METHODS' }));
   });
 
-  it('Should return error if mollieClient call fails', async () => {
+  it('Should return mollie formatted error if mollieClient call fails', async () => {
     const mockedError = new Error('Test error');
-    const mockedCTPayment = {} as CTPayment;
+    const mockedCTPayment = {
+      amountPlanned: {
+        centAmount: 1100,
+        currencyCode: 'EUR',
+      },
+      custom: {
+        fields: { paymentMethodsRequest: '{}' },
+      },
+    } as CTPayment;
     mockMethodsResource.list = jest.fn().mockRejectedValueOnce(mockedError);
 
     const { errors, status } = await getPaymentMethods(mockedCTPayment, mockMollieClient);
     expect(status).toBe(400);
     expect(errors).toHaveLength(1);
+    const errorArray = errors ?? [];
+    expect(errorArray[0]).toEqual({
+      code: 'General',
+      message: 'Server Error. Please see logs for more details',
+      extensionExtraInfo: {
+        mollieStatusCode: 500,
+      },
+    });
     expect(mockLogError).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should return extension formatted error if the incoming custom field JSON is malformed', async () => {
+    const mockedCTPayment = {
+      amountPlanned: { currencyCode: 'EUR', centAmount: 10000 },
+      custom: { fields: { paymentMethodsRequest: '{ bad format ' } },
+    } as CTPayment;
+
+    const { errors, status } = await getPaymentMethods(mockedCTPayment, mockMollieClient);
+    expect(status).toBe(400);
+    expect(errors).toHaveLength(1);
+
+    const errorArray = errors ?? [];
+    expect(errorArray[0]).toEqual({
+      code: 'InvalidInput',
+      message: 'Unexpected token b in JSON at position 2',
+      extensionExtraInfo: {
+        field: 'custom.fields.paymentMethodsRequest',
+      },
+    });
+    expect(mockLogError).toHaveBeenLastCalledWith('Unexpected token b in JSON at position 2');
   });
 });
 
