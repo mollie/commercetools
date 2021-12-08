@@ -27,7 +27,6 @@ export default async function handleRequest(req: Request, res: Response) {
   try {
     const ctPaymentObject = req.body?.resource?.obj;
     if (!isMolliePaymentInterface(ctPaymentObject)) {
-      console.log('not mollie!');
       Logger.debug('Payment interface is not Mollie, ending request');
       return res.status(200).end();
     }
