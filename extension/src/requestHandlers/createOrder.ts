@@ -1,6 +1,6 @@
 import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
-import { formatMollieErrorResponse, formatExtensionErrorResponse } from '../errorHandlers/';
+import handleErrors from '../errorHandlers/';
 import { Action, CTEnumErrors, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
@@ -232,7 +232,7 @@ export default async function createOrder(ctObj: any, mollieClient: MollieClient
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
     if (!cartByPayment.body.results.length) {
-      const error = formatExtensionErrorResponse(CTEnumErrors.ObjectNotFound, 'Could not find Cart associated with the payment id.');
+      const error = handleErrors.extension(CTEnumErrors.ObjectNotFound, 'Could not find Cart associated with the payment id.');
       return error;
     }
     console.log('cartByPayment', cartByPayment.body.results[0]);
@@ -246,7 +246,7 @@ export default async function createOrder(ctObj: any, mollieClient: MollieClient
     };
   } catch (error: any) {
     Logger.error({ error });
-    const errorResponse = formatMollieErrorResponse(error);
+    const errorResponse = handleErrors.mollie(error);
     return errorResponse;
   }
 }
