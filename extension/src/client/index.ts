@@ -1,4 +1,4 @@
-import initialiseCommercetoolsClient from './initialiseCommercetoolsClient'
-import initialiseMollieClient from './initialiseMollieClient'
+import initialiseCommercetoolsClient from './initialiseCommercetoolsClient';
+import initialiseMollieClient from './initialiseMollieClient';
 
-export { initialiseCommercetoolsClient, initialiseMollieClient }
+export { initialiseCommercetoolsClient, initialiseMollieClient };
