@@ -100,7 +100,7 @@ describe('List Payment Methods', () => {
           },
           custom: {
             fields: {
-              paymentMethodsRequest: '{"badlyforatted_json":}',
+              paymentMethodsRequest: '{"badlyformatted_json":}',
             },
           },
         },

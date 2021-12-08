@@ -2,7 +2,7 @@ import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-clien
 import { CTUpdatesRequestedResponse, Action } from '../types';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
-import { convertCTToMollieAmountValue } from '../utils';
+import { convertCTToMollieAmountValue, makeActions } from '../utils';
 
 function extractMethodListParameters(ctObj: any): MethodsListParams {
   // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
@@ -44,13 +44,7 @@ export default async function getPaymentMethods(ctObj: any, mollieClient: Mollie
       methods,
     });
     const availablePaymentMethods: string = methods.count > 0 ? responseMethods : JSON.stringify({ count: 0, methods: 'NO_AVAILABLE_PAYMENT_METHODS' });
-    const ctUpdateActions: Action[] = [
-      {
-        action: 'setCustomField',
-        name: 'paymentMethodsResponse',
-        value: availablePaymentMethods,
-      },
-    ];
+    const ctUpdateActions: Action[] = [makeActions.setCustomField('paymentMethodsResponse', availablePaymentMethods)];
     return {
       actions: ctUpdateActions,
       status: 200,

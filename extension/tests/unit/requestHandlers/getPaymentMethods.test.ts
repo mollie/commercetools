@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { mocked } from 'ts-jest/utils';
 import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
-import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
+import { convertCTToMollieAmountValue, createDateNowString, makeActions } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 import { MollieClient } from '@mollie/api-client';
 import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
@@ -30,6 +30,12 @@ describe('GetPaymentMethods', () => {
   });
 
   it('Should return status and one update action for commercetools', async () => {
+    mocked(makeActions.setCustomField).mockReturnValueOnce({
+      action: 'setCustomField',
+      name: 'paymentMethodsResponse',
+      value:
+        '{"count":2,"methods":[{"resource":"method","id":"ideal","description":"iDEAL","minimumAmount":{"value":"0.01","currency":"EUR"},"maximumAmount":{"value":"50000.00","currency":"EUR"},"image":{"size1x":"https://www.mollie.com/external/icons/payment-methods/ideal.png","size2x":"https://www.mollie.com/external/icons/payment-methods/ideal%402x.png","svg":"https://www.mollie.com/external/icons/payment-methods/ideal.svg"}},{"resource":"method","id":"paypal","description":"PayPal","minimumAmount":{"value":"0.01","currency":"EUR"},"maximumAmount":null,"image":{"size1x":"https://www.mollie.com/external/icons/payment-methods/paypal.png","size2x":"https://www.mollie.com/external/icons/payment-methods/paypal%402x.png","svg":"https://www.mollie.com/external/icons/payment-methods/paypal.svg"}}]}',
+    });
     const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedRequest = {
       custom: {
@@ -76,6 +82,11 @@ describe('GetPaymentMethods', () => {
   });
 
   it('Should return NO_PAYMENT_METHODS when methods returned are empty', async () => {
+    mocked(makeActions.setCustomField).mockReturnValueOnce({
+      action: 'setCustomField',
+      name: 'paymentMethodsResponse',
+      value: '{"count":0,"methods":"NO_AVAILABLE_PAYMENT_METHODS"}',
+    });
     const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedRequest = {
       custom: {
