@@ -22,7 +22,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
   }
 
   // If transactions are present, merchant is trying to create or update a mollie order
-  if (!paymentObject.transactions.length) {
+  if (!paymentObject.transactions?.length) {
     return {
       action: ControllerAction.NoAction,
       errorMessage,
