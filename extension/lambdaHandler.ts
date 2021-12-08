@@ -1,9 +1,12 @@
 import { validateAction } from './src/requestHandlers/actions';
 import { processAction } from './src/requestHandlers/handleRequest';
-import { initialiseMollieClient } from './src/client';
+import { initialiseMollieClient, initialiseCommercetoolsClient } from './src/client/';
 import Logger from './src/logger/logger';
 import { ControllerAction } from './src/types';
 import { isMolliePaymentInterface } from './src/utils';
+
+const mollieClient = initialiseMollieClient()
+const commercetoolsClient = initialiseCommercetoolsClient()
 
 exports.handler = async (event: any) => {
   try {
@@ -31,7 +34,7 @@ exports.handler = async (event: any) => {
     if (action === ControllerAction.NoAction) {
       return noActionObject;
     }
-    const { actions, errors } = await processAction(action, body, initialiseMollieClient());
+    const { actions, errors } = await processAction(action, body, mollieClient, commercetoolsClient);
     if (errors?.length) {
       Logger.debug('Process action errors');
       return {
