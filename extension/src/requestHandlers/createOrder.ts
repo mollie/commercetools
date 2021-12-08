@@ -1,7 +1,7 @@
 import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import handleErrors from '../errorHandlers/';
-import { Action, CTEnumErrors, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import { Action, CTEnumErrors, CTPayment, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
@@ -219,7 +219,7 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
   return Promise.resolve(result);
 }
 
-export default async function createOrder(ctObj: any, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrder(ctObj: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
   const paymentId = ctObj?.id;
   try {
     const getCartByPaymentOptions = {
@@ -232,7 +232,7 @@ export default async function createOrder(ctObj: any, mollieClient: MollieClient
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
     if (!cartByPayment.body.results.length) {
-      const error = handleErrors.extension(CTEnumErrors.ObjectNotFound, 'Could not find Cart associated with the payment id.');
+      const error = handleErrors.extension(CTEnumErrors.ObjectNotFound, `Could not find Cart associated with the payment ${paymentId}.`);
       return error;
     }
     console.log('cartByPayment', cartByPayment.body.results[0]);
