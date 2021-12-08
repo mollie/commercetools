@@ -6,7 +6,7 @@ import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, is
 import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
-import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client/utils';
+import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client/index';
 
 const mollieClient = initialiseMollieClient();
 const commercetoolsClient = initialiseCommercetoolsClient();
