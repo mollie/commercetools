@@ -2,6 +2,13 @@ import { loadConfig } from '../../config/config';
 
 describe('Config test', () => {
   const mockLogError = jest.fn();
+  const ctConfig = {
+    projectKey: 'test',
+    clientId: '123456789',
+    clientSecret: 'abcdefghi',
+    authUrl: 'https://auth.dummy.com',
+    host: 'https://api.dummy.com',
+  };
   beforeEach(() => {
     console.error = mockLogError;
   });
@@ -11,23 +18,11 @@ describe('Config test', () => {
   it('Should return correct config object including default settings', async () => {
     const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: {
-        projectKey: 'test',
-        clientId: '123456789',
-        clientSecret: 'abcdefghi',
-        authUrl: 'https://auth.dummy.com',
-        host: 'https://api.dummy.com',
-      },
+      commercetools: ctConfig,
     });
     const expectedConfig = {
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: {
-        projectKey: 'test',
-        clientId: '123456789',
-        clientSecret: 'abcdefghi',
-        authUrl: 'https://auth.dummy.com',
-        host: 'https://api.dummy.com',
-      },
+      commercetools: ctConfig,
       service: {
         port: 3000,
         logLevel: 'info',
@@ -41,24 +36,12 @@ describe('Config test', () => {
   it('Should return config with correct service properties', async () => {
     const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: {
-        projectKey: 'test',
-        clientId: '123456789',
-        clientSecret: 'abcdefghi',
-        authUrl: 'https://auth.dummy.com',
-        host: 'https://api.dummy.com',
-      },
+      commercetools: ctConfig,
       service: { port: 2000 },
     });
     const expectedConfig = {
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: {
-        projectKey: 'test',
-        clientId: '123456789',
-        clientSecret: 'abcdefghi',
-        authUrl: 'https://auth.dummy.com',
-        host: 'https://api.dummy.com',
-      },
+      commercetools: ctConfig,
       service: {
         port: 2000,
         logLevel: 'info',
