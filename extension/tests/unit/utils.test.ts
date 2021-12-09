@@ -1,6 +1,7 @@
 import { ControllerAction } from '../../src/types';
 import * as ut from '../../src/utils';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import { PaymentMethod } from '@mollie/api-client';
 
 describe('Utils', () => {
   beforeAll(() => {
@@ -148,6 +149,20 @@ describe('convert CT to mollie amount value', () => {
     ];
     testCases.forEach(({ expectedMollieAmount, centAmount, fractionDigits }) => {
       expect(ut.convertCTToMollieAmountValue(centAmount, fractionDigits)).toStrictEqual(expectedMollieAmount);
+    });
+  });
+});
+
+describe('isPaymentMethodValidWithIssuer', () => {
+  it('should validate correct issuer with payment method', () => {
+    const testCases = [
+      { method: PaymentMethod.ideal, result: true },
+      { method: PaymentMethod.applepay, result: false },
+      { method: PaymentMethod.giftcard, result: true },
+      { method: 'something else' as PaymentMethod, result: false },
+    ];
+    testCases.forEach(({ method, result }) => {
+      expect(ut.isPaymentMethodValidWithIssuer(method)).toBe(result);
     });
   });
 });
