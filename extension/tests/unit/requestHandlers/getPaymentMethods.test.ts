@@ -47,6 +47,7 @@ describe('GetPaymentMethods', () => {
     });
     const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedCTPayment = {
+      id: '1234',
       amountPlanned: { centAmount: 1000, currencyCode: 'EUR' },
       custom: {
         fields: { paymentMethodsRequest: mockedPaymentMethodsRequest },
@@ -99,6 +100,7 @@ describe('GetPaymentMethods', () => {
     });
     const mockedPaymentMethodsRequest = '{"locale":"en_US","resource":"orders","billingCountry":"NL","includeWallets":"applepay","orderLineCategories":"eco,meal"}';
     const mockedCTPayment = {
+      id: '1234',
       amountPlanned: { centAmount: 1000, currencyCode: 'EUR' },
       custom: {
         fields: { paymentMethodsRequest: mockedPaymentMethodsRequest },
@@ -142,6 +144,7 @@ describe('GetPaymentMethods', () => {
   it('Should return mollie formatted error if mollieClient call fails', async () => {
     const mockedError = new Error('Test error');
     const mockedCTPayment = {
+      id: '1234',
       amountPlanned: {
         centAmount: 1100,
         currencyCode: 'EUR',
@@ -168,6 +171,7 @@ describe('GetPaymentMethods', () => {
 
   it('Should return extension formatted error if the incoming custom field JSON is malformed', async () => {
     const mockedCTPayment = {
+      id: '1234',
       amountPlanned: { currencyCode: 'EUR', centAmount: 10000 },
       custom: { fields: { paymentMethodsRequest: '{ bad format ' } },
     } as CTPayment;
@@ -209,6 +213,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
     const expectedMockListOptions = {};
 
     const mockedCTPayment = {
+      id: '1234',
       custom: {
         fields: {
           paymentMethodsRequest: '{}',
@@ -234,6 +239,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
     };
 
     const ctObj = {
+      id: '1234',
       amountPlanned: {
         currencyCode: 'EUR',
         centAmount: 1100,
@@ -261,6 +267,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
     };
 
     const ctObj = {
+      id: '1234',
       amountPlanned: {
         currencyCode: 'USD',
         centAmount: 1100,
@@ -291,6 +298,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
     };
 
     const ctObj = {
+      id: '1234',
       amountPlanned: {
         currencyCode: 'EUR',
         centAmount: 1100,

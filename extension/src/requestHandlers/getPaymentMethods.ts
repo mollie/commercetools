@@ -1,9 +1,8 @@
 import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, Action, CTPayment, CTEnumErrors } from '../types';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import errorHandler from '../errorHandlers/index';
 import Logger from '../logger/logger';
 import { convertCTToMollieAmountValue, makeActions } from '../utils';
-import { formatExtensionErrorResponse } from '../errorHandlers/formatExtensionErrorResponse';
 
 function extractMethodListParameters(ctObj: CTPayment): MethodsListParams {
   try {
@@ -59,10 +58,10 @@ export default async function getPaymentMethods(ctObj: CTPayment, mollieClient: 
     let errorResponse;
     if (error.name === 'extractMethodListParameters') {
       Logger.error(error.message);
-      errorResponse = formatExtensionErrorResponse(CTEnumErrors.InvalidInput, error.message, { field: 'custom.fields.paymentMethodsRequest' });
+      errorResponse = errorHandler.extension(CTEnumErrors.InvalidInput, error.message, { field: 'custom.fields.paymentMethodsRequest' });
     } else {
       Logger.error({ error });
-      errorResponse = formatMollieErrorResponse(error);
+      errorResponse = errorHandler.mollie(error);
     }
     return errorResponse;
   }
