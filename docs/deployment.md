@@ -8,22 +8,22 @@ Commercetools Mollie integration requires 1 environment variable to start. This 
 
 Here is a table to show which environment variables are necessary, and which are optional:
 
-| Env variable name  | Required                   | Notes                                                                                                       |
-| ------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `CT_MOLLIE_CONFIG` | YES                        | Contains the commercetools & mollie project variables                                                       |
-| `mollie`           | YES                        | Contains Mollie-specific project variables                                                                  |
-| `apiKey`           | YES                        | API key for interacting with mollie                                                                         |
-| `commercetools`    | YES (Notifications module) | Contains commercetools-specific project variables                                                           |
-| `projectKey`       | YES                        | Commercetools project key                                                                                   |
-| `clientId`         | YES                        | Commercetools client id, unique to the client                                                               |
-| `clientSecret`     | YES                        | Commercetools client secret, unique to the client                                                           |
-| `authUrl`          | YES                        | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
-| `host`             | YES                        | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
-| `scopes`           | NO                         | Constrains endpoints the client has access to in commercetools                                              |
-| `service`          | NO                         | Contains service-specific project variables                                                                 |
-| `port`             | NO                         | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
-| `logLevel`         | NO                         | Specifies how verbose logs should be. Options are listed below.                                             |
-| `logTransports`    | NO                         | Specifies where the logs are written to/stored. Options listed below                                        |
+| Env variable name  | Required | Notes                                                                                                       |
+| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                       |
+| `mollie`           | YES      | Contains Mollie-specific project variables                                                                  |
+| `apiKey`           | YES      | API key for interacting with mollie                                                                         |
+| `commercetools`    | YES      | Contains commercetools-specific project variables                                                           |
+| `projectKey`       | YES      | Commercetools project key                                                                                   |
+| `clientId`         | YES      | Commercetools client id, unique to the client                                                               |
+| `clientSecret`     | YES      | Commercetools client secret, unique to the client                                                           |
+| `authUrl`          | YES      | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
+| `host`             | YES      | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
+| `scopes`           | NO       | Constrains endpoints the client has access to in commercetools                                              |
+| `service`          | NO       | Contains service-specific project variables                                                                 |
+| `port`             | NO       | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
+| `logLevel`         | NO       | Specifies how verbose logs should be. Options are listed below.                                             |
+| `logTransports`    | NO       | Specifies where the logs are written to/stored. Options listed below                                        |
 
 <!-- Notes - describe env, not structure in json -->
 

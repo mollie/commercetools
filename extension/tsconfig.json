@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings",
+    ],
     "module": "commonjs",
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -16,6 +20,7 @@
   ],
   "exclude": [
     "node_modules",
+    "./typings/**/*",
     "**/*.test.ts"
   ],
   "compileOnSave": true

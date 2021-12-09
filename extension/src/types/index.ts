@@ -49,6 +49,7 @@ export type CTMoney = {
 };
 
 export type CTPayment = {
+  id: string;
   amountPlanned: CTMoney;
   transactions?: CTTransaction[];
   key?: string;

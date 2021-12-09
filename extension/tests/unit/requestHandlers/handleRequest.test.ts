@@ -171,44 +171,47 @@ describe('handleRequest', () => {
 });
 
 describe('processActions', () => {
+  const mockedMollieClient = {} as MollieClient;
+  const mockedCommercetoolsClient = {} as any;
+
   it('should call GetPaymentMethods if the action is GetPaymentMethods', async () => {
     const mockedGetPaymentMethods = mocked(actions.getPaymentMethods);
-    await processAction(ControllerAction.GetPaymentMethods, {}, {} as MollieClient);
+    await processAction(ControllerAction.GetPaymentMethods, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedGetPaymentMethods).toBeCalledTimes(1);
   });
   it('should call CreateOrder if the action is CreateOrder', async () => {
     const mockedCreateOrder = mocked(actions.createOrder);
-    await processAction(ControllerAction.CreateOrder, {}, {} as MollieClient);
+    await processAction(ControllerAction.CreateOrder, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCreateOrder).toBeCalledTimes(1);
   });
   it('should call CreateOrderPayment if the action is CreateOrderPayment', async () => {
     const mockedCreateOrderPayment = mocked(actions.createOrderPayment);
-    await processAction(ControllerAction.CreateOrderPayment, {}, {} as MollieClient);
+    await processAction(ControllerAction.CreateOrderPayment, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCreateOrderPayment).toBeCalledTimes(1);
   });
   it('should call CreateShipment if the action is CreateShipment', async () => {
     const mockedCreateShipment = mocked(actions.createShipment);
-    await processAction(ControllerAction.CreateShipment, {}, {} as MollieClient);
+    await processAction(ControllerAction.CreateShipment, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCreateShipment).toBeCalledTimes(1);
   });
   it('should call UpdateShipment if the action is UpdateShipment', async () => {
     const mockedUpdateShipment = mocked(actions.updateShipment);
-    await processAction(ControllerAction.UpdateShipment, {}, {} as MollieClient);
+    await processAction(ControllerAction.UpdateShipment, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedUpdateShipment).toBeCalledTimes(1);
   });
   it('should call CancelOrder if the action is CancelOrder', async () => {
     const mockedCancelOrder = mocked(actions.cancelOrder);
-    await processAction(ControllerAction.CancelOrder, {}, {} as MollieClient);
+    await processAction(ControllerAction.CancelOrder, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCancelOrder).toBeCalledTimes(1);
   });
   it('should call CreateOrderRefund if the action is CreateOrderRefund', async () => {
     const mockedCreateOrderRefund = mocked(actions.createOrderRefund);
-    await processAction(ControllerAction.CreateOrderRefund, {}, {} as MollieClient);
+    await processAction(ControllerAction.CreateOrderRefund, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCreateOrderRefund).toBeCalledTimes(1);
   });
   it('should return status 200 and empty actions, (for now), if the action is createCustomRefund', async () => {
     const mockedCreateCustomRefund = mocked(actions.createCustomRefund);
-    const result = await processAction(ControllerAction.CreateCustomRefund, {}, {} as MollieClient);
+    const result = await processAction(ControllerAction.CreateCustomRefund, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCreateCustomRefund).toBeCalledTimes(1);
   });
   it('should return an error if the action does not exist', async () => {
@@ -216,7 +219,7 @@ describe('processActions', () => {
       status: 400,
       errors: [{ code: 'InvalidOperation', message: 'Error processing request, please check request and try again' }],
     };
-    const processActionResult = await processAction('nonExistingActionString' as ControllerAction, {}, {} as MollieClient);
+    const processActionResult = await processAction('nonExistingActionString' as ControllerAction, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(processActionResult).toEqual(expectedError);
   });
 });
