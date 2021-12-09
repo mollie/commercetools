@@ -34,17 +34,6 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "mollieOrderStatus",
-            "label": {
-                "en": "Order status from Mollie"
-            },
-            "required": false,
-            "inputHint": "SingleLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
             "name": "paymentMethodsRequest",
             "label": {
                 "en": "Payment methods request"
@@ -67,9 +56,9 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createOrderRequest",
+            "name": "createPayment",
             "label": {
-                "en": "Create order request"
+                "en": "Create payment"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -78,9 +67,9 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createOrderResponse",
+            "name": "createCapture",
             "label": {
-                "en": "Create order response"
+                "en": "Create capture"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -89,9 +78,9 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createOrderPaymentRequest",
+            "name": "cancelPayment",
             "label": {
-                "en": "Create order payment request"
+                "en": "Cancel payment"
             },
             "required": false,
             "inputHint": "MultiLine"
@@ -100,124 +89,13 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createOrderPaymentResponse",
+            "name": "createRefund",
             "label": {
-                "en": "Create order payment response"
+                "en": "Create refund"
             },
             "required": false,
             "inputHint": "MultiLine"
         },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createShipmentRequest",
-            "label": {
-                "en": "Create shipment request"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createShipmentResponse",
-            "label": {
-                "en": "Create shipment response"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "updateShipmentRequest",
-            "label": {
-                "en": "Update shipment request"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "updateShipmentResponse",
-            "label": {
-                "en": "Update shipment response"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createCancelOrderRequest",
-            "label": {
-                "en": "Cancel order request"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createCancelOrderResponse",
-            "label": {
-                "en": "Cancel order response"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createOrderRefundRequest",
-            "label": {
-                "en": "Create order refund request"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createOrderRefundResponse",
-            "label": {
-                "en": "Create order refund response"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createCustomRefundRequest",
-            "label": {
-                "en": "Create custom refund request"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createCustomRefundResponse",
-            "label": {
-                "en": "Create custom refund response"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        }
-
     ]
 }
 ```
@@ -238,6 +116,17 @@ Body:
         "payment-interface-interaction"
     ],
     "fieldDefinitions": [
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "id",
+            "label": {
+                "en": "id"
+            },
+            "required": true,
+            "inputHint": "SingleLine"
+        },
         {
             "type": {
                 "name": "String"

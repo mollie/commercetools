@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { Config } from './config-model';
 
 const isConfigValid = (config: Config): { valid: boolean; message: string } => {
@@ -42,6 +41,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
       throw new Error(message);
     }
   } catch (e) {
+    console.error(e);
     throw new Error('Commercetools - Mollie Integration configuration is incomplete, missing or not provided in the valid JSON format');
   }
 }

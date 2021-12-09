@@ -10,11 +10,13 @@ import { getShipmentParams as getUpdateShipmentParams, createCtActions as update
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
-import { initialiseMollieClient } from '../client/utils';
+import { initialiseMollieClient, initialiseCommercetoolsClient } from '../client';
 import { isMolliePaymentInterface } from '../utils';
 
+const commercetoolsClient = initialiseCommercetoolsClient();
+const mollieClient = initialiseMollieClient();
+
 export default async function handleRequest(req: Request, res: Response) {
-  const mollieClient = initialiseMollieClient();
   if (req.path !== '/') {
     Logger.http(`Path ${req.path} not allowed`);
     return res.status(400).end();
@@ -43,7 +45,7 @@ export default async function handleRequest(req: Request, res: Response) {
       return res.status(200).end();
     }
 
-    const { actions, errors, status } = await processAction(action, req.body, mollieClient);
+    const { actions, errors, status } = await processAction(action, ctPaymentObject, mollieClient, commercetoolsClient);
     if (errors?.length) {
       Logger.debug('Process action errors');
       return res.status(status).send({ errors: errors });
@@ -61,40 +63,40 @@ export default async function handleRequest(req: Request, res: Response) {
   }
 }
 
-const processAction = async function (action: ControllerAction, body: any, mollieClient: MollieClient) {
+const processAction = async function (action: ControllerAction, ctPaymentObject: any, mollieClient: MollieClient, commercetoolsClient: any) {
   let result = {} as CTUpdatesRequestedResponse;
   switch (action) {
     case ControllerAction.GetPaymentMethods:
       Logger.debug(`action: ${ControllerAction.GetPaymentMethods}`);
-      result = await actions.getPaymentMethods(body?.resource?.obj, mollieClient);
+      result = await actions.getPaymentMethods(ctPaymentObject, mollieClient);
       break;
     case ControllerAction.CreateOrder:
       Logger.debug(`action: ${ControllerAction.CreateOrder}`);
-      result = await actions.createOrder(body, mollieClient);
+      result = await actions.createOrder(ctPaymentObject, mollieClient, commercetoolsClient);
       break;
     case ControllerAction.CreateOrderPayment:
       Logger.debug(`action: ${ControllerAction.CreateOrderPayment}`);
-      result = await actions.createOrderPayment(body?.resource?.obj, mollieClient, getOrdersPaymentsParams, createOrderPaymentActions);
+      result = await actions.createOrderPayment(ctPaymentObject, mollieClient, getOrdersPaymentsParams, createOrderPaymentActions);
       break;
     case ControllerAction.CreateShipment:
       Logger.debug(`action: ${ControllerAction.CreateShipment}`);
-      result = await actions.createShipment(body?.resource?.obj, mollieClient, getCreateShipmentParams, createShipmentActions);
+      result = await actions.createShipment(ctPaymentObject, mollieClient, getCreateShipmentParams, createShipmentActions);
       break;
     case ControllerAction.UpdateShipment:
       Logger.debug(`action: ${ControllerAction.UpdateShipment}`);
-      result = await actions.updateShipment(body?.resource?.obj, mollieClient, getUpdateShipmentParams, updateShipmentActions);
+      result = await actions.updateShipment(ctPaymentObject, mollieClient, getUpdateShipmentParams, updateShipmentActions);
       break;
     case ControllerAction.CreateOrderRefund:
       Logger.debug(`action: ${ControllerAction.CreateOrderRefund}`);
-      result = await actions.createOrderRefund(body?.resource?.obj, mollieClient, createOrderRefundActions);
+      result = await actions.createOrderRefund(ctPaymentObject, mollieClient, createOrderRefundActions);
       break;
     case ControllerAction.CreateCustomRefund:
       Logger.debug(`action: ${ControllerAction.CreateCustomRefund}`);
-      result = await actions.createCustomRefund(body?.resource?.obj, mollieClient);
+      result = await actions.createCustomRefund(ctPaymentObject, mollieClient);
       break;
     case ControllerAction.CancelOrder:
       Logger.debug(`action: ${ControllerAction.CancelOrder}`);
-      result = await actions.cancelOrder(body?.resource?.obj, mollieClient, getCancelOrderParams, cancelOrderActions);
+      result = await actions.cancelOrder(ctPaymentObject, mollieClient, getCancelOrderParams, cancelOrderActions);
       break;
     default:
       result = {
