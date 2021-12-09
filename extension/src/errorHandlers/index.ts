@@ -1,19 +1,78 @@
-import { formatMollieErrorResponse } from './formatMollieErrorResponse';
-import { formatExtensionErrorResponse } from './formatExtensionErrorResponse';
+import { CTError, CTUpdatesRequestedResponse, CTEnumErrors } from '../types';
+
+// This is based on MollieApiError interface from Mollie's SDK
+const getExtraInfo = ({ status, links, title, field }: any) => {
+  const extraInfo = Object.assign({}, status && { originalStatusCode: status }, links && { links }, title && { title }, field && { field });
+  return extraInfo;
+};
 
 /**
  *
- * @param error Node Error object or an object with set keys of message, name, field
- * @param code Status code, defaults to 500
- * Extends error with isExtensionError, so we can format the response to commercetools
- * and make it clear that the error originated from either mollie or API Extension
+ * @param error Takes extension error or ApiError from Mollie SDK (extended from Node's Error class)
+ * Formats error into a commercetools "Validation Failed" response.
+ * Docs: https://docs.commercetools.com/api/projects/api-extensions#error
  */
-export const createExtensionError = (error: any, code = 500) => {
-  return { ...error, isExtensionError: true, code };
-};
+const formatErrorResponse = (error: any): CTUpdatesRequestedResponse => {
+  let formattedError = {} as CTError;
+  const ctCode = error.ctCode;
+  const status = error.status;
+  switch (true) {
+    case status === 401:
+    case status === 403:
+      formattedError = {
+        code: CTEnumErrors.Unauthorized,
+        message: error.message,
+      };
+      break;
 
-const formatErrorResponse = (error: any) => {
-  return error.isExtensionError ? formatExtensionErrorResponse(error) : formatMollieErrorResponse(error);
+    case status === 400:
+      formattedError = {
+        code: ctCode ?? CTEnumErrors.SyntaxError,
+        message: error.message,
+      };
+      break;
+
+    case status === 422:
+      formattedError = {
+        code: CTEnumErrors.SemanticError,
+        message: error.message,
+      };
+      break;
+
+    case status === 404:
+      formattedError = {
+        code: CTEnumErrors.ObjectNotFound,
+        message: error.message,
+      };
+      break;
+
+    case status === 409:
+      formattedError = {
+        code: CTEnumErrors.InvalidOperation,
+        message: error.message,
+      };
+      break;
+
+    case status >= 400 && status < 500:
+      formattedError = {
+        code: CTEnumErrors.SyntaxError,
+        message: error.message ?? `Request error`,
+      };
+      break;
+    default:
+      //5xx
+      formattedError = {
+        code: CTEnumErrors.General,
+        message: error.message ?? 'Please see logs for more details',
+      };
+  }
+  const extraInfo = getExtraInfo(error);
+  if (Object.keys(extraInfo).length) formattedError.extensionExtraInfo = extraInfo;
+
+  return {
+    status: 400,
+    errors: [formattedError],
+  };
 };
 
 export default formatErrorResponse;

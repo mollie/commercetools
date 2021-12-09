@@ -1,6 +1,6 @@
 import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, Action, CTPayment } from '../types';
-import formatErrorResponse, { createExtensionError } from '../errorHandlers/index';
+import { CTUpdatesRequestedResponse, Action, CTPayment, CTEnumErrors } from '../types';
+import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
 import { convertCTToMollieAmountValue, makeActions } from '../utils';
 
@@ -35,8 +35,7 @@ function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParam
 
     return Promise.resolve(mObject);
   } catch (error: any) {
-    const extensionError = createExtensionError({ message: error.message ?? 'Unable to parse input', name: error.name, field: 'custom.fields.paymentMethodsRequest' }, 400);
-    return Promise.reject(extensionError);
+    return Promise.reject({ status: 400, message: error.message, title: 'Parsing error', field: 'custom.fields.paymentMethodsRequest', ctCode: CTEnumErrors.InvalidInput });
   }
 }
 

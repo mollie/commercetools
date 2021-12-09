@@ -3,7 +3,7 @@ import { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors } from '../types/index';
 import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
-import { formatExtensionErrorResponse } from '../errorHandlers/formatExtensionErrorResponse';
+import formatErrorResponse from '../errorHandlers/';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
@@ -36,7 +36,7 @@ export default async function handleRequest(req: Request, res: Response) {
     const { action, errorMessage } = determineAction(ctPaymentObject);
     if (errorMessage) {
       Logger.debug(errorMessage);
-      const { status, errors } = formatExtensionErrorResponse({ message: errorMessage, code: 400 });
+      const { status, errors } = formatErrorResponse({ message: errorMessage, status: 400 });
       return res.status(status).send({ errors: errors });
     }
 
@@ -99,15 +99,7 @@ const processAction = async function (action: ControllerAction, ctPaymentObject:
       result = await actions.cancelOrder(ctPaymentObject, mollieClient, getCancelOrderParams, cancelOrderActions);
       break;
     default:
-      result = {
-        status: 400,
-        errors: [
-          {
-            code: CTEnumErrors.InvalidOperation,
-            message: 'Error processing request, please check request and try again',
-          },
-        ],
-      };
+      result = formatErrorResponse({ ctCode: CTEnumErrors.InvalidOperation, message: 'Error processing request, please check request and try again', status: 400 });
   }
   return result;
 };

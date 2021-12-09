@@ -141,8 +141,11 @@ describe('GetPaymentMethods', () => {
     expect(paymentMethodsResponseCTCustomField?.value).toEqual(JSON.stringify({ count: 0, methods: 'NO_AVAILABLE_PAYMENT_METHODS' }));
   });
 
-  it('Should return mollie formatted error if mollieClient call fails', async () => {
-    const mockedError = new Error('Test error');
+  it('Should return correctly formatted error if mollieClient call fails', async () => {
+    const mockedError = {
+      message: 'Mollie test error',
+      status: 500,
+    };
     const mockedCTPayment = {
       id: '1234',
       amountPlanned: {
@@ -161,15 +164,15 @@ describe('GetPaymentMethods', () => {
     const errorArray = errors ?? [];
     expect(errorArray[0]).toEqual({
       code: 'General',
-      message: 'Server Error. Please see logs for more details',
+      message: 'Mollie test error',
       extensionExtraInfo: {
-        mollieStatusCode: 500,
+        originalStatusCode: 500,
       },
     });
     expect(mockLogError).toHaveBeenCalledTimes(1);
   });
 
-  it('Should return extension formatted error if the incoming custom field JSON is malformed', async () => {
+  it('Should return correctly formatted error if the incoming custom field JSON is malformed', async () => {
     const mockedCTPayment = {
       id: '1234',
       amountPlanned: { currencyCode: 'EUR', centAmount: 10000 },
@@ -186,7 +189,8 @@ describe('GetPaymentMethods', () => {
       message: 'Unexpected token b in JSON at position 2',
       extensionExtraInfo: {
         field: 'custom.fields.paymentMethodsRequest',
-        name: 'SyntaxError',
+        originalStatusCode: 400,
+        title: 'Parsing error',
       },
     });
     expect(mockLogError).toHaveBeenLastCalledWith('Unexpected token b in JSON at position 2');

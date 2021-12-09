@@ -1,6 +1,6 @@
 import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
-import formatErrorResponse, { createExtensionError } from '../errorHandlers/index';
+import formatErrorResponse from '../errorHandlers/';
 import { Action, CTEnumErrors, CTPayment, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';

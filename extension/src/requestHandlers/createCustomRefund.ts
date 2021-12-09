@@ -1,7 +1,7 @@
 import { MollieClient } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/payments/refunds/parameters';
 import { ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
 import { createDateNowString, makeActions } from '../utils';
 import { convertCTToMollieAmountValue } from '../utils';
@@ -79,7 +79,7 @@ export async function createCustomRefund(ctObject: any, mollieClient: MollieClie
     };
   } catch (error) {
     Logger.error(error);
-    const errorResponse = formatMollieErrorResponse(error);
+    const errorResponse = formatErrorResponse(error);
     return errorResponse;
   }
 }

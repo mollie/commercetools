@@ -1,6 +1,6 @@
-import { formatMollieErrorResponse } from '../../../src/errorHandlers/formatMollieErrorResponse';
+import formatErrorResponse from '../../../src/errorHandlers/';
 
-describe('formatMollieErrorResponse', () => {
+describe('formatErrorResponse', () => {
   it("should return Forbidden when error's status is 403 or 4O1", () => {
     const mockError = {
       status: 401,
@@ -9,7 +9,7 @@ describe('formatMollieErrorResponse', () => {
         documentation: { href: 'https://docs.mollie.com/overview/authentication', type: 'text/html' },
       },
     };
-    const { status, errors } = formatMollieErrorResponse(mockError);
+    const { status, errors } = formatErrorResponse(mockError);
     expect(status).toBe(400);
     expect(errors?.length).toBe(1);
     expect(errors).toMatchSnapshot();
@@ -24,7 +24,7 @@ describe('formatMollieErrorResponse', () => {
         documentation: { href: 'https://docs.mollie.com/overview/handling-errors', type: 'text/html' },
       },
     };
-    const { status, errors } = formatMollieErrorResponse(mockError);
+    const { status, errors } = formatErrorResponse(mockError);
     expect(status).toBe(400);
     expect(errors?.length).toBe(1);
     expect(errors).toMatchSnapshot();
@@ -39,7 +39,7 @@ describe('formatMollieErrorResponse', () => {
         documentation: { href: 'https://docs.mollie.com/reference/v2/orders-api/create-order-payment', type: 'text/html' },
       },
     };
-    const { status: status422, errors: errors422 } = formatMollieErrorResponse(mockError422);
+    const { status: status422, errors: errors422 } = formatErrorResponse(mockError422);
     expect(status422).toBe(400);
     expect(errors422?.length).toBe(1);
     expect(errors422).toMatchSnapshot();
@@ -54,7 +54,7 @@ describe('formatMollieErrorResponse', () => {
         documentation: { href: 'https://docs.mollie.com/overview/handling-errors', type: 'text/html' },
       },
     };
-    const { status: status404, errors: errors404 } = formatMollieErrorResponse(mockError404);
+    const { status: status404, errors: errors404 } = formatErrorResponse(mockError404);
     expect(status404).toBe(400);
     expect(errors404?.length).toBe(1);
     expect(errors404).toMatchSnapshot();
@@ -72,7 +72,7 @@ describe('formatMollieErrorResponse', () => {
         },
       },
     };
-    const { status: status409, errors: errors409 } = formatMollieErrorResponse(mockError409);
+    const { status: status409, errors: errors409 } = formatErrorResponse(mockError409);
     expect(status409).toBe(400);
     expect(errors409?.length).toBe(1);
     expect(errors409).toMatchSnapshot();
@@ -87,7 +87,7 @@ describe('formatMollieErrorResponse', () => {
         documentation: { href: 'https://docs.mollie.com/overview/handling-errors', type: 'text/html' },
       },
     };
-    const { status: status402, errors: errors402 } = formatMollieErrorResponse(mockError402);
+    const { status: status402, errors: errors402 } = formatErrorResponse(mockError402);
     expect(status402).toBe(400);
     expect(errors402?.length).toBe(1);
     expect(errors402).toMatchSnapshot();
@@ -102,7 +102,7 @@ describe('formatMollieErrorResponse', () => {
         documentation: { href: 'https://docs.mollie.com/overview/handling-errors', type: 'text/html' },
       },
     };
-    const { status, errors } = formatMollieErrorResponse(mockError);
+    const { status, errors } = formatErrorResponse(mockError);
     expect(status).toBe(400);
     expect(errors?.length).toBe(1);
     expect(errors).toMatchSnapshot();

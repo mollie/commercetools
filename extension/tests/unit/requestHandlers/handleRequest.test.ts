@@ -4,14 +4,14 @@ import { mocked } from 'ts-jest/utils';
 import actions from '../../../src/requestHandlers/actions';
 import handleRequest, { processAction } from '../../../src/requestHandlers/handleRequest';
 import { determineAction } from '../../../src/requestHandlers/determineAction/determineAction';
-import { formatExtensionErrorResponse } from '../../../src/errorHandlers/formatExtensionErrorResponse';
-import { ControllerAction, CTEnumErrors } from '../../../src/types/index';
+import formatErrorResponse from '../../../src/errorHandlers/';
+import { ControllerAction, CTEnumErrors, CTUpdatesRequestedResponse } from '../../../src/types/index';
 import * as ut from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/requestHandlers/actions');
 jest.mock('../../../src/requestHandlers/determineAction/determineAction');
-jest.mock('../../../src/errorHandlers/formatExtensionErrorResponse');
+jest.mock('../../../src/errorHandlers/');
 jest.mock('../../../src/utils');
 
 describe('handleRequest', () => {
@@ -99,7 +99,7 @@ describe('handleRequest', () => {
         errorMessage: 'Invalid paymentMethodInfo.method cash. Payment method must be set in order to make and manage payment transactions',
       });
       mocked(ut.isMolliePaymentInterface).mockReturnValueOnce(true);
-      mocked(formatExtensionErrorResponse).mockReturnValueOnce({
+      mocked(formatErrorResponse).mockReturnValueOnce({
         status: 400,
         errors: [
           {
@@ -215,10 +215,11 @@ describe('processActions', () => {
     expect(mockedCreateCustomRefund).toBeCalledTimes(1);
   });
   it('should return an error if the action does not exist', async () => {
-    const expectedError = {
+    const expectedError: CTUpdatesRequestedResponse = {
       status: 400,
-      errors: [{ code: 'InvalidOperation', message: 'Error processing request, please check request and try again' }],
+      errors: [{ code: CTEnumErrors.InvalidOperation, message: 'Error processing request, please check request and try again' }],
     };
+    mocked(formatErrorResponse).mockReturnValueOnce(expectedError);
     const processActionResult = await processAction('nonExistingActionString' as ControllerAction, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(processActionResult).toEqual(expectedError);
   });

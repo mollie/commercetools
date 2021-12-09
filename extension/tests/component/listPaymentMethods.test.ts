@@ -113,7 +113,7 @@ describe('List Payment Methods', () => {
     const parsedErrors = JSON.parse(text);
     const { errors } = parsedErrors;
 
-    // This will change when we move away from using formatMollieErrorResponse
+    // This will change when we move away from using formatErrorResponse
     // to formatExtensionErrorResponse when error doesn't orginate from API
     expect(errors).toHaveLength(1);
     expect(errors[0]).toEqual({
@@ -121,7 +121,8 @@ describe('List Payment Methods', () => {
       message: 'Unexpected token } in JSON at position 23',
       extensionExtraInfo: {
         field: 'custom.fields.paymentMethodsRequest',
-        name: 'SyntaxError',
+        originalStatusCode: 400,
+        title: 'Parsing error',
       },
     });
   });
