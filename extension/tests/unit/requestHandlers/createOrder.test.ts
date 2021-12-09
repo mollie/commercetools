@@ -216,17 +216,13 @@ describe('Create orders tests', () => {
     const mockedCreateOrderRequestFields =
       '{"orderNumber":"1001","billingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"shippingAddress":{"firstName": "Piet", "lastName": "Mondriaan", "email": "coloured_square_lover@basicart.com", "streetName": "Keizersgracht", "streetNumber": "126", "postalCode": "1234AB", "country": "NL", "city": "Amsterdam"},"orderWebhookUrl":"https://www.examplewebhook.com/","locale":"nl_NL","redirectUrl":"https://www.exampleredirect.com/","lines":[{"id":"18920","productId":"900220","name":{"en":"apple"},"variant":{"id":"294028"},"price":{"id":"lineItemPriceId","value":{"currencyCode":"EUR","centAmount":1000}},"totalPrice":{"currencyCode":"EUR","centAmount":1000},"quantity":1,"vatRate":"0", "vatAmount": { "currencyCode": "EUR", "centAmount": 0 },"shopperCountryMustMatchBillingCountry":true,"state":[{"quantity":1,"state":{"typeId":"state","id":"stateOfApple"}}]}]}';
     const mockedCreateOrderRequest = {
-      resource: {
-        obj: {
-          custom: { fields: { createOrderRequest: mockedCreateOrderRequestFields } },
-          amountPlanned: {
-            currencyCode: 'EUR',
-            centAmount: 1000,
-          },
-          paymentMethodInfo: {
-            method: 'creditcard',
-          },
-        },
+      custom: { fields: { createOrderRequest: mockedCreateOrderRequestFields } },
+      amountPlanned: {
+        currencyCode: 'EUR',
+        centAmount: 1000,
+      },
+      paymentMethodInfo: {
+        method: 'creditcard',
       },
     };
     const mockedMollieCreateOrderObject = {
@@ -280,11 +276,7 @@ describe('Create orders tests', () => {
   });
   it('Should return an error if mollie order parameters can not be created', async () => {
     const mockedCreateOrderRequest = {
-      resource: {
-        obj: {
-          custom: { fields: { createOrderRequest: 'banana' } },
-        },
-      },
+      custom: { fields: { createOrderRequest: 'banana' } },
     };
     const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' };
     await expect(fillOrderValues(mockedCreateOrderRequest)).rejects.toEqual(expectedError);

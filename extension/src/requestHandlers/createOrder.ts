@@ -1,9 +1,14 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType, Payment } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
-import { Action, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import handleErrors from '../errorHandlers/';
+import { Action, CTEnumErrors, CTPayment, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
+import config from '../../config/config';
+
+const {
+  commercetools: { projectKey },
+} = config;
 
 enum MollieLineCategoryType {
   meal = 'meal',
@@ -130,14 +135,14 @@ export function extractLine(line: any) {
   return extractedLine;
 }
 
-export function fillOrderValues(body: any): Promise<OrderCreateParams> {
+export function fillOrderValues(ctObj: any): Promise<OrderCreateParams> {
   try {
-    const deStringedOrderRequest = JSON.parse(body?.resource?.obj?.custom?.fields?.createOrderRequest);
-    const amountConverted = convertCTToMollieAmountValue(body?.resource?.obj?.amountPlanned?.centAmount);
+    const deStringedOrderRequest = JSON.parse(ctObj.custom?.fields?.createOrderRequest);
+    const amountConverted = convertCTToMollieAmountValue(ctObj.amountPlanned?.centAmount);
     const orderValues: OrderCreateParams = {
       amount: {
         value: amountConverted,
-        currency: body?.resource?.obj?.amountPlanned?.currencyCode,
+        currency: ctObj.amountPlanned?.currencyCode,
       },
       orderNumber: deStringedOrderRequest.orderNumber.toString(),
       webhookUrl: deStringedOrderRequest.orderWebhookUrl,
@@ -156,7 +161,7 @@ export function fillOrderValues(body: any): Promise<OrderCreateParams> {
     if (deStringedOrderRequest.shippingAddress) {
       orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
     }
-    const formattedMethods = formatPaymentMethods(body?.resource?.obj?.paymentMethodInfo?.method);
+    const formattedMethods = formatPaymentMethods(ctObj.paymentMethodInfo?.method);
     if (formattedMethods) {
       orderValues.method = formattedMethods;
     }
@@ -214,19 +219,34 @@ export function createCtActions(orderResponse: Order, ctObj: any): Promise<Actio
   return Promise.resolve(result);
 }
 
-export default async function createOrder(body: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrder(ctObj: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+  const paymentId = ctObj?.id;
   try {
-    // TODO: refactor to not pass the whole body..
-    const orderParams = await fillOrderValues(body);
+    const getCartByPaymentOptions = {
+      uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    };
+    const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
+    if (!cartByPayment.body.results.length) {
+      const error = handleErrors.extension(CTEnumErrors.ObjectNotFound, `Could not find Cart associated with the payment ${paymentId}.`);
+      return error;
+    }
+    console.log('cartByPayment', cartByPayment.body.results[0]);
+
+    const orderParams = await fillOrderValues(ctObj);
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
-    const ctActions = await createCtActions(mollieCreatedOrder, body?.resource?.obj);
+    const ctActions = await createCtActions(mollieCreatedOrder, ctObj);
     return {
       actions: ctActions,
       status: 201,
     };
   } catch (error: any) {
     Logger.error({ error });
-    const errorResponse = formatMollieErrorResponse(error);
+    const errorResponse = handleErrors.mollie(error);
     return errorResponse;
   }
 }
