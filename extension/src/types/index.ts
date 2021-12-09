@@ -57,8 +57,21 @@ export type CTPayment = {
     fields?: {
       paymentMethodsRequest?: string;
       paymentMethodsResponse?: string;
+      createPayment?: string;
+      createCapture?: string;
+      cancelPayment?: string;
+      createRefund?: string;
     };
   };
+  interfaceInteractions?: CTInterfaceInteraction[];
+};
+
+export type CTInterfaceInteraction = {
+  id: string;
+  actionType: string;
+  createdAt?: Date;
+  request?: string;
+  response?: string;
 };
 
 export type CTTransaction = {

@@ -1,4 +1,3 @@
-import { cp } from 'fs';
 import { CTEnumErrors, CTError, CTUpdatesRequestedResponse } from '../types';
 
 /**
