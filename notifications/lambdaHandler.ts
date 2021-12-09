@@ -12,15 +12,7 @@ exports.lambdaHandler = async (event: any, context: any) => {
 
     // Reason for this check: if AWS API Gateway is used then event.body is provided as a string payload.
     const body = event.body ? qs.parse(event.body) : event;
-
-
-    //
-    let response = {
-      'statusCode': 200,
-      'body': `Hello from lambda ${body.name} with id ${body.id}`}
-      return response;
-
-    //
+    
     const {
       commercetools: { projectKey },
     } = config;
