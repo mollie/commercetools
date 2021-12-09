@@ -4,12 +4,15 @@ jest.mock('../src/logger/logger');
 
 describe('Config test', () => {
   const OLD_ENV = { ...process.env };
+  const mockLogError = jest.fn();
   beforeEach(() => {
     process.env = OLD_ENV;
+    console.error = mockLogError;
   });
 
   afterAll(() => {
     process.env = OLD_ENV;
+    jest.clearAllMocks();
   });
 
   it('Should return config object with correct keys from process.env.CT_MOLLIE_CONFIG, and default port, logLevel and logTransports when not provided', async () => {

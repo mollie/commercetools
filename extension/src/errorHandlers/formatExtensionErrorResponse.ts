@@ -1,4 +1,4 @@
-import { CTEnumErrors, CTError } from '../types';
+import { CTEnumErrors, CTError, CTUpdatesRequestedResponse } from '../types';
 
 /**
  *
@@ -6,7 +6,7 @@ import { CTEnumErrors, CTError } from '../types';
  * @param message High level description of the error
  * @param extraInfo JSON object, optional
  */
-export const formatExtensionErrorResponse = (code: CTEnumErrors = CTEnumErrors.General, message: string, extraInfo?: Object) => {
+export const formatExtensionErrorResponse = (code: CTEnumErrors = CTEnumErrors.General, message: string, extraInfo?: Object): CTUpdatesRequestedResponse => {
   const errorMessage = !!message ? message : 'Error, see logs for more details';
   const formattedError: CTError = {
     code,
