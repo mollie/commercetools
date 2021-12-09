@@ -1,5 +1,23 @@
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { Action, ControllerAction, CTMoney } from './types';
+import { PaymentMethod } from '@mollie/api-client';
+
+/**
+ * Checks whether the issuer is valid
+ * @param issuer
+ * @returns {boolean}
+ */
+export function isValidIssuer(issuerParameter: string, paymentMethod: string): boolean {
+  switch (true) {
+    case paymentMethod === PaymentMethod.ideal:
+    case paymentMethod === PaymentMethod.kbc:
+    case paymentMethod === PaymentMethod.giftcard:
+      return true;
+    default:
+      return false;
+  }
+}
+
 /**
  * Generates an ISO string date
  * @returns {String} Returns the current date converted to ISO.
