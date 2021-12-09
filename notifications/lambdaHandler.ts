@@ -5,11 +5,22 @@ import { handleOrderWebhook, handlePaymentWebhook } from './src/requestHandlers/
 import actions from './src/requestHandlers/index';
 import { AddTransaction, UpdateActionChangeTransactionState, UpdateActionSetCustomField } from './src/types/ctUpdateActions';
 import { isOrderOrPayment } from './src/utils';
+import * as qs from 'qs';
 
-exports.handler = async (event: any) => {
+exports.lambdaHandler = async (event: any, context: any) => {
   try {
+
     // Reason for this check: if AWS API Gateway is used then event.body is provided as a string payload.
-    const body = event.body ? JSON.parse(event.body) : event;
+    const body = event.body ? qs.parse(event.body) : event;
+
+
+    //
+    let response = {
+      'statusCode': 200,
+      'body': `Hello from lambda ${body.name} with id ${body.id}`}
+      return response;
+
+    //
     const {
       commercetools: { projectKey },
     } = config;
