@@ -30,7 +30,7 @@ Resources:
       Environment:
         Variables:
           CT_MOLLIE_CONFIG: >-
-            {"mollie":{"apiKey":"test_ayMsEe8EhVxcAysPwCPe35WfzQWnWE"},"commercetools":{"authUrl":"https://auth.europe-west1.gcp.commercetools.com","clientId":"dFKYZv5Xu9CpG9V0SLcG5M2u","clientSecret":"V0NjrGEMQYnsN5Kv9h-gekRwlmrt81zF","host":"https://api.europe-west1.gcp.commercetools.com","projectKey":"new-mollie-integration"}}
+            {"mollie":{"apiKey":"API_KEY"},"commercetools":{"authUrl":"AUTH_URL","clientId":"CLIENT_ID","clientSecret":"CLIENT_SECRET","host":"HOST","projectKey":"INTEGRATION"}}
 
   MollieCommerceToolsNotificationFunctionAPI:
     Type: AWS::Serverless::Api
