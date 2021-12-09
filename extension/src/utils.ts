@@ -3,15 +3,17 @@ import { Action, ControllerAction, CTMoney } from './types';
 import { PaymentMethod } from '@mollie/api-client';
 
 /**
- * Checks whether the issuer is valid
+ * Checks whether the payment method is valid with an issuer
  * @param issuer
  * @returns {boolean}
  */
-export function isValidIssuer(issuerParameter: string, paymentMethod: string): boolean {
+export function isPaymentMethodValidWithIssuer(paymentMethod: PaymentMethod): boolean {
   switch (true) {
     case paymentMethod === PaymentMethod.ideal:
     case paymentMethod === PaymentMethod.kbc:
     case paymentMethod === PaymentMethod.giftcard:
+    // Isn't yet in the mollie api but will be added soon - https://github.com/mollie/commercetools/issues/34
+    case paymentMethod === ('voucher' as PaymentMethod):
       return true;
     default:
       return false;
