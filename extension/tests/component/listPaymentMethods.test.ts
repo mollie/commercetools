@@ -121,6 +121,7 @@ describe('List Payment Methods', () => {
       message: 'Unexpected token } in JSON at position 23',
       extensionExtraInfo: {
         field: 'custom.fields.paymentMethodsRequest',
+        name: 'SyntaxError',
       },
     });
   });

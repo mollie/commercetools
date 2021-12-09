@@ -1,14 +1,14 @@
 import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, Action, CTPayment, CTEnumErrors } from '../types';
-import errorHandler from '../errorHandlers/index';
+import { CTUpdatesRequestedResponse, Action, CTPayment } from '../types';
+import formatErrorResponse, { createExtensionError } from '../errorHandlers/index';
 import Logger from '../logger/logger';
 import { convertCTToMollieAmountValue, makeActions } from '../utils';
 
-function extractMethodListParameters(ctObj: CTPayment): MethodsListParams {
+function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParams> {
   try {
-    // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
-    if (!ctObj.amountPlanned) {
-      return {};
+    // Safety - this function should not get invoked without amountPlanned or paymentMethodsRequest
+    if (!ctObj.amountPlanned || !ctObj.custom?.fields?.paymentMethodsRequest) {
+      return Promise.resolve({});
     }
     const mObject: MethodsListParams = {
       amount: {
@@ -19,7 +19,7 @@ function extractMethodListParameters(ctObj: CTPayment): MethodsListParams {
       resource: 'orders',
     };
 
-    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest as string);
+    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
     const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
     const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
 
@@ -33,16 +33,16 @@ function extractMethodListParameters(ctObj: CTPayment): MethodsListParams {
       orderLineCategories && { orderLineCategories: orderLineCategories },
     );
 
-    return mObject;
+    return Promise.resolve(mObject);
   } catch (error: any) {
-    error.name = 'extractMethodListParameters';
-    throw error;
+    const extensionError = createExtensionError({ message: error.message ?? 'Unable to parse input', name: error.name, field: 'custom.fields.paymentMethodsRequest' }, 400);
+    return Promise.reject(extensionError);
   }
 }
 
 export default async function getPaymentMethods(ctObj: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    const mollieOptions = extractMethodListParameters(ctObj);
+    const mollieOptions = await extractMethodListParameters(ctObj);
     const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
     const responseMethods = JSON.stringify({
       count: methods.count,
@@ -55,14 +55,7 @@ export default async function getPaymentMethods(ctObj: CTPayment, mollieClient: 
       status: 200,
     };
   } catch (error: any) {
-    let errorResponse;
-    if (error.name === 'extractMethodListParameters') {
-      Logger.error(error.message);
-      errorResponse = errorHandler.extension(CTEnumErrors.InvalidInput, error.message, { field: 'custom.fields.paymentMethodsRequest' });
-    } else {
-      Logger.error({ error });
-      errorResponse = errorHandler.mollie(error);
-    }
-    return errorResponse;
+    Logger.error(error.message);
+    return formatErrorResponse(error);
   }
 }

@@ -186,6 +186,7 @@ describe('GetPaymentMethods', () => {
       message: 'Unexpected token b in JSON at position 2',
       extensionExtraInfo: {
         field: 'custom.fields.paymentMethodsRequest',
+        name: 'SyntaxError',
       },
     });
     expect(mockLogError).toHaveBeenLastCalledWith('Unexpected token b in JSON at position 2');

@@ -36,7 +36,7 @@ export default async function handleRequest(req: Request, res: Response) {
     const { action, errorMessage } = determineAction(ctPaymentObject);
     if (errorMessage) {
       Logger.debug(errorMessage);
-      const { status, errors } = formatExtensionErrorResponse(CTEnumErrors.InvalidInput, errorMessage);
+      const { status, errors } = formatExtensionErrorResponse({ message: errorMessage, code: 400 });
       return res.status(status).send({ errors: errors });
     }
 

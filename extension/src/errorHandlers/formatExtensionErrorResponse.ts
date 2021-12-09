@@ -1,19 +1,31 @@
+import { cp } from 'fs';
 import { CTEnumErrors, CTError, CTUpdatesRequestedResponse } from '../types';
 
 /**
  *
- * @param code Defaults to "General" if not provided
- * @param message High level description of the error
- * @param extraInfo JSON object, optional
+ * @param error Either a NodeJS Error or an object containing message, name, field and code
  */
-export const formatExtensionErrorResponse = (code: CTEnumErrors = CTEnumErrors.General, message: string, extraInfo?: Object): CTUpdatesRequestedResponse => {
-  const errorMessage = !!message ? message : 'Error, see logs for more details';
+export const formatExtensionErrorResponse = (error: any): CTUpdatesRequestedResponse => {
+  const { message, name, field, code } = error;
+  const errorMessage = message ? message : 'Error, see logs for more details';
+  let ctCode;
+  switch (code) {
+    case 400:
+      ctCode = CTEnumErrors.InvalidInput;
+      break;
+    case 404:
+      ctCode = CTEnumErrors.ObjectNotFound;
+      break;
+    default:
+      ctCode = CTEnumErrors.General;
+  }
   const formattedError: CTError = {
-    code,
+    code: ctCode,
     message: errorMessage,
   };
 
-  if (extraInfo && Object.keys(extraInfo).length) {
+  if (field || name) {
+    const extraInfo = Object.assign({}, field && { field }, name && { name });
     formattedError['extensionExtraInfo'] = extraInfo;
   }
 
