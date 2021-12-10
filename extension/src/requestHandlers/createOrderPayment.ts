@@ -1,5 +1,5 @@
 import { MollieClient, OrderPaymentCreateParams, Payment } from '@mollie/api-client';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import formatErrorResponse from '../errorHandlers';
 import { Action, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../logger/logger';
@@ -65,7 +65,7 @@ export default async function createOrderPayment(ctObj: any, mollieClient: Molli
     };
   } catch (error: any) {
     Logger.error({ error });
-    const errorResponse = formatMollieErrorResponse(error);
+    const errorResponse = formatErrorResponse(error);
     return errorResponse;
   }
 }

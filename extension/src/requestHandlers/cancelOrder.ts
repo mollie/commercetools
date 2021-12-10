@@ -1,6 +1,6 @@
 import { MollieClient, Order, OrderLineCancelParams } from '@mollie/api-client';
 import Logger from '../logger/logger';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
 import { makeActions, makeMollieLineAmounts } from '../utils';
 
@@ -43,7 +43,7 @@ export default async function cancelOrder(ctObj: any, mollieClient: MollieClient
     };
   } catch (error: any) {
     Logger.error({ error });
-    const errorResponse = formatMollieErrorResponse(error);
+    const errorResponse = formatErrorResponse(error);
     return errorResponse;
   }
 }
