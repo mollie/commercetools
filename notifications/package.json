@@ -11,6 +11,7 @@
     "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:component": "jest --testPathPattern=component",
     "lint": "prettier --check ./src ./tests ./config ./**/*.md",
     "lint:fix": "prettier --write ./src ./tests ./config ./**/*.md"
   },
@@ -24,6 +25,7 @@
     "@types/node": "^16.10.1",
     "@types/supertest": "^2.0.11",
     "jest": "^27.2.1",
+    "nock": "^13.2.1",
     "nodemon": "^2.0.12",
     "prettier": "^2.4.1",
     "supertest": "^6.1.6",
