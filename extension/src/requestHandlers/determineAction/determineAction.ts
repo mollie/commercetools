@@ -28,21 +28,41 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
       errorMessage,
     };
   } else {
-    const method = paymentObject?.paymentMethodInfo?.method;
-    if (!hasValidPaymentMethod(method)) {
-      return {
-        action: ControllerAction.Error,
-        errorMessage: `Invalid paymentMethodInfo.method ${method}. Payment method must be set in order to make and manage payment transactions`,
-      };
-    } else {
-      if (isPayLater(method)) {
-        return handlePayLaterFlow(paymentObject);
-      } else {
-        return handlePayNowFlow(paymentObject);
-      }
-    }
+    return validatePaymentMethodAndIssuer(paymentObject);
   }
 };
+
+/**
+ * @param paymentObject commercetools paymentObject, (from body.resource.obj)
+ *
+ * Checks that there is one payment method and optionally one issuer.
+ *
+ * If issuer is present, it must correspond to a payment method that accepts an issuer.
+ *
+ *
+ */
+
+function validatePaymentMethodAndIssuer(paymentObject: any) {
+  const arrayOfMethods = paymentObject.paymentMethodInfo?.method.split(',');
+  const method = arrayOfMethods[0];
+  if (!hasValidPaymentMethod(method) || arrayOfMethods.length > 2) {
+    return {
+      action: ControllerAction.Error,
+      errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". Payment method must be set with a one method in order to make and manage payment transactions.`,
+    };
+  } else if (arrayOfMethods[1] && !isPaymentMethodValidWithIssuer(PaymentMethod[method as PaymentMethod])) {
+    return {
+      action: ControllerAction.Error,
+      errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". PaymentMethod "${method}" does not support issuers.`,
+    };
+  } else {
+    if (isPayLater(PaymentMethod[method as PaymentMethod])) {
+      return handlePayLaterFlow(paymentObject);
+    } else {
+      return handlePayNowFlow(paymentObject);
+    }
+  }
+}
 
 /**
  * @param method string - mollie payment method enum
@@ -69,6 +89,24 @@ const hasValidPaymentMethod = (method: string | undefined) => {
     return !!PaymentMethod[method as PaymentMethod];
   }
 };
+
+/**
+ * Checks whether the payment method is valid with an issuer
+ * @param issuer
+ * @returns {boolean}
+ */
+function isPaymentMethodValidWithIssuer(paymentMethod: PaymentMethod): boolean {
+  switch (true) {
+    case paymentMethod === PaymentMethod.ideal:
+    case paymentMethod === PaymentMethod.kbc:
+    case paymentMethod === PaymentMethod.giftcard:
+    // Isn't yet in the mollie api but will be added soon - https://github.com/mollie/commercetools/issues/34
+    case paymentMethod === ('voucher' as PaymentMethod):
+      return true;
+    default:
+      return false;
+  }
+}
 
 const isPayLater = (method: PaymentMethod) => {
   const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];

@@ -5,6 +5,8 @@ import { Action, CTEnumErrors, CTPayment, CTTransactionType, CTUpdatesRequestedR
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/payments/parameters';
+import { PaymentData } from '@mollie/api-client/dist/types/src/data/payments/data';
 
 const {
   commercetools: { projectKey },
@@ -158,13 +160,24 @@ export function fillOrderValues(ctObj: any): Promise<OrderCreateParams> {
         webhookUrl: deStringedOrderRequest.orderWebhookUrl,
       },
     };
+    // const paymentSpecificParams = {
+    //   webhookUrl: deStringedOrderRequest.orderWebhookUrl,
+    //   issuer: 'ideal_ASNBNL21',
+    // } as unknown as PaymentData;
+
+    // Object.assign(orderValues, { payment: paymentSpecificParams });
+
     if (deStringedOrderRequest.shippingAddress) {
       orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
     }
-    const formattedMethods = formatPaymentMethods(ctObj.paymentMethodInfo?.method);
-    if (formattedMethods) {
-      orderValues.method = formattedMethods;
-    }
+    // if (ctObj.paymentMethodInfo?.method) {
+    //   const methodAndIssuer = ctObj.paymentMethodInfo?.method.split(',');
+    //   orderValues.method = PaymentMethod[ctObj.paymentMethodInfo?.method as PaymentMethod];
+    //   if (methodAndIssuer[1]) {
+    //     orderValues.payment.issuer = methodAndIssuer[1];
+    //   }
+    // }
+    orderValues.method = PaymentMethod[ctObj.paymentMethodInfo?.method as PaymentMethod];
     return Promise.resolve(orderValues);
   } catch (error) {
     Logger.error({ error });

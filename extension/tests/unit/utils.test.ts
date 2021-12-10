@@ -153,16 +153,16 @@ describe('convert CT to mollie amount value', () => {
   });
 });
 
-describe('isPaymentMethodValidWithIssuer', () => {
-  it('should validate correct issuer with payment method', () => {
-    const testCases = [
-      { method: PaymentMethod.ideal, result: true },
-      { method: PaymentMethod.applepay, result: false },
-      { method: PaymentMethod.giftcard, result: true },
-      { method: 'something else' as PaymentMethod, result: false },
-    ];
-    testCases.forEach(({ method, result }) => {
-      expect(ut.isPaymentMethodValidWithIssuer(method)).toBe(result);
-    });
-  });
-});
+// describe('isPaymentMethodValidWithIssuer', () => {
+//   it('should validate correct issuer with payment method', () => {
+//     const testCases = [
+//       { method: PaymentMethod.ideal, result: true },
+//       { method: PaymentMethod.applepay, result: false },
+//       { method: PaymentMethod.giftcard, result: true },
+//       { method: 'something else' as PaymentMethod, result: false },
+//     ];
+//     testCases.forEach(({ method, result }) => {
+//       expect(ut.isPaymentMethodValidWithIssuer(method)).toBe(result);
+//     });
+//   });
+// });
