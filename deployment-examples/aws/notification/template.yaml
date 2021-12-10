@@ -45,8 +45,13 @@ Resources:
               "/":
                 post:
                   x-amazon-apigateway-integration:
-                    requestTemplates:
-                      application/x-www-form-urlencoded: '{ "body" : "$input.body"}'
+                    # The current implementation does not requires to transform the input from x-www-form-urlencoded in the API as we have decided to parse it in the application
+                    # In case it is prefered to parse the payload in the API gateway more information can be found here:
+                    # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+                    # https://blog.summercat.com/using-aws-lambda-and-api-gateway-as-html-form-endpoint.html
+                    # https://github.com/willmanio/aws-api-gateway-bodyparser 
+                    #requestTemplates:
+                      #application/x-www-form-urlencoded: '{ "body" : "$input.body"}'
                     httpMethod: POST
                     type: aws_proxy
                     uri:
