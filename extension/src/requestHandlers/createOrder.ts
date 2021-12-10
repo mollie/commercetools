@@ -232,7 +232,7 @@ export default async function createOrder(ctObj: CTPayment, mollieClient: Mollie
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
     if (!cartByPayment.body.results.length) {
-      const error = formatErrorResponse({ code: 404, message: `Could not find Cart associated with the payment ${paymentId}.` });
+      const error = formatErrorResponse({ status: 404, message: `Could not find Cart associated with the payment ${paymentId}.` });
       return error;
     }
     console.log('cartByPayment', cartByPayment.body.results[0]);
