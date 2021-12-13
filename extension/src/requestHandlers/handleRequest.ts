@@ -2,7 +2,7 @@ import { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors, HandleRequestInput, HandleRequestSuccess, HandleRequestFailure, HandleRequestOutput } from '../types/index';
 import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
-import { formatExtensionErrorResponse } from '../errorHandlers/formatExtensionErrorResponse';
+import  formatErrorResponse  from '../errorHandlers';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
@@ -35,7 +35,7 @@ export default async function handleRequest(input: HandleRequestInput) : Promise
     const { action, errorMessage } = determineAction(ctPaymentObject);
     if (errorMessage) {
       Logger.debug(errorMessage);
-      const { status, errors } = formatExtensionErrorResponse(CTEnumErrors.InvalidInput, errorMessage);
+      const { status, errors } = formatErrorResponse({ message: errorMessage, status: 400 });
       return new HandleRequestFailure(status, errors);
     }
 

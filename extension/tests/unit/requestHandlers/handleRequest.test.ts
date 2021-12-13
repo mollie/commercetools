@@ -3,7 +3,7 @@ import {mocked} from 'ts-jest/utils';
 import actions from '../../../src/requestHandlers/actions';
 import handleRequest, {processAction} from '../../../src/requestHandlers/handleRequest';
 import {determineAction} from '../../../src/requestHandlers/determineAction/determineAction';
-import {formatExtensionErrorResponse} from '../../../src/errorHandlers/formatExtensionErrorResponse';
+import formatExtensionErrorResponse from '../../../src/errorHandlers';
 import {
     ControllerAction,
     CTEnumErrors,
@@ -16,7 +16,7 @@ import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/requestHandlers/actions');
 jest.mock('../../../src/requestHandlers/determineAction/determineAction');
-jest.mock('../../../src/errorHandlers/formatExtensionErrorResponse');
+jest.mock('../../../src/errorHandlers');
 jest.mock('../../../src/utils');
 
 describe('handleRequest', () => {
