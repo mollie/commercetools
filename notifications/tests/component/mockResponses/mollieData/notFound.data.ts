@@ -10,4 +10,14 @@ export const orderNotFoundResponse = {
   },
 };
 
-export const paymentotFoundResponse = {};
+export const paymentNotFoundResponse = {
+  status: 404,
+  title: 'Not Found',
+  detail: 'No payment exists with token tr_1234567.',
+  _links: {
+    documentation: {
+      href: 'https://docs.mollie.com/overview/handling-errors',
+      type: 'text/html',
+    },
+  },
+};
