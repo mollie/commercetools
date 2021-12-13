@@ -48,9 +48,31 @@ export type CTMoney = {
   fractionDigits?: number;
 };
 
+export type CTLineItem = {
+  id: string
+  name: string
+  price: CTMoney
+  totalPrice: CTMoney
+  quantity: number
+};
+
+export type CTCart = {
+  id: string,
+  lineItems?: CTLineItem[],
+  // cartState: string,
+  totalPrice: CTMoney
+  shippingAddress?: Object
+  billingAddress?: Object
+  locale?: string
+};
+
 export type CTPayment = {
   id: string;
   amountPlanned: CTMoney;
+  paymentMethodInfo: {
+    method: string;
+    paymentInterface?: string;
+  };
   transactions?: CTTransaction[];
   key?: string;
   custom?: {
