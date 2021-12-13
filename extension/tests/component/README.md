@@ -8,7 +8,7 @@ These simulate a commercetools Payment object coming into our app and assert tha
 
 This does not call the commercetools nor mollie API directly. The requests are intercepted and mock responses returned, using [nock](https://github.com/nock/nock).
 
-These tests show us that our individual functions are working as expected together & give as Regression Tests once journeys are completed.
+These tests show us that our individual functions are working as expected together & act as Regression Tests once journeys are completed.
 
 ## Running the tests
 
