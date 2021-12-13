@@ -2,7 +2,7 @@ import { MollieClient } from '@mollie/api-client';
 import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors, HandleRequestInput, HandleRequestSuccess, HandleRequestFailure, HandleRequestOutput } from '../types/index';
 import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
-import  formatErrorResponse  from '../errorHandlers';
+import formatErrorResponse from '../errorHandlers';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
@@ -15,7 +15,7 @@ import { isMolliePaymentInterface } from '../utils';
 const commercetoolsClient = initialiseCommercetoolsClient();
 const mollieClient = initialiseMollieClient();
 
-export default async function handleRequest(input: HandleRequestInput) : Promise<HandleRequestOutput> {
+export default async function handleRequest(input: HandleRequestInput): Promise<HandleRequestOutput> {
   if (input.httpPath !== '/') {
     Logger.http(`Path ${input.httpPath} not allowed`);
     return new HandleRequestFailure(400);
@@ -56,7 +56,7 @@ export default async function handleRequest(input: HandleRequestInput) : Promise
     Logger.error({ error });
     // From Node's Error object: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
     const errorMessage = `error_name: ${error.name}, error_message: ${error.message}`;
-    return new HandleRequestFailure(400, [{ code: CTEnumErrors.General, message: errorMessage, extensionExtraInfo: undefined }])
+    return new HandleRequestFailure(400, [{ code: CTEnumErrors.General, message: errorMessage, extensionExtraInfo: undefined }]);
   }
 }
 

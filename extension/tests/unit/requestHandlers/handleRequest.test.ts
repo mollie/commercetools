@@ -1,16 +1,10 @@
-import {MollieClient} from '@mollie/api-client';
-import {mocked} from 'ts-jest/utils';
+import { MollieClient } from '@mollie/api-client';
+import { mocked } from 'ts-jest/utils';
 import actions from '../../../src/requestHandlers/actions';
-import handleRequest, {processAction} from '../../../src/requestHandlers/handleRequest';
-import {determineAction} from '../../../src/requestHandlers/determineAction/determineAction';
+import handleRequest, { processAction } from '../../../src/requestHandlers/handleRequest';
+import { determineAction } from '../../../src/requestHandlers/determineAction/determineAction';
 import formatExtensionErrorResponse from '../../../src/errorHandlers';
-import {
-  ControllerAction,
-  CTEnumErrors,
-  HandleRequestFailure,
-  HandleRequestInput,
-  HandleRequestSuccess
-} from '../../../src/types/index';
+import { ControllerAction, CTEnumErrors, HandleRequestFailure, HandleRequestInput, HandleRequestSuccess } from '../../../src/types/index';
 import * as ut from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
@@ -38,18 +32,18 @@ describe('handleRequest', () => {
   describe('2xx - Happy Path', () => {
     it('should return a list of actions and status 200 when processed action returns successfully', async () => {
       mocked(ut.isMolliePaymentInterface).mockReturnValueOnce(true);
-      mocked(determineAction).mockReturnValueOnce({action: ControllerAction.GetPaymentMethods, errorMessage: ''});
-      mocked(actions.getPaymentMethods).mockResolvedValueOnce({status: 200, actions: [{action: 'update'}]});
+      mocked(determineAction).mockReturnValueOnce({ action: ControllerAction.GetPaymentMethods, errorMessage: '' });
+      mocked(actions.getPaymentMethods).mockResolvedValueOnce({ status: 200, actions: [{ action: 'update' }] });
 
-      const result = await handleRequest(reqInput) as HandleRequestSuccess;
+      const result = (await handleRequest(reqInput)) as HandleRequestSuccess;
 
       expect(result.status).toBe(200);
-      expect(result.actions).toStrictEqual([{action: 'update'}]);
+      expect(result.actions).toStrictEqual([{ action: 'update' }]);
     });
 
     it('should return status 200 if when the action is NoAction', async () => {
       mocked(ut.isMolliePaymentInterface).mockReturnValueOnce(true);
-      mocked(determineAction).mockReturnValueOnce({action: ControllerAction.NoAction, errorMessage: ''});
+      mocked(determineAction).mockReturnValueOnce({ action: ControllerAction.NoAction, errorMessage: '' });
 
       const result = await handleRequest(reqInput);
 
@@ -100,21 +94,20 @@ describe('handleRequest', () => {
         ],
       });
 
-      const result = await handleRequest(reqInput) as HandleRequestFailure;
+      const result = (await handleRequest(reqInput)) as HandleRequestFailure;
 
       expect(result.status).toBe(400);
       expect(result.errors).toStrictEqual([
-            {
-              code: 'InvalidInput',
-              message: 'Invalid paymentMethodInfo.method cash. Payment method must be set in order to make and manage payment transactions',
-            },
-          ],
-      );
+        {
+          code: 'InvalidInput',
+          message: 'Invalid paymentMethodInfo.method cash. Payment method must be set in order to make and manage payment transactions',
+        },
+      ]);
     });
 
     it('should return status 400 and an array of formatted errors if an error happens whilst processing actions', async () => {
       mocked(ut.isMolliePaymentInterface).mockReturnValueOnce(true);
-      mocked(determineAction).mockReturnValueOnce({action: ControllerAction.GetPaymentMethods, errorMessage: ''});
+      mocked(determineAction).mockReturnValueOnce({ action: ControllerAction.GetPaymentMethods, errorMessage: '' });
       mocked(actions.getPaymentMethods).mockResolvedValue({
         status: 400,
         errors: [
@@ -125,7 +118,7 @@ describe('handleRequest', () => {
         ],
       });
 
-      const result = await handleRequest(reqInput) as HandleRequestFailure;
+      const result = (await handleRequest(reqInput)) as HandleRequestFailure;
 
       expect(result.status).toBe(400);
       expect(result.errors).toStrictEqual([
@@ -140,10 +133,10 @@ describe('handleRequest', () => {
       const mockError = new Error('Something went wrong');
       mockError.name = 'Big error';
       mocked(ut.isMolliePaymentInterface).mockReturnValueOnce(true);
-      mocked(determineAction).mockReturnValueOnce({action: ControllerAction.GetPaymentMethods, errorMessage: ''});
-      mocked(actions.getPaymentMethods).mockRejectedValue({name: 'Big error', message: 'Something went wrong'});
+      mocked(determineAction).mockReturnValueOnce({ action: ControllerAction.GetPaymentMethods, errorMessage: '' });
+      mocked(actions.getPaymentMethods).mockRejectedValue({ name: 'Big error', message: 'Something went wrong' });
 
-      const result = await handleRequest(reqInput) as HandleRequestFailure;
+      const result = (await handleRequest(reqInput)) as HandleRequestFailure;
 
       expect(result.status).toBe(400);
       expect(result.errors).toEqual([
@@ -204,10 +197,12 @@ describe('processActions', () => {
   it('should return an error if the action does not exist', async () => {
     const expectedError = {
       status: 400,
-      errors: [{
-        code: 'InvalidOperation',
-        message: 'Error processing request, please check request and try again'
-      }],
+      errors: [
+        {
+          code: 'InvalidOperation',
+          message: 'Error processing request, please check request and try again',
+        },
+      ],
     };
     const processActionResult = await processAction('nonExistingActionString' as ControllerAction, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(processActionResult).toEqual(expectedError);
