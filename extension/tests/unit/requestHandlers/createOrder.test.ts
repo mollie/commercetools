@@ -372,7 +372,7 @@ describe('Create orders tests', () => {
         ],
       },
     };
-    const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject);
+    const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404');
     expect(ctActions).toHaveLength(5);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
@@ -398,7 +398,7 @@ describe('Create orders tests', () => {
       title: 'Cannot find original transaction',
       field: 'Payment.transactions',
     };
-    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject)).rejects.toEqual(expectedError);
+    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404')).rejects.toEqual(expectedError);
   });
 
   it('Should return an error if mollie order does not return payments', async () => {
@@ -421,7 +421,7 @@ describe('Create orders tests', () => {
       status: 400,
       title: 'Could not get Mollie payment id.',
     };
-    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment)).rejects.toEqual(expectedError);
+    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404')).rejects.toEqual(expectedError);
   });
 
   it('Should extract the correct shipping address from the request body', () => {

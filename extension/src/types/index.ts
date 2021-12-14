@@ -75,6 +75,7 @@ export type CTInterfaceInteraction = {
   response?: string;
 };
 
+// TODO - make id required field as we remodel
 export type CTTransaction = {
   id?: string;
   timestamp?: string;

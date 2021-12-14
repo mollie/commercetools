@@ -174,7 +174,7 @@ export function fillOrderValues(ctObj: any): Promise<OrderCreateParams> {
   }
 }
 
-export function createCtActions(orderResponse: Order, ctObj: CTPayment): Promise<Action[]> {
+export function createCtActions(orderResponse: Order, ctObj: CTPayment, cartId: string): Promise<Action[]> {
   try {
     // Find the original transaction which triggered create order
     const originalTransaction = ctObj.transactions?.find(transaction => {
@@ -193,8 +193,8 @@ export function createCtActions(orderResponse: Order, ctObj: CTPayment): Promise
       return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
     }
 
-    // Should we add cartId?
     const interafaceInteractionRequest = {
+      cartId,
       transactionId: originalTransaction.id,
       extraInformation: ctObj.custom?.fields?.createPayment,
     };
@@ -242,7 +242,7 @@ export default async function createOrder(ctObj: CTPayment, mollieClient: Mollie
 
     const orderParams = await fillOrderValues(ctObj);
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
-    const ctActions = await createCtActions(mollieCreatedOrder, ctObj);
+    const ctActions = await createCtActions(mollieCreatedOrder, ctObj, cartByPayment.id);
     return {
       actions: ctActions,
       status: 201,

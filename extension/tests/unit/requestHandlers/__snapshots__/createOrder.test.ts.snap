@@ -7,7 +7,7 @@ Object {
     "actionType": "createOrder",
     "createdAt": "2021-10-08T12:12:02.625Z",
     "id": "d42d0dcc-ad68-4bc9-8faf-7b32d08f2504",
-    "request": "{\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\",\\"extraInformation\\":\\"{\\\\\\"orderNumber\\\\\\":\\\\\\"1001\\\\\\"}\\"}",
+    "request": "{\\"cartId\\":\\"fd5317fa-c2f8-44c0-85ab-a1c1169d2404\\",\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\",\\"extraInformation\\":\\"{\\\\\\"orderNumber\\\\\\":\\\\\\"1001\\\\\\"}\\"}",
     "response": "{\\"mollieOrderId\\":\\"ord_dsczl7\\",\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\"}",
   },
   "type": Object {
