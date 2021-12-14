@@ -8,7 +8,7 @@ import config from '../../config/config';
 
 const {
   commercetools: { projectKey },
-  service: { notificationsModuleUrl, locale, redirectUrl },
+  service: { webhookUrl, locale, redirectUrl },
 } = config;
 
 enum MollieLineCategoryType {
@@ -95,15 +95,15 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
       billingAddress: makeMollieAddress(cart.billingAddress),
       method: formatPaymentMethods(ctPayment.paymentMethodInfo.method),
 
-      webhookUrl: parsedCtPayment.webhookUrl || notificationsModuleUrl,
+      webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       embed: [OrderEmbed.payments],
       payment: {
-        webhookUrl: parsedCtPayment.webhookUrl || notificationsModuleUrl,
+        webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       },
 
       redirectUrl: parsedCtPayment.redirectUrl || redirectUrl,
       expiresAt: parsedCtPayment.expiresAt || '',
-      metadata: parsedCtPayment.metadata || {},
+      metadata: { cartId: cart.id },
     };
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
