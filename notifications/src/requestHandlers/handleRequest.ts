@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { Payment } from '@mollie/api-client';
-import { UpdateActionKey, UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
+import { UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
 import { CTTransaction } from '../types/ctPaymentTypes';
 import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions, getRefundStatusUpdateActions } from '../utils';
 import config from '../../config/config';
 import actions from './index';
 import Logger from '../logger/logger';
 import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client/index';
+import { makeActions } from '../makeActions';
 
 const mollieClient = initialiseMollieClient();
 const commercetoolsClient = initialiseCommercetoolsClient();
@@ -79,11 +80,7 @@ export async function handleOrderWebhook(id: any, ctPaymentVersion: any, updateA
   const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
 
   if (mollieOrderStatus !== ctOrderStatus) {
-    updateActions.push({
-      action: UpdateActionKey.SetCustomField,
-      name: 'mollieOrderStatus',
-      value: mollieOrderStatus,
-    });
+    updateActions.push(makeActions.setStatusInterfaceText(mollieOrderStatus));
   }
 
   // TODO: refactor into one function (rename functions)
