@@ -5,7 +5,7 @@ import handleRequest from "./src/requestHandlers/handleRequest";
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
     /*
-        The azure HttpRequest object doens't expose the path, it can be configured directly in the function config
+        The azure HttpRequest object does not expose the path, it can be configured directly in the function config
         https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?tabs=javascript
      */
     const requestInput = new HandleRequestInput('/', req.method, req.body);
