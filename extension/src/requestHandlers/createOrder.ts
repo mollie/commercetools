@@ -1,4 +1,4 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType, OrderLine } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
 import { Action, CTCart, CTLineItem, CTPayment, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
@@ -10,12 +10,6 @@ const {
   commercetools: { projectKey },
   service: { webhookUrl, locale, redirectUrl },
 } = config;
-
-enum MollieLineCategoryType {
-  meal = 'meal',
-  eco = 'eco',
-  gift = 'gift',
-}
 
 export function makeMollieAddress(ctAddress: any): OrderAddress {
   let mollieAddress: OrderAddress = {
@@ -30,34 +24,6 @@ export function makeMollieAddress(ctAddress: any): OrderAddress {
   return mollieAddress;
 }
 
-/**
- *
- * @param paymentMethods comma separated string of valid mollie PaymentMethods
- * If no valid payment methods are provided, this will return '' and
- * the 'method' parameter will not be passed as part of the createOrder request
- *
- * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
- * in V3.6 or V4 of the mollie node SDK.
- *
- * Until then, we cast 'voucher'/'mybank' as PaymentMethod and track this in Issue #34
- * https://github.com/mollie/commercetools/issues/34
- */
-export const formatPaymentMethods = (paymentMethods: string): PaymentMethod[] | PaymentMethod => {
-  const methods = paymentMethods.split(',');
-  const methodArray = methods
-    .map(method => {
-      if (method === 'voucher' || method === 'mybank') {
-        return method as PaymentMethod;
-      }
-      return PaymentMethod[method as PaymentMethod];
-    })
-    .filter(method => method !== undefined);
-  if (methodArray.length <= 1) {
-    return methodArray.join('') as PaymentMethod;
-  }
-  return methodArray;
-};
-
 export function makeMollieLine(line: CTLineItem): OrderLine {
   const extractedLine = {
     // Name as english for the time being
@@ -70,7 +36,6 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
     vatAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: line.taxedPrice.totalGross.centAmount - line.taxedPrice.totalNet.centAmount }),
     metadata: {
       cartLineItemId: line.id,
-      productId: line.productId,
     },
   };
   // Handle discounts
@@ -93,7 +58,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
       lines: (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l)),
       locale: parsedCtPayment.locale || locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
-      method: formatPaymentMethods(ctPayment.paymentMethodInfo.method),
+      method: ctPayment.paymentMethodInfo.method as PaymentMethod,
 
       webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       embed: [OrderEmbed.payments],
