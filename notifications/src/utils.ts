@@ -176,7 +176,6 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
   const updateActions: AddTransaction[] = [];
   for (let molliePayment of molliePayments) {
     if (!existsInCtTransactionsArray(molliePayment, ctTransactions)) {
-      // TODO: update
       const addTransaction: AddTransaction = {
         action: UpdateActionKey.AddTransaction,
         transaction: {
@@ -223,7 +222,6 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
   // If no corresponding CT Transaction, create it
   if (matchingTransaction === undefined) {
     const { newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, '');
-    // TODO: check if we need add transaction and update
     const addTransaction: AddTransaction = {
       action: UpdateActionKey.AddTransaction,
       transaction: {
@@ -265,7 +263,6 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
       }
     } else {
       // add corresponding Transaction to CT to keep inline with mollie
-      // TODO: check if we need add transaction & update
       const updateAction: AddTransaction = {
         action: UpdateActionKey.AddTransaction,
         transaction: {
