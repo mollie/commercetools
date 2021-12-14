@@ -3,7 +3,8 @@ import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/pa
 import { ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
-import { createDateNowString, makeActions } from '../utils';
+import { createDateNowString } from '../utils';
+import { makeActions } from '../makeActions';
 import { convertCTToMollieAmountValue } from '../utils';
 
 /**

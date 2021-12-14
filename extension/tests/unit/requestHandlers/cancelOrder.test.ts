@@ -1,10 +1,12 @@
 import { mocked } from 'ts-jest/utils';
 import { Action, ControllerAction } from '../../../src/types';
-import cancelOrder, { createCtActions, getCancelOrderParams } from '../../../src/requestHandlers/cancelOrder';
-import { makeActions, createDateNowString, makeMollieLineAmounts } from '../../../src/utils';
+import cancelOrder, { getCancelOrderParams, createCtActions } from '../../../src/requestHandlers/cancelOrder';
+import { createDateNowString, makeMollieLineAmounts } from '../../../src/utils';
+import { makeActions } from '../../../src/makeActions';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/utils');
+jest.mock('../../../src/makeActions');
 
 describe('getCancelOrderParams', () => {
   const mockLogError = jest.fn();
