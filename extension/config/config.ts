@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash';
 import { Config } from './config-model';
 
 const isConfigValid = (config: Config): { valid: boolean; message: string } => {

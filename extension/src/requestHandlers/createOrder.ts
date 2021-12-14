@@ -13,13 +13,13 @@ const {
 
 export function makeMollieAddress(ctAddress: any): OrderAddress {
   let mollieAddress: OrderAddress = {
-    givenName: ctAddress?.firstName,
-    familyName: ctAddress?.lastName,
-    email: ctAddress?.email,
-    streetAndNumber: ctAddress?.streetName && ctAddress?.streetNumber ? `${ctAddress?.streetName} ${ctAddress?.streetNumber}` : '',
-    city: ctAddress?.city,
-    postalCode: ctAddress?.postalCode,
-    country: ctAddress?.country,
+    givenName: ctAddress.firstName,
+    familyName: ctAddress.lastName,
+    email: ctAddress.email,
+    streetAndNumber: ctAddress.streetName && ctAddress.streetNumber ? `${ctAddress.streetName} ${ctAddress.streetNumber}` : '',
+    city: ctAddress.city,
+    postalCode: ctAddress.postalCode,
+    country: ctAddress.country,
   };
   return mollieAddress;
 }
@@ -49,6 +49,9 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
   if (!ctPayment.custom?.fields?.createPayment) {
     return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' });
+  }
+  if (!cart.billingAddress) {
+    return Promise.reject({ status: 400, title: 'Cart associated with this payment is missing billingAddress', field: 'cart.billingAddress' });
   }
   try {
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment);
