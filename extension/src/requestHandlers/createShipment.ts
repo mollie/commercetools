@@ -1,6 +1,6 @@
 import { MollieClient, ShipmentCreateParams, Shipment } from '@mollie/api-client';
 import formatErrorResponse from '../errorHandlers';
-import { Action, ControllerAction, CTShipment, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTPayment, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../../src/logger/logger';
 
@@ -43,7 +43,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
   return result;
 }
 
-export default async function createShipment(ctObj: CTShipment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function createShipment(ctObj: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     const shipmentParams = await getShipmentParams(ctObj);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);

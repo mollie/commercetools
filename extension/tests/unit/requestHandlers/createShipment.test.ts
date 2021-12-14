@@ -1,5 +1,5 @@
 import { mocked } from 'ts-jest/utils';
-import { Action, CTPayment, CTShipment } from '../../../src/types';
+import { Action, CTErrorExtensionExtraInfo, CTPayment } from '../../../src/types';
 import createShipment, { getShipmentParams, createCtActions } from '../../../src/requestHandlers/createShipment';
 import { createDateNowString } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
@@ -116,7 +116,7 @@ describe('createShipment', () => {
   });
   it('Should prepare params, call mollie, handle response and return actions', async () => {
     const mockedShipmentParams = { orderId: 'ord_qzwg9x', lines: [{ id: 'odl_1.d8ck99', quantity: 1 }] };
-    const mockedCtObject: CTShipment = {
+    const mockedCtObject = {
       key: 'ord_qzwg9x',
       custom: {
         fields: {
@@ -147,19 +147,19 @@ describe('createShipment', () => {
     };
     const mollieClient = { orders_shipments: { create: jest.fn().mockResolvedValueOnce(mockedShipmentResponse) } } as any;
 
-    const createShipmentRes = await createShipment(mockedCtObject, mollieClient);
+    const createShipmentRes = await createShipment(mockedCtObject as CTPayment, mollieClient);
     expect(mollieClient.orders_shipments.create).toHaveBeenCalledWith(mockedShipmentParams);
     expect(createShipmentRes.actions).toHaveLength(2);
     expect(createShipmentRes.status).toBe(201);
   });
   it('Should return commercetools formated error if one of the functions fails', async () => {
-    const mockedError = { status: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' };
-    // const getShipmentParams = jest.fn().mockRejectedValueOnce(mockedError);
-    // const createCtActions = jest.fn();
+    const mockedExtensionError: CTErrorExtensionExtraInfo = { originalStatusCode: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' };
     const mollieClient = { orders_shipments: { create: jest.fn() } } as any;
 
-    const createShipmentRes = await createShipment({} as CTShipment, mollieClient);
-    expect(createShipmentRes.status).toBe(400);
-    expect(createShipmentRes.errors).toHaveLength(1);
+    const createShipmentRes = await createShipment({} as CTPayment, mollieClient);
+    const { errors, status } = createShipmentRes;
+    expect(status).toBe(400);
+    expect(errors).toHaveLength(1);
+    // expect(errors[0]?.extensionExtraInfo).toMatchObject(mockedExtensionError);
   });
 });

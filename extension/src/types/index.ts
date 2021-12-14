@@ -38,7 +38,13 @@ export type Action = {
 export type CTError = {
   code: CTEnumErrors;
   message: string;
-  extensionExtraInfo?: Object;
+  extensionExtraInfo?: CTErrorExtensionExtraInfo;
+};
+
+export type CTErrorExtensionExtraInfo = {
+  originalStatusCode: number;
+  title: string;
+  field: string;
 };
 
 export type CTMoney = {
@@ -64,20 +70,6 @@ export type CTPayment = {
     };
   };
   interfaceInteractions?: CTInterfaceInteraction[];
-};
-
-export type CTShipment = {
-  key: string;
-  custom?: {
-    fields?: {
-      createCapture?: string;
-    };
-  };
-  resource?: string;
-  id?: string;
-  orderId?: string;
-  createdAt?: string;
-  lines?: [];
 };
 
 export type CTInterfaceInteraction = {
