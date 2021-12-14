@@ -49,21 +49,33 @@ export type CTMoney = {
 };
 
 export type CTLineItem = {
-  id: string
-  name: string
-  price: CTMoney
-  totalPrice: CTMoney
-  quantity: number
+  id: string;
+  productId: string;
+  name: {
+    'en-US': string;
+  };
+  price: {
+    value: CTMoney;
+    discounted?: { value: CTMoney };
+  };
+  discountedPrice?: { value: CTMoney };
+  taxRate: { amount: number };
+  totalPrice: CTMoney;
+  taxedPrice: {
+    totalGross: CTMoney;
+    totalNet: CTMoney;
+  };
+  quantity: number;
+  variant: { sku: string };
 };
 
 export type CTCart = {
-  id: string,
-  lineItems?: CTLineItem[],
-  // cartState: string,
-  totalPrice: CTMoney
-  shippingAddress?: Object
-  billingAddress?: Object
-  locale?: string
+  id: string;
+  lineItems?: CTLineItem[];
+  totalPrice: CTMoney;
+  shippingAddress?: Object;
+  billingAddress?: Object;
+  locale?: string;
 };
 
 export type CTPayment = {

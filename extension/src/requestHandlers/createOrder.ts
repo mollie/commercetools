@@ -8,17 +8,13 @@ import config from '../../config/config';
 
 const {
   commercetools: { projectKey },
-  service: { notificationsModuleUrl, locale, redirectUrl }
+  service: { notificationsModuleUrl, locale, redirectUrl },
 } = config;
 
 enum MollieLineCategoryType {
   meal = 'meal',
   eco = 'eco',
   gift = 'gift',
-}
-
-export function convertCTTaxRateToMollieTaxRate(CTTaxRate: any): string {
-  return (parseFloat(CTTaxRate) * 100).toFixed(2);
 }
 
 export function makeMollieAddress(ctAddress: any): OrderAddress {
@@ -62,62 +58,34 @@ export const formatPaymentMethods = (paymentMethods: string): PaymentMethod[] | 
   return methodArray;
 };
 
-export function isDiscountAmountValid(inputObject: any): boolean {
-  if (inputObject?.currencyCode && inputObject?.centAmount) {
-    return true;
-  }
-  return false;
-}
-
 export function makeMollieLine(line: CTLineItem): OrderLine {
-  // const unitPriceValueString = convertCTToMollieAmountValue(line.price.value.centAmount, line.price.value.fractionDigits);
-  // const extractedLine: OrderLine = {
-  //   // Name as english for the time being
-  //   name: line.name.en,
-  //   quantity: line.quantity,
-  //   unitPrice: makeMollieAmount(line.totalPrice)
-  //   // unitPrice: {
-  //   //   currency: line.price.value.currencyCode,
-  //   //   value: unitPriceValueString,
-  //   // },
-  //   vatRate: convertCTTaxRateToMollieTaxRate(line.vatRate),
-  //   vatAmount: {
-  //     currency: line.vatAmount.currencyCode,
-  //     value: convertCTToMollieAmountValue(line.vatAmount.centAmount),
-  //   },
-  //   type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
-  //   category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
-  //   sku: line.sku ? line.sku : '',
-  //   imageUrl: line.imageUrl ? line.imageUrl : '',
-  //   productUrl: line.productUrl ? line.productUrl : '',
-  //   metadata: line.metadata ? line.metadata : {},
-  // };
-
-  // // Handle discounts
-  // let discountCentAmount = 0;
-  // if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
-  //   discountCentAmount = line.discountAmount.centAmount;
-  //   extractedLine.discountAmount = {
-  //     currency: line.discountAmount.currencyCode,
-  //     value: convertCTToMollieAmountValue(line.discountAmount.centAmount),
-  //   };
-  // }
-
-  // // Calculate total line price
-  // const totalPriceCT = line.price.value.centAmount * line.quantity - discountCentAmount;
-  // const totalAmountMollieString = convertCTToMollieAmountValue(totalPriceCT, line?.price?.value?.fractionDigits);
-  // extractedLine.totalAmount = {
-  //   currency: line.price.value.currencyCode,
-  //   value: totalAmountMollieString,
-  // };
-
-  // return extractedLine;
-  return {} as OrderLine
+  const extractedLine: any = {
+    // Name as english for the time being
+    name: line.name['en-US'],
+    quantity: line.quantity,
+    sku: line.variant.sku,
+    unitPrice: makeMollieAmount(line.price.value),
+    vatRate: (line.taxRate.amount * 100).toFixed(2),
+    totalAmount: makeMollieAmount(line.totalPrice),
+    vatAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: line.taxedPrice.totalGross.centAmount - line.taxedPrice.totalNet.centAmount }),
+    // type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
+    // category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
+    metadata: {
+      cartLineItemId: line.id,
+      productId: line.productId,
+    },
+  };
+  // Handle discounts
+  if (line.price.discounted?.value || line.discountedPrice?.value) {
+    const discountCentAmount = line.price.value.centAmount * line.quantity - line.totalPrice.centAmount;
+    extractedLine.discountAmount = makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount });
+  }
+  return extractedLine;
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
   if (!ctPayment.custom?.fields?.createPayment) {
-    return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' })
+    return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' });
   }
   try {
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment);
@@ -213,10 +181,11 @@ export default async function createOrder(ctPayment: CTPayment, mollieClient: Mo
       const error = formatErrorResponse({ status: 404, message: `Could not find Cart associated with the payment ${paymentId}.` });
       return error;
     }
-    console.log('cartByPayment', cartByPayment.body.results[0]);
 
     const orderParams = await getCreateOrderParams(ctPayment, cartByPayment.body.results[0]);
+    Logger.debug({ orderParams });
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
+    Logger.debug({ mollieCreatedOrder });
     const ctActions = await createCtActions(mollieCreatedOrder, ctPayment);
     return {
       actions: ctActions,
