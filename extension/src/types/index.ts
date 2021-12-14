@@ -33,6 +33,7 @@ export type Action = {
   transaction?: CTTransaction;
   transactionId?: string;
   interactionId?: string;
+  state?: CTTransactionState;
 };
 
 export type CTError = {
@@ -75,7 +76,8 @@ export type CTInterfaceInteraction = {
 };
 
 export type CTTransaction = {
-  timestamp: string;
+  id?: string;
+  timestamp?: string;
   type: CTTransactionType;
   amount: CTMoney;
   interactionId?: string;
@@ -101,4 +103,11 @@ export enum CTTransactionType {
   Charge = 'Charge',
   Refund = 'Refund',
   Chargeback = 'Chargeback',
+}
+
+export enum CTTransactionState {
+  Initial = 'Initial',
+  Pending = 'Pending',
+  Success = 'Success',
+  Failure = 'Failure',
 }

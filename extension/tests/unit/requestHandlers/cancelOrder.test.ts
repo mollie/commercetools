@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import { Action, ControllerAction } from '../../../src/types';
 import cancelOrder, { getCancelOrderParams, createCtActions } from '../../../src/requestHandlers/cancelOrder';
@@ -5,12 +6,15 @@ import { createDateNowString, makeMollieLineAmounts } from '../../../src/utils';
 import { makeActions } from '../../../src/makeActions';
 import Logger from '../../../src/logger/logger';
 
+jest.mock('uuid');
 jest.mock('../../../src/utils');
 jest.mock('../../../src/makeActions');
 
 describe('getCancelOrderParams', () => {
   const mockLogError = jest.fn();
+  const mockUuid = '238e8459-06a1-46f6-95c6-cf3ce0998dce';
   beforeEach(() => {
+    mocked(uuid).mockReturnValue(mockUuid);
     Logger.error = mockLogError;
     mocked(makeMollieLineAmounts).mockReturnValueOnce([{ id: 'odl_1.n3xdt3', quantity: 1, amount: { currency: 'EUR', value: '4.20' } }]);
   });
@@ -103,6 +107,7 @@ describe('createCtActions', () => {
         key: 'ct-mollie-integration-interface-interaction-type',
       },
       fields: {
+        id: uuid(),
         actionType: ControllerAction.CancelOrder,
         createdAt: '2021-10-08T12:12:02.625Z',
         request: '[]',

@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import { createDateNowString, convertCTToMollieAmountValue } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
@@ -11,7 +12,9 @@ import {
   isDiscountAmountValid,
   convertCTTaxRateToMollieTaxRate,
 } from '../../../src/requestHandlers/createOrder';
+import { CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
 
+jest.mock('uuid');
 jest.mock('../../../src/utils');
 
 describe('formatPaymentMethods', () => {
@@ -39,7 +42,9 @@ describe('formatPaymentMethods', () => {
 
 describe('Create orders tests', () => {
   const mockLogError = jest.fn();
+  const mockUuid = 'd42d0dcc-ad68-4bc9-8faf-7b32d08f2504';
   beforeEach(() => {
+    mocked(uuid).mockReturnValue(mockUuid);
     Logger.error = mockLogError;
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
@@ -329,10 +334,25 @@ describe('Create orders tests', () => {
     expect(convertCTTaxRateToMollieTaxRate(0.40110228)).toBe('40.11');
     expect(convertCTTaxRateToMollieTaxRate(-0.2411)).toBe('-24.11');
   });
+
+  // CT Actions
   it('Should create correct ct actions from request and mollies order', async () => {
     const mockedCreateOrderString = '{"orderNumber":"1001"}';
     const mockedCtObject = {
-      custom: { fields: { createOrderRequest: mockedCreateOrderString } },
+      id: '3d0ede94-df76-423f-b560-71d4c365d086',
+      amountPlanned: { centAmount: 500, currencyCode: 'EUR' },
+      custom: { fields: { createPayment: mockedCreateOrderString } },
+      transactions: [
+        {
+          id: '949ab89f-7a71-4c7a-bb43-605354322a96',
+          state: CTTransactionState.Initial,
+          type: CTTransactionType.Charge,
+          amount: {
+            centAmount: 500,
+            currencyCode: 'EUR',
+          },
+        },
+      ],
     };
     const mockedMollieCreatedOrder: any = {
       resource: 'order',
@@ -353,14 +373,41 @@ describe('Create orders tests', () => {
       },
     };
     const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject);
+    expect(ctActions).toHaveLength(5);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
     });
   });
+
+  it('Should return an error if cannot find original transaction', async () => {
+    const mockedCreateOrderString = '{"orderNumber":"1001"}';
+    const mockedCtObject = {
+      id: '3d0ede94-df76-423f-b560-71d4c365d086',
+      amountPlanned: { centAmount: 500, currencyCode: 'EUR' },
+      custom: { fields: { createPayment: mockedCreateOrderString } },
+    };
+    const mockedMollieCreatedOrder: any = {
+      resource: 'order',
+      id: 'ord_dsczl7',
+      profileId: 'pfl_VtWA783A63',
+      amount: { value: '10.00', currency: 'EUR' },
+      orderNumber: '1001',
+    };
+    const expectedError = {
+      status: 400,
+      title: 'Cannot find original transaction',
+      field: 'Payment.transactions',
+    };
+    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject)).rejects.toEqual(expectedError);
+  });
+
   it('Should return an error if mollie order does not return payments', async () => {
     const mockedCreateOrderString = '{"orderNumber":"1001"}';
     const mockedCtObject = {
-      custom: { fields: { createOrderRequest: mockedCreateOrderString } },
+      id: '3d0ede94-df76-423f-b560-71d4c365d086',
+      amountPlanned: { centAmount: 500, currencyCode: 'EUR' },
+      custom: { fields: { createPayment: mockedCreateOrderString } },
+      transactions: [{ id: '409400f2-1741-4265-8283-bf23c5f76542', type: 'Charge', state: 'Initial' }],
     };
     const mockedMollieCreatedOrder: any = {
       resource: 'order',
@@ -374,8 +421,9 @@ describe('Create orders tests', () => {
       status: 400,
       title: 'Could not get Mollie payment id.',
     };
-    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject)).rejects.toEqual(expectedError);
+    await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment)).rejects.toEqual(expectedError);
   });
+
   it('Should extract the correct shipping address from the request body', () => {
     const mockedShippingAddressBody = {
       firstName: 'Piet',

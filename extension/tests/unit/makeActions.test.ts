@@ -1,13 +1,16 @@
-import { before } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import { makeActions } from '../../src/makeActions';
 import { ControllerAction } from '../../src/types';
 import { createDateNowString } from '../../src/utils';
 
+jest.mock('uuid');
 jest.mock('../../src/utils');
 
 describe('makeActions', () => {
+  const mockUuid = 'f2e6db50-7bd8-4036-8e1f-9971b6226c62';
   beforeAll(() => {
+    mocked(uuid).mockReturnValue(mockUuid);
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterAll(() => {
@@ -30,6 +33,7 @@ describe('makeActions', () => {
         key: 'ct-mollie-integration-interface-interaction-type',
       },
       fields: {
+        id: mockUuid,
         actionType: ControllerAction.GetPaymentMethods,
         createdAt: '2021-10-08T12:12:02.625Z',
         request: '{}',
