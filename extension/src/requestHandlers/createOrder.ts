@@ -59,7 +59,7 @@ export const formatPaymentMethods = (paymentMethods: string): PaymentMethod[] | 
 };
 
 export function makeMollieLine(line: CTLineItem): OrderLine {
-  const extractedLine: any = {
+  const extractedLine = {
     // Name as english for the time being
     name: line.name['en-US'],
     quantity: line.quantity,
@@ -68,8 +68,6 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
     vatRate: (line.taxRate.amount * 100).toFixed(2),
     totalAmount: makeMollieAmount(line.totalPrice),
     vatAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: line.taxedPrice.totalGross.centAmount - line.taxedPrice.totalNet.centAmount }),
-    // type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
-    // category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
     metadata: {
       cartLineItemId: line.id,
       productId: line.productId,
@@ -78,9 +76,9 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
   // Handle discounts
   if (line.price.discounted?.value || line.discountedPrice?.value) {
     const discountCentAmount = line.price.value.centAmount * line.quantity - line.totalPrice.centAmount;
-    extractedLine.discountAmount = makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount });
+    Object.assign(extractedLine, { discountAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount }) });
   }
-  return extractedLine;
+  return extractedLine as OrderLine;
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
@@ -110,6 +108,11 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
+
+    // TODO: Category for mollie is required on one of line items when using voucher. This feature is not supported atm
+    // if (orderParams.method === 'voucher') {
+    //   orderParams.lines.map(l => l.category = 'eco')
+    // }
 
     return Promise.resolve(orderParams);
   } catch (error) {
