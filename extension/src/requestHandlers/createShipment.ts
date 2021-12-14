@@ -1,18 +1,16 @@
 import { MollieClient, ShipmentCreateParams, Shipment } from '@mollie/api-client';
 import formatErrorResponse from '../errorHandlers';
-import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTShipment, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../../src/logger/logger';
 
 export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
   try {
-    const parsedShipmentRequest = JSON.parse(ctObj?.custom?.fields?.createShipmentRequest);
+    const parsedShipmentRequest = JSON.parse(ctObj?.custom?.fields?.createCapture);
     const shipmentParams: ShipmentCreateParams = {
       orderId: ctObj.key,
     };
     if (parsedShipmentRequest.lines?.length) Object.assign(shipmentParams, { lines: parsedShipmentRequest.lines });
-    if (parsedShipmentRequest.tracking) Object.assign(shipmentParams, { tracking: parsedShipmentRequest.tracking });
-
     Logger.debug({ shipmentParams: shipmentParams });
     return Promise.resolve(shipmentParams);
   } catch (error) {
@@ -32,7 +30,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
       fields: {
         actionType: ControllerAction.CreateShipment,
         createdAt: createDateNowString(),
-        request: ctObj?.custom?.fields?.createShipmentRequest,
+        request: ctObj?.custom?.fields?.createCapture,
         response: stringifiedShipmentResponse,
       },
     },
@@ -45,7 +43,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
   return result;
 }
 
-export default async function createShipment(ctObj: any, mollieClient: MollieClient, getShipmentParams: Function, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
+export default async function createShipment(ctObj: CTShipment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     const shipmentParams = await getShipmentParams(ctObj);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);

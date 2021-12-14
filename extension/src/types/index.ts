@@ -66,6 +66,20 @@ export type CTPayment = {
   interfaceInteractions?: CTInterfaceInteraction[];
 };
 
+export type CTShipment = {
+  key: string;
+  custom?: {
+    fields?: {
+      createCapture?: string;
+    };
+  };
+  resource?: string;
+  id?: string;
+  orderId?: string;
+  createdAt?: string;
+  lines?: [];
+};
+
 export type CTInterfaceInteraction = {
   id: string;
   actionType: string;
