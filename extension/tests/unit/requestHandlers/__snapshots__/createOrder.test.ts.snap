@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Create orders tests Should create correct ct actions from request and mollies order 1`] = `
+exports[`createCTActions Should create correct ct actions from request and mollies order 1`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
     "actionType": "createOrder",
-    "createdAt": "2021-10-08T12:12:02.625Z",
-    "id": "d42d0dcc-ad68-4bc9-8faf-7b32d08f2504",
+    "createdAt": "2021-12-15T08:21:15.495Z",
+    "id": "3fea7470-5434-4056-a829-a187339e94d8",
     "request": "{\\"cartId\\":\\"fd5317fa-c2f8-44c0-85ab-a1c1169d2404\\",\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\",\\"extraInformation\\":\\"{\\\\\\"orderNumber\\\\\\":\\\\\\"1001\\\\\\"}\\"}",
     "response": "{\\"mollieOrderId\\":\\"ord_dsczl7\\",\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\"}",
   },
@@ -16,21 +16,21 @@ Object {
 }
 `;
 
-exports[`Create orders tests Should create correct ct actions from request and mollies order 2`] = `
+exports[`createCTActions Should create correct ct actions from request and mollies order 2`] = `
 Object {
   "action": "setMethodInfoName",
   "interfaceText": undefined,
 }
 `;
 
-exports[`Create orders tests Should create correct ct actions from request and mollies order 3`] = `
+exports[`createCTActions Should create correct ct actions from request and mollies order 3`] = `
 Object {
   "action": "setKey",
   "key": "ord_dsczl7",
 }
 `;
 
-exports[`Create orders tests Should create correct ct actions from request and mollies order 4`] = `
+exports[`createCTActions Should create correct ct actions from request and mollies order 4`] = `
 Object {
   "action": "changeTransactionState",
   "state": "Pending",
@@ -38,7 +38,7 @@ Object {
 }
 `;
 
-exports[`Create orders tests Should create correct ct actions from request and mollies order 5`] = `
+exports[`createCTActions Should create correct ct actions from request and mollies order 5`] = `
 Object {
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_2hwPMAs5qU",

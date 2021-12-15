@@ -1,176 +1,93 @@
 import { v4 as uuid } from 'uuid';
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLineType } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
-import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState } from '../types';
-import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
+import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem } from '../types';
+import { createDateNowString, makeMollieAmount } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
 import { makeActions } from '../makeActions';
 
 const {
   commercetools: { projectKey },
+  service: { webhookUrl, locale, redirectUrl },
 } = config;
 
-enum MollieLineCategoryType {
-  meal = 'meal',
-  eco = 'eco',
-  gift = 'gift',
-}
-
-export function getBillingAddress(billingAddressObject: any): OrderAddress {
-  return {
-    givenName: billingAddressObject.firstName,
-    familyName: billingAddressObject.lastName,
-    email: billingAddressObject.email,
-    streetAndNumber: billingAddressObject?.streetName && billingAddressObject?.streetNumber ? billingAddressObject?.streetName + ' ' + billingAddressObject?.streetNumber : '',
-    city: billingAddressObject.city,
-    postalCode: billingAddressObject.postalCode,
-    country: billingAddressObject.country,
+export function makeMollieAddress(ctAddress: any): OrderAddress {
+  let mollieAddress: OrderAddress = {
+    givenName: ctAddress.firstName,
+    familyName: ctAddress.lastName,
+    email: ctAddress.email,
+    streetAndNumber: ctAddress.streetName && ctAddress.streetNumber ? `${ctAddress.streetName} ${ctAddress.streetNumber}` : '',
+    city: ctAddress.city,
+    postalCode: ctAddress.postalCode,
+    country: ctAddress.country,
   };
+  return mollieAddress;
 }
 
-export function convertCTTaxRateToMollieTaxRate(CTTaxRate: any): string {
-  return (parseFloat(CTTaxRate) * 100).toFixed(2);
-}
-
-export function getShippingAddress(shippingAddressObject: any): OrderAddress {
-  let rtnObject: OrderAddress = {
-    givenName: shippingAddressObject.firstName || '',
-    familyName: shippingAddressObject.lastName,
-    email: shippingAddressObject.email,
-    streetAndNumber: shippingAddressObject?.streetName && shippingAddressObject?.streetNumber ? shippingAddressObject?.streetName + ' ' + shippingAddressObject?.streetNumber : '',
-    city: shippingAddressObject.city,
-    postalCode: shippingAddressObject.postalCode,
-    country: shippingAddressObject.country,
-  };
-  return rtnObject;
-}
-
-/**
- *
- * @param paymentMethods comma separated string of valid mollie PaymentMethods
- * If no valid payment methods are provided, this will return '' and
- * the 'method' parameter will not be passed as part of the createOrder request
- *
- * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
- * in V3.6 or V4 of the mollie node SDK.
- *
- * Until then, we cast 'voucher'/'mybank' as PaymentMethod and track this in Issue #34
- * https://github.com/mollie/commercetools/issues/34
- */
-export const formatPaymentMethods = (paymentMethods: string | undefined): PaymentMethod[] | PaymentMethod | '' => {
-  if (paymentMethods) {
-    const methods = paymentMethods.split(',');
-    const methodArray = methods
-      .map(method => {
-        if (method === 'voucher' || method === 'mybank') {
-          return method as PaymentMethod;
-        }
-        return PaymentMethod[method as PaymentMethod];
-      })
-      .filter(method => method !== undefined);
-    if (methodArray.length <= 1) {
-      return methodArray.join('') as PaymentMethod;
-    }
-    return methodArray;
-  }
-  return '';
-};
-
-function extractAllLines(lines: any) {
-  let extractedLines = [];
-  for (let line of lines) {
-    extractedLines.push(extractLine(line));
-  }
-  return extractedLines;
-}
-
-export function isDiscountAmountValid(inputObject: any): boolean {
-  if (inputObject?.currencyCode && inputObject?.centAmount) {
-    return true;
-  }
-  return false;
-}
-
-export function extractLine(line: any) {
-  const unitPriceValueString = convertCTToMollieAmountValue(line.price.value.centAmount, line.price.value.fractionDigits);
-  const extractedLine: any = {
+export function makeMollieLine(line: CTLineItem): OrderLine {
+  const extractedLine = {
     // Name as english for the time being
-    name: line.name.en,
+    name: line.name['en-US'],
     quantity: line.quantity,
-    unitPrice: {
-      currency: line.price.value.currencyCode,
-      value: unitPriceValueString,
+    sku: line.variant.sku,
+    unitPrice: makeMollieAmount(line.price.value),
+    vatRate: (line.taxRate.amount * 100).toFixed(2),
+    totalAmount: makeMollieAmount(line.totalPrice),
+    vatAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: line.taxedPrice.totalGross.centAmount - line.taxedPrice.totalNet.centAmount }),
+    metadata: {
+      cartLineItemId: line.id,
     },
-    vatRate: convertCTTaxRateToMollieTaxRate(line.vatRate),
-    vatAmount: {
-      currency: line.vatAmount.currencyCode,
-      value: convertCTToMollieAmountValue(line.vatAmount.centAmount),
-    },
-    type: line.type in OrderLineType ? OrderLineType[line.type as keyof typeof OrderLineType] : ('' as OrderLineType),
-    category: line.category in MollieLineCategoryType ? MollieLineCategoryType[line.category as keyof typeof MollieLineCategoryType] : ('' as MollieLineCategoryType),
-    sku: line.sku ? line.sku : '',
-    imageUrl: line.imageUrl ? line.imageUrl : '',
-    productUrl: line.productUrl ? line.productUrl : '',
-    metadata: line.metadata ? line.metadata : {},
   };
-
   // Handle discounts
-  let discountCentAmount = 0;
-  if (line.discountAmount && isDiscountAmountValid(line.discountAmount)) {
-    discountCentAmount = line.discountAmount.centAmount;
-    extractedLine.discountAmount = {
-      currency: line.discountAmount.currencyCode,
-      value: convertCTToMollieAmountValue(line.discountAmount.centAmount),
-    };
+  if (line.price.discounted?.value || line.discountedPrice?.value) {
+    const discountCentAmount = line.price.value.centAmount * line.quantity - line.totalPrice.centAmount;
+    Object.assign(extractedLine, { discountAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount }) });
   }
-
-  // Calculate total line price
-  const totalPriceCT = line.price.value.centAmount * line.quantity - discountCentAmount;
-  const totalAmountMollieString = convertCTToMollieAmountValue(totalPriceCT, line?.price?.value?.fractionDigits);
-  extractedLine.totalAmount = {
-    currency: line.price.value.currencyCode,
-    value: totalAmountMollieString,
-  };
-
-  return extractedLine;
+  return extractedLine as OrderLine;
 }
 
-export function fillOrderValues(ctObj: any): Promise<OrderCreateParams> {
+export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
+  if (!ctPayment.custom?.fields?.createPayment) {
+    return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' });
+  }
+  if (!cart.billingAddress) {
+    return Promise.reject({ status: 400, title: 'Cart associated with this payment is missing billingAddress', field: 'cart.billingAddress' });
+  }
   try {
-    const deStringedOrderRequest = JSON.parse(ctObj.custom?.fields?.createOrderRequest);
-    const amountConverted = convertCTToMollieAmountValue(ctObj.amountPlanned?.centAmount);
-    const orderValues: OrderCreateParams = {
-      amount: {
-        value: amountConverted,
-        currency: ctObj.amountPlanned?.currencyCode,
-      },
-      orderNumber: deStringedOrderRequest.orderNumber.toString(),
-      webhookUrl: deStringedOrderRequest.orderWebhookUrl,
-      locale: deStringedOrderRequest.locale,
-      redirectUrl: deStringedOrderRequest.redirectUrl,
-      shopperCountryMustMatchBillingCountry: deStringedOrderRequest.shopperCountryMustMatchBillingCountry || false,
-      expiresAt: deStringedOrderRequest.expiresAt || '',
-      billingAddress: getBillingAddress(deStringedOrderRequest.billingAddress),
-      lines: extractAllLines(deStringedOrderRequest.lines),
-      metadata: deStringedOrderRequest.metadata || {},
+    const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment);
+    const orderParams: OrderCreateParams = {
+      amount: makeMollieAmount(ctPayment.amountPlanned),
+      orderNumber: ctPayment.id,
+      lines: (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l)),
+      locale: parsedCtPayment.locale || locale,
+      billingAddress: makeMollieAddress(cart.billingAddress),
+      method: ctPayment.paymentMethodInfo.method as PaymentMethod,
+
+      webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       embed: [OrderEmbed.payments],
       payment: {
-        webhookUrl: deStringedOrderRequest.orderWebhookUrl,
+        webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       },
+
+      redirectUrl: parsedCtPayment.redirectUrl || redirectUrl,
+      expiresAt: parsedCtPayment.expiresAt || '',
+      metadata: { cartId: cart.id },
     };
-    if (deStringedOrderRequest.shippingAddress) {
-      orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
+    if (cart.shippingAddress) {
+      orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
-    const formattedMethods = formatPaymentMethods(ctObj.paymentMethodInfo?.method);
-    if (formattedMethods) {
-      orderValues.method = formattedMethods;
-    }
-    return Promise.resolve(orderValues);
+
+    // TODO: Category for mollie is required on one of line items when using voucher. This feature is not supported atm
+    // if (orderParams.method === 'voucher') {
+    //   orderParams.lines.map(l => l.category = 'eco')
+    // }
+
+    return Promise.resolve(orderParams);
   } catch (error) {
     Logger.error({ error });
-    return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' });
+    return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createPayment' });
   }
 }
 
@@ -222,8 +139,8 @@ export function createCtActions(orderResponse: Order, ctObj: CTPayment, cartId: 
   }
 }
 
-export default async function createOrder(ctObj: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
-  const paymentId = ctObj?.id;
+export default async function createOrder(ctPayment: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+  const paymentId = ctPayment?.id;
   try {
     const getCartByPaymentOptions = {
       uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
@@ -238,11 +155,12 @@ export default async function createOrder(ctObj: CTPayment, mollieClient: Mollie
       const error = formatErrorResponse({ status: 404, message: `Could not find Cart associated with the payment ${paymentId}.` });
       return error;
     }
-    console.log('cartByPayment', cartByPayment.body.results[0]);
 
-    const orderParams = await fillOrderValues(ctObj);
+    const orderParams = await getCreateOrderParams(ctPayment, cartByPayment.body.results[0]);
+    Logger.debug({ orderParams });
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
-    const ctActions = await createCtActions(mollieCreatedOrder, ctObj, cartByPayment.id);
+    Logger.debug({ mollieCreatedOrder });
+    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment, cartByPayment.id);
     return {
       actions: ctActions,
       status: 201,

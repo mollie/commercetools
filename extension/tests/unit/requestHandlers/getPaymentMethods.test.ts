@@ -245,11 +245,15 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
       sequenceType: 'first',
     };
 
-    const ctObj = {
+    const ctObj: CTPayment = {
       id: '1234',
       amountPlanned: {
         currencyCode: 'EUR',
         centAmount: 1100,
+      },
+      paymentMethodInfo: {
+        method: '',
+        paymentInterface: 'mollie',
       },
       custom: {
         fields: {
@@ -273,11 +277,15 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
       locale: 'en_US',
     };
 
-    const ctObj = {
+    const ctObj: CTPayment = {
       id: '1234',
       amountPlanned: {
         currencyCode: 'USD',
         centAmount: 1100,
+      },
+      paymentMethodInfo: {
+        method: '',
+        paymentInterface: 'mollie',
       },
       custom: {
         fields: {
@@ -304,11 +312,15 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
       include: 'issuers,',
     };
 
-    const ctObj = {
+    const ctObj: CTPayment = {
       id: '1234',
       amountPlanned: {
         currencyCode: 'EUR',
         centAmount: 1100,
+      },
+      paymentMethodInfo: {
+        method: '',
+        paymentInterface: 'mollie',
       },
       custom: {
         fields: {

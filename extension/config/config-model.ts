@@ -14,5 +14,8 @@ export interface Config {
     port: number | string;
     logLevel: 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug';
     logTransports?: 'all' | 'file' | 'terminal';
+    webhookUrl?: string;
+    redirectUrl?: string;
+    locale?: string;
   };
 }
