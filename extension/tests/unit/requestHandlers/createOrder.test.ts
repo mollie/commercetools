@@ -22,9 +22,9 @@ describe('createCTActions', () => {
     mocked(uuid).mockReturnValue(mockUuid);
     mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
   });
-  // CT Actions
+
   it('Should create correct ct actions from request and mollies order', async () => {
-    const mockedCreateOrderString = '{"orderNumber":"1001"}';
+    const mockedCreateOrderString = '{"locale":"fr_FR"}';
     const mockedCtObject = {
       id: '3d0ede94-df76-423f-b560-71d4c365d086',
       amountPlanned: { centAmount: 500, currencyCode: 'EUR' },

@@ -49,6 +49,7 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
+  // TODO can remove this check - createPayment is not required
   if (!ctPayment.custom?.fields?.createPayment) {
     return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' });
   }
@@ -91,10 +92,10 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
   }
 }
 
-export function createCtActions(orderResponse: Order, ctObj: CTPayment, cartId: string): Promise<Action[]> {
+export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cartId: string): Promise<Action[]> {
   try {
     // Find the original transaction which triggered create order
-    const originalTransaction = ctObj.transactions?.find(transaction => {
+    const originalTransaction = ctPayment.transactions?.find(transaction => {
       return (transaction.type === CTTransactionType.Charge || transaction.type === CTTransactionType.Authorization) && transaction.state === CTTransactionState.Initial;
     });
     if (!originalTransaction) {
@@ -110,10 +111,11 @@ export function createCtActions(orderResponse: Order, ctObj: CTPayment, cartId: 
       return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
     }
 
+    const parsedCreatePayment = ctPayment.custom?.fields?.createPayment ? JSON.parse(ctPayment.custom?.fields?.createPayment) : '';
     const interafaceInteractionRequest = {
       cartId,
       transactionId: originalTransaction.id,
-      extraInformation: ctObj.custom?.fields?.createPayment,
+      createPayment: parsedCreatePayment,
     };
     const interfaceInteractionResponse = {
       mollieOrderId: orderResponse.id,
