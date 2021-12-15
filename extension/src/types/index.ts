@@ -45,6 +45,7 @@ export type CTErrorExtensionExtraInfo = {
   originalStatusCode: number;
   title: string;
   field: string;
+  links?: string;
 };
 
 export type CTMoney = {
