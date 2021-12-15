@@ -81,7 +81,7 @@ One of:
 | `paymentInterface: "mollie"`  | -                                  |
 | `method: "creditcard,paypal"` | `method: ['creditcard', 'paypal']` |
 
-The `PaymentMethodInfo.methods` is a comma separated string of mollie payment methods, used to limit the payment methods a customer can use at checkout. If not provided, or provided as `''`, all payment methods will be available to the customer. If the payment method is not enabled in your website profile, you will receive an error.
+The `PaymentMethodInfo.methods` is a comma separated string of [mollie payment methods](https://docs.mollie.com/reference/v2/orders-api/create-order), used to limit the payment methods a customer can use at checkout. If not provided, or provided as `''`, all payment methods will be available to the customer. If the payment method is not enabled in your website profile, you will receive an error.
 
 # Representation: CT create payment
 
@@ -89,7 +89,7 @@ The `PaymentMethodInfo.methods` is a comma separated string of mollie payment me
 {
     custom: {
         fields: {
-                createOrderRequest: "{\"orderNumber\":\"1001\",\"billingAddress\":{\"firstName\": \"Piet\", \"lastName\": \"Mondriaan\", \"email\": \"coloured_square_lover@basicart.com\", \"streetName\": \"Keizersgracht\", \"streetNumber\": \"126\", \"postalCode\": \"1234AB\", \"country\": \"NL\", \"city\": \"Amsterdam\"},\"shippingAddress\":{\"firstName\": \"Piet\", \"lastName\": \"Mondriaan\", \"email\": \"coloured_square_lover@basicart.com\", \"streetName\": \"Keizersgracht\", \"streetNumber\": \"126\", \"postalCode\": \"1234AB\", \"country\": \"NL\", \"city\": \"Amsterdam\"},\"orderWebhookUrl\":\"https:\/\/www.examplewebhook.com\/\",\"locale\":\"nl_NL\",\"redirectUrl\":\"https:\/\/www.exampleredirect.com\/\",\"lines\":[{\"id\":\"18920\",\"productId\":\"900220\",\"name\":{\"en\":\"apple\"},\"variant\":{\"id\":\"294028\"},\"price\":{\"id\":\"lineItemPriceId\",\"value\":{\"currencyCode\":\"EUR\",\"centAmount\":1000}},\"totalPrice\":{\"currencyCode\":\"EUR\",\"centAmount\":1000},\"quantity\":1,\"taxRate\":{\"name\": \"taxRateApple\", \"amount\": 0, \"includedInPrice\": false, \"country\": \"NL\"}, \"taxedPrice\": { \"totalNet\": { \"currencyCode\": \"EUR\", \"centAmount\": 0 }, \"totalGross\": { \"currencyCode\": \"EUR\", \"centAmount\": 0 } },\"shopperCountryMustMatchBillingCountry\":true,\"state\":[{\"quantity\":1,\"state\":{\"typeId\":\"state\",\"id\":\"stateOfApple\"}}]}]}"
+                "createPayment": "{\"description\":\"Payment description\",\"redirectUrl\":\"https:\/\/www.redirectUrl.com\/\",\"webhookUrl\":\"https:\/\/www.webhookUrl.com\",\"locale\":\"nl_NL\",\"locale\":\"nl_NL\"}",
             }
         },
     amountPlanned: {
