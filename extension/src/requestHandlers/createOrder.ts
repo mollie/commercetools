@@ -160,24 +160,11 @@ export function fillOrderValues(ctObj: any): Promise<OrderCreateParams> {
         webhookUrl: deStringedOrderRequest.orderWebhookUrl,
       },
     };
-    // const paymentSpecificParams = {
-    //   webhookUrl: deStringedOrderRequest.orderWebhookUrl,
-    //   issuer: 'ideal_ASNBNL21',
-    // } as unknown as PaymentData;
-
-    // Object.assign(orderValues, { payment: paymentSpecificParams });
-
     if (deStringedOrderRequest.shippingAddress) {
       orderValues.shippingAddress = getShippingAddress(deStringedOrderRequest.shippingAddress);
     }
-    // if (ctObj.paymentMethodInfo?.method) {
-    //   const methodAndIssuer = ctObj.paymentMethodInfo?.method.split(',');
-    //   orderValues.method = PaymentMethod[ctObj.paymentMethodInfo?.method as PaymentMethod];
-    //   if (methodAndIssuer[1]) {
-    //     orderValues.payment.issuer = methodAndIssuer[1];
-    //   }
-    // }
     orderValues.method = PaymentMethod[ctObj.paymentMethodInfo?.method as PaymentMethod];
+    if (ctObj.paymentMethodInfo?.issuer && orderValues.payment) orderValues.payment.issuer = ctObj.paymentMethodInfo?.issuer;
     return Promise.resolve(orderValues);
   } catch (error) {
     Logger.error({ error });
