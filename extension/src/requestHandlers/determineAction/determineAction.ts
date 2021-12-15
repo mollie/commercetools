@@ -28,7 +28,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
       errorMessage,
     };
   } else {
-    return validatePaymentMethodAndIssuer(paymentObject);
+    return validateAndSetPaymentMethodAndIssuer(paymentObject);
   }
 };
 
@@ -39,23 +39,23 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
  *
  * If issuer is present, it must correspond to a payment method that accepts an issuer.
  *
- *
  */
 
-function validatePaymentMethodAndIssuer(paymentObject: any) {
-  const arrayOfMethods = paymentObject.paymentMethodInfo?.method.split(',');
-  const method = arrayOfMethods[0];
-  if (!hasValidPaymentMethod(method) || arrayOfMethods.length > 2) {
+function validateAndSetPaymentMethodAndIssuer(paymentObject: any) {
+  const [method, issuer, ...extra] = paymentObject.paymentMethodInfo?.method.split(',');
+  if (!hasValidPaymentMethod(method) || extra.length > 0) {
     return {
       action: ControllerAction.Error,
-      errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". Payment method must be set with a one method in order to make and manage payment transactions.`,
+      errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". Payment method must be set with only one method and optionally one issuer, separated by a comma (,)`,
     };
-  } else if (arrayOfMethods[1] && !isPaymentMethodValidWithIssuer(PaymentMethod[method as PaymentMethod])) {
+  } else if (!!issuer && !isPaymentMethodValidWithIssuer(PaymentMethod[method as PaymentMethod])) {
     return {
       action: ControllerAction.Error,
       errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". PaymentMethod "${method}" does not support issuers.`,
     };
   } else {
+    if (!!issuer) paymentObject.paymentMethodInfo.issuer = issuer;
+    paymentObject.paymentMethodInfo.method = method;
     if (isPayLater(PaymentMethod[method as PaymentMethod])) {
       return handlePayLaterFlow(paymentObject);
     } else {

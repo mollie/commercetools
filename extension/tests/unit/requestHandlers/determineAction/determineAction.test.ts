@@ -97,7 +97,7 @@ describe('determineAction', () => {
         ],
       };
       const { errorMessage } = determineAction(mockPaymentObject);
-      expect(errorMessage).toEqual('Invalid paymentMethodInfo.method "paypal,ideal,creditcard". Payment method must be set with a one method in order to make and manage payment transactions.');
+      expect(errorMessage).toEqual('Invalid paymentMethodInfo.method "paypal,ideal,creditcard". Payment method must be set with only one method and optionally one issuer, separated by a comma (,)');
     });
   });
 
