@@ -6,7 +6,7 @@ import Logger from '../../src/logger/logger';
 
 export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
   try {
-    const parsedShipmentRequest = JSON.parse(ctObj?.custom?.fields?.createCapture);
+    const parsedShipmentRequest = ctObj?.custom?.fields?.createCapture ? JSON.parse(ctObj?.custom?.fields?.createCapture) : '';
     const shipmentParams: ShipmentCreateParams = {
       orderId: ctObj.key,
     };
@@ -43,12 +43,12 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
   return result;
 }
 
-export default async function createShipment(ctObj: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function createShipment(ctPayment: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    const shipmentParams = await getShipmentParams(ctObj);
+    const shipmentParams = await getShipmentParams(ctPayment);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
     Logger.debug({ mollieShipmentRes: mollieShipmentRes });
-    const ctActions = createCtActions(mollieShipmentRes, ctObj);
+    const ctActions = createCtActions(mollieShipmentRes, ctPayment);
     return {
       actions: ctActions,
       status: 201,

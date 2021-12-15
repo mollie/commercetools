@@ -44,23 +44,6 @@ describe('getShipmentParams', () => {
     };
     await expect(getShipmentParams(mockedCtObj)).resolves.toEqual(expectedCreateShipmentParams);
   });
-  it('Should return 400 and error message if creating the parameters throws an error', async () => {
-    const mockedCtObj = {
-      key: 'ord_3uwvfd',
-      custom: {
-        fields: {
-          createShipmentRequest: '',
-        },
-      },
-    };
-    const expectedRejectedValue = {
-      status: 400,
-      title: 'Could not make parameters needed to create Mollie shipment.',
-      field: 'createShipmentRequest',
-    };
-    await expect(getShipmentParams(mockedCtObj)).rejects.toEqual(expectedRejectedValue);
-    expect(mockLogError).toHaveBeenCalledTimes(1);
-  });
 });
 describe('createCtActions', () => {
   beforeEach(() => {
@@ -152,14 +135,18 @@ describe('createShipment', () => {
     expect(createShipmentRes.actions).toHaveLength(2);
     expect(createShipmentRes.status).toBe(201);
   });
-  it('Should return commercetools formated error if one of the functions fails', async () => {
-    const mockedExtensionError: CTErrorExtensionExtraInfo = { originalStatusCode: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' };
-    const mollieClient = { orders_shipments: { create: jest.fn() } } as any;
+  it('Should return commercetools formated error with message if call to mollie api fails', async () => {
+    const mockedExtensionError = {
+      code: 'General',
+      message: 'Cannot make shipment.',
+    };
+    const mollieClient = { orders_shipments: { create: jest.fn().mockRejectedValueOnce(new Error('Cannot make shipment.')) } } as any;
 
-    const createShipmentRes = await createShipment({} as CTPayment, mollieClient);
+    const createShipmentRes = await createShipment({ key: 'ord_123' } as CTPayment, mollieClient);
     const { errors, status } = createShipmentRes;
     expect(status).toBe(400);
     expect(errors).toHaveLength(1);
-    // expect(errors[0]?.extensionExtraInfo).toMatchObject(mockedExtensionError);
+    const error = errors?.[0] ?? {};
+    expect(error).toMatchObject(mockedExtensionError);
   });
 });
