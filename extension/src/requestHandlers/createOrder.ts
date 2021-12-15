@@ -1,10 +1,12 @@
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine } from '@mollie/api-client';
+import { v4 as uuid } from 'uuid';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
-import { Action, CTCart, CTLineItem, CTPayment, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem } from '../types';
 import { createDateNowString, makeMollieAmount } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
+import { makeActions } from '../makeActions';
 
 const {
   commercetools: { projectKey },
@@ -47,6 +49,7 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
+  // TODO can remove this check - createPayment is not required
   if (!ctPayment.custom?.fields?.createPayment) {
     return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' });
   }
@@ -89,51 +92,53 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
   }
 }
 
-export function createCtActions(orderResponse: Order, ctObj: any): Promise<Action[]> {
-  const stringifiedMollieOrder = JSON.stringify(orderResponse);
-  const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
-  if (!molliePaymentId) {
-    // This should theoretically never happen
-    return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
+export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cartId: string): Promise<Action[]> {
+  try {
+    // Find the original transaction which triggered create order
+    const originalTransaction = ctPayment.transactions?.find(transaction => {
+      return (transaction.type === CTTransactionType.Charge || transaction.type === CTTransactionType.Authorization) && transaction.state === CTTransactionState.Initial;
+    });
+    if (!originalTransaction) {
+      return Promise.reject({ status: 400, title: 'Cannot find original transaction', field: 'Payment.transactions' });
+    }
+    // TODO - remove when transaction type is updated to have ID as required
+    originalTransaction.id = originalTransaction.id ?? '';
+
+    const interfaceInteractionId = uuid();
+    const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
+    if (!molliePaymentId) {
+      // This should theoretically never happen
+      return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
+    }
+
+    const parsedCreatePayment = ctPayment.custom?.fields?.createPayment ? JSON.parse(ctPayment.custom?.fields?.createPayment) : '';
+    const interafaceInteractionRequest = {
+      cartId,
+      transactionId: originalTransaction.id,
+      createPayment: parsedCreatePayment,
+    };
+    const interfaceInteractionResponse = {
+      mollieOrderId: orderResponse.id,
+      checkoutUrl: orderResponse._links?.checkout?.href,
+      transactionId: originalTransaction.id,
+    };
+
+    const result: Action[] = [
+      // Add interface interaction
+      makeActions.addInterfaceInteraction(ControllerAction.CreateOrder, JSON.stringify(interafaceInteractionRequest), JSON.stringify(interfaceInteractionResponse), interfaceInteractionId),
+      // Set status interface text
+      makeActions.setStatusInterfaceText(orderResponse.status),
+      // Set key
+      makeActions.setKey(orderResponse.id),
+      // Update transaction state
+      makeActions.changeTransactionState(originalTransaction.id, CTTransactionState.Pending),
+      // Update transaction interactionId
+      makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
+    ];
+    return Promise.resolve(result);
+  } catch (error: any) {
+    return Promise.reject(error);
   }
-  const result: Action[] = [
-    {
-      action: 'addInterfaceInteraction',
-      type: {
-        key: 'ct-mollie-integration-interface-interaction-type',
-      },
-      fields: {
-        actionType: 'createOrder',
-        createdAt: createDateNowString(),
-        request: ctObj?.custom?.fields?.createOrderRequest,
-        response: JSON.stringify(orderResponse),
-      },
-    },
-    {
-      action: 'setCustomField',
-      name: 'createOrderResponse',
-      value: stringifiedMollieOrder,
-    },
-    {
-      action: 'setCustomField',
-      name: 'mollieOrderStatus',
-      value: 'created',
-    },
-    {
-      action: 'setKey',
-      key: orderResponse.id,
-    },
-    {
-      action: 'addTransaction',
-      transaction: {
-        timestamp: orderResponse.createdAt,
-        type: CTTransactionType.Charge,
-        amount: ctObj.amountPlanned,
-        interactionId: molliePaymentId,
-      },
-    },
-  ];
-  return Promise.resolve(result);
 }
 
 export default async function createOrder(ctPayment: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
@@ -157,7 +162,7 @@ export default async function createOrder(ctPayment: CTPayment, mollieClient: Mo
     Logger.debug({ orderParams });
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
     Logger.debug({ mollieCreatedOrder });
-    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment);
+    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment, cartByPayment.id);
     return {
       actions: ctActions,
       status: 201,

@@ -2,7 +2,8 @@ import { MollieClient, Order, OrderLineCancelParams } from '@mollie/api-client';
 import Logger from '../logger/logger';
 import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
-import { makeActions, makeMollieLineAmounts } from '../utils';
+import { makeMollieLineAmounts } from '../utils';
+import { makeActions } from '../makeActions';
 
 export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams> {
   try {

@@ -2,7 +2,8 @@ import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-clien
 import { CTUpdatesRequestedResponse, Action, CTPayment, CTEnumErrors } from '../types';
 import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
-import { convertCTToMollieAmountValue, makeActions } from '../utils';
+import { convertCTToMollieAmountValue } from '../utils';
+import { makeActions } from '../makeActions';
 
 function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParams> {
   try {
