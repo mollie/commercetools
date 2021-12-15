@@ -33,6 +33,7 @@ export type Action = {
   transaction?: CTTransaction;
   transactionId?: string;
   interactionId?: string;
+  state?: CTTransactionState;
 };
 
 export type CTError = {
@@ -115,8 +116,10 @@ export type CTInterfaceInteraction = {
   response?: string;
 };
 
+// TODO - make id required field as we remodel
 export type CTTransaction = {
-  timestamp: string;
+  id?: string;
+  timestamp?: string;
   type: CTTransactionType;
   amount: CTMoney;
   interactionId?: string;
@@ -143,3 +146,24 @@ export enum CTTransactionType {
   Refund = 'Refund',
   Chargeback = 'Chargeback',
 }
+
+export enum CTTransactionState {
+  Initial = 'Initial',
+  Pending = 'Pending',
+  Success = 'Success',
+  Failure = 'Failure',
+}
+
+export class HandleRequestInput {
+  constructor(public httpPath: string, public httpMethod: string, public httpBody: any) {}
+}
+
+export class HandleRequestSuccess {
+  constructor(public status: number, public actions: Action[] = []) {}
+}
+
+export class HandleRequestFailure {
+  constructor(public status: number, public errors: CTError[] = []) {}
+}
+
+export type HandleRequestOutput = HandleRequestSuccess | HandleRequestFailure;

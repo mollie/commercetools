@@ -3,10 +3,12 @@ import { MollieClient } from '@mollie/api-client';
 import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
 import { CTPayment } from '../../../src/types/index';
 import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
-import { convertCTToMollieAmountValue, createDateNowString, makeActions } from '../../../src/utils';
+import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
+import { makeActions } from '../../../src/makeActions';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/utils');
+jest.mock('../../../src/makeActions');
 
 describe('GetPaymentMethods', () => {
   const mockLogError = jest.fn();
