@@ -106,6 +106,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
 
     const interfaceInteractionId = uuid();
     const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
+    const mollieCreatedAt = orderResponse.createdAt;
+
     if (!molliePaymentId) {
       // This should theoretically never happen
       return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
@@ -134,6 +136,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       makeActions.changeTransactionState(originalTransaction.id, CTTransactionState.Pending),
       // Update transaction interactionId
       makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
+      // Update transaction timestamp
+      makeActions.changeTransactionTimestamp(originalTransaction.id, mollieCreatedAt),
     ];
     return Promise.resolve(result);
   } catch (error: any) {

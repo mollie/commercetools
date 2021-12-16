@@ -89,6 +89,20 @@ const changeTransactionInteractionId = (id: string, interactionId: string) => {
   };
 };
 
+/**
+ *
+ * @param id transaction to be updated
+ * @param timestamp CT DateTime is a JSON string representation of UTC date & time in ISO 8601 format (YYYY-MM-DDThh:mm:ss.sssZ)
+ * for example: "2018-10-12T14:00:00.000Z"
+ */
+const changeTransactionTimestamp = (id: string, timestamp: string) => {
+  return {
+    action: 'changeTransactionTimestamp',
+    transactionId: id,
+    timestamp,
+  };
+};
+
 export const makeActions = {
   setCustomField,
   addInterfaceInteraction,
@@ -96,4 +110,5 @@ export const makeActions = {
   setStatusInterfaceText,
   changeTransactionState,
   changeTransactionInteractionId,
+  changeTransactionTimestamp,
 };

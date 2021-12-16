@@ -41,4 +41,13 @@ describe('makeActions', () => {
       },
     });
   });
+
+  it('should return changeTransactionTimestamp with correct timestamp and id', () => {
+    const changeTransactionTimestampAction = makeActions.changeTransactionTimestamp('5a9868a0-7703-4bf2-95b8-bd7fa2e889e6', '2018-10-12T14:00:00.000Z');
+    expect(changeTransactionTimestampAction).toEqual({
+      action: 'changeTransactionTimestamp',
+      transactionId: '5a9868a0-7703-4bf2-95b8-bd7fa2e889e6',
+      timestamp: '2018-10-12T14:00:00.000Z',
+    });
+  });
 });

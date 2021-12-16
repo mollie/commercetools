@@ -45,3 +45,11 @@ Object {
   "transactionId": "949ab89f-7a71-4c7a-bb43-605354322a96",
 }
 `;
+
+exports[`createCTActions Should create correct ct actions from request and mollies order 6`] = `
+Object {
+  "action": "changeTransactionTimestamp",
+  "timestamp": "2018-08-02T09:29:56+00:00",
+  "transactionId": "949ab89f-7a71-4c7a-bb43-605354322a96",
+}
+`;
