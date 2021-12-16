@@ -20,7 +20,7 @@ To create an order on Mollie, we get required parameters from the commercetools 
 | Parameter (CT Cart)                                                        |                                              |          |
 | `lineItems: [array of lines]`                                              | `lines: [array of mollieLines]`              | NO       |
 | `billingAddress: [billingAddress]`                                         | `billingAddress: [billingAddress]`           | YES      |
-| `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | NO       |
+| `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | YES      |
 | `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
 
 \* This field can be set in config as well, putting it on createPayment will override config value
