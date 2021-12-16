@@ -1,10 +1,12 @@
-## Creating an Order on Mollie
+# Creating an Order on Mollie
 
 **Work in progress**
 
 To create an order on Mollie, we get required parameters from cart and payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the payment request through custom fields `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
 
-# Parameters map
+<br />
+
+## Parameters map
 
 | Parameter (CT Payment)                                                     | Parameter (Mollie Order)                     | Required |
 |----------------------------------------------------------------------------|----------------------------------------------|----------|
@@ -27,7 +29,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 
 \** The `PaymentMethodInfo.method` accepts a single [mollie payment method](https://docs.mollie.com/reference/v2/orders-api/create-order). If not provided, you will receive an error. `PaymentMethodInfo.interface` is checked on every request and must be set to `mollie`.
 
-# Line Items object
+## Line Items object
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
@@ -43,7 +45,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 \* vatAmount is calculated by using `totalGross - totalNet`
 \** discountAmount is calculated only if there is `price.discounted.value` or `discountedPrice.value` present on line item. Calculation is using `line.price.value.centAmount * line.quantity - line.totalPrice.centAmount`
 
-# billingAddress/shippingAddress object
+## billingAddress/shippingAddress object
 
 | Parameter (CT Cart billingAddress)            | Parameter (Mollie)                            | Required |
 | --------------------------------------------- | --------------------------------------------- | -------- |
@@ -56,7 +58,9 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 | `country: "NL"`                               | `country: "NL"`                               | YES      |
 | `city: "Amsterdam"`                           | `city: "Amsterdam"`                           | YES      |
 
-# Representation: CT Cart
+<br />
+
+## Representation: CT Cart
 <details>
   <summary>Click to expand!</summary>
 
@@ -311,8 +315,9 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 }
 ```
 </details>
+<br />
 
-# Representation: CT payment
+## Representation: CT payment
 <details>
   <summary>Click to expand!</summary>
 
@@ -370,8 +375,9 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 }
 ```
 </details>
+<br />
 
-# Representation: Mollie Order Parameters
+## Representation: Mollie Order Parameters
 <details>
   <summary>Click to expand!</summary>
 
@@ -423,25 +429,25 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 }
 ```
 </details>
+<br />
 
-<!-- 
-TODO:
 ## Creating commercetools actions from Mollie's response
 
 When an order is successfully created on Mollie, we update commercetools payment with following actions
 
-| Action name (CT)                 | Value                                                           |
-| -------------------------------- | --------------------------------------------------------------- |
-| `setCustomField`                 | `createOrderResponse: <mollie Order response in string format>` |
-| `setCustomField`                 | `mollieOrderStatus: "created"`                                  |
-| `setKey`                         | `key: <mollie Order ID>`                                        |
-| `changeTransactionInteractionId` | `transactionId: <first CT transaction ID>` *                    |
-|                                  | `interactionId: <mollie Payment ID>`                            |
-| `addInterfaceInteraction`        | `actionType: "createOrder"`                                     |
-|                                  | `createdAt: <local ISO time string>`  **                        |
-|                                  | `request: <createOrderRequest custom field in string format>`   |
-|                                  | `response: <mollie Order response in string format>`            |
+| Action name (CT)                 | Value                                                                      |
+| -------------------------------- | -------------------------------------------------------------------------- |
+| `changeTransactionState`         | `createOrderResponse: <transactionId>, state: 'Pending'`                   |
+| `setMethodInfoName`              | `interfaceText: "created"`                                                 |
+| `changeTransactionInteractionId` | `transactionId: <first CT transaction ID>` *                               |
+|                                  | `interactionId: <mollie Payment ID>`                                       |
+| `setKey`                         | `key: <mollie Order ID>`                                                   |
+| `addInterfaceInteraction`        | `actionType: "createOrder"`                                                |
+|                                  | `id: <UUID>`                                                               |
+|                                  | `createdAt: <local ISO time string>`  **                                   |
+|                                  | `request: {<createPayment custom field in string format, transactionId>`   |
+|                                  | `response: <mollieOrderId, checkoutUrl, transactionId>`                    |
 
 \* Actions will always use first transaction
 
-\*\* Timestamp for the time being is local of your deployment -->
+\** Timestamp for the time being is local of your deployment
