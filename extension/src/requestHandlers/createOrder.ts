@@ -125,9 +125,16 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       transactionId: originalTransaction.id,
     };
 
+    const interfaceInteractionParams = {
+      actionType: ControllerAction.CreateOrder,
+      requestValue: JSON.stringify(interafaceInteractionRequest),
+      responseValue: JSON.stringify(interfaceInteractionResponse),
+      id: interfaceInteractionId,
+      timestamp: mollieCreatedAt,
+    };
     const result: Action[] = [
       // Add interface interaction
-      makeActions.addInterfaceInteraction(ControllerAction.CreateOrder, JSON.stringify(interafaceInteractionRequest), JSON.stringify(interfaceInteractionResponse), interfaceInteractionId),
+      makeActions.addInterfaceInteraction(interfaceInteractionParams),
       // Set status interface text
       makeActions.setStatusInterfaceText(orderResponse.status),
       // Set key
