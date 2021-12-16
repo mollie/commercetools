@@ -1,0 +1,447 @@
+## Creating an Order on Mollie
+
+**Work in progress**
+
+To create an order on Mollie, we get required parameters from cart and payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the payment request through custom fields `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
+
+# Parameters map
+
+| Parameter (CT Payment)                                                     | Parameter (Mollie Order)                     | Required |
+|----------------------------------------------------------------------------|----------------------------------------------|----------|
+| `amountPlanned: { currencyCode: "EUR", centAmount: 200 }`                  | `amount: { currency: "EUR", value: "2.00" }` | YES      |
+| `id: "09f525b2-b739-4167"`                                                 | `orderNumber: "09f525b2-b739-4167"`          | YES      |
+| `custom.fields.createPayment.expiresAt: "2018-12-30"`                      | `expiresAt: "2018-12-30"`                    | NO       |
+| `custom.fields.createPayment.locale: "nl_NL"` *                            | `locale: nl_NL`                              | NO       |
+| `custom.fields.createPayment.webhookUrl: "https://www.webhook.com"` *      | `webhookUrl: "https://www.webhook.com"`      | NO       |
+| `custom.fields.createPayment.redirectUrl: "https://www.redirectUrl.com"` * | `redirectUrl: "https://www.redirectUrl.com"` | NO       |
+| `paymentMethodInfo.method: "ideal"` **                                     | `method: ideal`                              | YES      |
+| `paymentMethodInfo.interface: "mollie"` **                                 |                                              | YES      |
+|                                                                            |                                              |          |
+| Parameter (CT Cart)                                                        |                                              |          |
+| `lineItems: [array of lines]`                                              | `lines: [array of mollieLines]`              | NO       |
+| `billingAddress: [billingAddress]`                                         | `billingAddress: [billingAddress]`           | YES      |
+| `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | NO       |
+| `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
+
+\* This field can be passed on in config as well, putting it on createPayment will override config value
+
+\** The `PaymentMethodInfo.method` accepts a single [mollie payment method](https://docs.mollie.com/reference/v2/orders-api/create-order). If not provided, you will receive an error. `PaymentMethodInfo.interface` is checked on every request and must be set to `mollie`.
+
+# Line Items object
+
+| Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
+| `name: { en-US: "Apple" }`                                                 | `name: "Apple"`                                                           | YES      |
+| `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
+| `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
+| `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
+| `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
+| `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
+| `price: { value } x quantity - totalPrice` **                              | `discountAmount: { value: { currency: "EUR", value: "10.00" } } `         | NO       |
+| `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartLineItemId: "09f525b2-b739-4169" }`                      | NO       |
+
+\* vatAmount is calculated by using `totalGross - totalNet`
+\** discountAmount is calculated only if there is `price.discounted.value` or `discountedPrice.value` present on line item. Calculation is using `line.price.value.centAmount * line.quantity - line.totalPrice.centAmount`
+
+# billingAddress/shippingAddress object
+
+| Parameter (CT Cart billingAddress)            | Parameter (Mollie)                            | Required |
+| --------------------------------------------- | --------------------------------------------- | -------- |
+| `firstName: "Piet"`                           | `givenName: "Piet"`                           | YES      |
+| `lastName: "Mondriaan"`                       | `familyName: "Mondriaan"`                     | YES      |
+| `email: "coloured_square_lover@basicart.com"` | `email: "coloured_square_lover@basicart.com"` | YES      |
+| `streetName: "Keizersgracht"`                 | `streetAndNumber: "Keizersgracht 126"`        | YES      |
+| `streetNumber: "126"`                         |                                               | YES      |
+| `postalCode: "1234AB"`                        | `postalCode: "1234AB"`                        | YES      |
+| `country: "NL"`                               | `country: "NL"`                               | YES      |
+| `city: "Amsterdam"`                           | `city: "Amsterdam"`                           | YES      |
+
+# Representation: CT Cart
+<details>
+  <summary>Click to expand!</summary>
+
+```json
+{
+    "type": "Cart",
+    "id": "53a1652a-eba2-4854-a6f8-24f100f8e505",
+    "version": 5,
+    "lastMessageSequenceNumber": 1,
+    "createdAt": "2021-12-16T08:19:12.591Z",
+    "lastModifiedAt": "2021-12-16T08:21:09.902Z",
+    "lastModifiedBy": {
+        "clientId": "A-7gCPuzUQnNSdDwlOCC",
+        "isPlatformClient": false
+    },
+    "createdBy": {
+        "clientId": "A-7gCPuzUQnNSdDwlOCC",
+        "isPlatformClient": false
+    },
+    "lineItems": [
+        {
+            "id": "88030bb9-fc13-4b88-8711-0b7fd3e4eb4a",
+            "productId": "6fd97a79-c9f4-490e-9eb7-1b502812b266",
+            "productKey": "banana",
+            "name": {
+                "en-US": "Banana"
+            },
+            "productType": {
+                "typeId": "product-type",
+                "id": "9d4b0ab5-fde6-4e7c-89ea-d4befcd547e8",
+                "version": 1
+            },
+            "productSlug": {
+                "en-US": "banana"
+            },
+            "variant": {
+                "id": 1,
+                "sku": "12345",
+                "key": "banana-yellow",
+                "prices": [
+                    {
+                        "value": {
+                            "type": "centPrecision",
+                            "currencyCode": "EUR",
+                            "centAmount": 200,
+                            "fractionDigits": 2
+                        },
+                        "id": "9af7209c-c43d-4898-9d3d-96e9ba0a1787",
+                        "discounted": {
+                            "value": {
+                                "type": "centPrecision",
+                                "currencyCode": "EUR",
+                                "centAmount": 100,
+                                "fractionDigits": 2
+                            },
+                            "discount": {
+                                "typeId": "product-discount",
+                                "id": "272062e5-1329-4983-98bf-ca8b9282aa2d"
+                            }
+                        }
+                    }
+                ],
+                "images": [],
+                "attributes": [],
+                "assets": []
+            },
+            "price": {
+                "value": {
+                    "type": "centPrecision",
+                    "currencyCode": "EUR",
+                    "centAmount": 200,
+                    "fractionDigits": 2
+                },
+                "id": "9af7209c-c43d-4898-9d3d-96e9ba0a1787",
+                "discounted": {
+                    "value": {
+                        "type": "centPrecision",
+                        "currencyCode": "EUR",
+                        "centAmount": 100,
+                        "fractionDigits": 2
+                    },
+                    "discount": {
+                        "typeId": "product-discount",
+                        "id": "272062e5-1329-4983-98bf-ca8b9282aa2d"
+                    }
+                }
+            },
+            "quantity": 2,
+            "discountedPrice": {
+                "value": {
+                    "type": "centPrecision",
+                    "currencyCode": "EUR",
+                    "centAmount": 90,
+                    "fractionDigits": 2
+                },
+                "includedDiscounts": [
+                    {
+                        "discount": {
+                            "typeId": "cart-discount",
+                            "id": "8f50ace8-480c-49d4-b43f-462336a5fdd0"
+                        },
+                        "discountedAmount": {
+                            "type": "centPrecision",
+                            "currencyCode": "EUR",
+                            "centAmount": 10,
+                            "fractionDigits": 2
+                        }
+                    }
+                ]
+            },
+            "discountedPricePerQuantity": [
+                {
+                    "quantity": 2,
+                    "discountedPrice": {
+                        "value": {
+                            "type": "centPrecision",
+                            "currencyCode": "EUR",
+                            "centAmount": 90,
+                            "fractionDigits": 2
+                        },
+                        "includedDiscounts": [
+                            {
+                                "discount": {
+                                    "typeId": "cart-discount",
+                                    "id": "8f50ace8-480c-49d4-b43f-462336a5fdd0"
+                                },
+                                "discountedAmount": {
+                                    "type": "centPrecision",
+                                    "currencyCode": "EUR",
+                                    "centAmount": 10,
+                                    "fractionDigits": 2
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "taxRate": {
+                "name": "21% BTW",
+                "amount": 0.21,
+                "includedInPrice": true,
+                "country": "NL",
+                "id": "22LLeAS3",
+                "subRates": []
+            },
+            "addedAt": "2021-12-16T08:19:12.582Z",
+            "lastModifiedAt": "2021-12-16T08:19:12.582Z",
+            "state": [
+                {
+                    "quantity": 2,
+                    "state": {
+                        "typeId": "state",
+                        "id": "5c0e44e5-c554-4e0c-94f2-47fe0249d1d7"
+                    }
+                }
+            ],
+            "priceMode": "Platform",
+            "totalPrice": {
+                "type": "centPrecision",
+                "currencyCode": "EUR",
+                "centAmount": 180,
+                "fractionDigits": 2
+            },
+            "taxedPrice": {
+                "totalNet": {
+                    "type": "centPrecision",
+                    "currencyCode": "EUR",
+                    "centAmount": 149,
+                    "fractionDigits": 2
+                },
+                "totalGross": {
+                    "type": "centPrecision",
+                    "currencyCode": "EUR",
+                    "centAmount": 180,
+                    "fractionDigits": 2
+                }
+            },
+            "lineItemMode": "Standard"
+        }
+    ],
+    "cartState": "Active",
+    "totalPrice": {
+        "type": "centPrecision",
+        "currencyCode": "EUR",
+        "centAmount": 180,
+        "fractionDigits": 2
+    },
+    "taxedPrice": {
+        "totalNet": {
+            "type": "centPrecision",
+            "currencyCode": "EUR",
+            "centAmount": 149,
+            "fractionDigits": 2
+        },
+        "totalGross": {
+            "type": "centPrecision",
+            "currencyCode": "EUR",
+            "centAmount": 180,
+            "fractionDigits": 2
+        },
+        "taxPortions": [
+            {
+                "rate": 0.21,
+                "amount": {
+                    "type": "centPrecision",
+                    "currencyCode": "EUR",
+                    "centAmount": 31,
+                    "fractionDigits": 2
+                },
+                "name": "21% BTW"
+            }
+        ]
+    },
+    "customLineItems": [],
+    "discountCodes": [],
+    "paymentInfo": {
+        "payments": [
+            {
+                "typeId": "payment",
+                "id": "c0887a2d-bfbf-4f77-8f3d-fc33fb4c0920"
+            }
+        ]
+    },
+    "inventoryMode": "None",
+    "taxMode": "Platform",
+    "taxRoundingMode": "HalfEven",
+    "taxCalculationMode": "LineItemLevel",
+    "deleteDaysAfterLastModification": 90,
+    "refusedGifts": [],
+    "origin": "Customer",
+    "shippingAddress": {
+        "firstName": "Piet",
+        "lastName": "Mondriaan",
+        "streetName": "Keizersgracht",
+        "streetNumber": "126",
+        "postalCode": "1234AB",
+        "city": "Amsterdam",
+        "country": "NL",
+        "email": "coloured_square_lover@basicart.com"
+    },
+    "billingAddress": {
+        "firstName": "Piet",
+        "lastName": "Mondriaan",
+        "streetName": "Keizersgracht",
+        "streetNumber": "126",
+        "postalCode": "1234AB",
+        "city": "Amsterdam",
+        "country": "NL",
+        "email": "coloured_square_lover@basicart.com"
+    },
+    "itemShippingAddresses": []
+}
+```
+</details>
+
+# Representation: CT payment
+<details>
+  <summary>Click to expand!</summary>
+
+```json
+{
+    "id": "c0887a2d-bfbf-4f77-8f3d-fc33fb4c0920",
+    "version": 7,
+    "lastMessageSequenceNumber": 4,
+    "createdAt": "2021-12-16T08:21:02.813Z",
+    "lastModifiedAt": "2021-12-16T08:22:28.979Z",
+    "lastModifiedBy": {
+        "clientId": "A-7gCPuzUQnNSdDwlOCC",
+        "isPlatformClient": false
+    },
+    "createdBy": {
+        "clientId": "A-7gCPuzUQnNSdDwlOCC",
+        "isPlatformClient": false
+    },
+    "key": "ord_5h2f3w",
+    "amountPlanned": {
+        "type": "centPrecision",
+        "currencyCode": "EUR",
+        "centAmount": 180,
+        "fractionDigits": 2
+    },
+    "paymentMethodInfo": {
+        "paymentInterface": "Mollie",
+        "method": "ideal"
+    },
+    "custom": {
+        "type": {
+            "typeId": "type",
+            "id": "c11764fa-4e07-4cc0-ba40-e7dfc8d67b4e"
+        },
+        "fields": {
+            "createPayment": "{\"redirectUrl\":\"https://www.redirect.com/\",\"webhookUrl\":\"https://webhook.com\",\"locale\":\"nl_NL\"}"
+        }
+    },
+    "paymentStatus": {},
+    "transactions": [
+        {
+            "id": "79b2a578-c8a4-4450-98b9-df2f55871a9e",
+            "type": "Charge",
+            "amount": {
+                "type": "centPrecision",
+                "currencyCode": "EUR",
+                "centAmount": 180,
+                "fractionDigits": 2
+            },
+            "interactionId": "tr_SDSQMRH8kH",
+            "state": "Pending"
+        }
+    ],
+    "interfaceInteractions": []
+}
+```
+</details>
+
+# Representation: Mollie Order Parameters
+<details>
+  <summary>Click to expand!</summary>
+
+```json
+{
+  "amount": { "value": "1.80", "currency": "EUR" },
+  "orderNumber": "c0887a2d-bfbf-4f77-8f3d-fc33fb4c0920",
+  "lines": [
+  {
+    "name": "Banana",
+    "quantity": 2,
+    "sku": "12345",
+    "unitPrice": { "value": "2.00", "currency": "EUR" },
+    "vatRate": "21.00",
+    "totalAmount": { "value": "1.80", "currency": "EUR" },
+    "vatAmount": { "value": "0.31", "currency": "EUR" },
+    "metadata": { "cartLineItemId": "88030bb9-fc13-4b88-8711-0b7fd3e4eb4a" },
+    "discountAmount": { "value": "2.20", "currency": "EUR" }
+  }
+],
+  "locale": "nl_NL",
+  "billingAddress": {
+    "givenName": "Piet",
+    "familyName": "Mondriaan",
+    "email": "coloured_square_lover@basicart.com",
+    "streetAndNumber": "Keizersgracht 126",
+    "city": "Amsterdam",
+    "postalCode": "1234AB",
+    "country": "NL"
+  },
+  "method": "ideal",
+  "webhookUrl": "https://www.webhook.com",
+  "embed": [ "payments" ],
+  "payment": {
+    "webhookUrl": "https://www.webhook.com"
+  },
+  "redirectUrl": "https://www.redirect.com",
+  "expiresAt": "",
+  "metadata": { "cartId": "53a1652a-eba2-4854-a6f8-24f100f8e505" },
+  "shippingAddress": {
+    "givenName": "Piet",
+    "familyName": "Mondriaan",
+    "email": "coloured_square_lover@basicart.com",
+    "streetAndNumber": "Keizersgracht 126",
+    "city": "Amsterdam",
+    "postalCode": "1234AB",
+    "country": "NL"
+  }
+}
+```
+</details>
+
+<!-- 
+TODO:
+## Creating commercetools actions from Mollie's response
+
+When an order is successfully created on Mollie, we update commercetools payment with following actions
+
+| Action name (CT)                 | Value                                                           |
+| -------------------------------- | --------------------------------------------------------------- |
+| `setCustomField`                 | `createOrderResponse: <mollie Order response in string format>` |
+| `setCustomField`                 | `mollieOrderStatus: "created"`                                  |
+| `setKey`                         | `key: <mollie Order ID>`                                        |
+| `changeTransactionInteractionId` | `transactionId: <first CT transaction ID>` *                    |
+|                                  | `interactionId: <mollie Payment ID>`                            |
+| `addInterfaceInteraction`        | `actionType: "createOrder"`                                     |
+|                                  | `createdAt: <local ISO time string>`  **                        |
+|                                  | `request: <createOrderRequest custom field in string format>`   |
+|                                  | `response: <mollie Order response in string format>`            |
+
+\* Actions will always use first transaction
+
+\*\* Timestamp for the time being is local of your deployment -->
