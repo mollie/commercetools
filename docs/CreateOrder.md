@@ -1,8 +1,6 @@
 # Creating an Order on Mollie
 
-**Work in progress**
-
-To create an order on Mollie, we get required parameters from cart and payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the payment request through custom fields `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
+To create an order on Mollie, we get required parameters from the commercetools Cart and Payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the Payment's custom field `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
 
 <br />
 
@@ -25,7 +23,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 | `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | NO       |
 | `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
 
-\* This field can be passed on in config as well, putting it on createPayment will override config value
+\* This field can be set in config as well, putting it on createPayment will override config value
 
 \** The `PaymentMethodInfo.method` accepts a single [mollie payment method](https://docs.mollie.com/reference/v2/orders-api/create-order). If not provided, you will receive an error. `PaymentMethodInfo.interface` is checked on every request and must be set to `mollie`.
 
@@ -33,7 +31,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `name: { en-US: "Apple" }`                                                 | `name: "Apple"`                                                           | YES      |
+| `variant: { key: "apple-green" }`                                          | `name: "apple-green"`                                                     | YES      |
 | `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
 | `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
 | `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
@@ -45,7 +43,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 \* vatAmount is calculated by using `totalGross - totalNet`
 \** discountAmount is calculated only if there is `price.discounted.value` or `discountedPrice.value` present on line item. Calculation is using `line.price.value.centAmount * line.quantity - line.totalPrice.centAmount`
 
-## billingAddress/shippingAddress object
+## Billing / Shipping Address object
 
 | Parameter (CT Cart billingAddress)            | Parameter (Mollie)                            | Required |
 | --------------------------------------------- | --------------------------------------------- | -------- |
@@ -62,7 +60,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 
 ## Representation: CT Cart
 <details>
-  <summary>Click to expand!</summary>
+  <summary>Cart example</summary>
 
 ```json
 {
@@ -317,9 +315,9 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 </details>
 <br />
 
-## Representation: CT payment
+## Representation: CT Payment
 <details>
-  <summary>Click to expand!</summary>
+  <summary>Payment example</summary>
 
 ```json
 {
@@ -379,7 +377,7 @@ To create an order on Mollie, we get required parameters from cart and payment. 
 
 ## Representation: Mollie Order Parameters
 <details>
-  <summary>Click to expand!</summary>
+  <summary>Order parameters example</summary>
 
 ```json
 {
