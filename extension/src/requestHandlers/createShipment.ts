@@ -45,6 +45,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
 
 export default async function createShipment(ctPayment: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
+    Logger.debug('Payment object: ', ctPayment);
     const shipmentParams = await getShipmentParams(ctPayment);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
     Logger.debug({ mollieShipmentRes: mollieShipmentRes });
