@@ -208,7 +208,7 @@ describe('Create Order', () => {
   });
 
   describe('Happy Path', () => {
-    it('Charge works', async () => {
+    it.skip('Charge works', async () => {
       const orderCreatedWithPayNowMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithIdeal);
 
       const mockCTPaymentObj = {
