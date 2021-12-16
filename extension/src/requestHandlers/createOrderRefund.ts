@@ -1,5 +1,5 @@
 import { MollieClient } from '@mollie/api-client';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/refunds/orders/parameters';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/refunds/orders/parameters';
 import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
 import Logger from '../logger/logger';
 import { Action, ControllerAction, CTTransactionType, CTUpdatesRequestedResponse } from '../types';

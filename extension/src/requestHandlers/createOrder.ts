@@ -5,7 +5,7 @@ import { Action, CTEnumErrors, CTPayment, CTTransactionType, CTUpdatesRequestedR
 import { convertCTToMollieAmountValue, createDateNowString } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/resources/payments/parameters';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/refunds/parameters';
 import { PaymentData } from '@mollie/api-client/dist/types/src/data/payments/data';
 
 const {
