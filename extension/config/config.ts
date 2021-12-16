@@ -31,6 +31,12 @@ export function loadConfig(ctMollieConfig: string | undefined) {
         logTransports: envConfig.service?.logTransports || 'terminal',
       },
     };
+    Object.assign(
+      config.service,
+      envConfig.service?.webhookUrl && { webhookUrl: envConfig.service.webhookUrl },
+      envConfig.service?.redirectUrl && { redirectUrl: envConfig.service.redirectUrl },
+      envConfig.service?.locale && { locale: envConfig.service.locale },
+    );
 
     const { valid, message } = isConfigValid(config);
     if (valid) {

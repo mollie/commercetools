@@ -42,7 +42,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
  */
 
 function validateAndSetPaymentMethodAndIssuer(paymentObject: any) {
-  const [method, issuer, ...extra] = paymentObject.paymentMethodInfo?.method.split(',');
+  const [method, issuer, ...extra] = paymentObject.paymentMethodInfo?.method.toString().split(',');
   if (!hasValidPaymentMethod(method) || extra.length > 0) {
     return {
       action: ControllerAction.Error,

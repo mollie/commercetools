@@ -1,5 +1,5 @@
 import express, { Application } from 'express';
-import handleRequest from './requestHandlers/handleRequest';
+import handler from '../expressHandler';
 import morganMiddleware from './logger/morganMiddleware';
 
 const app: Application = express();
@@ -12,6 +12,6 @@ app.get('/health', (req, res) => {
 
 app.use(express.json());
 
-app.use('/', handleRequest);
+app.use('/', handler);
 
 export default app;

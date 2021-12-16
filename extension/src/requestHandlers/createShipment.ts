@@ -1,5 +1,5 @@
 import { MollieClient, ShipmentCreateParams, Shipment } from '@mollie/api-client';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../../src/logger/logger';
@@ -57,7 +57,7 @@ export default async function createShipment(ctObj: any, mollieClient: MollieCli
     };
   } catch (error: any) {
     Logger.error({ error });
-    const errorResponse = formatMollieErrorResponse(error);
+    const errorResponse = formatErrorResponse(error);
     return errorResponse;
   }
 }

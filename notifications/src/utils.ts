@@ -2,6 +2,7 @@ import { Payment, PaymentStatus, Refund, RefundStatus } from '@mollie/api-client
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
 import { UpdateActionChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
+import { makeActions } from './makeActions';
 
 export const isOrderOrPayment = (resourceId: string): string => {
   const orderRegex = new RegExp('^ord_');
@@ -144,11 +145,7 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
       if (matchingMolliePayment.status) {
         let shouldOrderStatusUpdateObject = shouldPaymentStatusUpdate(matchingMolliePayment.status, ctTransaction.state);
         if (shouldOrderStatusUpdateObject.shouldUpdate) {
-          changeTransactionStateUpdateActions.push({
-            action: UpdateActionKey.ChangeTransactionState,
-            transactionId: ctTransaction.id,
-            state: shouldOrderStatusUpdateObject.newStatus,
-          });
+          changeTransactionStateUpdateActions.push(makeActions.changeTransactionState(ctTransaction.id, shouldOrderStatusUpdateObject.newStatus));
         }
       }
     }
@@ -239,12 +236,7 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
   // Corresponding transaction, update it
   const { shouldUpdate, newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, matchingTransaction.state);
   if (shouldUpdate) {
-    const updateAction: UpdateActionChangeTransactionState = {
-      action: UpdateActionKey.ChangeTransactionState,
-      transactionId: matchingTransaction?.id,
-      state: newStatus as CTTransactionState,
-    };
-    return updateAction;
+    return makeActions.changeTransactionState(matchingTransaction.id, newStatus);
   }
 };
 
@@ -266,11 +258,7 @@ export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mo
     if (matchingCTTransaction) {
       const shouldUpdate = shouldRefundStatusUpdate(mollieRefundStatus, matchingCTTransaction.state);
       if (shouldUpdate) {
-        const updateAction: UpdateActionChangeTransactionState = {
-          action: UpdateActionKey.ChangeTransactionState,
-          transactionId: matchingCTTransaction.id,
-          state: mollieRefundToCTStatusMap[mollieRefundStatus],
-        };
+        const updateAction = makeActions.changeTransactionState(matchingCTTransaction.id, mollieRefundToCTStatusMap[mollieRefundStatus]);
         updateActions.push(updateAction);
       }
     } else {

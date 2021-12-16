@@ -41,7 +41,7 @@ describe('General Error Flow - Mollie API returning 5xx', () => {
     const { status, text } = res;
     expect(status).toBe(400);
 
-    // This will change when we move away from using formatMollieErrorResponse
+    // This will change when we move away from using formatErrorResponse
     // to formatExtensionErrorResponse when error doesn't orginate from API
     const parsedErrors = JSON.parse(text);
     const { errors } = parsedErrors;

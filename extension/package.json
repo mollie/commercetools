@@ -9,9 +9,10 @@
     "develop:default-config": "CT_MOLLIE_CONFIG='{\"mollieApiKey\": \"default-api-key\"}' npm run develop",
     "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && cp -R node_modules build/ && cd build && rm gcpFunctionHandler.js lambdaHandler.js && zip -r ../extension-module.zip .",
     "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
-    "test": "jest --config tests/jest.config.js --testPathPattern=unit",
-    "test:watch": "jest --config tests/jest.config.js --testPathPattern=unit --watch",
-    "test:component": "jest --config tests/jest.config.js --testPathPattern=component",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:component": "jest --testPathPattern=component",
     "lint": "prettier --check ./src ./tests ./config ./**/*.md",
     "lint:fix": "prettier --write ./src ./tests ./config ./**/*.md"
   },
@@ -24,6 +25,7 @@
     "@types/lodash": "^4.14.175",
     "@types/node": "^16.10.1",
     "@types/supertest": "^2.0.11",
+    "@types/uuid": "^8.3.3",
     "axios": "^0.24.0",
     "jest": "^27.2.1",
     "nock": "^13.2.1",
@@ -47,6 +49,7 @@
     "express": "^4.17.1",
     "morgan": "^1.10.0",
     "node-fetch-commonjs": "^3.1.1",
+    "uuid": "^8.3.2",
     "winston": "^3.3.3"
   }
 }

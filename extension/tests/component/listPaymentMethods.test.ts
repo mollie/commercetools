@@ -113,14 +113,16 @@ describe('List Payment Methods', () => {
     const parsedErrors = JSON.parse(text);
     const { errors } = parsedErrors;
 
-    // This will change when we move away from using formatMollieErrorResponse
+    // This will change when we move away from using formatErrorResponse
     // to formatExtensionErrorResponse when error doesn't orginate from API
     expect(errors).toHaveLength(1);
     expect(errors[0]).toEqual({
-      code: 'General',
-      message: 'Server Error. Please see logs for more details',
+      code: 'InvalidInput',
+      message: 'Unexpected token } in JSON at position 23',
       extensionExtraInfo: {
-        mollieStatusCode: 500,
+        field: 'custom.fields.paymentMethodsRequest',
+        originalStatusCode: 400,
+        title: 'Parsing error',
       },
     });
   });

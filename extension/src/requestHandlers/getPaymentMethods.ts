@@ -1,43 +1,48 @@
 import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, Action } from '../types';
-import { formatMollieErrorResponse } from '../errorHandlers/formatMollieErrorResponse';
+import { CTUpdatesRequestedResponse, Action, CTPayment, CTEnumErrors } from '../types';
+import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
-import { convertCTToMollieAmountValue, makeActions } from '../utils';
+import { convertCTToMollieAmountValue } from '../utils';
+import { makeActions } from '../makeActions';
 
-function extractMethodListParameters(ctObj: any): MethodsListParams {
-  // Generally this shouldn't be needed, but a safety anyway.. eventually could return error here
-  if (!ctObj.amountPlanned) {
-    return {};
+function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParams> {
+  try {
+    // Safety - this function should not get invoked without amountPlanned or paymentMethodsRequest
+    if (!ctObj.amountPlanned || !ctObj.custom?.fields?.paymentMethodsRequest) {
+      return Promise.resolve({});
+    }
+    const mObject: MethodsListParams = {
+      amount: {
+        value: convertCTToMollieAmountValue(ctObj.amountPlanned.centAmount, ctObj.amountPlanned.fractionDigits),
+        currency: ctObj.amountPlanned.currencyCode,
+      },
+      // Resource is hardcoded, for the time being we only support Orders API
+      resource: 'orders',
+    };
+
+    const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
+    const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
+    const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
+
+    Object.assign(
+      mObject,
+      locale && { locale: locale },
+      include && { include: include },
+      includeWallets && { includeWallets: includeWallets },
+      billingCountry && { billingCountry: billingCountry },
+      sequenceType && { sequenceType: sequenceType },
+      orderLineCategories && { orderLineCategories: orderLineCategories },
+    );
+
+    return Promise.resolve(mObject);
+  } catch (error: any) {
+    return Promise.reject({ status: 400, message: error.message, title: 'Parsing error', field: 'custom.fields.paymentMethodsRequest', ctCode: CTEnumErrors.InvalidInput });
   }
-  const mObject: MethodsListParams = {
-    amount: {
-      value: convertCTToMollieAmountValue(parseFloat(ctObj.amountPlanned.centAmount), ctObj.amountPlanned.fractionDigits),
-      currency: ctObj.amountPlanned.currencyCode,
-    },
-    // Resource is hardcoded, for the time being we only support Orders API
-    resource: 'orders',
-  };
-
-  const parsedMethodsRequest = JSON.parse(ctObj.custom?.fields?.paymentMethodsRequest);
-  const { locale, billingCountry, includeWallets, orderLineCategories, issuers, pricing, sequenceType } = parsedMethodsRequest;
-  const include = issuers || pricing ? `${issuers ? 'issuers,' : ''}${pricing ? 'pricing' : ''}` : undefined;
-
-  Object.assign(
-    mObject,
-    locale && { locale: locale },
-    include && { include: include },
-    includeWallets && { includeWallets: includeWallets },
-    billingCountry && { billingCountry: billingCountry },
-    sequenceType && { sequenceType: sequenceType },
-    orderLineCategories && { orderLineCategories: orderLineCategories },
-  );
-
-  return mObject;
 }
 
-export default async function getPaymentMethods(ctObj: any, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function getPaymentMethods(ctObj: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    const mollieOptions = extractMethodListParameters(ctObj);
+    const mollieOptions = await extractMethodListParameters(ctObj);
     const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
     const responseMethods = JSON.stringify({
       count: methods.count,
@@ -50,8 +55,7 @@ export default async function getPaymentMethods(ctObj: any, mollieClient: Mollie
       status: 200,
     };
   } catch (error: any) {
-    Logger.error({ error });
-    const errorResponse = formatMollieErrorResponse(error);
-    return errorResponse;
+    Logger.error(error.message);
+    return formatErrorResponse(error);
   }
 }
