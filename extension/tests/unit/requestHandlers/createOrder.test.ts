@@ -11,11 +11,43 @@ import {
   // getShippingAddress,
   // isDiscountAmountValid,
   // convertCTTaxRateToMollieTaxRate,
+  extractLocalizedName,
 } from '../../../src/requestHandlers/createOrder';
 import { CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
 
 jest.mock('uuid');
 jest.mock('../../../src/utils');
+
+describe('getLocalisedName', () => {
+  it('should extract random localised name when config locale does not match any names given', () => {
+    const mockName = {
+      en: 'Red dress',
+      fr: 'Robe rouge',
+    };
+    const localizedName = extractLocalizedName(mockName);
+    expect(localizedName).toBe('Red dress');
+  });
+
+  it('should format an aa-AA formatted locale to ct formatting and find the matching localised name', () => {
+    const mockName = {
+      en: 'Red dress',
+      fr: 'Robe rouge',
+      'nl-NL': 'Rode jurk',
+    };
+    const localizedName = extractLocalizedName(mockName);
+    expect(localizedName).toBe('Rode jurk');
+  });
+
+  it('should transform the locale to ct formatting and find the main language, if the sub language is not present', () => {
+    const mockName = {
+      en: 'Red dress',
+      fr: 'Robe rouge',
+      nl: 'Rode jurk',
+    };
+    const localizedName = extractLocalizedName(mockName);
+    expect(localizedName).toBe('Rode jurk');
+  });
+});
 
 describe('createCTActions', () => {
   beforeAll(() => {

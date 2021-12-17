@@ -58,6 +58,7 @@ export type CTMoney = {
 
 export type CTLineItem = {
   id: string;
+  name: { [key: string]: string };
   productId: string;
   price: {
     value: CTMoney;
