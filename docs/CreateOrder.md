@@ -45,16 +45,18 @@ To create an order on Mollie, we get required parameters from the commercetools 
 
 ## Billing / Shipping Address object
 
-| Parameter (CT Cart billingAddress)            | Parameter (Mollie)                            | Required |
-| --------------------------------------------- | --------------------------------------------- | -------- |
-| `firstName: "Piet"`                           | `givenName: "Piet"`                           | YES      |
-| `lastName: "Mondriaan"`                       | `familyName: "Mondriaan"`                     | YES      |
-| `email: "coloured_square_lover@basicart.com"` | `email: "coloured_square_lover@basicart.com"` | YES      |
-| `streetName: "Keizersgracht"`                 | `streetAndNumber: "Keizersgracht 126"`        | YES      |
-| `streetNumber: "126"`                         |                                               | YES      |
-| `postalCode: "1234AB"`                        | `postalCode: "1234AB"`                        | YES      |
-| `country: "NL"`                               | `country: "NL"`                               | YES      |
-| `city: "Amsterdam"`                           | `city: "Amsterdam"`                           | YES      |
+Mollie only requires billing address to create the order. However, we require shipping address as commercetools does not calculate the tax price for each line item without the shipping address being set.
+
+| Parameter (CT Cart billingAddress/shippingAddress) | Parameter (Mollie)                            | Required |
+| -------------------------------------------------- | --------------------------------------------- | -------- |
+| `firstName: "Piet"`                                | `givenName: "Piet"`                           | YES      |
+| `lastName: "Mondriaan"`                            | `familyName: "Mondriaan"`                     | YES      |
+| `email: "coloured_square_lover@basicart.com"`      | `email: "coloured_square_lover@basicart.com"` | YES      |
+| `streetName: "Keizersgracht"`                      | `streetAndNumber: "Keizersgracht 126"`        | YES      |
+| `streetNumber: "126"`                              |                                               | YES      |
+| `postalCode: "1234AB"`                             | `postalCode: "1234AB"`                        | YES      |
+| `country: "NL"`                                    | `country: "NL"`                               | YES      |
+| `city: "Amsterdam"`                                | `city: "Amsterdam"`                           | YES      |
 
 <br />
 
