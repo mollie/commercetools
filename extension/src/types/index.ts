@@ -56,6 +56,10 @@ export type CTMoney = {
   fractionDigits?: number;
 };
 
+export type CTCustomLineItem = Pick<CTLineItem, 'taxedPrice' | 'totalPrice' | 'quantity' | 'taxRate' | 'id'> & {
+  money: CTMoney;
+};
+
 export type CTLineItem = {
   id: string;
   productId: string;
@@ -80,6 +84,7 @@ export type CTLineItem = {
 export type CTCart = {
   id: string;
   lineItems?: CTLineItem[];
+  customLineItems?: CTCustomLineItem[];
   totalPrice: CTMoney;
   shippingAddress?: Object;
   billingAddress?: Object;

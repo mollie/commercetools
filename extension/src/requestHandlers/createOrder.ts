@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
-import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem } from '../types';
+import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem, CTCustomLineItem } from '../types';
 import { createDateNowString, makeMollieAmount } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
@@ -26,8 +26,25 @@ export function makeMollieAddress(ctAddress: any): OrderAddress {
   return mollieAddress;
 }
 
+export function makeMollieLineCustom(customLine: CTCustomLineItem): OrderLine {
+  const lineItem = {
+    // TODO: implement once localised name is there, until then it's id
+    // name: getLocalisedName(customLine.name),
+    name: customLine.id,
+    quantity: customLine.quantity,
+    unitPrice: makeMollieAmount(customLine.money),
+    vatRate: (customLine.taxRate.amount * 100).toFixed(2),
+    totalAmount: makeMollieAmount(customLine.totalPrice),
+    vatAmount: makeMollieAmount({ ...customLine.taxedPrice.totalGross, centAmount: customLine.taxedPrice.totalGross.centAmount - customLine.taxedPrice.totalNet.centAmount }),
+    metadata: {
+      cartCustomLineItemId: customLine.id,
+    },
+  };
+  return lineItem as OrderLine;
+}
+
 export function makeMollieLine(line: CTLineItem): OrderLine {
-  const extractedLine = {
+  const lineItem = {
     name: line.variant.key,
     quantity: line.quantity,
     sku: line.variant.sku,
@@ -42,9 +59,22 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
   // Handle discounts
   if (line.price.discounted?.value || line.discountedPrice?.value) {
     const discountCentAmount = line.price.value.centAmount * line.quantity - line.totalPrice.centAmount;
-    Object.assign(extractedLine, { discountAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount }) });
+    Object.assign(lineItem, { discountAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount }) });
   }
-  return extractedLine as OrderLine;
+  return lineItem as OrderLine;
+}
+
+export function makeMollieLines(cart: CTCart): OrderLine[] {
+  const lines: OrderLine[] = [];
+  // Handle line items
+  const lineItems = (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l));
+  // Handle custom line items
+  const customLineItems = (cart.customLineItems ?? []).map((l: CTCustomLineItem) => makeMollieLineCustom(l));
+
+  // Handle shipment - make a line item
+  // lines.concat(makeMollieLineShipping(cart.shippingInfo))
+
+  return lines.concat(lineItems, customLineItems);
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
@@ -60,7 +90,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
-      lines: (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l)),
+      lines: makeMollieLines(cart),
       locale: parsedCtPayment.locale || locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
       method: ctPayment.paymentMethodInfo.method as PaymentMethod,
@@ -78,11 +108,6 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
-
-    // TODO: Category for mollie is required on one of line items when using voucher. This feature is not supported atm
-    // if (orderParams.method === 'voucher') {
-    //   orderParams.lines.map(l => l.category = 'eco')
-    // }
 
     return Promise.resolve(orderParams);
   } catch (error) {
@@ -169,6 +194,7 @@ export default async function createOrder(ctPayment: CTPayment, mollieClient: Mo
     }
 
     const orderParams = await getCreateOrderParams(ctPayment, cartByPayment.body.results[0]);
+    console.log('orderParams', orderParams);
     Logger.debug({ orderParams });
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
     Logger.debug({ mollieCreatedOrder });
