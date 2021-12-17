@@ -105,6 +105,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
 
     const interfaceInteractionId = uuid();
     const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
+    const mollieCreatedAt = orderResponse.createdAt;
+
     if (!molliePaymentId) {
       // This should theoretically never happen
       return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
@@ -122,9 +124,16 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       transactionId: originalTransaction.id,
     };
 
+    const interfaceInteractionParams = {
+      actionType: ControllerAction.CreateOrder,
+      requestValue: JSON.stringify(interafaceInteractionRequest),
+      responseValue: JSON.stringify(interfaceInteractionResponse),
+      id: interfaceInteractionId,
+      timestamp: mollieCreatedAt,
+    };
     const result: Action[] = [
       // Add interface interaction
-      makeActions.addInterfaceInteraction(ControllerAction.CreateOrder, JSON.stringify(interafaceInteractionRequest), JSON.stringify(interfaceInteractionResponse), interfaceInteractionId),
+      makeActions.addInterfaceInteraction(interfaceInteractionParams),
       // Set status interface text
       makeActions.setStatusInterfaceText(orderResponse.status),
       // Set key
@@ -133,6 +142,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       makeActions.changeTransactionState(originalTransaction.id, CTTransactionState.Pending),
       // Update transaction interactionId
       makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
+      // Update transaction timestamp
+      makeActions.changeTransactionTimestamp(originalTransaction.id, mollieCreatedAt),
     ];
     return Promise.resolve(result);
   } catch (error: any) {

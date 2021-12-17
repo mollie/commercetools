@@ -437,11 +437,12 @@ When an order is successfully created on Mollie, we update commercetools payment
 
 | Action name (CT)                 | Value                                                                      |
 | -------------------------------- | -------------------------------------------------------------------------- |
-| `changeTransactionState`         | `createOrderResponse: <transactionId>, state: 'Pending'`                   |
+| `setKey`                         | `key: <mollie Order ID>`                                                   |
 | `setMethodInfoName`              | `interfaceText: "created"`                                                 |
+| `changeTransactionState`         | `createOrderResponse: <transactionId>, state: 'Pending'`                   |
+| `changeTransactionTimestamp`     | `createOrderResponse: <createdAt>`                                         |
 | `changeTransactionInteractionId` | `transactionId: <first CT transaction ID>` *                               |
 |                                  | `interactionId: <mollie Payment ID>`                                       |
-| `setKey`                         | `key: <mollie Order ID>`                                                   |
 | `addInterfaceInteraction`        | `actionType: "createOrder"`                                                |
 |                                  | `id: <UUID>`                                                               |
 |                                  | `createdAt: <local ISO time string>`  **                                   |

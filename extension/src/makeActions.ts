@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { Action, ControllerAction, CTTransactionState } from './types';
+import { ControllerAction, CTTransactionState } from './types';
 import { createDateNowString } from './utils';
 
 /**
@@ -16,16 +16,26 @@ const setCustomField = (customFieldName: string, customFieldValue: string) => {
   };
 };
 
+type createInterfaceInteractionParams = {
+  actionType: ControllerAction;
+  requestValue: string;
+  responseValue: string;
+  id?: string;
+  timestamp?: string;
+};
 /**
- *
- * @param actionType ControllerAction
- * @param requestValue
- * @param responseValue
- * @param id
+ * @param parameters type createInterfaceInteractionParams, which contains
+ * actionType ControllerAction
+ * requestValue string
+ * responseValue string
+ * id string string, optional
+ * timestamp string, optional
  * If the responseValue is an API response, JSON Stringify it before passing it
  */
-const addInterfaceInteraction = (actionType: ControllerAction, requestValue: string, responseValue: string, id?: string) => {
+const addInterfaceInteraction = (params: createInterfaceInteractionParams) => {
+  const { actionType, requestValue, responseValue, id, timestamp } = params;
   const interfaceInteractionId = id ? id : uuid();
+  const interfaceInteractionTimestamp = timestamp ? timestamp : createDateNowString();
   return {
     action: 'addInterfaceInteraction',
     type: {
@@ -34,7 +44,7 @@ const addInterfaceInteraction = (actionType: ControllerAction, requestValue: str
     fields: {
       id: interfaceInteractionId,
       actionType,
-      createdAt: createDateNowString(),
+      createdAt: interfaceInteractionTimestamp,
       request: requestValue,
       response: responseValue,
     },
@@ -89,6 +99,20 @@ const changeTransactionInteractionId = (id: string, interactionId: string) => {
   };
 };
 
+/**
+ *
+ * @param id transaction to be updated
+ * @param timestamp CT DateTime is a JSON string representation of UTC date & time in ISO 8601 format (YYYY-MM-DDThh:mm:ss.sssZ)
+ * for example: "2018-10-12T14:00:00.000Z"
+ */
+const changeTransactionTimestamp = (id: string, timestamp: string) => {
+  return {
+    action: 'changeTransactionTimestamp',
+    transactionId: id,
+    timestamp,
+  };
+};
+
 export const makeActions = {
   setCustomField,
   addInterfaceInteraction,
@@ -96,4 +120,5 @@ export const makeActions = {
   setStatusInterfaceText,
   changeTransactionState,
   changeTransactionInteractionId,
+  changeTransactionTimestamp,
 };

@@ -24,10 +24,12 @@ export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams>
 export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action[] {
   const stringifiedCancelOrderResponse = JSON.stringify(mollieCancelOrderRes);
   const actions: Action[] = [];
-  actions.push(
-    makeActions.addInterfaceInteraction(ControllerAction.CancelOrder, ctObj?.custom?.fields?.createCancelOrderRequest, stringifiedCancelOrderResponse),
-    makeActions.setCustomField('createCancelOrderResponse', stringifiedCancelOrderResponse),
-  );
+  const interfaceInteractionParams = {
+    actionType: ControllerAction.CancelOrder,
+    requestValue: ctObj?.custom?.fields?.createCancelOrderRequest,
+    responseValue: stringifiedCancelOrderResponse,
+  };
+  actions.push(makeActions.addInterfaceInteraction(interfaceInteractionParams), makeActions.setCustomField('createCancelOrderResponse', stringifiedCancelOrderResponse));
 
   return actions;
 }

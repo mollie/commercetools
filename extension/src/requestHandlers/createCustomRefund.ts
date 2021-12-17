@@ -55,23 +55,24 @@ export async function createCustomRefund(ctObject: any, mollieClient: MollieClie
 
     // Create update actions
     const updateActions = [];
-    updateActions.push(
-      makeActions.setCustomField('createCustomRefundResponse', JSON.stringify(response)),
-      makeActions.addInterfaceInteraction(ControllerAction.CreateCustomRefund, ctObject?.custom?.fields?.createCustomRefundRequest, JSON.stringify(response)),
-      {
-        action: 'addTransaction',
-        transaction: {
-          interactionId: mollieRefundId,
-          amount: {
-            centAmount: parsedRequest.amount.centAmount,
-            currencyCode: parsedRequest.amount.currencyCode,
-            fractionDigits: parsedRequest.amount?.fractionDigits ?? 2,
-          },
-          type: CTTransactionType.Refund,
-          timestamp: createDateNowString(),
+    const interfaceInteractionParams = {
+      actionType: ControllerAction.CreateCustomRefund,
+      requestValue: ctObject?.custom?.fields?.createCustomRefundRequest,
+      responseValue: JSON.stringify(response),
+    };
+    updateActions.push(makeActions.setCustomField('createCustomRefundResponse', JSON.stringify(response)), makeActions.addInterfaceInteraction(interfaceInteractionParams), {
+      action: 'addTransaction',
+      transaction: {
+        interactionId: mollieRefundId,
+        amount: {
+          centAmount: parsedRequest.amount.centAmount,
+          currencyCode: parsedRequest.amount.currencyCode,
+          fractionDigits: parsedRequest.amount?.fractionDigits ?? 2,
         },
+        type: CTTransactionType.Refund,
+        timestamp: createDateNowString(),
       },
-    );
+    });
 
     // Return correct status and updates for CT
     return {

@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
+import { Order } from '@mollie/api-client';
 import { createDateNowString } from '../../../src/utils';
 // import Logger from '../../../src/logger/logger';
 import {
@@ -41,10 +42,11 @@ describe('createCTActions', () => {
         },
       ],
     };
-    const mockedMollieCreatedOrder: any = {
+    const mockedMollieCreatedOrder = {
       resource: 'order',
       id: 'ord_dsczl7',
       profileId: 'pfl_VtWA783A63',
+      createdAt: '2018-08-02T09:29:56+00:00',
       amount: { value: '10.00', currency: 'EUR' },
       orderNumber: '1001',
       _embedded: {
@@ -58,9 +60,9 @@ describe('createCTActions', () => {
           },
         ],
       },
-    };
+    } as Order;
     const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404');
-    expect(ctActions).toHaveLength(5);
+    expect(ctActions).toHaveLength(6);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
     });
