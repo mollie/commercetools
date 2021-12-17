@@ -4,7 +4,6 @@ import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
 import formatErrorResponse from '../errorHandlers';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
-import { getShipmentParams as getCreateShipmentParams, createCtActions as createShipmentActions } from './createShipment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
 import { createCtActions as createOrderRefundActions } from './createOrderRefund';
@@ -77,7 +76,7 @@ const processAction = async function (action: ControllerAction, ctPaymentObject:
       break;
     case ControllerAction.CreateShipment:
       Logger.debug(`action: ${ControllerAction.CreateShipment}`);
-      result = await actions.createShipment(ctPaymentObject, mollieClient, getCreateShipmentParams, createShipmentActions);
+      result = await actions.createShipment(ctPaymentObject, mollieClient);
       break;
     case ControllerAction.UpdateShipment:
       Logger.debug(`action: ${ControllerAction.UpdateShipment}`);

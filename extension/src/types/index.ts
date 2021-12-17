@@ -39,7 +39,14 @@ export type Action = {
 export type CTError = {
   code: CTEnumErrors;
   message: string;
-  extensionExtraInfo?: Object;
+  extensionExtraInfo?: CTErrorExtensionExtraInfo;
+};
+
+export type CTErrorExtensionExtraInfo = {
+  originalStatusCode: number;
+  title: string;
+  field: string;
+  links?: string;
 };
 
 export type CTMoney = {
