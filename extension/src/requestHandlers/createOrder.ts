@@ -28,8 +28,7 @@ export function makeMollieAddress(ctAddress: any): OrderAddress {
 
 export function makeMollieLine(line: CTLineItem): OrderLine {
   const extractedLine = {
-    // Name as english for the time being
-    name: line.name['en-US'],
+    name: line.variant.key,
     quantity: line.quantity,
     sku: line.variant.sku,
     unitPrice: makeMollieAmount(line.price.value),

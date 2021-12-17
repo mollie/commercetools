@@ -39,7 +39,14 @@ export type Action = {
 export type CTError = {
   code: CTEnumErrors;
   message: string;
-  extensionExtraInfo?: Object;
+  extensionExtraInfo?: CTErrorExtensionExtraInfo;
+};
+
+export type CTErrorExtensionExtraInfo = {
+  originalStatusCode: number;
+  title: string;
+  field: string;
+  links?: string;
 };
 
 export type CTMoney = {
@@ -52,9 +59,6 @@ export type CTMoney = {
 export type CTLineItem = {
   id: string;
   productId: string;
-  name: {
-    'en-US': string;
-  };
   price: {
     value: CTMoney;
     discounted?: { value: CTMoney };
@@ -67,7 +71,10 @@ export type CTLineItem = {
     totalNet: CTMoney;
   };
   quantity: number;
-  variant: { sku: string };
+  variant: {
+    key: string;
+    sku: string;
+  };
 };
 
 export type CTCart = {
