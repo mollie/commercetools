@@ -1,7 +1,7 @@
-import { CTError, CTUpdatesRequestedResponse, CTEnumErrors } from '../types';
+import { CTError, CTUpdatesRequestedResponse, CTEnumErrors, CTErrorExtensionExtraInfo } from '../types';
 
 // This is based on MollieApiError interface from Mollie's SDK
-const getExtraInfo = ({ status, links, title, field }: any) => {
+const getExtraInfo = ({ status, links, title, field }: any): CTErrorExtensionExtraInfo => {
   const extraInfo = Object.assign({}, status && { originalStatusCode: status }, links && { links }, title && { title }, field && { field });
   return extraInfo;
 };
