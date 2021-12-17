@@ -59,9 +59,6 @@ export type CTMoney = {
 export type CTLineItem = {
   id: string;
   productId: string;
-  name: {
-    'en-US': string;
-  };
   price: {
     value: CTMoney;
     discounted?: { value: CTMoney };
@@ -74,7 +71,10 @@ export type CTLineItem = {
     totalNet: CTMoney;
   };
   quantity: number;
-  variant: { sku: string };
+  variant: {
+    key: string;
+    sku: string;
+  };
 };
 
 export type CTCart = {
