@@ -35,7 +35,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
         errorMessage: `Invalid paymentMethodInfo.method ${method}. Payment method must be set in order to make and manage payment transactions`,
       };
     } else {
-      if (isPayLater(PaymentMethod[method as PaymentMethod])) {
+      if (isPayLater(method)) {
         return handlePayLaterFlow(paymentObject);
       } else {
         return handlePayNowFlow(paymentObject);
