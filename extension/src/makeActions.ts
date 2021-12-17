@@ -1,6 +1,5 @@
-import { time } from 'console';
 import { v4 as uuid } from 'uuid';
-import { Action, ControllerAction, CTTransactionState } from './types';
+import { ControllerAction, CTTransactionState } from './types';
 import { createDateNowString } from './utils';
 
 /**
