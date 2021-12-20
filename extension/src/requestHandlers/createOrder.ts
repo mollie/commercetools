@@ -3,7 +3,7 @@ import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, Orde
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
 import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem, CTCustomLineItem } from '../types';
-import { createDateNowString, makeMollieAmount } from '../utils';
+import { makeMollieAmount } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
 import { makeActions } from '../makeActions';
@@ -43,9 +43,42 @@ export function makeMollieLineCustom(customLine: CTCustomLineItem): OrderLine {
   return lineItem as OrderLine;
 }
 
+/**
+ *
+ * @param name object with string key of language tag and value of a localized name
+ *
+ * This function uses locale, if set, to pick which name value to use. For example,
+ * if locale is set to "en_US":
+ *
+ * First try to find a key of "en-US"
+ * If not found, try to find a key of "en"
+ *
+ * If no matches, or locale isn't set, then default to the first key in the name object.
+ */
+export const extractLocalizedName = (name: { [key: string]: string }) => {
+  let localizedName;
+  if (locale) {
+    // transform from aa_AA to aa-AA to match CT's format
+    const ctFormattedLocale = locale.replace('_', '-');
+    localizedName = name[ctFormattedLocale];
+    if (localizedName) {
+      return localizedName;
+    }
+    const shortFormatLocale = locale.split('_')[0];
+    localizedName = name[shortFormatLocale];
+    if (localizedName) {
+      return localizedName;
+    }
+  }
+  // Default to first localized string on the object
+  const keys = Object.keys(name);
+  localizedName = name[keys[0]];
+  return localizedName;
+};
+
 export function makeMollieLine(line: CTLineItem): OrderLine {
   const lineItem = {
-    name: line.variant.key,
+    name: extractLocalizedName(line.name),
     quantity: line.quantity,
     sku: line.variant.sku,
     unitPrice: makeMollieAmount(line.price.value),

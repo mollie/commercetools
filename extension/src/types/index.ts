@@ -62,6 +62,7 @@ export type CTCustomLineItem = Pick<CTLineItem, 'taxedPrice' | 'totalPrice' | 'q
 
 export type CTLineItem = {
   id: string;
+  name: { [key: string]: string };
   productId: string;
   price: {
     value: CTMoney;
