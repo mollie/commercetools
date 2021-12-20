@@ -24,8 +24,8 @@ To create an order on Mollie, we get required parameters from the commercetools 
 | `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | YES      |
 | `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
 
-\* This field can be set in config as well, putting it on createPayment will override config value. It should be one of the valid "locale" tags that mollie supports. The list is available on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order). 
-This field is used to extract the `LineItem` name. The API extension will try to use the localized string that is closest to locale, if this value is set in config.             
+\* This field can be set in config as well, putting it on createPayment will override config value. Locale should be one of the valid "locale" tags that mollie supports. The list is available on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order). 
+This field is used to extract the `LineItem` and `CustomLineItem` name. The API extension will try to use the localized string that is closest to locale, if this value is set in config.
 
 \** The `PaymentMethodInfo.method` accepts a single [mollie payment method](https://docs.mollie.com/reference/v2/orders-api/create-order). If not provided, you will receive an error. `PaymentMethodInfo.interface` is checked on every request and must be set to `mollie`.
 
@@ -33,7 +33,7 @@ This field is used to extract the `LineItem` name. The API extension will try to
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `variant: { key: "apple-green" }`                                          | `name: "apple-green"`                                                     | YES      |
+| `variant: { [key]: "apple-green" }`                                        | `name: "apple-green"`                                                     | YES      |
 | `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
 | `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
 | `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |

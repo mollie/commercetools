@@ -56,7 +56,7 @@ export type CTMoney = {
   fractionDigits?: number;
 };
 
-export type CTCustomLineItem = Pick<CTLineItem, 'taxedPrice' | 'totalPrice' | 'quantity' | 'taxRate' | 'id'> & {
+export type CTCustomLineItem = Pick<CTLineItem, 'taxedPrice' | 'totalPrice' | 'quantity' | 'taxRate' | 'name' | 'id'> & {
   money: CTMoney;
 };
 

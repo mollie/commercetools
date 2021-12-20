@@ -26,23 +26,6 @@ export function makeMollieAddress(ctAddress: any): OrderAddress {
   return mollieAddress;
 }
 
-export function makeMollieLineCustom(customLine: CTCustomLineItem): OrderLine {
-  const lineItem = {
-    // TODO: implement once localised name is there, until then it's id
-    // name: getLocalisedName(customLine.name),
-    name: customLine.id,
-    quantity: customLine.quantity,
-    unitPrice: makeMollieAmount(customLine.money),
-    vatRate: (customLine.taxRate.amount * 100).toFixed(2),
-    totalAmount: makeMollieAmount(customLine.totalPrice),
-    vatAmount: makeMollieAmount({ ...customLine.taxedPrice.totalGross, centAmount: customLine.taxedPrice.totalGross.centAmount - customLine.taxedPrice.totalNet.centAmount }),
-    metadata: {
-      cartCustomLineItemId: customLine.id,
-    },
-  };
-  return lineItem as OrderLine;
-}
-
 /**
  *
  * @param name object with string key of language tag and value of a localized name
@@ -75,6 +58,21 @@ export const extractLocalizedName = (name: { [key: string]: string }) => {
   localizedName = name[keys[0]];
   return localizedName;
 };
+
+export function makeMollieLineCustom(customLine: CTCustomLineItem): OrderLine {
+  const lineItem = {
+    name: extractLocalizedName(customLine.name),
+    quantity: customLine.quantity,
+    unitPrice: makeMollieAmount(customLine.money),
+    vatRate: (customLine.taxRate.amount * 100).toFixed(2),
+    totalAmount: makeMollieAmount(customLine.totalPrice),
+    vatAmount: makeMollieAmount({ ...customLine.taxedPrice.totalGross, centAmount: customLine.taxedPrice.totalGross.centAmount - customLine.taxedPrice.totalNet.centAmount }),
+    metadata: {
+      cartCustomLineItemId: customLine.id,
+    },
+  };
+  return lineItem as OrderLine;
+}
 
 export function makeMollieLine(line: CTLineItem): OrderLine {
   const lineItem = {
