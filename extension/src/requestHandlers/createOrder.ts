@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
-import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem } from '../types';
+import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem, CTCustomLineItem } from '../types';
 import { makeMollieAmount } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
@@ -10,7 +10,7 @@ import { makeActions } from '../makeActions';
 
 const {
   commercetools: { projectKey },
-  service: { webhookUrl, locale, redirectUrl },
+  service: { webhookUrl, locale: configLocale, redirectUrl },
 } = config;
 
 export function makeMollieAddress(ctAddress: any): OrderAddress {
@@ -38,7 +38,7 @@ export function makeMollieAddress(ctAddress: any): OrderAddress {
  *
  * If no matches, or locale isn't set, then default to the first key in the name object.
  */
-export const extractLocalizedName = (name: { [key: string]: string }) => {
+export const extractLocalizedName = (name: { [key: string]: string }, locale?: string) => {
   let localizedName;
   if (locale) {
     // transform from aa_AA to aa-AA to match CT's format
@@ -59,9 +59,24 @@ export const extractLocalizedName = (name: { [key: string]: string }) => {
   return localizedName;
 };
 
-export function makeMollieLine(line: CTLineItem): OrderLine {
-  const extractedLine = {
-    name: extractLocalizedName(line.name),
+export function makeMollieLineCustom(customLine: CTCustomLineItem, locale: string): OrderLine {
+  const lineItem = {
+    name: extractLocalizedName(customLine.name, locale),
+    quantity: customLine.quantity,
+    unitPrice: makeMollieAmount(customLine.money),
+    vatRate: (customLine.taxRate.amount * 100).toFixed(2),
+    totalAmount: makeMollieAmount(customLine.totalPrice),
+    vatAmount: makeMollieAmount({ ...customLine.taxedPrice.totalGross, centAmount: customLine.taxedPrice.totalGross.centAmount - customLine.taxedPrice.totalNet.centAmount }),
+    metadata: {
+      cartCustomLineItemId: customLine.id,
+    },
+  };
+  return lineItem as OrderLine;
+}
+
+export function makeMollieLine(line: CTLineItem, locale: string): OrderLine {
+  const lineItem = {
+    name: extractLocalizedName(line.name, locale),
     quantity: line.quantity,
     sku: line.variant.sku,
     unitPrice: makeMollieAmount(line.price.value),
@@ -75,26 +90,36 @@ export function makeMollieLine(line: CTLineItem): OrderLine {
   // Handle discounts
   if (line.price.discounted?.value || line.discountedPrice?.value) {
     const discountCentAmount = line.price.value.centAmount * line.quantity - line.totalPrice.centAmount;
-    Object.assign(extractedLine, { discountAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount }) });
+    Object.assign(lineItem, { discountAmount: makeMollieAmount({ ...line.taxedPrice.totalGross, centAmount: discountCentAmount }) });
   }
-  return extractedLine as OrderLine;
+  return lineItem as OrderLine;
+}
+
+export function makeMollieLines(cart: CTCart, locale: string): OrderLine[] {
+  const lines: OrderLine[] = [];
+  // Handle line items
+  const lineItems = (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l, locale));
+  // Handle custom line items
+  const customLineItems = (cart.customLineItems ?? []).map((l: CTCustomLineItem) => makeMollieLineCustom(l, locale));
+
+  // Handle shipment - make a line item
+  // lines.concat(makeMollieLineShipping(cart.shippingInfo))
+
+  return lines.concat(lineItems, customLineItems);
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
-  // TODO can remove this check - createPayment is not required
-  if (!ctPayment.custom?.fields?.createPayment) {
-    return Promise.reject({ status: 400, title: 'createPayment field is required to create Mollie order.', field: 'createPayment' });
-  }
   if (!cart.billingAddress) {
     return Promise.reject({ status: 400, title: 'Cart associated with this payment is missing billingAddress', field: 'cart.billingAddress' });
   }
   try {
-    const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment);
+    const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment || '{}');
+    const locale = parsedCtPayment.locale || configLocale;
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
-      lines: (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l)),
-      locale: parsedCtPayment.locale || locale,
+      lines: makeMollieLines(cart, locale),
+      locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
       method: ctPayment.paymentMethodInfo.method as PaymentMethod,
 
@@ -111,11 +136,6 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
-
-    // TODO: Category for mollie is required on one of line items when using voucher. This feature is not supported atm
-    // if (orderParams.method === 'voucher') {
-    //   orderParams.lines.map(l => l.category = 'eco')
-    // }
 
     return Promise.resolve(orderParams);
   } catch (error) {
