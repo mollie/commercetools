@@ -1,8 +1,9 @@
 import {AzureFunction, Context, HttpRequest} from "@azure/functions"
 import {HandleRequestInput, HandleRequestSuccess} from "./src/types";
-import handleRequest from "./src/requestHandlers/handleRequest";
 
 loadSettings();
+
+import handleRequest from "./src/requestHandlers/handleRequest";
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
     /*
