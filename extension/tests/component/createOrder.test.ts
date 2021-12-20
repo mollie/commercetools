@@ -13,8 +13,6 @@ import {
   orderCreatedWithTwoLinesUsingIdeal,
   orderCreatedWithTwoLineItemsUsingKlarna,
 } from './mockResponses/mollieData/createOrder.data';
-// Data required:
-// Successfully created order in mollie - pay now / pay later
 
 jest.mock('uuid');
 
