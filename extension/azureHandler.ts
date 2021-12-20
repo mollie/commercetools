@@ -2,6 +2,7 @@ import {AzureFunction, Context, HttpRequest} from "@azure/functions"
 import {HandleRequestInput, HandleRequestSuccess} from "./src/types";
 import handleRequest from "./src/requestHandlers/handleRequest";
 
+loadSettings();
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
     /*
@@ -22,5 +23,26 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         }
     }
 };
+function loadSettings(){
+    const config = {
+        commercetools: {
+            authUrl: process.env["CT_MOLLIE_CONFIG:commercetools:authUrl"],
+            clientId: process.env["CT_MOLLIE_CONFIG:commercetools:clientId"],
+            clientSecret: process.env["CT_MOLLIE_CONFIG:commercetools:clientSecret"],
+            host: process.env["CT_MOLLIE_CONFIG:commercetools:host"],
+            projectKey: process.env["CT_MOLLIE_CONFIG:commercetools:projectKey"]
+        },
+        mollie: {
+            apiKey: process.env["CT_MOLLIE_CONFIG:mollie:apiKey"]
+        },
+        service: {
+            port: process.env["CT_MOLLIE_CONFIG:service:port"],
+            logLevel: process.env["CT_MOLLIE_CONFIG:service:logLevel"],
+            logTransports: process.env["CT_MOLLIE_CONFIG:service:logTransports"],
+        }
+
+    }
+    process.env.CT_MOLLIE_CONFIG = JSON.stringify(config);
+}
 
 export default httpTrigger;
