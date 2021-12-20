@@ -19,6 +19,7 @@ To create an order on Mollie, we get required parameters from the commercetools 
 |                                                                            |                                              |          |
 | Parameter (CT Cart)                                                        |                                              |          |
 | `lineItems: [array of lines]`                                              | `lines: [array of mollieLines]`              | NO       |
+| `customLineItems: [array of lines]`                                        | `lines: [array of mollieLines]`              | NO       |
 | `billingAddress: [billingAddress]`                                         | `billingAddress: [billingAddress]`           | YES      |
 | `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | YES      |
 | `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
@@ -37,11 +38,26 @@ To create an order on Mollie, we get required parameters from the commercetools 
 | `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
 | `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
 | `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
+| `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                    | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
 | `price: { value } x quantity - totalPrice` **                              | `discountAmount: { value: { currency: "EUR", value: "10.00" } } `         | NO       |
 | `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartLineItemId: "09f525b2-b739-4169" }`                      | NO       |
 
 \* vatAmount is calculated by using `totalGross - totalNet`
 \** discountAmount is calculated only if there is `price.discounted.value` or `discountedPrice.value` present on line item. Calculation is using `line.price.value.centAmount * line.quantity - line.totalPrice.centAmount`
+
+## Custom Line Items object
+
+| Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
+| `name: { [key]: "apple-green" }`                                           | `name: "apple-green"`                                                     | YES      |
+| `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
+| `money: { currencyCode: "EUR", centAmount: 1000 }`                         | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
+| `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
+| `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
+| `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                    | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
+| `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartCustomLineItemId: "09f525b2-b739-4169" }`                | NO       |
+
+\* vatAmount is calculated by using `totalGross - totalNet`
 
 ## Billing / Shipping Address object
 
