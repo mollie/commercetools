@@ -21,9 +21,12 @@ Here is a table to show which environment variables are necessary, and which are
 | `host`             | YES      | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
 | `scopes`           | NO       | Constrains endpoints the client has access to in commercetools                                              |
 | `service`          | NO       | Contains service-specific project variables                                                                 |
+| `locale`           | NO       | Locale language tag, in `aa_AA` format, based on tags mollie supports *                                     |
 | `port`             | NO       | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
 | `logLevel`         | NO       | Specifies how verbose logs should be. Options are listed below.                                             |
 | `logTransports`    | NO       | Specifies where the logs are written to/stored. Options listed below                                        |
+
+* Valid tags are available here on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order).         
 
 <!-- Notes - describe env, not structure in json -->
 
