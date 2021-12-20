@@ -1,6 +1,7 @@
 import { mocked } from 'ts-jest/utils';
 import { MollieClient } from '@mollie/api-client';
-import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
+import MethodsBinder from '@mollie/api-client/dist/types/src/binders/methods/MethodsBinder';
+// import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
 import { CTPayment } from '../../../src/types/index';
 import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
 import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
@@ -14,8 +15,9 @@ describe('GetPaymentMethods', () => {
   const mockLogError = jest.fn();
 
   const mockMollieClient = {} as MollieClient;
-  const mockMethodsResource = {} as MethodsResource;
-  mockMollieClient.methods = mockMethodsResource;
+  const mockMethodsBinder = {} as MethodsBinder;
+
+  mockMollieClient.methods = mockMethodsBinder;
   const mockMethodsResponse: any = [{ method: 'creditcard' }];
   mockMethodsResponse.count = 1;
   const mockList = jest.fn().mockResolvedValue(() => mockMethodsResponse);
@@ -25,7 +27,7 @@ describe('GetPaymentMethods', () => {
     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   beforeEach(() => {
-    mockMethodsResource.list = mockList;
+    mockMethodsBinder.list = mockList;
     mocked(convertCTToMollieAmountValue).mockReturnValue('11.00');
   });
 
@@ -158,7 +160,7 @@ describe('GetPaymentMethods', () => {
         fields: { paymentMethodsRequest: '{}' },
       },
     } as CTPayment;
-    mockMethodsResource.list = jest.fn().mockRejectedValueOnce(mockedError);
+    mockMethodsBinder.list = jest.fn().mockRejectedValueOnce(mockedError);
 
     const { errors, status } = await getPaymentMethods(mockedCTPayment, mockMollieClient);
     expect(status).toBe(400);
@@ -201,14 +203,14 @@ describe('GetPaymentMethods', () => {
 
 describe('Get Payment Methods - extractMethodListParameters', () => {
   const mockMollieClient = {} as MollieClient;
-  const mockMethodsResource = {} as MethodsResource;
-  mockMollieClient.methods = mockMethodsResource;
+  const mockMethodsBinder = {} as MethodsBinder;
+  mockMollieClient.methods = mockMethodsBinder;
   const mockMethodsResponse: any = [{ method: 'creditcard' }];
   mockMethodsResponse.count = 1;
   const mockList = jest.fn().mockResolvedValue(() => mockMethodsResponse);
 
   beforeEach(() => {
-    mockMethodsResource.list = mockList;
+    mockMethodsBinder.list = mockList;
     mocked(convertCTToMollieAmountValue).mockReturnValue('11.00');
   });
 

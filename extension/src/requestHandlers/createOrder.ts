@@ -90,7 +90,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
   }
   try {
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment);
-    const [paymentMethod, paymentIssuer ] = parsedCtPayment.paymentMethodInfo.method.split(',');
+    const [paymentMethod, paymentIssuer] = parsedCtPayment.paymentMethodInfo.method.split(',');
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
@@ -103,7 +103,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
       embed: [OrderEmbed.payments],
       payment: {
         webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
-        issuer: paymentIssuer ?? ''
+        issuer: paymentIssuer ?? '',
       },
 
       redirectUrl: parsedCtPayment.redirectUrl || redirectUrl,
