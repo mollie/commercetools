@@ -1,5 +1,4 @@
 import { PaymentMethod } from '@mollie/api-client';
-import { triggerAsyncId } from 'async_hooks';
 import { ControllerAction } from '../../types';
 import { handlePayLaterFlow } from './handlePayLaterFlow';
 import { handlePayNowFlow } from './handlePayNowFlow';
@@ -47,7 +46,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
   }
 };
 
-export const checkPaymentMethodAndIssuer = (paymentMethod: string): { isValid: boolean; errorMessage: string } => {
+const checkPaymentMethodAndIssuer = (paymentMethod: string): { isValid: boolean; errorMessage: string } => {
   let errorMessage = '';
   let isValid = true;
   const paymentMethodString = paymentMethod ?? '';
@@ -62,7 +61,7 @@ export const checkPaymentMethodAndIssuer = (paymentMethod: string): { isValid: b
       isValid = false;
       errorMessage = `Invalid paymentMethodInfo.method "${method}"`;
       break;
-    case issuer && !isPaymentMethodValidWithIssuer(method as PaymentMethod):
+    case issuer && !doesPaymentMethodSupportIssuer(method as PaymentMethod):
       isValid = false;
       errorMessage = `Payment method "${method}" does not support issuers`;
     default:
@@ -96,7 +95,7 @@ const hasValidPaymentMethod = (method: string | undefined) => {
  * @param issuer
  * @returns {boolean}
  */
-function isPaymentMethodValidWithIssuer(paymentMethod: PaymentMethod): boolean {
+function doesPaymentMethodSupportIssuer(paymentMethod: PaymentMethod): boolean {
   switch (true) {
     case paymentMethod === PaymentMethod.ideal:
     case paymentMethod === PaymentMethod.kbc:

@@ -1,4 +1,4 @@
-import { determineAction, checkPaymentMethodAndIssuer } from '../../../../src/requestHandlers/determineAction/determineAction';
+import { determineAction } from '../../../../src/requestHandlers/determineAction/determineAction';
 import { ControllerAction } from '../../../../src/types';
 
 describe('determineAction', () => {
@@ -160,24 +160,6 @@ describe('determineAction', () => {
 
       const { action } = determineAction(mockPaymentObject);
       expect(action).toBe(ControllerAction.CreateShipment);
-    });
-  });
-});
-
-describe.skip('checkPaymentMethodAndIssuer', () => {
-  it('should work with these', () => {
-    const testCases = [
-      { incomingMethodString: 'paypal', expectedValid: true, expectedMessage: '' },
-      { incomingMethodString: 'klarnapaylater', expectedValid: true, expectedMessage: '' },
-      { incomingMethodString: 'ideal,abn', expectedValid: true, expectedMessage: '' },
-      { incomingMethodString: 'klarna', expectedValid: false, expectedMessage: 'Invalid paymentMethodInfo.method "klarna"' },
-      { incomingMethodString: 'paypal,abn', expectedValid: false, expectedMessage: 'Payment method "paypal" does not support issuers' },
-      { incomingMethodString: '', expectedValid: false, expectedMessage: 'Payment method must be set in order to make and manage payment transactions' },
-    ];
-    testCases.forEach(({ incomingMethodString, expectedValid, expectedMessage }) => {
-      const { isValid, errorMessage } = checkPaymentMethodAndIssuer(incomingMethodString);
-      expect(isValid).toBe(expectedValid);
-      expect(errorMessage).toBe(expectedMessage);
     });
   });
 });
