@@ -225,7 +225,6 @@ export default async function createOrder(ctPayment: CTPayment, mollieClient: Mo
     }
 
     const orderParams = await getCreateOrderParams(ctPayment, cartByPayment.body.results[0]);
-    console.log('orderParams', orderParams);
     Logger.debug({ orderParams });
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
     Logger.debug({ mollieCreatedOrder });
