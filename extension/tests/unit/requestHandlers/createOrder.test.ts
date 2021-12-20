@@ -34,7 +34,7 @@ describe('getLocalisedName', () => {
       fr: 'Robe rouge',
       'nl-NL': 'Rode jurk',
     };
-    const localizedName = extractLocalizedName(mockName);
+    const localizedName = extractLocalizedName(mockName, 'nl_NL');
     expect(localizedName).toBe('Rode jurk');
   });
 
@@ -44,7 +44,7 @@ describe('getLocalisedName', () => {
       fr: 'Robe rouge',
       nl: 'Rode jurk',
     };
-    const localizedName = extractLocalizedName(mockName);
+    const localizedName = extractLocalizedName(mockName, 'nl_NL');
     expect(localizedName).toBe('Rode jurk');
   });
 });
