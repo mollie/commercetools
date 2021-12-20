@@ -26,10 +26,42 @@ export function makeMollieAddress(ctAddress: any): OrderAddress {
   return mollieAddress;
 }
 
+/**
+ *
+ * @param name object with string key of language tag and value of a localized name
+ *
+ * This function uses locale, if set, to pick which name value to use. For example,
+ * if locale is set to "en_US":
+ *
+ * First try to find a key of "en-US"
+ * If not found, try to find a key of "en"
+ *
+ * If no matches, or locale isn't set, then default to the first key in the name object.
+ */
+export const extractLocalizedName = (name: { [key: string]: string }) => {
+  let localizedName;
+  if (locale) {
+    // transform from aa_AA to aa-AA to match CT's format
+    const ctFormattedLocale = locale.replace('_', '-');
+    localizedName = name[ctFormattedLocale];
+    if (localizedName) {
+      return localizedName;
+    }
+    const shortFormatLocale = locale.split('_')[0];
+    localizedName = name[shortFormatLocale];
+    if (localizedName) {
+      return localizedName;
+    }
+  }
+  // Default to first localized string on the object
+  const keys = Object.keys(name);
+  localizedName = name[keys[0]];
+  return localizedName;
+};
+
 export function makeMollieLine(line: CTLineItem): OrderLine {
   const extractedLine = {
-    // Name as english for the time being
-    name: line.name['en-US'],
+    name: extractLocalizedName(line.name),
     quantity: line.quantity,
     sku: line.variant.sku,
     unitPrice: makeMollieAmount(line.price.value),
@@ -107,6 +139,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
 
     const interfaceInteractionId = uuid();
     const molliePaymentId = orderResponse._embedded?.payments?.[0].id;
+    const mollieCreatedAt = orderResponse.createdAt;
+
     if (!molliePaymentId) {
       // This should theoretically never happen
       return Promise.reject({ status: 400, title: 'Could not get Mollie payment id.', field: '<MollieOrder>._embedded.payments.[0].id' });
@@ -124,9 +158,16 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       transactionId: originalTransaction.id,
     };
 
+    const interfaceInteractionParams = {
+      actionType: ControllerAction.CreateOrder,
+      requestValue: JSON.stringify(interafaceInteractionRequest),
+      responseValue: JSON.stringify(interfaceInteractionResponse),
+      id: interfaceInteractionId,
+      timestamp: mollieCreatedAt,
+    };
     const result: Action[] = [
       // Add interface interaction
-      makeActions.addInterfaceInteraction(ControllerAction.CreateOrder, JSON.stringify(interafaceInteractionRequest), JSON.stringify(interfaceInteractionResponse), interfaceInteractionId),
+      makeActions.addInterfaceInteraction(interfaceInteractionParams),
       // Set status interface text
       makeActions.setStatusInterfaceText(orderResponse.status),
       // Set key
@@ -135,6 +176,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       makeActions.changeTransactionState(originalTransaction.id, CTTransactionState.Pending),
       // Update transaction interactionId
       makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
+      // Update transaction timestamp
+      makeActions.changeTransactionTimestamp(originalTransaction.id, mollieCreatedAt),
     ];
     return Promise.resolve(result);
   } catch (error: any) {

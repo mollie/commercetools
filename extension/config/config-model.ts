@@ -16,6 +16,6 @@ export interface Config {
     logTransports?: 'all' | 'file' | 'terminal';
     webhookUrl?: string;
     redirectUrl?: string;
-    locale?: string;
+    locale?: string; // should match regex ^[a-z]{2}_[A-Z]{2}$
   };
 }

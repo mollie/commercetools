@@ -25,8 +25,13 @@ describe('makeActions', () => {
     });
   });
 
-  it('should return addInterfaceInteraction with correct values', () => {
-    const addInterfaceInteraction = makeActions.addInterfaceInteraction(ControllerAction.GetPaymentMethods, '{}', '"count": 5, "methods": [ "creditcard"]');
+  it('should return addInterfaceInteraction with defaults set for id and timestamp, if not provided', () => {
+    const params = {
+      actionType: ControllerAction.GetPaymentMethods,
+      requestValue: '{}',
+      responseValue: '"count": 5, "methods": [ "creditcard"]',
+    };
+    const addInterfaceInteraction = makeActions.addInterfaceInteraction(params);
     expect(addInterfaceInteraction).toEqual({
       action: 'addInterfaceInteraction',
       type: {
@@ -39,6 +44,39 @@ describe('makeActions', () => {
         request: '{}',
         response: '"count": 5, "methods": [ "creditcard"]',
       },
+    });
+  });
+
+  it('should return addInterfaceInteraction using provided id and timestamp', () => {
+    const params = {
+      actionType: ControllerAction.GetPaymentMethods,
+      requestValue: '{}',
+      responseValue: '"count": 5, "methods": [ "creditcard"]',
+      id: 'a4ac79f3-f623-4f00-8d43-d5b1b24caba1',
+      timestamp: '2018-10-12T14:00:00.000Z',
+    };
+    const addInterfaceInteraction = makeActions.addInterfaceInteraction(params);
+    expect(addInterfaceInteraction).toEqual({
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        id: 'a4ac79f3-f623-4f00-8d43-d5b1b24caba1',
+        actionType: ControllerAction.GetPaymentMethods,
+        createdAt: '2018-10-12T14:00:00.000Z',
+        request: '{}',
+        response: '"count": 5, "methods": [ "creditcard"]',
+      },
+    });
+  });
+
+  it('should return changeTransactionTimestamp with correct timestamp and id', () => {
+    const changeTransactionTimestampAction = makeActions.changeTransactionTimestamp('5a9868a0-7703-4bf2-95b8-bd7fa2e889e6', '2018-10-12T14:00:00.000Z');
+    expect(changeTransactionTimestampAction).toEqual({
+      action: 'changeTransactionTimestamp',
+      transactionId: '5a9868a0-7703-4bf2-95b8-bd7fa2e889e6',
+      timestamp: '2018-10-12T14:00:00.000Z',
     });
   });
 });
