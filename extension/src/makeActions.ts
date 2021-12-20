@@ -68,7 +68,7 @@ const setKey = (key: string) => {
  */
 const setStatusInterfaceText = (interfaceText: string) => {
   return {
-    action: 'setMethodInfoName',
+    action: 'setStatusInterfaceText',
     interfaceText,
   };
 };
