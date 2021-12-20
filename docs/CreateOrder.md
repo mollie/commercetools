@@ -18,8 +18,8 @@ To create an order on Mollie, we get required parameters from the commercetools 
 | `paymentMethodInfo.interface: "mollie"` **                                 |                                              | YES      |
 |                                                                            |                                              |          |
 | Parameter (CT Cart)                                                        |                                              |          |
-| `lineItems: [array of lines]`                                              | `lines: [array of mollieLines]`              | NO       |
-| `customLineItems: [array of lines]`                                        | `lines: [array of mollieLines]`              | NO       |
+| `lineItems: [array]`                                                       | `lines: [array of mollieLines]`              | NO       |
+| `customLineItems: [array]`                                                 | `lines: [array of mollieLines]`              | NO       |
 | `billingAddress: [billingAddress]`                                         | `billingAddress: [billingAddress]`           | YES      |
 | `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | YES      |
 | `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
@@ -33,7 +33,7 @@ This field is used to extract the `LineItem` and `CustomLineItem` name. The API 
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `variant: { [key]: "apple-green" }`                                        | `name: "apple-green"`                                                     | YES      |
+| `variant: { en: "Green Apple" }`                                           | `name: "Green Apple"`                                                     | YES      |
 | `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
 | `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
 | `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
@@ -50,7 +50,7 @@ This field is used to extract the `LineItem` and `CustomLineItem` name. The API 
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `name: { [key]: "apple-green" }`                                           | `name: "apple-green"`                                                     | YES      |
+| `name: { en: "Green Apple" }`                                              | `name: "Green Apple"`                                                     | YES      |
 | `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
 | `money: { currencyCode: "EUR", centAmount: 1000 }`                         | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
 | `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
