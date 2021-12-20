@@ -31,14 +31,18 @@ export function loadConfig(ctMollieConfig: string | undefined) {
         logTransports: envConfig.service?.logTransports || 'terminal',
       },
     };
+
+    const localeRegex = /^[a-z]{2}_[A-Z]{2}$/;
+
     Object.assign(
       config.service,
       envConfig.service?.webhookUrl && { webhookUrl: envConfig.service.webhookUrl },
       envConfig.service?.redirectUrl && { redirectUrl: envConfig.service.redirectUrl },
-      envConfig.service?.locale && { locale: envConfig.service.locale },
+      envConfig.service?.locale && envConfig.service.locale.match(localeRegex) && { locale: envConfig.service.locale },
     );
 
     const { valid, message } = isConfigValid(config);
+
     if (valid) {
       return config;
     } else {

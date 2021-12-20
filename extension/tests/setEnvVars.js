@@ -9,6 +9,9 @@ const testConfig = JSON.stringify({
     authUrl: 'https://auth.dummy.com',
     host: 'https://api.dummy.com',
   },
+  service: {
+    locale: 'nl_NL',
+  },
 });
 
 process.env.CT_MOLLIE_CONFIG = testConfig;
