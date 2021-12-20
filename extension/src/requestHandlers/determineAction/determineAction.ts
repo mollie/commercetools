@@ -1,4 +1,5 @@
 import { PaymentMethod } from '@mollie/api-client';
+import { triggerAsyncId } from 'async_hooks';
 import { ControllerAction } from '../../types';
 import { handlePayLaterFlow } from './handlePayLaterFlow';
 import { handlePayNowFlow } from './handlePayNowFlow';
@@ -28,47 +29,53 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
       errorMessage,
     };
   } else {
-    return validateAndSetPaymentMethodAndIssuer(paymentObject);
+    // Check payment method and issuer (if present) are valid
+    const method = paymentObject?.paymentMethodInfo?.method;
+    const { isValid, errorMessage } = checkPaymentMethodAndIssuer(method);
+    if (!isValid) {
+      return {
+        action: ControllerAction.NoAction,
+        errorMessage: errorMessage,
+      };
+    } else {
+      if (isPayLater(method)) {
+        return handlePayLaterFlow(paymentObject);
+      } else {
+        return handlePayNowFlow(paymentObject);
+      }
+    }
   }
 };
 
-/**
- * @param paymentObject commercetools paymentObject, (from body.resource.obj)
- *
- * Checks that there is one payment method and optionally one issuer.
- *
- * If issuer is present, it must correspond to a payment method that accepts an issuer.
- *
- */
+export const checkPaymentMethodAndIssuer = (paymentMethod: string): { isValid: boolean; errorMessage: string } => {
+  let errorMessage = '';
+  let isValid = true;
+  const paymentMethodString = paymentMethod ?? '';
+  const [method, issuer] = paymentMethodString.split(',');
 
-function validateAndSetPaymentMethodAndIssuer(paymentObject: any) {
-  const [method, issuer, ...extra] = paymentObject.paymentMethodInfo?.method.toString().split(',');
-  if (!hasValidPaymentMethod(method) || extra.length > 0) {
-    return {
-      action: ControllerAction.Error,
-      errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". Payment method must be set with only one method and optionally one issuer, separated by a comma (,)`,
-    };
-  } else if (!!issuer && !isPaymentMethodValidWithIssuer(PaymentMethod[method as PaymentMethod])) {
-    return {
-      action: ControllerAction.Error,
-      errorMessage: `Invalid paymentMethodInfo.method "${paymentObject.paymentMethodInfo?.method}". PaymentMethod "${method}" does not support issuers.`,
-    };
-  } else {
-    if (!!issuer) paymentObject.paymentMethodInfo.issuer = issuer;
-    paymentObject.paymentMethodInfo.method = method;
-    if (isPayLater(PaymentMethod[method as PaymentMethod])) {
-      return handlePayLaterFlow(paymentObject);
-    } else {
-      return handlePayNowFlow(paymentObject);
-    }
+  switch (true) {
+    case !method:
+      isValid = false;
+      errorMessage = 'Payment method must be set in order to make and manage payment transactions';
+      break;
+    case !hasValidPaymentMethod(method):
+      isValid = false;
+      errorMessage = `Invalid paymentMethodInfo.method "${method}"`;
+      break;
+    case issuer && !isPaymentMethodValidWithIssuer(method as PaymentMethod):
+      isValid = false;
+      errorMessage = `Payment method "${method}" does not support issuers`;
+    default:
+      break;
   }
-}
+  return {
+    isValid,
+    errorMessage,
+  };
+};
 
 /**
  * @param method string - mollie payment method enum
- *
- * If no valid payment methods are provided, this will return '' and
- * the 'method' parameter will not be passed as part of the createOrder request
  *
  * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
  * in V3.6 or V4 of the mollie node SDK.
@@ -76,18 +83,12 @@ function validateAndSetPaymentMethodAndIssuer(paymentObject: any) {
  * Until then, we cast 'voucher'/'mybank' as PaymentMethod and track this in Issue #34
  * https://github.com/mollie/commercetools/issues/34
  *
- * N.B. this may be updated to handle issuers (i.e. for vouchers, iDEAL) later on
- *
  */
 const hasValidPaymentMethod = (method: string | undefined) => {
-  if (!method) {
-    return false;
-  } else {
-    if (method === 'voucher' || method == 'mybank') {
-      return true;
-    }
-    return !!PaymentMethod[method as PaymentMethod];
+  if (method === 'voucher' || method == 'mybank') {
+    return true;
   }
+  return !!PaymentMethod[method as PaymentMethod];
 };
 
 /**

@@ -90,18 +90,20 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
   }
   try {
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment);
+    const [paymentMethod, paymentIssuer ] = parsedCtPayment.paymentMethodInfo.method.split(',');
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
       lines: (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l)),
       locale: parsedCtPayment.locale || locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
-      method: ctPayment.paymentMethodInfo.method as PaymentMethod,
+      method: paymentMethod as PaymentMethod,
 
       webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       embed: [OrderEmbed.payments],
       payment: {
         webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
+        issuer: paymentIssuer ?? ''
       },
 
       redirectUrl: parsedCtPayment.redirectUrl || redirectUrl,
@@ -111,8 +113,6 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
-    orderParams.method = PaymentMethod[ctPayment.paymentMethodInfo?.method as PaymentMethod];
-    if (ctPayment.paymentMethodInfo?.issuer && orderParams.payment) orderParams.payment.issuer = ctPayment.paymentMethodInfo?.issuer;
     return Promise.resolve(orderParams);
 
     // TODO: Category for mollie is required on one of line items when using voucher. This feature is not supported atm

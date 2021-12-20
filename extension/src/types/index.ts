@@ -93,7 +93,6 @@ export type CTPayment = {
   paymentMethodInfo: {
     method: string;
     paymentInterface?: string;
-    issuer?: string;
   };
   transactions?: CTTransaction[];
   key?: string;
@@ -138,7 +137,6 @@ export enum ControllerAction {
   UpdateShipment = 'updateShipment',
   CancelOrder = 'cancelOrder',
   NoAction = 'noAction',
-  Error = 'error',
 }
 
 export enum CTTransactionType {

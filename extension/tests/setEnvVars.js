@@ -15,3 +15,4 @@ const testConfig = JSON.stringify({
 });
 
 process.env.CT_MOLLIE_CONFIG = testConfig;
+process.env.DISABLE_MOCKED_WARNING=true
