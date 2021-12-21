@@ -76,7 +76,7 @@ Log transports are where the logs are written to. If this isn't provided in the 
 
 ## AWS Lambda
 
-1. Run `npm run zip-lambda-function` from the repository root directory (where package.json is located), to zip the contents in preparation for uploading to AWS
+1. Run `npm run zip-aws-lambda` from the repository root directory (where package.json is located), to zip the contents in preparation for uploading to AWS
 2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 14.x.
 3. Upload the 'extension-module.zip' file to the lambda function (in the code section, select upload from zip file)
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
@@ -93,7 +93,9 @@ Setting up the extension as a google cloud function requires an existing functio
 
 ## Azure
 
-// TODO
+1. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
+2. Upload the generated zip file to your azure cloud function ([Guide to creating cloud functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+3. Set Runtime to `Node.js 16` and change entry point to `handler`
 
 Add the following global variables into the config file:
 
@@ -101,6 +103,29 @@ Add the following global variables into the config file:
     AZURE_FUNCTIONAPP_PACKAGE_PATH=<> _Optional_
     AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> _Optional_
 
+### [Config](#azureConfig)
+[Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
+Therefore the configuration must be defined in the same format as `local.settings.json` file
+```
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "",
+    "CT_MOLLIE_CONFIG:mollie:apiKey": "mollieApiKey",
+    "CT_MOLLIE_CONFIG:commercetools:authUrl": "example_auth_url",
+    "CT_MOLLIE_CONFIG:commercetools:clientId": "example_client_id",
+    "CT_MOLLIE_CONFIG:commercetools:clientSecret": "example_client_secret",
+    "CT_MOLLIE_CONFIG:commercetools:host": "example_host",
+    "CT_MOLLIE_CONFIG:commercetools:projectKey": "example_project_key"
+    "CT_MOLLIE_CONFIG:service:port": "example_port",
+    "CT_MOLLIE_CONFIG:service:logLevel": "example_logLevel",
+    "CT_MOLLIE_CONFIG:service:logTransports": "example_logTransports",
+    "CT_MOLLIE_CONFIG:service:webhookUrl": "example_webhookUrl",
+    "CT_MOLLIE_CONFIG:service:redirectUrl": "example_redirectUrl",
+  }
+}
+```
 ## Docker
 
 To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:
