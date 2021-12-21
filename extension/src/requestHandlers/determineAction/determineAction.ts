@@ -61,9 +61,6 @@ const checkPaymentMethodInput = (paymentMethod: string): { isValid: boolean; err
       isValid = false;
       errorMessage = `Invalid paymentMethodInfo.method "${method}"`;
       break;
-    case issuer && !doesPaymentMethodSupportIssuer(method as PaymentMethod):
-      isValid = false;
-      errorMessage = `Payment method "${method}" does not support issuers`;
     default:
       break;
   }
@@ -79,34 +76,17 @@ const checkPaymentMethodInput = (paymentMethod: string): { isValid: boolean; err
  * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
  * in V3.6 or V4 of the mollie node SDK.
  *
- * Until then, we cast 'voucher'/'mybank' as PaymentMethod and track this in Issue #34
+ * Until then, we cast 'mybank' as PaymentMethod and track this in Issue #34
  * https://github.com/mollie/commercetools/issues/34
+ * Voucher is out of scope for V1.
  *
  */
 const hasValidPaymentMethod = (method: string | undefined) => {
-  if (method === 'voucher' || method == 'mybank') {
+  if (method == 'mybank') {
     return true;
   }
   return !!PaymentMethod[method as PaymentMethod];
 };
-
-/**
- * Checks whether the payment method is valid with an issuer
- * @param issuer
- * @returns {boolean}
- */
-function doesPaymentMethodSupportIssuer(paymentMethod: PaymentMethod): boolean {
-  switch (true) {
-    case paymentMethod === PaymentMethod.ideal:
-    case paymentMethod === PaymentMethod.kbc:
-    case paymentMethod === PaymentMethod.giftcard:
-    // Isn't yet in the mollie api but will be added soon - https://github.com/mollie/commercetools/issues/34
-    case paymentMethod === ('voucher' as PaymentMethod):
-      return true;
-    default:
-      return false;
-  }
-}
 
 const isPayLater = (method: PaymentMethod) => {
   const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];

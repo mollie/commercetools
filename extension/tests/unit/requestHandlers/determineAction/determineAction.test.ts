@@ -55,24 +55,6 @@ describe('determineAction', () => {
       const { errorMessage } = determineAction(mockPaymentObject);
       expect(errorMessage).toEqual('Payment method must be set in order to make and manage payment transactions');
     });
-
-    it('should return error message if issuer is present on an incompatible payment method', () => {
-      const mockPaymentObject = {
-        paymentMethodInfo: {
-          paymentInterface: 'mollie',
-          method: 'paypal,ideal_ASNBNL21',
-        },
-        key: 'ord_1234',
-        transactions: [
-          {
-            type: 'Charge',
-            state: 'Initial',
-          },
-        ],
-      };
-      const { errorMessage } = determineAction(mockPaymentObject);
-      expect(errorMessage).toEqual('Payment method "paypal" does not support issuers');
-    });
   });
   describe('getPaymentMethods', () => {
     it('should return GetPaymentMethods action if the correct custom fields are set', () => {
