@@ -127,9 +127,12 @@ export function makeMollieLines(cart: CTCart, locale: string): OrderLine[] {
   // Handle custom line items
   const customLineItems = (cart.customLineItems ?? []).map((l: CTCustomLineItem) => makeMollieLineCustom(l, locale));
   // Handle shipment - make a line item
-  const shipppingLine = makeMollieLineShipping(cart.shippingInfo);
+  if (cart.shippingInfo) {
+    const shipppingLine = makeMollieLineShipping(cart.shippingInfo);
+    lines.concat(shipppingLine);
+  }
 
-  return lines.concat(lineItems, customLineItems, shipppingLine);
+  return lines.concat(lineItems, customLineItems);
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
