@@ -1,28 +1,27 @@
 import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import { Order } from '@mollie/api-client';
+import { cloneDeep, omit } from 'lodash';
 import { createDateNowString, makeMollieAmount } from '../../../src/utils';
-// import Logger from '../../../src/logger/logger';
-import { makeMollieAddress, createCtActions, extractLocalizedName, makeMollieLineCustom, makeMollieLine, makeMollieLines, getCreateOrderParams } from '../../../src/requestHandlers/createOrder';
+import Logger from '../../../src/logger/logger';
+import createOrder, {
+  makeMollieAddress,
+  createCtActions,
+  extractLocalizedName,
+  makeMollieLineCustom,
+  makeMollieLine,
+  makeMollieLines,
+  getCreateOrderParams,
+} from '../../../src/requestHandlers/createOrder';
 
 import { CTCart, CTLineItem, CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
-import { mollieCreateOrderParams, ctCart, ctPayment, ctLineItem } from './constants';
+import { mollieCreateOrderParams, mollieOrder, ctCart, ctPayment, ctLineItem, ctAddress, extensionActions } from './constants';
 
 jest.mock('uuid');
 jest.mock('../../../src/utils');
 
 describe('makeMollieAddress', () => {
   it('Should properly map address fields', () => {
-    const ctAddress = {
-      firstName: 'Piet',
-      lastName: 'Mondriaan',
-      streetName: 'Keizersgracht',
-      streetNumber: '126',
-      postalCode: '1234AB',
-      city: 'Amsterdam',
-      country: 'NL',
-      email: 'coloured_square_lover@basicart.com',
-    };
     expect(makeMollieAddress(ctAddress)).toMatchSnapshot();
   });
 });
@@ -109,6 +108,13 @@ describe('makeMollieLines', () => {
 });
 
 describe('getCreateOrderParams', () => {
+  const mockLogError = jest.fn();
+  beforeEach(() => {
+    Logger.error = mockLogError;
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('Should make create order parameters', async () => {
     mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
@@ -125,6 +131,22 @@ describe('getCreateOrderParams', () => {
       .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' });
 
     await expect(getCreateOrderParams(ctPayment as CTPayment, ctCart as CTCart)).resolves.toMatchObject(mollieCreateOrderParams);
+  });
+  it('Should return error if no billing address on cart', async () => {
+    const expectedError = {
+      field: 'cart.billingAddress',
+      status: 400,
+      title: 'Cart associated with this payment is missing billingAddress',
+    };
+
+    await expect(getCreateOrderParams(ctPayment as CTPayment, omit(ctCart, 'billingAddress') as CTCart)).rejects.toMatchObject(expectedError);
+  });
+  it('Should return error if parsing of createPayment fails', async () => {
+    const ctPaymentBadJson = cloneDeep(ctPayment);
+    ctPaymentBadJson.custom.fields.createPayment = 'unparsable JSON';
+    const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createPayment' };
+
+    await expect(getCreateOrderParams(ctPaymentBadJson as CTPayment, ctCart as CTCart)).rejects.toMatchObject(expectedError);
   });
 });
 
@@ -225,41 +247,74 @@ describe('createCTActions', () => {
   });
 });
 
-// describe.skip('Create orders tests', () => {
-//   const mockLogError = jest.fn();
-//   beforeEach(() => {
-//     Logger.error = mockLogError;
-//     mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
-//   });
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+describe('createOrder', () => {
+  const mockLogError = jest.fn();
+  beforeEach(() => {
+    Logger.error = mockLogError;
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('Returns an array of actions on success', async () => {
+    const commercetoolsClient = { execute: jest.fn().mockResolvedValueOnce({ body: { results: [ctCart] } }) };
+    const getCreateOrderParams = jest.fn().mockResolvedValueOnce(mollieCreateOrderParams);
+    const createOrderActions = jest.fn().mockResolvedValueOnce(extensionActions);
+    const mollieClient = { orders: { create: jest.fn().mockResolvedValueOnce(mollieOrder) } } as any;
+    const expectedResult = {
+      actions: extensionActions,
+      status: 201,
+    };
 
-//   it('Should return an error if mollie order parameters can not be created', async () => {
-//     const mockedCreateOrderRequest = {
-//       custom: { fields: { createOrderRequest: 'banana' } },
-//     };
-//     const expectedError = { status: 400, title: 'Could not make parameters needed to create Mollie order.', field: 'createOrderRequest' };
-//     await expect(getCreateOrderParams(mockedCreateOrderRequest)).rejects.toEqual(expectedError);
-//     expect(mockLogError).toHaveBeenCalledTimes(1);
-//   });
-//   it('Should return an error if mollie order does not return payments', async () => {
-//     const mockedCreateOrderString = '{"orderNumber":"1001"}';
-//     const mockedCtObject = {
-//       custom: { fields: { createOrderRequest: mockedCreateOrderString } },
-//     };
-//     const mockedMollieCreatedOrder: any = {
-//       resource: 'order',
-//       id: 'ord_dsczl7',
-//       profileId: 'pfl_VtWA783A63',
-//       amount: { value: '10.00', currency: 'EUR' },
-//       orderNumber: '1001',
-//     };
-//     const expectedError = {
-//       field: '<MollieOrder>._embedded.payments.[0].id',
-//       status: 400,
-//       title: 'Could not get Mollie payment id.',
-//     };
-//     await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject)).rejects.toEqual(expectedError);
-//   });
-// });
+    await expect(createOrder(ctPayment as CTPayment, mollieClient, commercetoolsClient, getCreateOrderParams, createOrderActions)).resolves.toMatchObject(expectedResult);
+  });
+  it('Returns an error if call to commercetools carts fails', async () => {
+    const mockedError = { status: 400, message: 'Bad request', code: 400 };
+    const commercetoolsClient = { execute: jest.fn().mockRejectedValueOnce(mockedError) } as any;
+    const mollieClient = {} as any;
+    const expectedError = {
+      status: 400,
+      errors: [
+        {
+          code: 'SyntaxError',
+          message: 'Bad request',
+          extensionExtraInfo: { originalStatusCode: 400 },
+        },
+      ],
+    };
+
+    await expect(
+      createOrder(
+        ctPayment as CTPayment,
+        mollieClient,
+        commercetoolsClient,
+        () => {},
+        () => {},
+      ),
+    ).resolves.toMatchObject(expectedError);
+  });
+  it('Returns an error if commercetools cart is not found', async () => {
+    const mockedNoCart = { body: { results: [] } };
+    const commercetoolsClient = { execute: jest.fn().mockResolvedValueOnce(mockedNoCart) } as any;
+    const mollieClient = {} as any;
+    const expectedError = {
+      status: 400,
+      errors: [
+        {
+          code: 'ObjectNotFound',
+          message: 'Could not find Cart associated with the payment 95437342-d64f-4bfb-bc4e-eed6f1769d2e.',
+          extensionExtraInfo: { originalStatusCode: 404 },
+        },
+      ],
+    };
+
+    await expect(
+      createOrder(
+        ctPayment as CTPayment,
+        mollieClient,
+        commercetoolsClient,
+        () => {},
+        () => {},
+      ),
+    ).resolves.toMatchObject(expectedError);
+  });
+});

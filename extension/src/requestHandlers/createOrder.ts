@@ -204,7 +204,13 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
   }
 }
 
-export default async function createOrder(ctPayment: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrder(
+  ctPayment: CTPayment,
+  mollieClient: MollieClient,
+  commercetoolsClient: any,
+  getCreateOrderParams: Function,
+  createCtActions: Function,
+): Promise<CTUpdatesRequestedResponse> {
   const paymentId = ctPayment?.id;
   try {
     const getCartByPaymentOptions = {
