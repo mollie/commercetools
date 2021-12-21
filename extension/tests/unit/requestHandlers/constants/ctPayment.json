@@ -1,0 +1,37 @@
+{
+  "id": "95437342-d64f-4bfb-bc4e-eed6f1769d2e",
+  "version": 1,
+  "lastMessageSequenceNumber": 1,
+  "createdAt": "2021-12-17T16:14:15.473Z",
+  "lastModifiedAt": "2021-12-17T16:14:15.473Z",
+  "lastModifiedBy": {
+    "clientId": "A-7gCPuzUQnNSdDwlOCCngFj",
+    "isPlatformClient": false
+  },
+  "createdBy": {
+    "clientId": "A-7gCPuzUQnNSdDwlOCCngFj",
+    "isPlatformClient": false
+  },
+  "amountPlanned": {
+    "type": "centPrecision",
+    "currencyCode": "EUR",
+    "centAmount": 712,
+    "fractionDigits": 2
+  },
+  "paymentMethodInfo": {
+    "paymentInterface": "Mollie",
+    "method": "ideal"
+  },
+  "custom": {
+    "type": {
+      "typeId": "type",
+      "id": "c11764fa-4e07-4cc0-ba40-e7dfc8d67b4e"
+    },
+    "fields": {
+      "createPayment": "{\"redirectUrl\":\"https://www.redirect.com/\",\"webhookUrl\":\"https://www.webhook.com\",\"locale\":\"nl_NL\"}"
+    }
+  },
+  "paymentStatus": {},
+  "transactions": [],
+  "interfaceInteractions": []
+}
