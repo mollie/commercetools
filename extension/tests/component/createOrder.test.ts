@@ -6,12 +6,17 @@ import app from '../../src/app';
 import config from '../../config/config';
 import Logger from '../../src/logger/logger';
 
-import { noCartFoundForGivenPaymentId, cartFoundWith2LineItemsForGivenPaymentId } from './mockResponses/commercetoolsData/cartResponses.data';
+import {
+  noCartFoundForGivenPaymentId,
+  cartFoundWith2LineItemsForGivenPaymentId,
+  cartFoundWith2LineItemsAndOneCustomLineItemForGivenPaymentId,
+} from './mockResponses/commercetoolsData/cartResponses.data';
 import {
   paymentMethodNotEnabledInProfile,
   amountLowerThanMinimumKlarnaSliceIt,
   orderCreatedWithTwoLinesUsingIdeal,
   orderCreatedWithTwoLineItemsUsingKlarna,
+  orderCreatedIncludingDiscountLineUsingIdeal,
 } from './mockResponses/mollieData/createOrder.data';
 
 jest.mock('uuid');
@@ -45,7 +50,7 @@ describe('Create Order', () => {
   };
   let authTokenScope: any;
   beforeAll(() => {
-    // Ensure consisten uuid and datetime
+    // Ensure consistent uuid and datetime
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
     mocked(uuid).mockReturnValue('b2bd1698-9923-4704-9729-02db2de495d1');
     // Credentials authentication flow is called first by commercetools client
@@ -268,7 +273,7 @@ describe('Create Order', () => {
       expect(orderCreatedWithPayNowMethodScope.isDone()).toBeTruthy();
     });
 
-    it('Authorization works', async () => {
+    it('200 - Order created successfully using pay later method (Klarnapaylater)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
@@ -312,6 +317,53 @@ describe('Create Order', () => {
 
       expect(getCartByPaymentIdScope.isDone()).toBeTruthy();
       expect(orderCreatedWithPayLaterMethodScope.isDone()).toBeTruthy();
+    });
+
+    it('200 - Order created from cart with Line Items and Custom Line Items', async () => {
+      const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
+        .get('/carts')
+        .query(true) // mock the url regardless of query string
+        .reply(200, cartFoundWith2LineItemsAndOneCustomLineItemForGivenPaymentId);
+      const orderCreatedWithDiscountLineScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedIncludingDiscountLineUsingIdeal);
+
+      const mockCTPaymentObj = {
+        ...baseMockCTPaymentObj,
+      };
+      mockCTPaymentObj.resource.obj.id = '990d9419-62c2-44e5-91d4-8cb9e5cc6518';
+      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
+      mockCTPaymentObj.resource.obj['transactions'] = [
+        {
+          id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
+          type: 'Charge',
+          state: 'Initial',
+          amount: {
+            currencyCode: 'EUR',
+            centAmount: 88500,
+          },
+        },
+      ];
+
+      const res = await request(app).post('/').send(mockCTPaymentObj);
+      const { status, text } = res;
+      expect(status).toBe(200);
+
+      const parsedActions = JSON.parse(text);
+      const { actions } = parsedActions;
+      expect(actions).toHaveLength(6);
+
+      // Ensure the interface interaction contains the checkout url
+      const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
+      expect(JSON.parse(interfaceInteractionAction.fields.response)).toEqual({
+        mollieOrderId: 'ord_ca1j7q',
+        checkoutUrl: 'https://www.mollie.com/checkout/order/ca1j7q',
+        transactionId: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
+      });
+      // Snapshot all update actions
+      actions.forEach((action: any) => {
+        expect(action).toMatchSnapshot();
+      });
+      expect(getCartByPaymentIdScope.isDone()).toBeTruthy();
+      expect(orderCreatedWithDiscountLineScope.isDone()).toBeTruthy();
     });
   });
 });

@@ -471,4 +471,247 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
   },
 };
 
-export const orderCreatedWithTwoLinesUsingKlarna = {};
+export const orderCreatedIncludingDiscountLineUsingIdeal = {
+  resource: 'order',
+  id: 'ord_ca1j7q',
+  profileId: 'pfl_a2jBK6dR32',
+  method: 'ideal',
+  amount: {
+    value: '885.00',
+    currency: 'EUR',
+  },
+  status: 'created',
+  isCancelable: true,
+  metadata: {
+    cartId: '84e5f274-c413-404e-b938-ffb45ce63f61',
+  },
+  createdAt: '2021-12-21T07:33:07+00:00',
+  expiresAt: '2022-01-18T07:33:07+00:00',
+  mode: 'test',
+  locale: 'nl_NL',
+  billingAddress: {
+    streetAndNumber: 'Picassostraat 4711',
+    postalCode: '1111AB',
+    city: 'Amsterdam',
+    country: 'NL',
+    givenName: 'Pablo',
+    familyName: 'Picasso',
+    email: 'picasso@mail.com',
+  },
+  shopperCountryMustMatchBillingCountry: false,
+  orderNumber: '990d9419-62c2-44e5-91d4-8cb9e5cc6518',
+  shippingAddress: {
+    streetAndNumber: 'Picassostraat 4711',
+    postalCode: '1111AB',
+    city: 'Amsterdam',
+    country: 'NL',
+    givenName: 'Diego',
+    familyName: 'Ruiz y Picasso',
+    email: 'picasso@mail.com',
+  },
+  redirectUrl: 'https://google.com',
+  webhookUrl: 'https://google.com',
+  lines: [
+    {
+      resource: 'orderline',
+      id: 'odl_1.uvuwbi',
+      orderId: 'ord_ca1j7q',
+      name: 'Sweater Pinko white',
+      sku: 'M0E20000000DJR9',
+      type: 'physical',
+      status: 'created',
+      metadata: {
+        cartLineItemId: '3f7c61ab-27d8-4b52-b7e6-00524b88c01b',
+      },
+      isCancelable: false,
+      quantity: 2,
+      quantityShipped: 0,
+      amountShipped: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityRefunded: 0,
+      amountRefunded: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityCanceled: 0,
+      amountCanceled: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      shippableQuantity: 0,
+      refundableQuantity: 0,
+      cancelableQuantity: 0,
+      unitPrice: {
+        value: '212.50',
+        currency: 'EUR',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        value: '73.76',
+        currency: 'EUR',
+      },
+      totalAmount: {
+        value: '425.00',
+        currency: 'EUR',
+      },
+      createdAt: '2021-12-21T07:33:07+00:00',
+    },
+    {
+      resource: 'orderline',
+      id: 'odl_1.1uasgg',
+      orderId: 'ord_ca1j7q',
+      name: 'Bag medium GUM black',
+      sku: 'A0E2000000027DV',
+      type: 'physical',
+      status: 'created',
+      metadata: {
+        cartLineItemId: 'a8f2d939-fedb-4164-ada0-e638252d0993',
+      },
+      isCancelable: false,
+      quantity: 4,
+      quantityShipped: 0,
+      amountShipped: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityRefunded: 0,
+      amountRefunded: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityCanceled: 0,
+      amountCanceled: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      shippableQuantity: 0,
+      refundableQuantity: 0,
+      cancelableQuantity: 0,
+      unitPrice: {
+        value: '118.75',
+        currency: 'EUR',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        value: '82.44',
+        currency: 'EUR',
+      },
+      totalAmount: {
+        value: '475.00',
+        currency: 'EUR',
+      },
+      createdAt: '2021-12-21T07:33:07+00:00',
+    },
+    {
+      resource: 'orderline',
+      id: 'odl_1.7xk3r6',
+      orderId: 'ord_ca1j7q',
+      name: 'Holiday Discount',
+      sku: null,
+      type: 'physical',
+      status: 'created',
+      metadata: {
+        cartCustomLineItemId: 'a568f5eb-a788-497a-a93c-13050edaaf17',
+      },
+      isCancelable: false,
+      quantity: 1,
+      quantityShipped: 0,
+      amountShipped: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityRefunded: 0,
+      amountRefunded: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityCanceled: 0,
+      amountCanceled: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      shippableQuantity: 0,
+      refundableQuantity: 0,
+      cancelableQuantity: 0,
+      unitPrice: {
+        value: '-15.00',
+        currency: 'EUR',
+      },
+      vatRate: '0.00',
+      vatAmount: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      totalAmount: {
+        value: '-15.00',
+        currency: 'EUR',
+      },
+      createdAt: '2021-12-21T07:33:07+00:00',
+    },
+  ],
+  _embedded: {
+    payments: [
+      {
+        resource: 'payment',
+        id: 'tr_D6V5dfjWfz',
+        mode: 'test',
+        createdAt: '2021-12-21T07:33:07+00:00',
+        amount: {
+          value: '885.00',
+          currency: 'EUR',
+        },
+        description: 'Order 990d9419-62c2-44e5-91d4-8cb9e5cc6518',
+        method: 'ideal',
+        metadata: null,
+        status: 'open',
+        isCancelable: false,
+        expiresAt: '2021-12-21T07:48:07+00:00',
+        locale: 'nl_NL',
+        profileId: 'pfl_a2jBK6dR32',
+        orderId: 'ord_ca1j7q',
+        sequenceType: 'oneoff',
+        redirectUrl: 'https://google.com',
+        webhookUrl: 'https://google.com',
+        _links: {
+          self: {
+            href: 'https://api.mollie.com/v2/payments/tr_D6V5dfjWfz',
+            type: 'application/hal+json',
+          },
+          checkout: {
+            href: 'https://www.mollie.com/checkout/select-issuer/ideal/D6V5dfjWfz',
+            type: 'text/html',
+          },
+          dashboard: {
+            href: 'https://www.mollie.com/dashboard/org_12908718/payments/tr_D6V5dfjWfz',
+            type: 'text/html',
+          },
+          order: {
+            href: 'https://api.mollie.com/v2/orders/ord_ca1j7q',
+            type: 'application/hal+json',
+          },
+        },
+      },
+    ],
+    refunds: [],
+  },
+  _links: {
+    self: {
+      href: 'https://api.mollie.com/v2/orders/ord_ca1j7q?embed=payments%2Crefunds',
+      type: 'application/hal+json',
+    },
+    dashboard: {
+      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_ca1j7q',
+      type: 'text/html',
+    },
+    checkout: {
+      href: 'https://www.mollie.com/checkout/order/ca1j7q',
+      type: 'text/html',
+    },
+    documentation: {
+      href: 'https://docs.mollie.com/reference/v2/orders-api/get-order',
+      type: 'text/html',
+    },
+  },
+};
