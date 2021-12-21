@@ -1,7 +1,17 @@
 import request from 'supertest';
 import app from '../../src/app';
+import { mocked } from 'ts-jest/utils';
+import { checkAuthorizationHeader } from '../../src/authentication/authenticationHandler';
+jest.mock('../../src/authentication/authenticationHandler');
 
 describe('Health check', () => {
+  mocked(checkAuthorizationHeader).mockImplementation(() => {
+    return {
+      isValid: true,
+      message: '',
+    };
+  });
+
   it('Should have /health endpoint to check', async () => {
     const res = await request(app).get('/health');
     expect(res.statusCode).toBe(200);

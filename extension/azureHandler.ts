@@ -4,6 +4,7 @@ import {HandleRequestInput, HandleRequestSuccess} from "./src/types";
 loadSettings();
 
 import handleRequest from "./src/requestHandlers/handleRequest";
+
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
 
     /*
@@ -11,6 +12,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?tabs=javascript
      */
     const requestInput = new HandleRequestInput('/', req.method!.toString(), req.body);
+    const headers = new Map([['authorization',req.headers['authorization'] ??'']]);
     const result = await handleRequest(requestInput);
     if (result instanceof HandleRequestSuccess) {
         context.res = {

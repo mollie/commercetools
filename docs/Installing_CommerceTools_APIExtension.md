@@ -6,6 +6,13 @@
 
 **TODO** Add installation steps here
 
+### Authentication - HTTP Destination
+
+For HTTP Destination API Extensions, we can add an authorization header. We use Basic authorization, configured with a username and password which is set in the environment variables.
+
+To enable Authentication on an HTTP trigger API Extension, make sure you add the `Authorization Header` as per the docs:
+https://docs.commercetools.com/api/projects/api-extensions#http-destination-authentication
+
 ## Configure custom fields for your project
 
 We use Custom Fields on the Payment, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project.

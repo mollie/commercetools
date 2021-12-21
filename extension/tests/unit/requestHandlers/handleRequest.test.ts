@@ -5,6 +5,7 @@ import handleRequest, { processAction } from '../../../src/requestHandlers/handl
 import { determineAction } from '../../../src/requestHandlers/determineAction/determineAction';
 import formatExtensionErrorResponse from '../../../src/errorHandlers';
 import { ControllerAction, CTEnumErrors, HandleRequestFailure, HandleRequestInput, HandleRequestSuccess } from '../../../src/types/index';
+import { checkAuthorizationHeader } from '../../../src/authentication/authenticationHandler';
 import * as ut from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
@@ -12,11 +13,18 @@ jest.mock('../../../src/requestHandlers/actions');
 jest.mock('../../../src/requestHandlers/determineAction/determineAction');
 jest.mock('../../../src/errorHandlers');
 jest.mock('../../../src/utils');
+jest.mock('../../../src/authentication/authenticationHandler');
 
 describe('handleRequest', () => {
   let reqInput = {} as HandleRequestInput;
   const mockLogError = jest.fn();
   const mockLogDebug = jest.fn();
+  mocked(checkAuthorizationHeader).mockImplementation(() => {
+    return {
+      isValid: true,
+      message: '',
+    };
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
