@@ -1,5 +1,5 @@
 import { MollieClient, Refund } from '@mollie/api-client';
-import PaymentsRefundsResource from '@mollie/api-client/dist/types/src/resources/payments/refunds/PaymentRefundsResource';
+import PaymentRefundsBinder from '@mollie/api-client/dist/types/src/binders/payments/refunds/PaymentRefundsBinder';
 import Logger from '../../../src/logger/logger';
 import { createCustomRefund } from '../../../src/requestHandlers/createCustomRefund';
 
@@ -7,7 +7,7 @@ describe('createCustomRefund', () => {
   const mockLogError = jest.fn();
 
   const mockMollieClient = {} as MollieClient;
-  const mockPaymentRefunds = {} as PaymentsRefundsResource;
+  const mockPaymentRefunds = {} as PaymentRefundsBinder;
 
   const mockRefund = {} as Refund;
   mockMollieClient.payments_refunds = mockPaymentRefunds;
@@ -24,7 +24,7 @@ describe('createCustomRefund', () => {
   const createCustomRefundRequestWithDescriptionAndMetadata =
     '{ "interactionId": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 }, "description": "refund", "metadata": { "code": "HA_789"}}';
 
-  const mockCreate = jest.fn().mockImplementation(() => mockRefund);
+  const mockCreate = jest.fn().mockResolvedValue(() => mockRefund);
   beforeEach(() => {
     jest.clearAllMocks();
     Logger.error = mockLogError;
