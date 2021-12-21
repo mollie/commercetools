@@ -2,6 +2,60 @@ import { determineAction } from '../../../../src/requestHandlers/determineAction
 import { ControllerAction } from '../../../../src/types';
 
 describe('determineAction', () => {
+  describe('No Action', () => {
+    // Happy
+    it('should return no action if the interface is set to mollie but there are no transactions', () => {
+      const mockPaymentObject = {
+        paymentMethodInfo: {
+          paymentInterface: 'mollie',
+        },
+        custom: {
+          fields: {
+            createPayment: '{"redirectUrl": "webshop.com"}',
+          },
+        },
+      };
+
+      const { action } = determineAction(mockPaymentObject);
+      expect(action).toBe(ControllerAction.NoAction);
+    });
+
+    // Unhappy
+    it('should error if payment method provided is invalid', () => {
+      const mockPaymentObject = {
+        paymentMethodInfo: {
+          paymentInterface: 'mollie',
+          method: 'payfriend',
+        },
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: 'Charge',
+            state: 'Initial',
+          },
+        ],
+      };
+      const { errorMessage } = determineAction(mockPaymentObject);
+      expect(errorMessage).toEqual('Invalid paymentMethodInfo.method "payfriend"');
+    });
+
+    it('should error message if payment method is not set', () => {
+      const mockPaymentObject = {
+        paymentMethodInfo: {
+          paymentInterface: 'mollie',
+        },
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: 'Charge',
+            state: 'Initial',
+          },
+        ],
+      };
+      const { errorMessage } = determineAction(mockPaymentObject);
+      expect(errorMessage).toEqual('Payment method must be set in order to make and manage payment transactions');
+    });
+  });
   describe('getPaymentMethods', () => {
     it('should return GetPaymentMethods action if the correct custom fields are set', () => {
       const mockPaymentObject = {
@@ -49,7 +103,7 @@ describe('determineAction', () => {
       const mockPaymentObject = {
         paymentMethodInfo: {
           paymentInterface: 'mollie',
-          method: 'paypal',
+          method: 'ideal,ideal_ASNBNL21',
         },
         key: 'ord_1234',
         transactions: [

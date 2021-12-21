@@ -1,5 +1,3 @@
-# Pull Request Template
-
 ## Description
 
 Summary of the change, which issue does it address (if applicable, the # of the issue), why was it necessary.
@@ -14,9 +12,6 @@ Summary of the change, which issue does it address (if applicable, the # of the 
 
 Please describe the tests that you ran to verify your changes, providing instructions so it can be reproduced.
 Please also list any relevant details for your test configuration
-
-- Test A
-- Test B
 
 ## Checklist:
 
