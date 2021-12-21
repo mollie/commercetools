@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
 import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem, CTCustomLineItem } from '../types';
@@ -95,17 +95,41 @@ export function makeMollieLine(line: CTLineItem, locale: string): OrderLine {
   return lineItem as OrderLine;
 }
 
+export function makeMollieLineShipping(shippingInfo: any): OrderLine {
+  const { price, discountedPrice } = shippingInfo;
+
+  const shippingLine = {
+    name: `Shipping - ${shippingInfo?.shippingMethodName}`,
+    quantity: 1,
+    unitPrice: makeMollieAmount(price),
+    vatRate: (shippingInfo.taxRate.amount * 100).toFixed(2),
+    vatAmount: makeMollieAmount({ ...shippingInfo.taxedPrice.totalGross, centAmount: shippingInfo.taxedPrice.totalGross.centAmount - shippingInfo.taxedPrice.totalNet.centAmount }),
+    type: OrderLineType.shipping_fee,
+  };
+  // handle discounts
+  if (discountedPrice) {
+    const discountCentAmount = price.centAmount - discountedPrice.value.centAmount;
+    const mollieDiscountPrice = makeMollieAmount({ ...price, centAmount: discountCentAmount });
+    Object.assign(shippingLine, { discount: mollieDiscountPrice });
+  }
+  // Take totalAmount from discountedPrice if present, otherwise use price
+  const ctTotalAmount = discountedPrice ? { ...discountedPrice.value } : { ...price };
+  const mollieTotalAmount = makeMollieAmount(ctTotalAmount);
+  Object.assign(shippingLine, { totalAmount: mollieTotalAmount });
+
+  return shippingLine as OrderLine;
+}
+
 export function makeMollieLines(cart: CTCart, locale: string): OrderLine[] {
   const lines: OrderLine[] = [];
   // Handle line items
   const lineItems = (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l, locale));
   // Handle custom line items
   const customLineItems = (cart.customLineItems ?? []).map((l: CTCustomLineItem) => makeMollieLineCustom(l, locale));
-
   // Handle shipment - make a line item
-  // lines.concat(makeMollieLineShipping(cart.shippingInfo))
+  const shipppingLine = makeMollieLineShipping(cart.shippingInfo);
 
-  return lines.concat(lineItems, customLineItems);
+  return lines.concat(lineItems, customLineItems, shipppingLine);
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
@@ -134,6 +158,10 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
       expiresAt: parsedCtPayment.expiresAt || '',
       metadata: { cartId: cart.id },
     };
+
+    // Call a method about shipping?
+
+    // orderParams.addAnotherLine = shippingLine;
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
