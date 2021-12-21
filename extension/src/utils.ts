@@ -1,10 +1,12 @@
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { Action, ControllerAction, CTMoney } from './types';
+import { PaymentMethod } from '@mollie/api-client';
+
 /**
  * Generates an ISO string date
- * @returns {String} Returns the current date converted to ISO.
+ * @returns Returns the current date converted to ISO.
  */
-export function createDateNowString() {
+export function createDateNowString(): string {
   return new Date().toISOString();
 }
 

@@ -28,11 +28,13 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
       errorMessage,
     };
   } else {
+    // Check payment method and issuer (if present) are valid
     const method = paymentObject?.paymentMethodInfo?.method;
-    if (!hasValidPaymentMethod(method)) {
+    const { isValid, errorMessage } = checkPaymentMethodInput(method);
+    if (!isValid) {
       return {
-        action: ControllerAction.Error,
-        errorMessage: `Invalid paymentMethodInfo.method ${method}. Payment method must be set in order to make and manage payment transactions`,
+        action: ControllerAction.NoAction,
+        errorMessage: errorMessage,
       };
     } else {
       if (isPayLater(method)) {
@@ -44,30 +46,46 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
   }
 };
 
+const checkPaymentMethodInput = (paymentMethod: string): { isValid: boolean; errorMessage: string } => {
+  let errorMessage = '';
+  let isValid = true;
+  const paymentMethodString = paymentMethod ?? '';
+  const [method, issuer] = paymentMethodString.split(',');
+
+  switch (true) {
+    case !method:
+      isValid = false;
+      errorMessage = 'Payment method must be set in order to make and manage payment transactions';
+      break;
+    case !hasValidPaymentMethod(method):
+      isValid = false;
+      errorMessage = `Invalid paymentMethodInfo.method "${method}"`;
+      break;
+    default:
+      break;
+  }
+  return {
+    isValid,
+    errorMessage,
+  };
+};
+
 /**
  * @param method string - mollie payment method enum
- *
- * If no valid payment methods are provided, this will return '' and
- * the 'method' parameter will not be passed as part of the createOrder request
  *
  * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
  * in V3.6 or V4 of the mollie node SDK.
  *
- * Until then, we cast 'voucher'/'mybank' as PaymentMethod and track this in Issue #34
+ * Until then, we cast 'mybank' as PaymentMethod and track this in Issue #34
  * https://github.com/mollie/commercetools/issues/34
- *
- * N.B. this may be updated to handle issuers (i.e. for vouchers, iDEAL) later on
+ * Voucher is out of scope for V1.
  *
  */
 const hasValidPaymentMethod = (method: string | undefined) => {
-  if (!method) {
-    return false;
-  } else {
-    if (method === 'voucher' || method == 'mybank') {
-      return true;
-    }
-    return !!PaymentMethod[method as PaymentMethod];
+  if (method == 'mybank') {
+    return true;
   }
+  return !!PaymentMethod[method as PaymentMethod];
 };
 
 const isPayLater = (method: PaymentMethod) => {
