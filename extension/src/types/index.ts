@@ -159,15 +159,15 @@ export enum CTTransactionState {
 }
 
 export class HandleRequestInput {
-  constructor(public httpPath: string, public httpMethod: string, public httpBody: any) { }
+  constructor(public httpPath: string, public httpMethod: string, public httpBody: any) {}
 }
 
 export class HandleRequestSuccess {
-  constructor(public status: number, public actions: Action[] = []) { }
+  constructor(public status: number, public actions: Action[] = []) {}
 }
 
 export class HandleRequestFailure {
-  constructor(public status: number, public errors: CTError[] = []) { }
+  constructor(public status: number, public errors: CTError[] = []) {}
 }
 
 export type HandleRequestOutput = HandleRequestSuccess | HandleRequestFailure;
