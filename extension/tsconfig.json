@@ -17,6 +17,7 @@
     "src/**/*",
     "lambdaHandler.ts",
     "gcpFunctionHandler.ts",
+    "azureHandler.ts"
   ],
   "exclude": [
     "node_modules",
