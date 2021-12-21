@@ -11,6 +11,8 @@ const testConfig = JSON.stringify({
   },
   service: {
     locale: 'nl_NL',
+    webhookUrl: 'http://dummywebhook.com',
+    redirectUrl: 'http://dummyredirect.com',
   },
 });
 

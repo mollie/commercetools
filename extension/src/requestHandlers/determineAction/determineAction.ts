@@ -30,7 +30,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
   } else {
     // Check payment method and issuer (if present) are valid
     const method = paymentObject?.paymentMethodInfo?.method;
-    const { isValid, errorMessage } = checkPaymentMethodAndIssuer(method);
+    const { isValid, errorMessage } = checkPaymentMethodInput(method);
     if (!isValid) {
       return {
         action: ControllerAction.NoAction,
@@ -46,7 +46,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
   }
 };
 
-const checkPaymentMethodAndIssuer = (paymentMethod: string): { isValid: boolean; errorMessage: string } => {
+const checkPaymentMethodInput = (paymentMethod: string): { isValid: boolean; errorMessage: string } => {
   let errorMessage = '';
   let isValid = true;
   const paymentMethodString = paymentMethod ?? '';
