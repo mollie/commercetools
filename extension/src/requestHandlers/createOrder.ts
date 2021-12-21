@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
 import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem, CTCustomLineItem } from '../types';
@@ -113,6 +113,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     return Promise.reject({ status: 400, title: 'Cart associated with this payment is missing billingAddress', field: 'cart.billingAddress' });
   }
   try {
+    const [paymentMethod, paymentIssuer] = ctPayment.paymentMethodInfo.method.split(',');
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment || '{}');
     const locale = parsedCtPayment.locale || configLocale;
     const orderParams: OrderCreateParams = {
@@ -121,14 +122,14 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
       lines: makeMollieLines(cart, locale),
       locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
-      method: ctPayment.paymentMethodInfo.method as PaymentMethod,
+      method: paymentMethod as PaymentMethod,
 
       webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
       embed: [OrderEmbed.payments],
       payment: {
         webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
+        issuer: paymentIssuer ?? '',
       },
-
       redirectUrl: parsedCtPayment.redirectUrl || redirectUrl,
       expiresAt: parsedCtPayment.expiresAt || '',
       metadata: { cartId: cart.id },
@@ -136,7 +137,6 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
-
     return Promise.resolve(orderParams);
   } catch (error) {
     Logger.error({ error });
