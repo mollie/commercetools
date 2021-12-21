@@ -1,24 +1,39 @@
 import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import { Order } from '@mollie/api-client';
-import { createDateNowString } from '../../../src/utils';
+import { createDateNowString, makeMollieAmount } from '../../../src/utils';
 // import Logger from '../../../src/logger/logger';
 import {
-  // getCreateOrderParams,
-  // extractLine,
-  // getBillingAddress,
+  makeMollieAddress,
   createCtActions,
-  // getShippingAddress,
-  // isDiscountAmountValid,
-  // convertCTTaxRateToMollieTaxRate,
   extractLocalizedName,
+  makeMollieLineCustom,
+  makeMollieLine,
+  makeMollieLines,
 } from '../../../src/requestHandlers/createOrder';
-import { CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
+
+import { CTCart, CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
 
 jest.mock('uuid');
 jest.mock('../../../src/utils');
 
-describe('getLocalisedName', () => {
+describe('makeMollieAddress', () => {
+  it('Should properly map address fields', () => {
+    const ctAddress = {
+      "firstName": "Piet",
+      "lastName": "Mondriaan",
+      "streetName": "Keizersgracht",
+      "streetNumber": "126",
+      "postalCode": "1234AB",
+      "city": "Amsterdam",
+      "country": "NL",
+      "email": "coloured_square_lover@basicart.com"
+    }
+    expect(makeMollieAddress(ctAddress)).toMatchSnapshot()
+  });
+});
+
+describe('extractLocalizedName', () => {
   it('should extract random localised name when config locale does not match any names given', () => {
     const mockName = {
       en: 'Red dress',
@@ -46,6 +61,82 @@ describe('getLocalisedName', () => {
     };
     const localizedName = extractLocalizedName(mockName, 'nl_NL');
     expect(localizedName).toBe('Rode jurk');
+  });
+});
+
+describe('makeMollieLineCustom', () => {
+  it('Should make correct customLineItem parameters', () => {
+    mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: "-1.50", currency: "EUR" }) // unitPrice
+      .mockReturnValueOnce({ value: "-1.50", currency: "EUR" }) // totalAmount
+      .mockReturnValueOnce({ value: "-0.26", currency: "EUR" }) // vatAmount
+
+    const customLineItem = {
+      totalPrice: { currencyCode: 'EUR', centAmount: -150 },
+      id: '33025909-90b6-48c6-b885-43feb2c',
+      name: { en: 'Giftcard' },
+      money: { currencyCode: 'EUR', centAmount: -150 },
+      quantity: 1,
+      taxRate: { amount: 0.21 },
+      taxedPrice: {
+        totalNet: { currencyCode: 'EUR', centAmount: -124 },
+        totalGross: { currencyCode: 'EUR', centAmount: -150 }
+      }
+    }
+    expect(makeMollieLineCustom(customLineItem, 'en')).toMatchSnapshot()
+  });
+});
+
+describe('makeMollieLine', () => {
+  it('Should make correct lineItem parameters', () => {
+    mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: "2.00", currency: "EUR" }) // unitPrice
+      .mockReturnValueOnce({ value: "1.42", currency: "EUR" }) // totalAmount
+      .mockReturnValueOnce({ value: "0.25", currency: "EUR" }) // vatAmount
+      .mockReturnValueOnce({ value: "2.58", currency: "EUR" }) // discountAmount
+
+    const lineItem = {
+      id: '5ab4dbee-2e4f-439f-91fd-f1f4bbf1',
+      productId: '6fd97a79-c9f4-490e-9eb7-1b502812',
+      name: { 'en-US': 'Banana' },
+      variant: { sku: '12345' },
+      price: {
+        value: { currencyCode: 'EUR', centAmount: 200 },
+        id: '9af7209c-c43d-4898-9d3d-96e9ba0a1787',
+        discounted: { value: { currencyCode: 'EUR', centAmount: 100 } }
+      },
+      quantity: 2,
+      discountedPrice: {
+        value: { currencyCode: 'EUR', centAmount: 71 },
+        includedDiscounts: [{ discountedAmount: { currencyCode: 'EUR', centAmount: 21 } },
+        { discountedAmount: { currencyCode: 'EUR', centAmount: 8 } }]
+      },
+      taxRate: {
+        amount: 0.21,
+        includedInPrice: true
+      },
+      totalPrice: { currencyCode: 'EUR', centAmount: 142, },
+      taxedPrice: {
+        totalNet: { currencyCode: 'EUR', centAmount: 117, },
+        totalGross: { currencyCode: 'EUR', centAmount: 142, }
+      },
+    }
+    expect(makeMollieLine(lineItem, 'en')).toMatchSnapshot()
+  });
+});
+
+describe('makeMollieLines', () => {
+  it('Should combine lineItems and customLineItems in one array', () => {
+    const testCart = {
+      lineItems: [{}, {}],
+      customLineItems: [{}]
+    } as CTCart
+    const makeMollieLine = jest.fn().mockReturnValue({ name: 'Line Object' })
+    const makeMollieLineCustom = jest.fn().mockReturnValueOnce({ name: 'Custom Line Object' })
+
+    expect(makeMollieLines(testCart, 'nl_NL', makeMollieLine, makeMollieLineCustom)).toHaveLength(3)
+    expect(makeMollieLine).toHaveBeenCalledTimes(2)
+    expect(makeMollieLineCustom).toHaveBeenCalledTimes(1)
   });
 });
 
@@ -509,5 +600,4 @@ describe.skip('Create orders tests', () => {
   //   it('Should validate the discount amount object', () => {
   //     expect(isDiscountAmountValid({ currencyCode: 'EUR', centAmount: 2000 })).toBeTruthy();
   //   });
-  it('', () => {});
 });

@@ -53,3 +53,66 @@ Object {
   "transactionId": "949ab89f-7a71-4c7a-bb43-605354322a96",
 }
 `;
+
+exports[`makeMollieAddress Should properly map address fields 1`] = `
+Object {
+  "city": "Amsterdam",
+  "country": "NL",
+  "email": "coloured_square_lover@basicart.com",
+  "familyName": "Mondriaan",
+  "givenName": "Piet",
+  "postalCode": "1234AB",
+  "streetAndNumber": "Keizersgracht 126",
+}
+`;
+
+exports[`makeMollieLine Should make correct lineItem parameters 1`] = `
+Object {
+  "discountAmount": Object {
+    "currency": "EUR",
+    "value": "2.58",
+  },
+  "metadata": Object {
+    "cartLineItemId": "5ab4dbee-2e4f-439f-91fd-f1f4bbf1",
+  },
+  "name": "Banana",
+  "quantity": 2,
+  "sku": "12345",
+  "totalAmount": Object {
+    "currency": "EUR",
+    "value": "1.42",
+  },
+  "unitPrice": Object {
+    "currency": "EUR",
+    "value": "2.00",
+  },
+  "vatAmount": Object {
+    "currency": "EUR",
+    "value": "0.25",
+  },
+  "vatRate": "21.00",
+}
+`;
+
+exports[`makeMollieLineCustom Should make correct customLineItem parameters 1`] = `
+Object {
+  "metadata": Object {
+    "cartCustomLineItemId": "33025909-90b6-48c6-b885-43feb2c",
+  },
+  "name": "Giftcard",
+  "quantity": 1,
+  "totalAmount": Object {
+    "currency": "EUR",
+    "value": "-1.50",
+  },
+  "unitPrice": Object {
+    "currency": "EUR",
+    "value": "-1.50",
+  },
+  "vatAmount": Object {
+    "currency": "EUR",
+    "value": "-0.26",
+  },
+  "vatRate": "21.00",
+}
+`;

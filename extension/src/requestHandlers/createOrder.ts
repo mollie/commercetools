@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine, OrderLineType } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, OrderCreateParams, Order, OrderEmbed, OrderLine } from '@mollie/api-client';
 import { OrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
 import formatErrorResponse from '../errorHandlers/';
 import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, ControllerAction, CTTransactionState, CTCart, CTLineItem, CTCustomLineItem } from '../types';
@@ -95,7 +95,7 @@ export function makeMollieLine(line: CTLineItem, locale: string): OrderLine {
   return lineItem as OrderLine;
 }
 
-export function makeMollieLines(cart: CTCart, locale: string): OrderLine[] {
+export function makeMollieLines(cart: CTCart, locale: string, makeMollieLine: Function, makeMollieLineCustom: Function): OrderLine[] {
   const lines: OrderLine[] = [];
   // Handle line items
   const lineItems = (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l, locale));
@@ -118,7 +118,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
-      lines: makeMollieLines(cart, locale),
+      lines: makeMollieLines(cart, locale, makeMollieLine, makeMollieLineCustom),
       locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
       method: ctPayment.paymentMethodInfo.method as PaymentMethod,
