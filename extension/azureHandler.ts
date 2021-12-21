@@ -45,6 +45,8 @@ function loadSettings(){
             port: process.env["CT_MOLLIE_CONFIG:service:port"],
             logLevel: process.env["CT_MOLLIE_CONFIG:service:logLevel"],
             logTransports: process.env["CT_MOLLIE_CONFIG:service:logTransports"],
+            webhookUrl: process.env["CT_MOLLIE_CONFIG:service:webhookUrl"],
+            redirectUrl: process.env["CT_MOLLIE_CONFIG:service:redirectUrl"],
         }
 
     }

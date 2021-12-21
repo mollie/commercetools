@@ -105,7 +105,7 @@ Add the following global variables into the config file:
 
 ### [Config](#azureConfig)
 [Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
-Therefore the configuration must be defined as this local.settings.json
+Therefore the configuration must be defined in the same format as `local.settings.json` file
 ```
 {
   "IsEncrypted": false,
@@ -121,6 +121,8 @@ Therefore the configuration must be defined as this local.settings.json
     "CT_MOLLIE_CONFIG:service:port": "example_port",
     "CT_MOLLIE_CONFIG:service:logLevel": "example_logLevel",
     "CT_MOLLIE_CONFIG:service:logTransports": "example_logTransports",
+    "CT_MOLLIE_CONFIG:service:webhookUrl": "example_webhookUrl",
+    "CT_MOLLIE_CONFIG:service:redirectUrl": "example_redirectUrl",
   }
 }
 ```
