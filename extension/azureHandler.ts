@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     } else {
         context.res = {
             status: result.status,
-            body: {actions: result.errors}
+            body: {errors: result.errors}
         }
     }
 };
