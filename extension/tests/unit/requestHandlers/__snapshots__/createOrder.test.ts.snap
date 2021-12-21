@@ -18,7 +18,7 @@ Object {
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 2`] = `
 Object {
-  "action": "setMethodInfoName",
+  "action": "setStatusInterfaceText",
   "interfaceText": undefined,
 }
 `;
