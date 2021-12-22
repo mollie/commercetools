@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
   const result = await handleRequest(requestInput);
   if (result instanceof HandleRequestSuccess) {
     context.res = {
-      status: 200,
+      status: result.status,
       body: { actions: result.actions },
     };
   } else {
