@@ -97,12 +97,10 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
 
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(400);
 
-      const parsedText = JSON.parse(text);
-      const { errors } = parsedText;
-
+      const { errors } = body;
       expect(errors).toHaveLength(1);
       expect(errors[0]).toEqual({
         code: 'ObjectNotFound',
@@ -138,12 +136,10 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
 
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(400);
 
-      const parsedText = JSON.parse(text);
-      const { errors } = parsedText;
-
+      const { errors } = body;
       expect(errors).toHaveLength(1);
       expect(errors[0]).toEqual({
         code: 'SemanticError',
@@ -189,12 +185,10 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
 
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(400);
 
-      const parsedText = JSON.parse(text);
-      const { errors } = parsedText;
-
+      const { errors } = body;
       expect(errors).toHaveLength(1);
       expect(errors[0]).toEqual({
         code: 'SemanticError',
@@ -244,11 +238,11 @@ describe('Create Order', () => {
       ];
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(201);
 
-      const parsedActions = JSON.parse(text);
-      const { actions } = parsedActions;
+      // const parsedActions = JSON.parse(text);
+      const { actions } = body;
       expect(actions).toHaveLength(6);
 
       // Ensure the interface interaction contains the checkout url
@@ -288,11 +282,10 @@ describe('Create Order', () => {
       ];
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(201);
 
-      const parsedActions = JSON.parse(text);
-      const { actions } = parsedActions;
+      const { actions } = body;
       expect(actions).toHaveLength(6);
 
       // Ensure the interface interaction contains the checkout url
@@ -334,11 +327,10 @@ describe('Create Order', () => {
       ];
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(201);
 
-      const parsedActions = JSON.parse(text);
-      const { actions } = parsedActions;
+      const { actions } = body;
       expect(actions).toHaveLength(6);
 
       // Ensure the interface interaction contains the checkout url
