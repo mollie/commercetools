@@ -12,6 +12,7 @@ For HTTP Destination API Extensions, we can add an authorization header. We use 
 
 To enable Authentication on an HTTP trigger API Extension, make sure you add the `Authorization Header` as per the docs:
 https://docs.commercetools.com/api/projects/api-extensions#http-destination-authentication
+Authentication configuration should also be added to `CT_MOLLIE_CONFIG` as described in [deployment docsumentation](./deployment.md)
 
 ## Configure custom fields for your project
 

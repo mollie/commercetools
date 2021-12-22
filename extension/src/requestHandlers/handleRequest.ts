@@ -20,7 +20,7 @@ export default async function handleRequest(input: HandleRequestInput): Promise<
   const { isValid, message } = checkAuthorizationHeader(input.headers);
   if (!isValid) {
     Logger.error(message);
-    return new HandleRequestFailure(400, [{ code: CTEnumErrors.Unauthorized, message: message, extensionExtraInfo: undefined }]);
+    return new HandleRequestFailure(400, [{ code: CTEnumErrors.Unauthorized, message: message }]);
   }
 
   if (input.httpPath !== '/') {
