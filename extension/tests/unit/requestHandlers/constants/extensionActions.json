@@ -1,0 +1,38 @@
+[
+  {
+    "action": "addInterfaceInteraction",
+    "type": {
+      "key": "ct-mollie-integration-interface-interaction-type"
+    },
+    "fields": {
+      "id": "25e1de73-6c50-4329-a5ba-b60a412977d7",
+      "actionType": "createOrder",
+      "createdAt": "2021-12-15T08:21:15.495Z",
+      "request": "{\"transactionId\":\"1eb7b27c-21f1-4cae-88c9-cba670a2ca3d\",\"createPayment\":{\"redirectUrl\":\"https://www.redirect.com/\",\"webhookUrl\":\"https//www.webhook.com\",\"locale\":\"nl_NL\"}}",
+      "response": "{\"mollieOrderId\":\"ord_123456\",\"checkoutUrl\":\"https://www.mollie.com/checkout/order/123456\",\"transactionId\":\"1eb7b27c-21f1-4cae-88c9-cba670a2ca3d\"}"
+    }
+  },
+  {
+    "action": "setStatusInterfaceText",
+    "interfaceText": "created"
+  },
+  {
+    "action": "setKey",
+    "key": "ord_123456"
+  },
+  {
+    "action": "changeTransactionState",
+    "transactionId": "1eb7b27c-21f1-4cae-88c9-cba670a2ca3d",
+    "state": "Pending"
+  },
+  {
+    "action": "changeTransactionInteractionId",
+    "transactionId": "1eb7b27c-21f1-4cae-88c9-cba670a2ca3d",
+    "interactionId": "tr_FQ35yRChjS"
+  },
+  {
+    "action": "changeTransactionTimestamp",
+    "transactionId": "1eb7b27c-21f1-4cae-88c9-cba670a2ca3d",
+    "timestamp": "2021-12-15T08:21:15.495Z"
+  }
+]

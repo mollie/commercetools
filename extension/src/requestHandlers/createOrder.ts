@@ -117,7 +117,7 @@ export function makeMollieLineShipping(shippingInfo: any): OrderLine {
   return shippingLine as OrderLine;
 }
 
-export function makeMollieLines(cart: CTCart, locale: string): OrderLine[] {
+export function makeMollieLines(cart: CTCart, locale: string, makeMollieLine: Function, makeMollieLineCustom: Function): OrderLine[] {
   const lines: OrderLine[] = [];
   // Handle line items
   const lineItems = (cart.lineItems ?? []).map((l: CTLineItem) => makeMollieLine(l, locale));
@@ -140,7 +140,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
-      lines: makeMollieLines(cart, locale),
+      lines: makeMollieLines(cart, locale, makeMollieLine, makeMollieLineCustom),
       locale,
       billingAddress: makeMollieAddress(cart.billingAddress),
       method: paymentMethod as PaymentMethod,
@@ -226,7 +226,13 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
   }
 }
 
-export default async function createOrder(ctPayment: CTPayment, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTUpdatesRequestedResponse> {
+export default async function createOrder(
+  ctPayment: CTPayment,
+  mollieClient: MollieClient,
+  commercetoolsClient: any,
+  getCreateOrderParams: Function,
+  createCtActions: Function,
+): Promise<CTUpdatesRequestedResponse> {
   const paymentId = ctPayment?.id;
   try {
     const getCartByPaymentOptions = {
@@ -238,7 +244,6 @@ export default async function createOrder(ctPayment: CTPayment, mollieClient: Mo
       },
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
-    console.dir(cartByPayment, { depth: null });
     if (!cartByPayment.body.results.length) {
       const error = formatErrorResponse({ status: 404, message: `Could not find Cart associated with the payment ${paymentId}.` });
       return error;

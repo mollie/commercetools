@@ -77,7 +77,6 @@ export type CTLineItem = {
   };
   quantity: number;
   variant: {
-    key: string;
     sku: string;
   };
 };

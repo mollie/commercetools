@@ -3,6 +3,7 @@ import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors, HandleReque
 import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
 import formatErrorResponse from '../errorHandlers';
+import { getCreateOrderParams, createCtActions as createOrderActions } from './createOrder';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getShipmentParams as getUpdateShipmentParams, createCtActions as updateShipmentActions } from './updateShipment';
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
@@ -68,7 +69,7 @@ const processAction = async function (action: ControllerAction, ctPaymentObject:
       break;
     case ControllerAction.CreateOrder:
       Logger.debug(`action: ${ControllerAction.CreateOrder}`);
-      result = await actions.createOrder(ctPaymentObject, mollieClient, commercetoolsClient);
+      result = await actions.createOrder(ctPaymentObject, mollieClient, commercetoolsClient, getCreateOrderParams, createOrderActions);
       break;
     case ControllerAction.CreateOrderPayment:
       Logger.debug(`action: ${ControllerAction.CreateOrderPayment}`);
