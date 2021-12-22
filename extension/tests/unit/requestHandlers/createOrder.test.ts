@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
-import { Order } from '@mollie/api-client';
-import { createDateNowString } from '../../../src/utils';
+import { Order, OrderLineType } from '@mollie/api-client';
+// import { createDateNowString } from '../../../src/utils';
 // import Logger from '../../../src/logger/logger';
 import {
   // getCreateOrderParams,
@@ -11,12 +11,13 @@ import {
   // getShippingAddress,
   // isDiscountAmountValid,
   // convertCTTaxRateToMollieTaxRate,
+  makeMollieLineShipping,
   extractLocalizedName,
 } from '../../../src/requestHandlers/createOrder';
 import { CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
 
 jest.mock('uuid');
-jest.mock('../../../src/utils');
+// jest.mock('../../../src/utils');
 
 describe('getLocalisedName', () => {
   it('should extract random localised name when config locale does not match any names given', () => {
@@ -53,7 +54,8 @@ describe('createCTActions', () => {
   beforeAll(() => {
     const mockUuid = '3fea7470-5434-4056-a829-a187339e94d8';
     mocked(uuid).mockReturnValue(mockUuid);
-    mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
+    // mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
+    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-12-15T08:21:15.495Z');
   });
 
   it('Should create correct ct actions from request and mollies order', async () => {
@@ -143,6 +145,141 @@ describe('createCTActions', () => {
       title: 'Could not get Mollie payment id.',
     };
     await expect(createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404')).rejects.toEqual(expectedError);
+  });
+});
+
+describe('makeMollieLines - shipping', () => {
+  const shippingInfoWithDiscount = {
+    shippingMethodName: 'Express EU',
+    price: {
+      type: 'centPrecision',
+      currencyCode: 'EUR',
+      centAmount: 1000,
+      fractionDigits: 2,
+    },
+    taxRate: {
+      name: '21% incl.',
+      amount: 0.21,
+      includedInPrice: true,
+      country: 'NL',
+      id: '0gSSkVZl',
+      subRates: [],
+    },
+    discountedPrice: {
+      value: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 0,
+        fractionDigits: 2,
+      },
+      includedDiscounts: [
+        {
+          discount: {
+            typeId: 'cart-discount',
+            id: '1f584b1f-b6ea-414f-87b7-0c58f8c15f78',
+          },
+          discountedAmount: {
+            type: 'centPrecision',
+            currencyCode: 'EUR',
+            centAmount: 1000,
+            fractionDigits: 2,
+          },
+        },
+      ],
+    },
+    taxedPrice: {
+      totalNet: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 0,
+        fractionDigits: 2,
+      },
+      totalGross: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 0,
+        fractionDigits: 2,
+      },
+    },
+  };
+  const shippingInfo = {
+    shippingMethodName: 'Express EU',
+    price: {
+      type: 'centPrecision',
+      currencyCode: 'EUR',
+      centAmount: 1000,
+      fractionDigits: 2,
+    },
+    taxRate: {
+      name: '21% incl.',
+      amount: 0.21,
+      includedInPrice: true,
+      country: 'NL',
+      id: '0gSSkVZl',
+      subRates: [],
+    },
+    taxedPrice: {
+      totalNet: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 826,
+        fractionDigits: 2,
+      },
+      totalGross: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 1000,
+        fractionDigits: 2,
+      },
+    },
+  };
+
+  it('should create mollie order line for shipping with correct amount', () => {
+    const orderLine = makeMollieLineShipping(shippingInfo);
+    expect(orderLine).toEqual({
+      type: OrderLineType.shipping_fee,
+      name: 'Shipping - Express EU',
+      quantity: 1,
+      unitPrice: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+      totalAmount: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        currency: 'EUR',
+        value: '1.74',
+      },
+    });
+  });
+
+  it('should create mollie order line for shipping and handle discount amount', () => {
+    const orderLine = makeMollieLineShipping(shippingInfoWithDiscount);
+    expect(orderLine).toEqual({
+      type: OrderLineType.shipping_fee,
+      name: 'Shipping - Express EU',
+      quantity: 1,
+      unitPrice: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+      totalAmount: {
+        currency: 'EUR',
+        value: '0.00',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        currency: 'EUR',
+        value: '0.00',
+      },
+      discountAmount: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+    });
   });
 });
 
