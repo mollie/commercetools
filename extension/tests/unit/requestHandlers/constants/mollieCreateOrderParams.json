@@ -1,0 +1,109 @@
+{
+  "amount": {
+    "value": "7.04",
+    "currency": "EUR"
+  },
+  "orderNumber": "95437342-d64f-4bfb-bc4e-eed6f1769d2e",
+  "lines": [
+    {
+      "name": "Banaan",
+      "quantity": 2,
+      "sku": "12345",
+      "unitPrice": {
+        "value": "2.00",
+        "currency": "EUR"
+      },
+      "vatRate": "21.00",
+      "totalAmount": {
+        "value": "1.42",
+        "currency": "EUR"
+      },
+      "vatAmount": {
+        "value": "0.25",
+        "currency": "EUR"
+      },
+      "metadata": {
+        "cartLineItemId": "5ab4dbee-2e4f-439f-91fd-f1f4bbf1acfd"
+      },
+      "discountAmount": {
+        "value": "2.58",
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": "Apple",
+      "quantity": 4,
+      "sku": "21345",
+      "unitPrice": {
+        "value": "2.50",
+        "currency": "EUR"
+      },
+      "vatRate": "21.00",
+      "totalAmount": {
+        "value": "7.12",
+        "currency": "EUR"
+      },
+      "vatAmount": {
+        "value": "1.24",
+        "currency": "EUR"
+      },
+      "metadata": {
+        "cartLineItemId": "6363dc17-2931-4c74-9d94-1a26f09f3c16"
+      },
+      "discountAmount": {
+        "value": "2.88",
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": "Giftcard",
+      "quantity": 1,
+      "unitPrice": {
+        "value": "-1.50",
+        "currency": "EUR"
+      },
+      "vatRate": "21.00",
+      "totalAmount": {
+        "value": "-1.50",
+        "currency": "EUR"
+      },
+      "vatAmount": {
+        "value": "-0.26",
+        "currency": "EUR"
+      },
+      "metadata": {
+        "cartCustomLineItemId": "33025909-90b6-48c6-b885-43feb2c6136d"
+      }
+    }
+  ],
+  "locale": "nl_NL",
+  "billingAddress": {
+    "givenName": "Piet",
+    "familyName": "Mondriaan",
+    "email": "coloured_square_lover@basicart.com",
+    "streetAndNumber": "Keizersgracht 126",
+    "city": "Amsterdam",
+    "postalCode": "1234AB",
+    "country": "NL"
+  },
+  "method": "ideal",
+  "webhookUrl": "https://www.webhook.com",
+  "embed": ["payments"],
+  "payment": {
+    "webhookUrl": "https://www.webhook.com"
+  },
+  "redirectUrl": "https://www.redirect.com/",
+  "expiresAt": "",
+  "metadata": {
+    "cartId": "17848aba-9bf4-48f2-9a13-91086745f778"
+  },
+  "shippingAddress": {
+    "givenName": "Piet",
+    "familyName": "Mondriaan",
+    "email": "coloured_square_lover@basicart.com",
+    "streetAndNumber": "Keizersgracht 126",
+    "city": "Amsterdam",
+    "postalCode": "1234AB",
+    "country": "NL"
+  }
+}

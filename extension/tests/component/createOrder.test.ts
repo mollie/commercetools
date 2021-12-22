@@ -247,7 +247,7 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
       const { status, text } = res;
-      expect(status).toBe(200);
+      expect(status).toBe(201);
 
       const parsedActions = JSON.parse(text);
       const { actions } = parsedActions;
@@ -292,7 +292,7 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
       const { status, text } = res;
-      expect(status).toBe(200);
+      expect(status).toBe(201);
 
       const parsedActions = JSON.parse(text);
       const { actions } = parsedActions;

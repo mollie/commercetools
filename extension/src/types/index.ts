@@ -77,7 +77,6 @@ export type CTLineItem = {
   };
   quantity: number;
   variant: {
-    key: string;
     sku: string;
   };
 };
@@ -90,6 +89,7 @@ export type CTCart = {
   shippingAddress?: Object;
   billingAddress?: Object;
   locale?: string;
+  shippingInfo?: Object;
 };
 
 export type CTPayment = {
