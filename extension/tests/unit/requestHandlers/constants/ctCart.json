@@ -1,0 +1,490 @@
+{
+  "type": "Cart",
+  "id": "17848aba-9bf4-48f2-9a13-91086745f778",
+  "version": 19,
+  "lastMessageSequenceNumber": 1,
+  "createdAt": "2021-12-16T15:08:47.722Z",
+  "lastModifiedAt": "2021-12-20T12:40:53.108Z",
+  "lastModifiedBy": {
+    "clientId": "A-7gCPuzUQnNSdDwlOCCngFj",
+    "isPlatformClient": false
+  },
+  "createdBy": {
+    "clientId": "A-7gCPuzUQnNSdDwlOCCngFj",
+    "isPlatformClient": false
+  },
+  "lineItems": [
+    {
+      "id": "5ab4dbee-2e4f-439f-91fd-f1f4bbf1acfd",
+      "productId": "6fd97a79-c9f4-490e-9eb7-1b502812b266",
+      "productKey": "banana",
+      "name": {
+        "en-US": "Banana",
+        "en": "Banana",
+        "nl-NL": "Banaan"
+      },
+      "productType": {
+        "typeId": "product-type",
+        "id": "9d4b0ab5-fde6-4e7c-89ea-d4befcd547e8",
+        "version": 1
+      },
+      "productSlug": {
+        "en-US": "banana"
+      },
+      "variant": {
+        "id": 1,
+        "sku": "12345",
+        "key": "banana-yellow",
+        "prices": [
+          {
+            "value": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 200,
+              "fractionDigits": 2
+            },
+            "id": "9af7209c-c43d-4898-9d3d-96e9ba0a1787",
+            "discounted": {
+              "value": {
+                "type": "centPrecision",
+                "currencyCode": "EUR",
+                "centAmount": 100,
+                "fractionDigits": 2
+              },
+              "discount": {
+                "typeId": "product-discount",
+                "id": "272062e5-1329-4983-98bf-ca8b9282aa2d"
+              }
+            }
+          }
+        ],
+        "images": [],
+        "attributes": [],
+        "assets": []
+      },
+      "price": {
+        "value": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 200,
+          "fractionDigits": 2
+        },
+        "id": "9af7209c-c43d-4898-9d3d-96e9ba0a1787",
+        "discounted": {
+          "value": {
+            "type": "centPrecision",
+            "currencyCode": "EUR",
+            "centAmount": 100,
+            "fractionDigits": 2
+          },
+          "discount": {
+            "typeId": "product-discount",
+            "id": "272062e5-1329-4983-98bf-ca8b9282aa2d"
+          }
+        }
+      },
+      "quantity": 2,
+      "discountedPrice": {
+        "value": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 71,
+          "fractionDigits": 2
+        },
+        "includedDiscounts": [
+          {
+            "discount": {
+              "typeId": "cart-discount",
+              "id": "45e9c92c-714e-453f-b6e0-da40600bbbd1"
+            },
+            "discountedAmount": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 21,
+              "fractionDigits": 2
+            }
+          },
+          {
+            "discount": {
+              "typeId": "cart-discount",
+              "id": "8f50ace8-480c-49d4-b43f-462336a5fdd0"
+            },
+            "discountedAmount": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 8,
+              "fractionDigits": 2
+            }
+          }
+        ]
+      },
+      "discountedPricePerQuantity": [
+        {
+          "quantity": 2,
+          "discountedPrice": {
+            "value": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 71,
+              "fractionDigits": 2
+            },
+            "includedDiscounts": [
+              {
+                "discount": {
+                  "typeId": "cart-discount",
+                  "id": "45e9c92c-714e-453f-b6e0-da40600bbbd1"
+                },
+                "discountedAmount": {
+                  "type": "centPrecision",
+                  "currencyCode": "EUR",
+                  "centAmount": 21,
+                  "fractionDigits": 2
+                }
+              },
+              {
+                "discount": {
+                  "typeId": "cart-discount",
+                  "id": "8f50ace8-480c-49d4-b43f-462336a5fdd0"
+                },
+                "discountedAmount": {
+                  "type": "centPrecision",
+                  "currencyCode": "EUR",
+                  "centAmount": 8,
+                  "fractionDigits": 2
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "taxRate": {
+        "name": "21% BTW",
+        "amount": 0.21,
+        "includedInPrice": true,
+        "country": "NL",
+        "id": "22LLeAS3",
+        "subRates": []
+      },
+      "addedAt": "2021-12-16T15:08:47.715Z",
+      "lastModifiedAt": "2021-12-16T15:08:47.715Z",
+      "state": [
+        {
+          "quantity": 2,
+          "state": {
+            "typeId": "state",
+            "id": "5c0e44e5-c554-4e0c-94f2-47fe0249d1d7"
+          }
+        }
+      ],
+      "priceMode": "Platform",
+      "totalPrice": {
+        "type": "centPrecision",
+        "currencyCode": "EUR",
+        "centAmount": 142,
+        "fractionDigits": 2
+      },
+      "taxedPrice": {
+        "totalNet": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 117,
+          "fractionDigits": 2
+        },
+        "totalGross": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 142,
+          "fractionDigits": 2
+        }
+      },
+      "lineItemMode": "Standard"
+    },
+    {
+      "id": "6363dc17-2931-4c74-9d94-1a26f09f3c16",
+      "productId": "12b4ef27-8726-4732-9e70-c994f0bf3d3d",
+      "productKey": "apple",
+      "name": {
+        "en-US": "Apple"
+      },
+      "productType": {
+        "typeId": "product-type",
+        "id": "9d4b0ab5-fde6-4e7c-89ea-d4befcd547e8",
+        "version": 1
+      },
+      "productSlug": {
+        "en-US": "apple"
+      },
+      "variant": {
+        "id": 1,
+        "sku": "21345",
+        "key": "apple-jazz",
+        "prices": [
+          {
+            "value": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 250,
+              "fractionDigits": 2
+            },
+            "id": "30c69f6a-d67c-42a0-b2c6-5980f16bbe2b"
+          }
+        ],
+        "images": [],
+        "attributes": [],
+        "assets": []
+      },
+      "price": {
+        "value": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 250,
+          "fractionDigits": 2
+        },
+        "id": "30c69f6a-d67c-42a0-b2c6-5980f16bbe2b"
+      },
+      "quantity": 4,
+      "discountedPrice": {
+        "value": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 178,
+          "fractionDigits": 2
+        },
+        "includedDiscounts": [
+          {
+            "discount": {
+              "typeId": "cart-discount",
+              "id": "45e9c92c-714e-453f-b6e0-da40600bbbd1"
+            },
+            "discountedAmount": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 52,
+              "fractionDigits": 2
+            }
+          },
+          {
+            "discount": {
+              "typeId": "cart-discount",
+              "id": "8f50ace8-480c-49d4-b43f-462336a5fdd0"
+            },
+            "discountedAmount": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 20,
+              "fractionDigits": 2
+            }
+          }
+        ]
+      },
+      "discountedPricePerQuantity": [
+        {
+          "quantity": 4,
+          "discountedPrice": {
+            "value": {
+              "type": "centPrecision",
+              "currencyCode": "EUR",
+              "centAmount": 178,
+              "fractionDigits": 2
+            },
+            "includedDiscounts": [
+              {
+                "discount": {
+                  "typeId": "cart-discount",
+                  "id": "45e9c92c-714e-453f-b6e0-da40600bbbd1"
+                },
+                "discountedAmount": {
+                  "type": "centPrecision",
+                  "currencyCode": "EUR",
+                  "centAmount": 52,
+                  "fractionDigits": 2
+                }
+              },
+              {
+                "discount": {
+                  "typeId": "cart-discount",
+                  "id": "8f50ace8-480c-49d4-b43f-462336a5fdd0"
+                },
+                "discountedAmount": {
+                  "type": "centPrecision",
+                  "currencyCode": "EUR",
+                  "centAmount": 20,
+                  "fractionDigits": 2
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "taxRate": {
+        "name": "21% BTW",
+        "amount": 0.21,
+        "includedInPrice": true,
+        "country": "NL",
+        "id": "22LLeAS3",
+        "subRates": []
+      },
+      "addedAt": "2021-12-16T15:08:47.715Z",
+      "lastModifiedAt": "2021-12-16T15:08:47.715Z",
+      "state": [
+        {
+          "quantity": 4,
+          "state": {
+            "typeId": "state",
+            "id": "5c0e44e5-c554-4e0c-94f2-47fe0249d1d7"
+          }
+        }
+      ],
+      "priceMode": "Platform",
+      "totalPrice": {
+        "type": "centPrecision",
+        "currencyCode": "EUR",
+        "centAmount": 712,
+        "fractionDigits": 2
+      },
+      "taxedPrice": {
+        "totalNet": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 588,
+          "fractionDigits": 2
+        },
+        "totalGross": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 712,
+          "fractionDigits": 2
+        }
+      },
+      "lineItemMode": "Standard"
+    }
+  ],
+  "cartState": "Active",
+  "totalPrice": {
+    "type": "centPrecision",
+    "currencyCode": "EUR",
+    "centAmount": 704,
+    "fractionDigits": 2
+  },
+  "taxedPrice": {
+    "totalNet": {
+      "type": "centPrecision",
+      "currencyCode": "EUR",
+      "centAmount": 581,
+      "fractionDigits": 2
+    },
+    "totalGross": {
+      "type": "centPrecision",
+      "currencyCode": "EUR",
+      "centAmount": 704,
+      "fractionDigits": 2
+    },
+    "taxPortions": [
+      {
+        "rate": 0.21,
+        "amount": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": 123,
+          "fractionDigits": 2
+        },
+        "name": "21% BTW"
+      }
+    ]
+  },
+  "customLineItems": [
+    {
+      "totalPrice": {
+        "type": "centPrecision",
+        "currencyCode": "EUR",
+        "centAmount": -150,
+        "fractionDigits": 2
+      },
+      "id": "33025909-90b6-48c6-b885-43feb2c6136d",
+      "name": {
+        "en": "Giftcard"
+      },
+      "money": {
+        "type": "centPrecision",
+        "currencyCode": "EUR",
+        "centAmount": -150,
+        "fractionDigits": 2
+      },
+      "slug": "giftcard",
+      "quantity": 1,
+      "discountedPricePerQuantity": [],
+      "taxCategory": {
+        "typeId": "tax-category",
+        "id": "bf76c01c-64a2-4906-870a-f10708dcefcb"
+      },
+      "taxRate": {
+        "name": "21% BTW",
+        "amount": 0.21,
+        "includedInPrice": true,
+        "country": "NL",
+        "id": "22LLeAS3",
+        "subRates": []
+      },
+      "state": [
+        {
+          "quantity": 1,
+          "state": {
+            "typeId": "state",
+            "id": "5c0e44e5-c554-4e0c-94f2-47fe0249d1d7"
+          }
+        }
+      ],
+      "taxedPrice": {
+        "totalNet": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": -124,
+          "fractionDigits": 2
+        },
+        "totalGross": {
+          "type": "centPrecision",
+          "currencyCode": "EUR",
+          "centAmount": -150,
+          "fractionDigits": 2
+        }
+      }
+    }
+  ],
+  "discountCodes": [],
+  "paymentInfo": {
+    "payments": [
+      {
+        "typeId": "payment",
+        "id": "95437342-d64f-4bfb-bc4e-eed6f1769d2e"
+      }
+    ]
+  },
+  "inventoryMode": "None",
+  "taxMode": "Platform",
+  "taxRoundingMode": "HalfEven",
+  "taxCalculationMode": "LineItemLevel",
+  "deleteDaysAfterLastModification": 90,
+  "refusedGifts": [],
+  "origin": "Customer",
+  "shippingAddress": {
+    "firstName": "Piet",
+    "lastName": "Mondriaan",
+    "streetName": "Keizersgracht",
+    "streetNumber": "126",
+    "postalCode": "1234AB",
+    "city": "Amsterdam",
+    "country": "NL",
+    "email": "coloured_square_lover@basicart.com"
+  },
+  "billingAddress": {
+    "firstName": "Piet",
+    "lastName": "Mondriaan",
+    "streetName": "Keizersgracht",
+    "streetNumber": "126",
+    "postalCode": "1234AB",
+    "city": "Amsterdam",
+    "country": "NL",
+    "email": "coloured_square_lover@basicart.com"
+  },
+  "itemShippingAddresses": []
+}

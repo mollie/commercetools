@@ -1,0 +1,251 @@
+{
+  "resource": "order",
+  "id": "ord_ns4ga8",
+  "profileId": "pfl_VtWA783A63",
+  "method": "ideal",
+  "amount": {
+    "value": "7.04",
+    "currency": "EUR"
+  },
+  "status": "created",
+  "isCancelable": true,
+  "metadata": {
+    "cartId": "17848aba-9bf4-48f2-9a13-91086745f778"
+  },
+  "createdAt": "2021-12-21T16:06:38+00:00",
+  "expiresAt": "2022-01-18T16:06:38+00:00",
+  "mode": "test",
+  "locale": "nl_NL",
+  "billingAddress": {
+    "streetAndNumber": "Keizersgracht 126",
+    "postalCode": "1234AB",
+    "city": "Amsterdam",
+    "country": "NL",
+    "givenName": "Piet",
+    "familyName": "Mondriaan",
+    "email": "coloured_square_lover@basicart.com"
+  },
+  "shopperCountryMustMatchBillingCountry": false,
+  "orderNumber": "95437342-d64f-4bfb-bc4e-eed6f1769d2e",
+  "shippingAddress": {
+    "streetAndNumber": "Keizersgracht 126",
+    "postalCode": "1234AB",
+    "city": "Amsterdam",
+    "country": "NL",
+    "givenName": "Piet",
+    "familyName": "Mondriaan",
+    "email": "coloured_square_lover@basicart.com"
+  },
+  "redirectUrl": "https://www.redirect.com/",
+  "webhookUrl": "https://www.webhook.com",
+  "lines": [
+    {
+      "resource": "orderline",
+      "id": "odl_1.s63aie",
+      "orderId": "ord_ns4ga8",
+      "name": "Banaan",
+      "sku": "12345",
+      "type": "physical",
+      "status": "created",
+      "metadata": {
+        "cartLineItemId": "5ab4dbee-2e4f-439f-91fd-f1f4bbf1acfd"
+      },
+      "isCancelable": false,
+      "quantity": 2,
+      "quantityShipped": 0,
+      "amountShipped": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "quantityRefunded": 0,
+      "amountRefunded": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "quantityCanceled": 0,
+      "amountCanceled": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "shippableQuantity": 0,
+      "refundableQuantity": 0,
+      "cancelableQuantity": 0,
+      "unitPrice": {
+        "value": "2.00",
+        "currency": "EUR"
+      },
+      "vatRate": "21.00",
+      "vatAmount": {
+        "value": "0.25",
+        "currency": "EUR"
+      },
+      "totalAmount": {
+        "value": "1.42",
+        "currency": "EUR"
+      },
+      "createdAt": "2021-12-21T16:06:38+00:00",
+      "discountAmount": {
+        "value": "2.58",
+        "currency": "EUR"
+      }
+    },
+    {
+      "resource": "orderline",
+      "id": "odl_1.yeck14",
+      "orderId": "ord_ns4ga8",
+      "name": "Apple",
+      "sku": "21345",
+      "type": "physical",
+      "status": "created",
+      "metadata": {
+        "cartLineItemId": "6363dc17-2931-4c74-9d94-1a26f09f3c16"
+      },
+      "isCancelable": false,
+      "quantity": 4,
+      "quantityShipped": 0,
+      "amountShipped": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "quantityRefunded": 0,
+      "amountRefunded": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "quantityCanceled": 0,
+      "amountCanceled": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "shippableQuantity": 0,
+      "refundableQuantity": 0,
+      "cancelableQuantity": 0,
+      "unitPrice": {
+        "value": "2.50",
+        "currency": "EUR"
+      },
+      "vatRate": "21.00",
+      "vatAmount": {
+        "value": "1.24",
+        "currency": "EUR"
+      },
+      "totalAmount": {
+        "value": "7.12",
+        "currency": "EUR"
+      },
+      "createdAt": "2021-12-21T16:06:38+00:00",
+      "discountAmount": {
+        "value": "2.88",
+        "currency": "EUR"
+      }
+    },
+    {
+      "resource": "orderline",
+      "id": "odl_1.4z209m",
+      "orderId": "ord_ns4ga8",
+      "name": "Giftcard",
+      "sku": null,
+      "type": "physical",
+      "status": "created",
+      "metadata": {
+        "cartCustomLineItemId": "33025909-90b6-48c6-b885-43feb2c6136d"
+      },
+      "isCancelable": false,
+      "quantity": 1,
+      "quantityShipped": 0,
+      "amountShipped": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "quantityRefunded": 0,
+      "amountRefunded": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "quantityCanceled": 0,
+      "amountCanceled": {
+        "value": "0.00",
+        "currency": "EUR"
+      },
+      "shippableQuantity": 0,
+      "refundableQuantity": 0,
+      "cancelableQuantity": 0,
+      "unitPrice": {
+        "value": "-1.50",
+        "currency": "EUR"
+      },
+      "vatRate": "21.00",
+      "vatAmount": {
+        "value": "-0.26",
+        "currency": "EUR"
+      },
+      "totalAmount": {
+        "value": "-1.50",
+        "currency": "EUR"
+      },
+      "createdAt": "2021-12-21T16:06:38+00:00"
+    }
+  ],
+  "_embedded": {
+    "payments": [
+      {
+        "resource": "payment",
+        "id": "tr_FQ35yRChjS",
+        "mode": "test",
+        "createdAt": "2021-12-21T16:06:38+00:00",
+        "amount": {
+          "value": "7.04",
+          "currency": "EUR"
+        },
+        "description": "Order 95437342-d64f-4bfb-bc4e-eed6f1769d2e",
+        "method": "ideal",
+        "metadata": null,
+        "status": "open",
+        "isCancelable": false,
+        "expiresAt": "2021-12-21T16:21:38+00:00",
+        "locale": "nl_NL",
+        "profileId": "pfl_VtWA783A63",
+        "orderId": "ord_ns4ga8",
+        "sequenceType": "oneoff",
+        "redirectUrl": "https://www.redirect.com/",
+        "webhookUrl": "https://www.webhook.com",
+        "_links": {
+          "self": {
+            "href": "https://api.mollie.com/v2/payments/tr_FQ35yRChjS",
+            "type": "application/hal+json"
+          },
+          "checkout": {
+            "href": "https://www.mollie.com/checkout/select-issuer/ideal/FQ35yRChjS",
+            "type": "text/html"
+          },
+          "dashboard": {
+            "href": "https://www.mollie.com/dashboard/org_12932188/payments/tr_FQ35yRChjS",
+            "type": "text/html"
+          },
+          "order": {
+            "href": "https://api.mollie.com/v2/orders/ord_ns4ga8",
+            "type": "application/hal+json"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "https://api.mollie.com/v2/orders/ord_ns4ga8?embed=payments",
+      "type": "application/hal+json"
+    },
+    "dashboard": {
+      "href": "https://www.mollie.com/dashboard/org_12932188/orders/ord_ns4ga8",
+      "type": "text/html"
+    },
+    "checkout": {
+      "href": "https://www.mollie.com/checkout/order/ns4ga8",
+      "type": "text/html"
+    },
+    "documentation": {
+      "href": "https://docs.mollie.com/reference/v2/orders-api/create-order",
+      "type": "text/html"
+    }
+  }
+}
