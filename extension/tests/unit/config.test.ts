@@ -8,6 +8,7 @@ describe('Config test', () => {
     clientSecret: 'abcdefghi',
     authUrl: 'https://auth.dummy.com',
     host: 'https://api.dummy.com',
+    authentication: { isBasicAuth: false },
   };
   beforeEach(() => {
     console.error = mockLogError;
@@ -33,15 +34,16 @@ describe('Config test', () => {
     expect(config).toEqual(expectedConfig);
   });
 
-  it('Should return config with correct service properties', async () => {
+  it('Should return config with correct service and authentication properties', async () => {
+    const ctConfigAuth = { ...ctConfig, authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' } };
     const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: ctConfig,
+      commercetools: ctConfigAuth,
       service: { port: 2000, locale: 'nl_NL' },
     });
     const expectedConfig = {
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: ctConfig,
+      commercetools: ctConfigAuth,
       service: {
         port: 2000,
         logLevel: 'info',
