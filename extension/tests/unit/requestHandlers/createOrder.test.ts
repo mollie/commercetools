@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import { Order, OrderLineType } from '@mollie/api-client';
 import { cloneDeep, omit } from 'lodash';
-import { createDateNowString, makeMollieAmount } from '../../../src/utils';
+import { makeMollieAmount } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 import createOrder, {
   makeMollieAddress,
@@ -336,10 +336,7 @@ describe('makeMollieLines - shipping', () => {
   };
 
   it('should create mollie order line for shipping with correct amount', () => {
-    mocked(makeMollieAmount)
-      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
-      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
-      .mockReturnValueOnce({ value: '1.74', currency: 'EUR' })
+    mocked(makeMollieAmount).mockReturnValueOnce({ value: '10.00', currency: 'EUR' }).mockReturnValueOnce({ value: '10.00', currency: 'EUR' }).mockReturnValueOnce({ value: '1.74', currency: 'EUR' });
     const orderLine = makeMollieLineShipping(shippingInfo);
     expect(orderLine).toEqual({
       type: OrderLineType.shipping_fee,
@@ -366,7 +363,7 @@ describe('makeMollieLines - shipping', () => {
       .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '0.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '0.00', currency: 'EUR' })
-      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' });
     const orderLine = makeMollieLineShipping(shippingInfoWithDiscount);
     expect(orderLine).toEqual({
       type: OrderLineType.shipping_fee,
