@@ -1,6 +1,7 @@
 import nock from 'nock';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
 import { mocked } from 'ts-jest/utils';
 import app from '../../src/app';
 import config from '../../config/config';
@@ -80,11 +81,9 @@ describe('Create Order', () => {
         .query(true) // mock the url regardless of query string
         .reply(200, noCartFoundForGivenPaymentId);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
@@ -123,11 +122,9 @@ describe('Create Order', () => {
 
       const createOrderFailsAsUnprocessableScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(422, paymentMethodNotEnabledInProfile);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
@@ -176,11 +173,9 @@ describe('Create Order', () => {
 
       const createOrderFailsAsUnprocessableScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(422, amountLowerThanMinimumKlarnaSliceIt);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'klarnasliceit';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnasliceit';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Authorization',
@@ -234,11 +229,9 @@ describe('Create Order', () => {
         .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
       const orderCreatedWithPayNowMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithTwoLinesUsingIdeal);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
@@ -279,11 +272,10 @@ describe('Create Order', () => {
         .query(true) // mock the url regardless of query string
         .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
       const orderCreatedWithPayLaterMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithTwoLineItemsUsingKlarna);
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'klarnapaylater';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnapaylater';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Authorization',
@@ -326,12 +318,10 @@ describe('Create Order', () => {
         .reply(200, cartFoundWith2LineItemsAndOneCustomLineItemForGivenPaymentId);
       const orderCreatedWithDiscountLineScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedIncludingDiscountLineUsingIdeal);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
       mockCTPaymentObj.resource.obj.id = '990d9419-62c2-44e5-91d4-8cb9e5cc6518';
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
