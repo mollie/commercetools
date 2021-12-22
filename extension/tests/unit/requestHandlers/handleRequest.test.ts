@@ -19,11 +19,14 @@ describe('handleRequest', () => {
   let reqInput = {} as HandleRequestInput;
   const mockLogError = jest.fn();
   const mockLogDebug = jest.fn();
-  mocked(checkAuthorizationHeader).mockImplementation(() => {
-    return {
-      isValid: true,
-      message: '',
-    };
+
+  beforeAll(() => {
+    mocked(checkAuthorizationHeader).mockImplementation(() => {
+      return {
+        isValid: true,
+        message: '',
+      };
+    });
   });
 
   beforeEach(() => {
