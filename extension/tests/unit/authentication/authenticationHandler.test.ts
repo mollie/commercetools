@@ -14,8 +14,8 @@ jest.mock('../../../config/config', () => {
   };
 });
 
-let req = {} as HandleRequestInput;
 describe('checkAuthorizationHeader', () => {
+  let req = {} as HandleRequestInput;
   req = new HandleRequestInput('/', 'POST', {});
   beforeEach(() => {
     req.headers.set('authorization', 'Basic dXNlcjpwYXNzd29yZA==');
@@ -58,7 +58,6 @@ describe('checkAuthorizationHeader', () => {
 });
 
 describe('isAuthorizationHeaderValid', () => {
-  beforeEach(() => {});
   it('should return true if the decoded username and password match those in config', () => {
     const result = isAuthorizationHeaderValid('Basic dXNlcjpwYXNzd29yZA==');
     expect(result).toBeTruthy();

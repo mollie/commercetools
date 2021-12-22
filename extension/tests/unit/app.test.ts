@@ -4,7 +4,7 @@ import { mocked } from 'ts-jest/utils';
 import { checkAuthorizationHeader } from '../../src/authentication/authenticationHandler';
 jest.mock('../../src/authentication/authenticationHandler');
 
-describe('Health check', () => {
+describe('App', () => {
   mocked(checkAuthorizationHeader).mockImplementation(() => {
     return {
       isValid: true,
