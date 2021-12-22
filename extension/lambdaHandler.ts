@@ -1,7 +1,6 @@
 import handleRequest from './src/requestHandlers/handleRequest';
 import { HandleRequestInput, HandleRequestSuccess } from './src/types';
 
-
 exports.handler = async (event: any) => {
   const body = event.body ? JSON.parse(event.body) : event;
   const input = new HandleRequestInput(event.path, event.httpMethod, body);
@@ -11,18 +10,18 @@ exports.handler = async (event: any) => {
   if (result instanceof HandleRequestSuccess) {
     return {
       statusCode: result.status,
-      'body': JSON.stringify({
+      body: JSON.stringify({
         responseType: 'UpdateRequest',
-        actions: result.actions
-      })
+        actions: result.actions,
+      }),
     };
   } else {
     return {
       statusCode: result.status,
-      'body': JSON.stringify({
+      body: JSON.stringify({
         responseType: 'FailedValidation',
-        errors: result.errors
-      })
+        errors: result.errors,
+      }),
     };
   }
 };
