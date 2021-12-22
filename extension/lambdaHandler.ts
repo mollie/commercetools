@@ -10,7 +10,7 @@ exports.handler = async (event: any) => {
 
   if (result instanceof HandleRequestSuccess) {
     return {
-      statusCode: 200,
+      statusCode: result.status,
       'body': JSON.stringify({
         responseType: 'UpdateRequest',
         actions: result.actions
@@ -18,7 +18,7 @@ exports.handler = async (event: any) => {
     };
   } else {
     return {
-      statusCode: 200,
+      statusCode: result.status,
       'body': JSON.stringify({
         responseType: 'FailedValidation',
         errors: result.errors
