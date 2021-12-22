@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Create Order Happy Path 200 - Order created from cart with Line Items and Custom Line Items 1`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created from cart with both Line Items and Custom Line Items 1`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
@@ -16,21 +16,21 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created from cart with Line Items and Custom Line Items 2`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created from cart with both Line Items and Custom Line Items 2`] = `
 Object {
   "action": "setStatusInterfaceText",
   "interfaceText": "created",
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created from cart with Line Items and Custom Line Items 3`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created from cart with both Line Items and Custom Line Items 3`] = `
 Object {
   "action": "setKey",
   "key": "ord_ca1j7q",
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created from cart with Line Items and Custom Line Items 4`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created from cart with both Line Items and Custom Line Items 4`] = `
 Object {
   "action": "changeTransactionState",
   "state": "Pending",
@@ -38,7 +38,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created from cart with Line Items and Custom Line Items 5`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created from cart with both Line Items and Custom Line Items 5`] = `
 Object {
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_D6V5dfjWfz",
@@ -46,7 +46,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created from cart with Line Items and Custom Line Items 6`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created from cart with both Line Items and Custom Line Items 6`] = `
 Object {
   "action": "changeTransactionTimestamp",
   "timestamp": "2021-12-21T07:33:07+00:00",
@@ -54,7 +54,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay later method (Klarnapaylater) 1`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay later method (Klarnapaylater) 1`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
@@ -70,21 +70,21 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay later method (Klarnapaylater) 2`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay later method (Klarnapaylater) 2`] = `
 Object {
   "action": "setStatusInterfaceText",
   "interfaceText": "created",
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay later method (Klarnapaylater) 3`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay later method (Klarnapaylater) 3`] = `
 Object {
   "action": "setKey",
   "key": "ord_l2idwq",
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay later method (Klarnapaylater) 4`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay later method (Klarnapaylater) 4`] = `
 Object {
   "action": "changeTransactionState",
   "state": "Pending",
@@ -92,7 +92,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay later method (Klarnapaylater) 5`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay later method (Klarnapaylater) 5`] = `
 Object {
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_FCc42uPfJx",
@@ -100,7 +100,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay later method (Klarnapaylater) 6`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay later method (Klarnapaylater) 6`] = `
 Object {
   "action": "changeTransactionTimestamp",
   "timestamp": "2021-12-20T11:17:23+00:00",
@@ -108,7 +108,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay now method (iDEAL) 1`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay now method (iDEAL) 1`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
@@ -124,21 +124,21 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay now method (iDEAL) 2`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay now method (iDEAL) 2`] = `
 Object {
   "action": "setStatusInterfaceText",
   "interfaceText": "created",
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay now method (iDEAL) 3`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay now method (iDEAL) 3`] = `
 Object {
   "action": "setKey",
   "key": "ord_8xnw8a",
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay now method (iDEAL) 4`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay now method (iDEAL) 4`] = `
 Object {
   "action": "changeTransactionState",
   "state": "Pending",
@@ -146,7 +146,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay now method (iDEAL) 5`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay now method (iDEAL) 5`] = `
 Object {
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_J5R48EP58J",
@@ -154,7 +154,7 @@ Object {
 }
 `;
 
-exports[`Create Order Happy Path 200 - Order created successfully using pay now method (iDEAL) 6`] = `
+exports[`Create Order Happy Path Should return 200 when mollie order created successfully using pay now method (iDEAL) 6`] = `
 Object {
   "action": "changeTransactionTimestamp",
   "timestamp": "2021-12-20T10:15:15+00:00",

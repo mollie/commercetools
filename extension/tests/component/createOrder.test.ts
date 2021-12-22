@@ -7,11 +7,7 @@ import app from '../../src/app';
 import config from '../../config/config';
 import Logger from '../../src/logger/logger';
 
-import {
-  noCartFoundForGivenPaymentId,
-  cartFoundWith2LineItemsForGivenPaymentId,
-  cartFoundWith2LineItemsAndOneCustomLineItemForGivenPaymentId,
-} from './mockResponses/commercetoolsData/cartResponses.data';
+import { noCartFoundForGivenPaymentId, cartWithLineItems, cartWithLineItemsAndCustomLineItem } from './mockResponses/commercetoolsData/cartResponses.data';
 import {
   paymentMethodNotEnabledInProfile,
   amountLowerThanMinimumKlarnaSliceIt,
@@ -75,7 +71,7 @@ describe('Create Order', () => {
   });
 
   describe('Unhappy Path', () => {
-    it('Payment not linked to Cart', async () => {
+    it('Should return 404 when Payment not linked to Cart', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
@@ -112,11 +108,11 @@ describe('Create Order', () => {
       expect(getCartByPaymentIdScope.isDone()).toBeTruthy();
     });
 
-    it('422 from mollie - pay now method', async () => {
+    it('Should return 400 when a 422 is returned from mollie API - pay now method', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
 
       const createOrderFailsAsUnprocessableScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(422, paymentMethodNotEnabledInProfile);
 
@@ -161,11 +157,11 @@ describe('Create Order', () => {
       expect(createOrderFailsAsUnprocessableScope.isDone()).toBeTruthy();
     });
 
-    it('422 from mollie - pay later method', async () => {
+    it('Should return 400 when a 422 is returned from mollie API - pay later method', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
 
       const createOrderFailsAsUnprocessableScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(422, amountLowerThanMinimumKlarnaSliceIt);
 
@@ -216,11 +212,11 @@ describe('Create Order', () => {
       nock.cleanAll();
     });
 
-    it('200 - Order created successfully using pay now method (iDEAL)', async () => {
+    it('Should return 200 when mollie order created successfully using pay now method (iDEAL)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
       const orderCreatedWithPayNowMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithTwoLinesUsingIdeal);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
@@ -260,11 +256,11 @@ describe('Create Order', () => {
       expect(orderCreatedWithPayNowMethodScope.isDone()).toBeTruthy();
     });
 
-    it('200 - Order created successfully using pay later method (Klarnapaylater)', async () => {
+    it('Should return 200 when mollie order created successfully using pay later method (Klarnapaylater)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
       const orderCreatedWithPayLaterMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithTwoLineItemsUsingKlarna);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
@@ -304,11 +300,11 @@ describe('Create Order', () => {
       expect(orderCreatedWithPayLaterMethodScope.isDone()).toBeTruthy();
     });
 
-    it('200 - Order created from cart with Line Items and Custom Line Items', async () => {
+    it('Should return 200 when mollie order created from cart with both Line Items and Custom Line Items', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsAndOneCustomLineItemForGivenPaymentId);
+        .reply(200, cartWithLineItemsAndCustomLineItem);
       const orderCreatedWithDiscountLineScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedIncludingDiscountLineUsingIdeal);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
