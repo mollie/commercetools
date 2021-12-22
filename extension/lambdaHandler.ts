@@ -1,9 +1,6 @@
-import {
-  APIGatewayProxyEvent,
-} from "aws-lambda";
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import handleRequest from './src/requestHandlers/handleRequest';
 import { HandleRequestInput, HandleRequestSuccess } from './src/types';
-
 
 exports.handler = async (event: APIGatewayProxyEvent) => {
   const body = event.body ? JSON.parse(event.body) : event;

@@ -3,7 +3,7 @@ import { HandleRequestInput, HandleRequestSuccess } from './src/types';
 
 loadSettings();
 
-import handleRequest from "./src/requestHandlers/handleRequest";
+import handleRequest from './src/requestHandlers/handleRequest';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   /*
@@ -16,13 +16,13 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
   if (result instanceof HandleRequestSuccess) {
     context.res = {
       status: 200,
-      body: { actions: result.actions }
-    }
+      body: { actions: result.actions },
+    };
   } else {
     context.res = {
       status: result.status,
-      body: { errors: result.errors }
-    }
+      body: { errors: result.errors },
+    };
   }
 };
 
