@@ -148,7 +148,7 @@ describe('createCTActions', () => {
   });
 });
 
-describe.only('makeMollieLines - shipping', () => {
+describe('makeMollieLines - shipping', () => {
   const shippingInfoWithDiscount = {
     shippingMethodName: 'Express EU',
     price: {
@@ -157,15 +157,6 @@ describe.only('makeMollieLines - shipping', () => {
       centAmount: 1000,
       fractionDigits: 2,
     },
-    shippingRate: {
-      price: {
-        type: 'centPrecision',
-        currencyCode: 'EUR',
-        centAmount: 1000,
-        fractionDigits: 2,
-      },
-      tiers: [],
-    },
     taxRate: {
       name: '21% incl.',
       amount: 0.21,
@@ -173,15 +164,6 @@ describe.only('makeMollieLines - shipping', () => {
       country: 'NL',
       id: '0gSSkVZl',
       subRates: [],
-    },
-    taxCategory: {
-      typeId: 'tax-category',
-      id: 'f6442dd1-811d-4df0-b1ac-9045c5ff290c',
-    },
-    deliveries: [],
-    shippingMethod: {
-      typeId: 'shipping-method',
-      id: '145f3f79-dba9-476e-bd09-7c64dd7fa913',
     },
     discountedPrice: {
       value: {
@@ -219,7 +201,6 @@ describe.only('makeMollieLines - shipping', () => {
         fractionDigits: 2,
       },
     },
-    shippingMethodState: 'MatchesCart',
   };
   const shippingInfo = {
     shippingMethodName: 'Express EU',
@@ -229,15 +210,6 @@ describe.only('makeMollieLines - shipping', () => {
       centAmount: 1000,
       fractionDigits: 2,
     },
-    shippingRate: {
-      price: {
-        type: 'centPrecision',
-        currencyCode: 'EUR',
-        centAmount: 1000,
-        fractionDigits: 2,
-      },
-      tiers: [],
-    },
     taxRate: {
       name: '21% incl.',
       amount: 0.21,
@@ -245,15 +217,6 @@ describe.only('makeMollieLines - shipping', () => {
       country: 'NL',
       id: '0gSSkVZl',
       subRates: [],
-    },
-    taxCategory: {
-      typeId: 'tax-category',
-      id: 'f6442dd1-811d-4df0-b1ac-9045c5ff290c',
-    },
-    deliveries: [],
-    shippingMethod: {
-      typeId: 'shipping-method',
-      id: '145f3f79-dba9-476e-bd09-7c64dd7fa913',
     },
     taxedPrice: {
       totalNet: {
@@ -269,7 +232,6 @@ describe.only('makeMollieLines - shipping', () => {
         fractionDigits: 2,
       },
     },
-    shippingMethodState: 'MatchesCart',
   };
 
   it('should create mollie order line for shipping with correct amount', () => {
@@ -313,7 +275,7 @@ describe.only('makeMollieLines - shipping', () => {
         currency: 'EUR',
         value: '0.00',
       },
-      discount: {
+      discountAmount: {
         currency: 'EUR',
         value: '10.00',
       },

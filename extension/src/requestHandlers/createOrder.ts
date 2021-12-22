@@ -102,6 +102,7 @@ export function makeMollieLineShipping(shippingInfo: any): OrderLine {
     name: `Shipping - ${shippingInfo?.shippingMethodName}`,
     quantity: 1,
     unitPrice: makeMollieAmount(price),
+    totalAmount: makeMollieAmount(shippingInfo.taxedPrice.totalGross),
     vatRate: (shippingInfo.taxRate.amount * 100).toFixed(2),
     vatAmount: makeMollieAmount({ ...shippingInfo.taxedPrice.totalGross, centAmount: shippingInfo.taxedPrice.totalGross.centAmount - shippingInfo.taxedPrice.totalNet.centAmount }),
     type: OrderLineType.shipping_fee,
@@ -110,12 +111,8 @@ export function makeMollieLineShipping(shippingInfo: any): OrderLine {
   if (discountedPrice) {
     const discountCentAmount = price.centAmount - discountedPrice.value.centAmount;
     const mollieDiscountPrice = makeMollieAmount({ ...price, centAmount: discountCentAmount });
-    Object.assign(shippingLine, { discount: mollieDiscountPrice });
+    Object.assign(shippingLine, { discountAmount: mollieDiscountPrice });
   }
-  // Take totalAmount from discountedPrice if present, otherwise use price
-  const ctTotalAmount = discountedPrice ? { ...discountedPrice.value } : { ...price };
-  const mollieTotalAmount = makeMollieAmount(ctTotalAmount);
-  Object.assign(shippingLine, { totalAmount: mollieTotalAmount });
 
   return shippingLine as OrderLine;
 }
@@ -127,12 +124,9 @@ export function makeMollieLines(cart: CTCart, locale: string): OrderLine[] {
   // Handle custom line items
   const customLineItems = (cart.customLineItems ?? []).map((l: CTCustomLineItem) => makeMollieLineCustom(l, locale));
   // Handle shipment - make a line item
-  if (cart.shippingInfo) {
-    const shipppingLine = makeMollieLineShipping(cart.shippingInfo);
-    lines.concat(shipppingLine);
-  }
+  const shippingLine = cart.shippingInfo ? [makeMollieLineShipping(cart.shippingInfo)] : [];
 
-  return lines.concat(lineItems, customLineItems);
+  return lines.concat(lineItems, customLineItems, shippingLine);
 }
 
 export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
@@ -162,9 +156,6 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
       metadata: { cartId: cart.id },
     };
 
-    // Call a method about shipping?
-
-    // orderParams.addAnotherLine = shippingLine;
     if (cart.shippingAddress) {
       orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
     }
@@ -247,6 +238,7 @@ export default async function createOrder(ctPayment: CTPayment, mollieClient: Mo
       },
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
+    console.dir(cartByPayment, { depth: null });
     if (!cartByPayment.body.results.length) {
       const error = formatErrorResponse({ status: 404, message: `Could not find Cart associated with the payment ${paymentId}.` });
       return error;
