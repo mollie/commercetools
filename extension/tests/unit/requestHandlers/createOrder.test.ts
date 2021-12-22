@@ -411,16 +411,16 @@ describe('createOrder', () => {
     await expect(createOrder(ctPayment as CTPayment, mollieClient, commercetoolsClient, getCreateOrderParams, createOrderActions)).resolves.toMatchObject(expectedResult);
   });
   it('Returns an error if call to commercetools carts fails', async () => {
-    const mockedError = { status: 400, message: 'Bad request', code: 400 };
+    const mockedError = { status: 503, message: 'Service unavailable', code: 503 };
     const commercetoolsClient = { execute: jest.fn().mockRejectedValueOnce(mockedError) } as any;
     const mollieClient = {} as any;
     const expectedError = {
       status: 400,
       errors: [
         {
-          code: 'SyntaxError',
-          message: 'Bad request',
-          extensionExtraInfo: { originalStatusCode: 400 },
+          code: 'General',
+          message: 'Service unavailable',
+          extensionExtraInfo: { originalStatusCode: 503 },
         },
       ],
     };
@@ -430,8 +430,8 @@ describe('createOrder', () => {
         ctPayment as CTPayment,
         mollieClient,
         commercetoolsClient,
-        () => { },
-        () => { },
+        () => {},
+        () => {},
       ),
     ).resolves.toMatchObject(expectedError);
   });
@@ -455,8 +455,8 @@ describe('createOrder', () => {
         ctPayment as CTPayment,
         mollieClient,
         commercetoolsClient,
-        () => { },
-        () => { },
+        () => {},
+        () => {},
       ),
     ).resolves.toMatchObject(expectedError);
   });
