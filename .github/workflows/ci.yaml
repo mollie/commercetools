@@ -27,7 +27,7 @@ jobs:
         run: npm run lint
 
       - name: Unit Test
-        run: npm run test
+        run: npm run test:unit
 
       - name: Component Test
         run: npm run test:component
