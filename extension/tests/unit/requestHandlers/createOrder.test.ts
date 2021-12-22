@@ -1,12 +1,13 @@
 import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
-import { Order } from '@mollie/api-client';
+import { Order, OrderLineType } from '@mollie/api-client';
 import { cloneDeep, omit } from 'lodash';
 import { createDateNowString, makeMollieAmount } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 import createOrder, {
   makeMollieAddress,
   createCtActions,
+  makeMollieLineShipping,
   extractLocalizedName,
   makeMollieLineCustom,
   makeMollieLine,
@@ -154,7 +155,8 @@ describe('createCTActions', () => {
   beforeAll(() => {
     const mockUuid = '3fea7470-5434-4056-a829-a187339e94d8';
     mocked(uuid).mockReturnValue(mockUuid);
-    mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
+    // mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
+    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-12-15T08:21:15.495Z');
   });
 
   it('Should create correct ct actions from request and mollies order', async () => {
@@ -247,6 +249,150 @@ describe('createCTActions', () => {
   });
 });
 
+describe('makeMollieLines - shipping', () => {
+  const shippingInfoWithDiscount = {
+    shippingMethodName: 'Express EU',
+    price: {
+      type: 'centPrecision',
+      currencyCode: 'EUR',
+      centAmount: 1000,
+      fractionDigits: 2,
+    },
+    taxRate: {
+      name: '21% incl.',
+      amount: 0.21,
+      includedInPrice: true,
+      country: 'NL',
+      id: '0gSSkVZl',
+      subRates: [],
+    },
+    discountedPrice: {
+      value: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 0,
+        fractionDigits: 2,
+      },
+      includedDiscounts: [
+        {
+          discount: {
+            typeId: 'cart-discount',
+            id: '1f584b1f-b6ea-414f-87b7-0c58f8c15f78',
+          },
+          discountedAmount: {
+            type: 'centPrecision',
+            currencyCode: 'EUR',
+            centAmount: 1000,
+            fractionDigits: 2,
+          },
+        },
+      ],
+    },
+    taxedPrice: {
+      totalNet: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 0,
+        fractionDigits: 2,
+      },
+      totalGross: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 0,
+        fractionDigits: 2,
+      },
+    },
+  };
+  const shippingInfo = {
+    shippingMethodName: 'Express EU',
+    price: {
+      type: 'centPrecision',
+      currencyCode: 'EUR',
+      centAmount: 1000,
+      fractionDigits: 2,
+    },
+    taxRate: {
+      name: '21% incl.',
+      amount: 0.21,
+      includedInPrice: true,
+      country: 'NL',
+      id: '0gSSkVZl',
+      subRates: [],
+    },
+    taxedPrice: {
+      totalNet: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 826,
+        fractionDigits: 2,
+      },
+      totalGross: {
+        type: 'centPrecision',
+        currencyCode: 'EUR',
+        centAmount: 1000,
+        fractionDigits: 2,
+      },
+    },
+  };
+
+  it('should create mollie order line for shipping with correct amount', () => {
+    mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '1.74', currency: 'EUR' })
+    const orderLine = makeMollieLineShipping(shippingInfo);
+    expect(orderLine).toEqual({
+      type: OrderLineType.shipping_fee,
+      name: 'Shipping - Express EU',
+      quantity: 1,
+      unitPrice: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+      totalAmount: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        currency: 'EUR',
+        value: '1.74',
+      },
+    });
+  });
+
+  it('should create mollie order line for shipping and handle discount amount', () => {
+    mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '0.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '0.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+    const orderLine = makeMollieLineShipping(shippingInfoWithDiscount);
+    expect(orderLine).toEqual({
+      type: OrderLineType.shipping_fee,
+      name: 'Shipping - Express EU',
+      quantity: 1,
+      unitPrice: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+      totalAmount: {
+        currency: 'EUR',
+        value: '0.00',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        currency: 'EUR',
+        value: '0.00',
+      },
+      discountAmount: {
+        currency: 'EUR',
+        value: '10.00',
+      },
+    });
+  });
+});
+
 describe('createOrder', () => {
   const mockLogError = jest.fn();
   beforeEach(() => {
@@ -287,8 +433,8 @@ describe('createOrder', () => {
         ctPayment as CTPayment,
         mollieClient,
         commercetoolsClient,
-        () => {},
-        () => {},
+        () => { },
+        () => { },
       ),
     ).resolves.toMatchObject(expectedError);
   });
@@ -312,8 +458,8 @@ describe('createOrder', () => {
         ctPayment as CTPayment,
         mollieClient,
         commercetoolsClient,
-        () => {},
-        () => {},
+        () => { },
+        () => { },
       ),
     ).resolves.toMatchObject(expectedError);
   });
