@@ -43,7 +43,7 @@ This field is used to extract the `LineItem` and `CustomLineItem` name. The API 
 | `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
 | `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
 | `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                    | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
-| `price: { value } x quantity - totalPrice` **                              | `discountAmount: { value: { currency: "EUR", value: "10.00" } } `         | NO       |
+| `price: { value } x quantity - totalPrice` **                              | `discountAmount: { currency: "EUR", value: "10.00" }`                     | NO       |
 | `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartLineItemId: "09f525b2-b739-4169" }`                      | NO       |
 
 \* vatAmount is calculated by using `totalGross - totalNet`
@@ -59,9 +59,11 @@ This field is used to extract the `LineItem` and `CustomLineItem` name. The API 
 | `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
 | `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
 | `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                    | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
+| `money x quantity - totalPrice` **                                         | `discountAmount: { currency: "EUR", value: "10.00" }`                     | NO       |
 | `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartCustomLineItemId: "09f525b2-b739-4169" }`                | NO       |
 
 \* vatAmount is calculated by using `totalGross - totalNet`
+\** discountAmount is calculated only if there is `discountedPrice.value` present on custom line item. Calculation is using `customLine.money.centAmount * customLine.quantity - customLine.totalPrice.centAmount`
 
 ## Shipping Info object
 
@@ -73,9 +75,12 @@ This field is used to extract the `LineItem` and `CustomLineItem` name. The API 
 | `taxedPrice : {totalGross: { currencyCode: "EUR", centAmount: 1000 }}`     | `totalAmount: { currency: "EUR", value: "10.00" }`                        | YES      |
 | `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
 | `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
+| `price - discountedPrice: { value }` **                                    | `discountAmount: { currency: "EUR", value: "10.00" } `                    | NO       |
 |                                                                            | `type: "shipping_fee"`                                                    | NO       |
 
 \* vatAmount is calculated by using `totalGross - totalNet`
+\** discountAmount is calculated only if there is `discountedPrice` present on shipping info. Calculation is using `shipping.price.centAmount - shipping.discountedPrice.value.centAmount`
+
 
 ## Billing / Shipping Address object
 

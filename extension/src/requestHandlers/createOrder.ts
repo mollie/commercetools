@@ -71,6 +71,11 @@ export function makeMollieLineCustom(customLine: CTCustomLineItem, locale: strin
       cartCustomLineItemId: customLine.id,
     },
   };
+  // Handle discounts
+  if (customLine.discountedPrice?.value) {
+    const discountCentAmount = customLine.money.centAmount * customLine.quantity - customLine.totalPrice.centAmount;
+    Object.assign(lineItem, { discountAmount: makeMollieAmount({ ...customLine.money, centAmount: discountCentAmount }) });
+  }
   return lineItem as OrderLine;
 }
 
