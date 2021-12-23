@@ -212,7 +212,7 @@ describe('Create Order', () => {
       nock.cleanAll();
     });
 
-    it('Should return 200 when mollie order created successfully using pay now method (iDEAL)', async () => {
+    it('Should return 201 when mollie order created successfully using pay now method (iDEAL)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
