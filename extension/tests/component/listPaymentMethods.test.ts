@@ -38,12 +38,11 @@ describe('List Payment Methods', () => {
     // Call API extension & trigger payment methods request
     const res = await request(app).post('/').send(mockCTPaymentObj);
 
-    const { status, text } = res;
+    const { status, body } = res;
     expect(status).toBe(200);
 
-    // Parse and check the update action
-    const parsedActions = JSON.parse(text);
-    const { actions } = parsedActions;
+    // Check the update action
+    const { actions } = body;
     expect(actions).toHaveLength(1);
 
     const { name, value: stringifiedValue } = actions.find((action: any) => action.action === 'setCustomField');
@@ -65,12 +64,11 @@ describe('List Payment Methods', () => {
     // Call API extension & trigger payment methods request
     const res = await request(app).post('/').send(mockCTPaymentObj);
 
-    const { status, text } = res;
+    const { status, body } = res;
     expect(status).toBe(200);
 
-    // Parse and check the update action
-    const parsedActions = JSON.parse(text);
-    const { actions } = parsedActions;
+    // Check the update action
+    const { actions } = body;
     expect(actions).toHaveLength(1);
 
     const { name, value: stringifiedValue } = actions.find((action: any) => action.action === 'setCustomField');
@@ -107,14 +105,10 @@ describe('List Payment Methods', () => {
       },
     };
     const res = await request(app).post('/').send(wrongFormatMockCTPaymentObj);
-    const { status, text } = res;
+    const { status, body } = res;
     expect(status).toBe(400);
 
-    const parsedErrors = JSON.parse(text);
-    const { errors } = parsedErrors;
-
-    // This will change when we move away from using formatErrorResponse
-    // to formatExtensionErrorResponse when error doesn't orginate from API
+    const { errors } = body;
     expect(errors).toHaveLength(1);
     expect(errors[0]).toEqual({
       code: 'InvalidInput',

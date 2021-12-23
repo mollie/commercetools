@@ -11,11 +11,18 @@ import { createCtActions as createOrderRefundActions } from './createOrderRefund
 import Logger from '../logger/logger';
 import { initialiseMollieClient, initialiseCommercetoolsClient } from '../client';
 import { isMolliePaymentInterface } from '../utils';
+import { checkAuthorizationHeader } from '../authentication/authenticationHandler';
 
 const commercetoolsClient = initialiseCommercetoolsClient();
 const mollieClient = initialiseMollieClient();
 
 export default async function handleRequest(input: HandleRequestInput): Promise<HandleRequestOutput> {
+  const { isValid, message } = checkAuthorizationHeader(input.headers);
+  if (!isValid) {
+    Logger.error(message);
+    return new HandleRequestFailure(400, [{ code: CTEnumErrors.Unauthorized, message: message }]);
+  }
+
   if (input.httpPath !== '/') {
     Logger.http(`Path ${input.httpPath} not allowed`);
     return new HandleRequestFailure(400);

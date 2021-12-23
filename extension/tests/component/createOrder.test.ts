@@ -1,17 +1,19 @@
 import nock from 'nock';
 import request from 'supertest';
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
 import { mocked } from 'ts-jest/utils';
 import app from '../../src/app';
 import config from '../../config/config';
 import Logger from '../../src/logger/logger';
 
-import { noCartFoundForGivenPaymentId, cartFoundWith2LineItemsForGivenPaymentId } from './mockResponses/commercetoolsData/cartResponses.data';
+import { noCartFoundForGivenPaymentId, cartWithLineItems, cartWithLineItemsAndCustomLineItem } from './mockResponses/commercetoolsData/cartResponses.data';
 import {
   paymentMethodNotEnabledInProfile,
   amountLowerThanMinimumKlarnaSliceIt,
   orderCreatedWithTwoLinesUsingIdeal,
   orderCreatedWithTwoLineItemsUsingKlarna,
+  orderCreatedIncludingDiscountLineUsingIdeal,
 } from './mockResponses/mollieData/createOrder.data';
 
 jest.mock('uuid');
@@ -45,7 +47,7 @@ describe('Create Order', () => {
   };
   let authTokenScope: any;
   beforeAll(() => {
-    // Ensure consisten uuid and datetime
+    // Ensure consistent uuid and datetime
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
     mocked(uuid).mockReturnValue('b2bd1698-9923-4704-9729-02db2de495d1');
     // Credentials authentication flow is called first by commercetools client
@@ -69,17 +71,15 @@ describe('Create Order', () => {
   });
 
   describe('Unhappy Path', () => {
-    it('Payment not linked to Cart', async () => {
+    it('Should return 404 when Payment not linked to Cart', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
         .reply(200, noCartFoundForGivenPaymentId);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
@@ -93,12 +93,10 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
 
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(400);
 
-      const parsedText = JSON.parse(text);
-      const { errors } = parsedText;
-
+      const { errors } = body;
       expect(errors).toHaveLength(1);
       expect(errors[0]).toEqual({
         code: 'ObjectNotFound',
@@ -110,19 +108,17 @@ describe('Create Order', () => {
       expect(getCartByPaymentIdScope.isDone()).toBeTruthy();
     });
 
-    it('422 from mollie - pay now method', async () => {
+    it('Should return 400 when a 422 is returned from mollie API - pay now method', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
 
       const createOrderFailsAsUnprocessableScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(422, paymentMethodNotEnabledInProfile);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
@@ -136,12 +132,10 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
 
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(400);
 
-      const parsedText = JSON.parse(text);
-      const { errors } = parsedText;
-
+      const { errors } = body;
       expect(errors).toHaveLength(1);
       expect(errors[0]).toEqual({
         code: 'SemanticError',
@@ -163,19 +157,17 @@ describe('Create Order', () => {
       expect(createOrderFailsAsUnprocessableScope.isDone()).toBeTruthy();
     });
 
-    it('422 from mollie - pay later method', async () => {
+    it('Should return 400 when a 422 is returned from mollie API - pay later method', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
 
       const createOrderFailsAsUnprocessableScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(422, amountLowerThanMinimumKlarnaSliceIt);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'klarnasliceit';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnasliceit';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Authorization',
@@ -189,12 +181,10 @@ describe('Create Order', () => {
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
 
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(400);
 
-      const parsedText = JSON.parse(text);
-      const { errors } = parsedText;
-
+      const { errors } = body;
       expect(errors).toHaveLength(1);
       expect(errors[0]).toEqual({
         code: 'SemanticError',
@@ -222,18 +212,16 @@ describe('Create Order', () => {
       nock.cleanAll();
     });
 
-    it('200 - Order created successfully using pay now method (iDEAL)', async () => {
+    it('Should return 201 when mollie order created successfully using pay now method (iDEAL)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
       const orderCreatedWithPayNowMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithTwoLinesUsingIdeal);
 
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'ideal';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Charge',
@@ -246,11 +234,10 @@ describe('Create Order', () => {
       ];
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(201);
 
-      const parsedActions = JSON.parse(text);
-      const { actions } = parsedActions;
+      const { actions } = body;
       expect(actions).toHaveLength(6);
 
       // Ensure the interface interaction contains the checkout url
@@ -268,17 +255,16 @@ describe('Create Order', () => {
       expect(orderCreatedWithPayNowMethodScope.isDone()).toBeTruthy();
     });
 
-    it('Authorization works', async () => {
+    it('Should return 201 when mollie order created successfully using pay later method (Klarnapaylater)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
-        .reply(200, cartFoundWith2LineItemsForGivenPaymentId);
+        .reply(200, cartWithLineItems);
       const orderCreatedWithPayLaterMethodScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedWithTwoLineItemsUsingKlarna);
-      const mockCTPaymentObj = {
-        ...baseMockCTPaymentObj,
-      };
-      mockCTPaymentObj.resource.obj.paymentMethodInfo['method'] = 'klarnapaylater';
-      mockCTPaymentObj.resource.obj['transactions'] = [
+
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnapaylater';
+      mockCTPaymentObj.resource.obj.transactions = [
         {
           id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
           type: 'Authorization',
@@ -291,11 +277,10 @@ describe('Create Order', () => {
       ];
 
       const res = await request(app).post('/').send(mockCTPaymentObj);
-      const { status, text } = res;
+      const { status, body } = res;
       expect(status).toBe(201);
 
-      const parsedActions = JSON.parse(text);
-      const { actions } = parsedActions;
+      const { actions } = body;
       expect(actions).toHaveLength(6);
 
       // Ensure the interface interaction contains the checkout url
@@ -312,6 +297,50 @@ describe('Create Order', () => {
 
       expect(getCartByPaymentIdScope.isDone()).toBeTruthy();
       expect(orderCreatedWithPayLaterMethodScope.isDone()).toBeTruthy();
+    });
+
+    it('Should return 201 when mollie order created from cart with both Line Items and Custom Line Items', async () => {
+      const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
+        .get('/carts')
+        .query(true) // mock the url regardless of query string
+        .reply(200, cartWithLineItemsAndCustomLineItem);
+      const orderCreatedWithDiscountLineScope = nock('https://api.mollie.com/v2').post('/orders?embed=payments').reply(201, orderCreatedIncludingDiscountLineUsingIdeal);
+
+      const mockCTPaymentObj = _.cloneDeep(baseMockCTPaymentObj);
+      mockCTPaymentObj.resource.obj.id = '990d9419-62c2-44e5-91d4-8cb9e5cc6518';
+      mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
+      mockCTPaymentObj.resource.obj.transactions = [
+        {
+          id: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
+          type: 'Charge',
+          state: 'Initial',
+          amount: {
+            currencyCode: 'EUR',
+            centAmount: 88500,
+          },
+        },
+      ];
+
+      const res = await request(app).post('/').send(mockCTPaymentObj);
+      const { status, body } = res;
+      expect(status).toBe(201);
+
+      const { actions } = body;
+      expect(actions).toHaveLength(6);
+
+      // Ensure the interface interaction contains the checkout url
+      const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
+      expect(JSON.parse(interfaceInteractionAction.fields.response)).toEqual({
+        mollieOrderId: 'ord_ca1j7q',
+        checkoutUrl: 'https://www.mollie.com/checkout/order/ca1j7q',
+        transactionId: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
+      });
+      // Snapshot all update actions
+      actions.forEach((action: any) => {
+        expect(action).toMatchSnapshot();
+      });
+      expect(getCartByPaymentIdScope.isDone()).toBeTruthy();
+      expect(orderCreatedWithDiscountLineScope.isDone()).toBeTruthy();
     });
   });
 });
