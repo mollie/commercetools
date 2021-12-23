@@ -38,14 +38,25 @@ describe('General Error Flow - Mollie API returning 5xx', () => {
       .reply(500, genericMollieErrorResponse);
 
     const res = await request(app).post('/').send(mockCTPaymentObj);
-    const { status, text } = res;
+    const { status, body } = res;
     expect(status).toBe(400);
 
-    // This will change when we move away from using formatErrorResponse
-    // to formatExtensionErrorResponse when error doesn't orginate from API
-    const parsedErrors = JSON.parse(text);
-    const { errors } = parsedErrors;
+    const { errors } = body;
     expect(errors).toHaveLength(1);
+    expect(errors[0]).toEqual({
+      code: 'General',
+      message: 'Received an error without a message',
+      extensionExtraInfo: {
+        title: 'Internal Server Error',
+        originalStatusCode: 500,
+        links: {
+          documentation: {
+            href: 'https://docs.mollie.com/overview/handling-errors',
+            type: 'text/html',
+          },
+        },
+      },
+    });
     expect(genericMollieServerErrorScope.isDone()).toBeTruthy();
   });
 });
