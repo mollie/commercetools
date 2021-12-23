@@ -255,7 +255,7 @@ describe('Create Order', () => {
       expect(orderCreatedWithPayNowMethodScope.isDone()).toBeTruthy();
     });
 
-    it('Should return 200 when mollie order created successfully using pay later method (Klarnapaylater)', async () => {
+    it('Should return 201 when mollie order created successfully using pay later method (Klarnapaylater)', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
@@ -299,7 +299,7 @@ describe('Create Order', () => {
       expect(orderCreatedWithPayLaterMethodScope.isDone()).toBeTruthy();
     });
 
-    it('Should return 200 when mollie order created from cart with both Line Items and Custom Line Items', async () => {
+    it('Should return 201 when mollie order created from cart with both Line Items and Custom Line Items', async () => {
       const getCartByPaymentIdScope = nock(`${host}/${projectKey}`)
         .get('/carts')
         .query(true) // mock the url regardless of query string
