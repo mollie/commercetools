@@ -9,7 +9,7 @@ Commercetools Mollie integration requires 1 environment variable to start. This 
 Here is a table to show which environment variables are necessary, and which are optional:
 
 | Env variable name  | Required | Notes                                                                                                       |
-| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
+|--------------------| -------- |-------------------------------------------------------------------------------------------------------------|
 | `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                       |
 | `mollie`           | YES      | Contains Mollie-specific project variables                                                                  |
 | `apiKey`           | YES      | API key for interacting with mollie                                                                         |
@@ -20,6 +20,10 @@ Here is a table to show which environment variables are necessary, and which are
 | `authUrl`          | YES      | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
 | `host`             | YES      | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
 | `scopes`           | NO       | Constrains endpoints the client has access to in commercetools                                              |
+| `authentication`   | NO       | CommerceTools Authentication variables                                                                      |
+| `isBasicAuth`      | NO       | Enable/Disable basic authentication. Default is false                                                       |
+| `username`         | NO       | Username as configured in Commercetools                                                                     |
+| `password`         | NO       | Password as configured in Commercetools                                                                     |
 | `service`          | NO       | Contains service-specific project variables                                                                 |
 | `locale`           | NO       | Locale language tag, in `aa_AA` format, based on tags mollie supports *                                     |
 | `port`             | NO       | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
@@ -44,7 +48,12 @@ Below is an example of how these should be formatted:
       "clientSecret": "example_client_secret",
       "authUrl": "example_auth_url",
       "host": "example_host",
-      "scopes": "example_scopes"
+      "scopes": "example_scopes",
+      "authentication": {
+        "isBasicAuth": true,
+        "username": "username",
+        "password": "password"
+      }
     },
     "service": {
       "port": 3050,

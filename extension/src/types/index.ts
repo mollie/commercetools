@@ -160,7 +160,7 @@ export enum CTTransactionState {
 }
 
 export class HandleRequestInput {
-  constructor(public httpPath: string, public httpMethod: string, public httpBody: any) {}
+  constructor(public httpPath: string, public httpMethod: string, public httpBody: any, public headers: Map<string, string> = new Map<string, string>()) {}
 }
 
 export class HandleRequestSuccess {

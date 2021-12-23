@@ -9,6 +9,11 @@ export interface Config {
     authUrl: string;
     host: string;
     scopes?: string[];
+    authentication: {
+      isBasicAuth: boolean;
+      username?: string;
+      password?: string;
+    };
   };
   service: {
     port: number | string;

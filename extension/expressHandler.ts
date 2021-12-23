@@ -3,7 +3,8 @@ import handleRequest from './src/requestHandlers/handleRequest';
 import { HandleRequestInput, HandleRequestSuccess } from './src/types';
 
 export default async function handler(req: Request, res: Response) {
-  const requestInput = new HandleRequestInput(req.path, req.method, req.body);
+  const headers = new Map([['authorization', req?.headers?.authorization ?? '']]);
+  const requestInput = new HandleRequestInput(req.path, req.method, req.body, headers);
 
   const result = await handleRequest(requestInput);
   if (result instanceof HandleRequestSuccess) {

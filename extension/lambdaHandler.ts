@@ -1,9 +1,12 @@
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import handleRequest from './src/requestHandlers/handleRequest';
 import { HandleRequestInput, HandleRequestSuccess } from './src/types';
 
-exports.handler = async (event: any) => {
+exports.handler = async (event: APIGatewayProxyEvent) => {
   const body = event.body ? JSON.parse(event.body) : event;
-  const input = new HandleRequestInput(event.path, event.httpMethod, body);
+
+  const headers = new Map([['authorization', event.headers['authorization'] ?? '']]);
+  const input = new HandleRequestInput(event.path, event.httpMethod, body, headers);
 
   let result = await handleRequest(input);
 

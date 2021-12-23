@@ -13,8 +13,8 @@ jobs:
     name: extension
     concurrency: Dev-Extension-Build
     runs-on: ubuntu-latest
-    defaults: 
-      run: 
+    defaults:
+      run:
         working-directory: extension
     steps:
       - name: Checkout Code
@@ -39,8 +39,8 @@ jobs:
     name: notifications
     concurrency: Dev-Notification-Build
     runs-on: ubuntu-latest
-    defaults: 
-      run: 
+    defaults:
+      run:
         working-directory: notifications
     steps:
       - name: Checkout Code
