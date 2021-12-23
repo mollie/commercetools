@@ -237,7 +237,6 @@ describe('Create Order', () => {
       const { status, body } = res;
       expect(status).toBe(201);
 
-      // const parsedActions = JSON.parse(text);
       const { actions } = body;
       expect(actions).toHaveLength(6);
 
