@@ -126,6 +126,10 @@ describe('handlePayLaterFlow - actions', () => {
         transactions: [
           {
             type: 'Authorization',
+            state: 'Failure',
+          },
+          {
+            type: 'Authorization',
             state: 'Success',
           },
           {
