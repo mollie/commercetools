@@ -130,6 +130,12 @@ export type CTTransaction = {
   amount: CTMoney;
   interactionId?: string;
   state?: 'Initial' | 'Pending' | 'Success' | 'Failure';
+  custom?: {
+    fields: {
+      lineIds?: string;
+      includeShipping?: boolean;
+    };
+  };
 };
 
 export enum ControllerAction {

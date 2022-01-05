@@ -1,6 +1,7 @@
+import { isEmpty } from 'lodash';
 import { MollieClient, ShipmentCreateParams, Shipment } from '@mollie/api-client';
 import formatErrorResponse from '../errorHandlers';
-import { Action, ControllerAction, CTPayment, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../../src/logger/logger';
 
@@ -17,6 +18,12 @@ export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
     Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' });
   }
+}
+
+export function isPartialCapture(transactions: CTTransaction[]): boolean {
+  // Only find the first transaction with initial state to overcome mistakes
+  const initialCharge = transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
+  return !isEmpty(initialCharge?.custom?.fields?.lineIds);
 }
 
 export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action[] {
@@ -45,7 +52,13 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
 
 export default async function createShipment(ctPayment: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    Logger.debug('Payment object: ', ctPayment);
+    Logger.debug({ 'Payment object': ctPayment });
+    if (!ctPayment.key) {
+      return Promise.reject({ status: 400, title: 'Payment is missing key', field: 'payment.key' });
+    }
+
+    const molliePaymentRes = isPartialCapture(ctPayment.transactions ?? []) ? await mollieClient.orders.get(ctPayment.key) : undefined;
+    console.log('molliePaymentRes', molliePaymentRes);
     const shipmentParams = await getShipmentParams(ctPayment);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
     Logger.debug({ mollieShipmentRes: mollieShipmentRes });
