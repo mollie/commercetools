@@ -88,7 +88,6 @@ export async function handleOrderWebhook(id: string): Promise<WebhookHandlerResp
   if (newCtTransactions.length) {
     updateActions.push(...newCtTransactions);
   }
-
   return {
     actions: updateActions,
     version: ctPayment.version,
@@ -98,8 +97,8 @@ export async function handleOrderWebhook(id: string): Promise<WebhookHandlerResp
 export async function handlePaymentWebhook(id: string): Promise<WebhookHandlerResponse> {
   let updateActions: CTUpdateAction[] = [];
   const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
-  const mollieOrderId = molliePayment.orderId ?? '';
-  const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
+  const mollieOrderId = molliePayment.orderId;
+  const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId!, commercetoolsClient, projectKey);
   const ctTransactions = ctPayment.transactions || [];
   const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
   if (paymentStatusUpdateAction) {
