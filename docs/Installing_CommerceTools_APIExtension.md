@@ -16,9 +16,9 @@ Authentication configuration should also be added to `CT_MOLLIE_CONFIG` as descr
 
 ## Configure custom fields for your project
 
-We use Custom Fields on the Payment, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project.
+We use Custom Fields on the Payment, Transaction, and the Payment's Interface Interaction to send and store data from Mollie. To use the API extension and notification module, you will need to install these on your Commerce Tool project.
 
-To do this, we make two requests to the `types` endpoint.
+To do this, we make 3 requests to the `types` endpoint.
 
 N.B. this list is still work in progress and will be updated as we develop.
 
@@ -28,7 +28,7 @@ POST `/<project-id>/types`
 
 Body:
 
-```
+```json
 {
     "key": "ct-mollie-integration-payment-type",
     "name": {
@@ -75,17 +75,6 @@ Body:
             "type": {
                 "name": "String"
             },
-            "name": "createCapture",
-            "label": {
-                "en": "Create capture"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
             "name": "cancelPayment",
             "label": {
                 "en": "Cancel payment"
@@ -108,13 +97,54 @@ Body:
 }
 ```
 
-(2) Payment Interface Interaction:
+**(2) Transaction:**
 
 POST `/<project-id>/types`
 
 Body:
 
+```JSON
+{
+    "key": "ct-mollie-integration-transaction-type",
+    "name": {
+        "en": "Mollie Integration transaction type"
+    },
+    "resourceTypeIds": [
+        "transaction"
+    ],
+    "fieldDefinitions": [
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "lineIds",
+            "label": {
+                "en": "Line IDs and Custom Line IDs"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        },
+        {
+            "type": {
+                "name": "Boolean"
+            },
+            "name": "includeShipping",
+            "label": {
+                "en": "Include shipping"
+            },
+            "required": false,
+        },
+    ]
+}
 ```
+
+**(3) Payment Interface Interaction:**
+
+POST `/<project-id>/types`
+
+Body:
+
+```json
 {
     "key": "ct-mollie-integration-interface-interaction-type",
     "name": {
