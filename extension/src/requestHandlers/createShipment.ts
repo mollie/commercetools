@@ -21,7 +21,7 @@ export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
 }
 
 export function isPartialCapture(transactions: CTTransaction[]): boolean {
-  // Only find the first transaction with initial state to overcome mistakes
+  // // Assumes only one initial transaction, i.e. only one capture being made at a time
   const initialCharge = transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
   return !isEmpty(initialCharge?.custom?.fields?.lineIds);
 }
