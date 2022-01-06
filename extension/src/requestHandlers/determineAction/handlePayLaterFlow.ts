@@ -24,7 +24,7 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot add a refund, cancel or charge transaction without an Authorization transaction';
       break;
-    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Success').length && !!chargeTransactions.length:
+    case !authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length && !!chargeTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a capture without a successful Authorization';
       break;
