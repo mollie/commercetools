@@ -9,6 +9,12 @@ import actions from './index';
 import Logger from '../logger/logger';
 import { makeActions } from '../makeActions';
 
+type WebhookHandlerResponse = {
+  actions: CTUpdateAction[];
+  version: number;
+  orderId?: string;
+};
+
 const mollieClient = initialiseMollieClient();
 const commercetoolsClient = initialiseCommercetoolsClient();
 const {
@@ -17,8 +23,7 @@ const {
 
 /**
  * handleRequest
- * @param req Request
- * @param res Response
+ * @param input HandleRequestInput
  */
 export default async function handleRequest(input: HandleRequestInput): Promise<HandleRequestOutput> {
   // Only accept '/' endpoint
@@ -42,26 +47,13 @@ export default async function handleRequest(input: HandleRequestInput): Promise<
       return new HandleRequestSuccess(200);
     }
 
-    // Order or Payment flow will populate the updated actions
-    let updateActions: CTUpdateAction[] = [];
-    let mollieOrderId;
-    let ctPaymentVersion;
-
-    // Order webhook - updateActions
-    if (resourceType === 'order') {
-      const { actions, version } = await handleOrderWebhook(id);
-      updateActions.concat(actions);
-      ctPaymentVersion = version;
-    }
-    // Payment webhook - updateActions
-    else {
-      const { actions, version } = await handlePaymentWebhook(id);
-      updateActions.concat(actions);
-      ctPaymentVersion = version;
-    }
+    // Call the payment or order webhook handler to create array of update actions
+    const webhookHandler = resourceType === 'order' ? handleOrderWebhook : handlePaymentWebhook;
+    const { actions: updateActions, version, orderId } = await webhookHandler(id);
+    const ctPaymentVersion = version;
 
     // Update the CT Payment
-    const ctKey = resourceType === 'order' ? id : mollieOrderId;
+    const ctKey = resourceType === 'order' ? id : orderId;
     await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion, updateActions);
     return new HandleRequestSuccess(200);
   } catch (error: any) {
@@ -71,7 +63,7 @@ export default async function handleRequest(input: HandleRequestInput): Promise<
   }
 }
 
-export async function handleOrderWebhook(id: string): Promise<{ actions: CTUpdateAction[]; version: number }> {
+export async function handleOrderWebhook(id: string): Promise<WebhookHandlerResponse> {
   let updateActions: CTUpdateAction[] = [];
   const order = await actions.mGetOrderDetailsById(id, mollieClient);
   const mollieOrderStatus = order.status;
@@ -103,7 +95,7 @@ export async function handleOrderWebhook(id: string): Promise<{ actions: CTUpdat
   };
 }
 
-export async function handlePaymentWebhook(id: string): Promise<{ actions: CTUpdateAction[]; version: number }> {
+export async function handlePaymentWebhook(id: string): Promise<WebhookHandlerResponse> {
   let updateActions: CTUpdateAction[] = [];
   const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
   const mollieOrderId = molliePayment.orderId ?? '';
@@ -123,5 +115,6 @@ export async function handlePaymentWebhook(id: string): Promise<{ actions: CTUpd
   return {
     actions: updateActions,
     version: ctPayment.version,
+    orderId: mollieOrderId,
   };
 }
