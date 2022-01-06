@@ -1,8 +1,8 @@
-import { getPaymentByKey } from '../../../src/requestHandlers/commercetools/getPaymentByKey';
-import { CTPayment } from '../../../src/types/ctPaymentTypes';
-import Logger from '../../../src/logger/logger';
+import { getPaymentByKey } from '../../../../src/requestHandlers/commercetools/getPaymentByKey';
+import { CTPayment } from '../../../../src/types/ctPaymentTypes';
+import Logger from '../../../../src/logger/logger';
 
-jest.mock('../../../src/logger/logger');
+jest.mock('../../../../src/logger/logger');
 
 describe('getPaymentByKey', () => {
   const mockProjectKey = 'test';

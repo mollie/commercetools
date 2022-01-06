@@ -1,4 +1,4 @@
-import Logger from '../../src/logger/logger';
+import Logger from '../../../src/logger/logger';
 
 describe('Logger', () => {
   it('Default Logger should have the settings: level = info, transport = console', () => {

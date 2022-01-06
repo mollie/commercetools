@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
 import { Payment } from '@mollie/api-client';
-import { UpdateActionChangeTransactionState, UpdateActionSetCustomField, AddTransaction } from '../types/ctUpdateActions';
+import { HandleRequestInput, HandleRequestOutput, HandleRequestFailure, HandleRequestSuccess } from '../types/requestHandlerTypes';
 import { CTTransaction } from '../types/ctPaymentTypes';
-import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions, getRefundStatusUpdateActions } from '../utils';
+import { CTUpdateAction } from '../types/ctUpdateActions';
 import config from '../../config/config';
+import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client/index';
+import { getTransactionStateUpdateOrderActions, getPaymentStatusUpdateAction, isOrderOrPayment, getAddTransactionUpdateActions, getRefundStatusUpdateActions } from '../utils';
 import actions from './index';
 import Logger from '../logger/logger';
-import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client/index';
 import { makeActions } from '../makeActions';
 
 const mollieClient = initialiseMollieClient();
@@ -20,63 +20,64 @@ const {
  * @param req Request
  * @param res Response
  */
-export default async function handleRequest(req: Request, res: Response) {
-  const {
-    body: { id },
-    path,
-    method,
-  } = req;
-
+export default async function handleRequest(input: HandleRequestInput): Promise<HandleRequestOutput> {
   // Only accept '/' endpoint
-  if (path !== '/') {
-    Logger.http(`Path ${path} not allowed`);
-    return res.status(400).end();
+  if (input.httpPath !== '/') {
+    Logger.http(`Path ${input.httpPath} not allowed`);
+    return new HandleRequestFailure(400);
   }
-  if (method !== 'POST') {
-    Logger.http(`Method ${method} not allowed`);
-    return res.status(405).end();
+  if (input.httpMethod !== 'POST') {
+    Logger.http(`Method ${input.httpMethod} not allowed`);
+    return new HandleRequestFailure(405);
   }
 
   try {
+    const {
+      httpBody: { id },
+    } = input;
     // Receive webhook trigger from Mollie with order or payment ID
     const resourceType = isOrderOrPayment(id);
     if (resourceType === 'invalid') {
       Logger.error(`ID ${id} is invalid`);
-      return res.status(200).end();
+      return new HandleRequestSuccess(200);
     }
 
     // Order or Payment flow will populate the updated actions
-    let updateActions: (UpdateActionChangeTransactionState | UpdateActionSetCustomField | AddTransaction)[] = [];
+    let updateActions: CTUpdateAction[] = [];
     let mollieOrderId;
     let ctPaymentVersion;
 
     // Order webhook - updateActions
     if (resourceType === 'order') {
-      await handleOrderWebhook(id, ctPaymentVersion, updateActions);
+      const { actions, version } = await handleOrderWebhook(id);
+      updateActions.concat(actions);
+      ctPaymentVersion = version;
     }
     // Payment webhook - updateActions
     else {
-      await handlePaymentWebhook(id, ctPaymentVersion, updateActions, mollieOrderId);
+      const { actions, version } = await handlePaymentWebhook(id);
+      updateActions.concat(actions);
+      ctPaymentVersion = version;
     }
 
     // Update the CT Payment
     const ctKey = resourceType === 'order' ? id : mollieOrderId;
-    await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion ?? 1, updateActions);
-
-    res.status(200).end();
+    await actions.ctUpdatePaymentByKey(ctKey, commercetoolsClient, projectKey, ctPaymentVersion, updateActions);
+    return new HandleRequestSuccess(200);
   } catch (error: any) {
     Logger.error({ error });
-    res.status(200).end();
+    // TODO: change to handlerequestfailure and return 4xx/5xx with no message
+    return new HandleRequestSuccess(200);
   }
 }
 
-export async function handleOrderWebhook(id: any, ctPaymentVersion: any, updateActions: any) {
+export async function handleOrderWebhook(id: string): Promise<{ actions: CTUpdateAction[]; version: number }> {
+  let updateActions: CTUpdateAction[] = [];
   const order = await actions.mGetOrderDetailsById(id, mollieClient);
   const mollieOrderStatus = order.status;
   const molliePayments = order._embedded?.payments;
 
   const ctPayment = await actions.ctGetPaymentByKey(id, commercetoolsClient, projectKey);
-  ctPaymentVersion = ctPayment.version;
   const ctOrderStatus = ctPayment.custom?.fields.mollieOrderStatus;
 
   if (mollieOrderStatus !== ctOrderStatus) {
@@ -95,13 +96,18 @@ export async function handleOrderWebhook(id: any, ctPaymentVersion: any, updateA
   if (newCtTransactions.length) {
     updateActions.push(...newCtTransactions);
   }
+
+  return {
+    actions: updateActions,
+    version: ctPayment.version,
+  };
 }
 
-export async function handlePaymentWebhook(id: any, ctPaymentVersion: any, updateActions: any, mollieOrderId: any) {
+export async function handlePaymentWebhook(id: string): Promise<{ actions: CTUpdateAction[]; version: number }> {
+  let updateActions: CTUpdateAction[] = [];
   const molliePayment = await actions.mGetPaymentDetailsById(id, mollieClient);
-  mollieOrderId = molliePayment.orderId ?? '';
+  const mollieOrderId = molliePayment.orderId ?? '';
   const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
-  ctPaymentVersion = ctPayment.version;
   const ctTransactions = ctPayment.transactions || [];
   const paymentStatusUpdateAction = getPaymentStatusUpdateAction(ctTransactions, molliePayment);
   if (paymentStatusUpdateAction) {
@@ -113,4 +119,9 @@ export async function handlePaymentWebhook(id: any, ctPaymentVersion: any, updat
     const refundUpdateActions = getRefundStatusUpdateActions(ctTransactions, refunds);
     updateActions.push(...refundUpdateActions);
   }
+
+  return {
+    actions: updateActions,
+    version: ctPayment.version,
+  };
 }

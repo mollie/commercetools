@@ -19,8 +19,16 @@ export type AddTransaction = {
   transaction: CTTransactionDraft;
 };
 
+export type SetStatusInterfaceText = {
+  action: UpdateActionKey.SetStatusInterfaceText;
+  interfaceText: string;
+};
+
 export enum UpdateActionKey {
   SetCustomField = 'setCustomField',
   ChangeTransactionState = 'changeTransactionState',
   AddTransaction = 'addTransaction',
+  SetStatusInterfaceText = 'setStatusInterfaceText',
 }
+
+export type CTUpdateAction = UpdateActionSetCustomField | UpdateActionChangeTransactionState | AddTransaction | SetStatusInterfaceText;

@@ -1,7 +1,7 @@
 import { PaymentStatus, Payment, RefundStatus, Refund } from '@mollie/api-client';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../src/types/ctPaymentTypes';
-import { UpdateActionKey } from '../src/types/ctUpdateActions';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../../src/types/ctPaymentTypes';
+import { UpdateActionKey } from '../../src/types/ctUpdateActions';
 import {
   isOrderOrPayment,
   shouldPaymentStatusUpdate,
@@ -13,7 +13,7 @@ import {
   existsInCtTransactionsArray,
   getAddTransactionUpdateActions,
   getRefundStatusUpdateActions,
-} from '../src/utils';
+} from '../../src/utils';
 
 describe('isOrderOrPayment', () => {
   it("should return order when the resource id starts with 'ord_'", () => {
