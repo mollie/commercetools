@@ -1,8 +1,8 @@
 import { MollieClient } from '@mollie/api-client';
-import { mocked } from 'ts-jest/utils';
-import getOrderDetailsById from '../../../src/requestHandlers/mollie/getOrderDetailsById';
 import OrdersResource from '@mollie/api-client/dist/types/src/resources/orders/OrdersResource';
-import Logger from '../../../src/logger/logger';
+import { mocked } from 'ts-jest/utils';
+import getOrderDetailsById from '../../../../src/requestHandlers/mollie/getOrderDetailsById';
+import Logger from '../../../../src/logger/logger';
 
 jest.mock('@mollie/api-client');
 

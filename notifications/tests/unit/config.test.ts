@@ -1,6 +1,6 @@
-import { loadConfig } from '../config/config';
+import { loadConfig } from '../../config/config';
 
-jest.mock('../src/logger/logger');
+jest.mock('../../src/logger/logger');
 
 describe('Config test', () => {
   const OLD_ENV = { ...process.env };

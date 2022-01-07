@@ -21,6 +21,7 @@ describe('Webhook triggered with non-existent mollie ID as payload', () => {
   afterAll(() => {
     jest.resetAllMocks();
   });
+
   it('should return 200 when called with non existent order id', async () => {
     const mockBody = { id: 'ord_12345' };
     const orderNotFoundScope = nock('https://api.mollie.com/v2')
