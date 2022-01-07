@@ -1,7 +1,7 @@
 import { Payment, PaymentStatus, Refund, RefundStatus } from '@mollie/api-client';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
-import { UpdateActionChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types/ctPayment';
+import { ChangeTransactionState, UpdateActionKey, AddTransaction } from './types/ctUpdateActions';
 import { makeActions } from './makeActions';
 
 export const isOrderOrPayment = (resourceId: string): string => {
@@ -134,10 +134,10 @@ export const getMatchingMolliePayment = (molliePayments: any[], ctInteractionId:
  * Gets an array of transactionStateUpdateOrderActions, a list of commands which tells CT to update transactions based on the corresponding mollie payment states.
  * @param ctTransactions: array of commercetools transactions
  * @param molliePayments: array of mollie payments
- * @returns UpdateActionChangeTransactionState[]
+ * @returns ChangeTransactionState[]
  */
-export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: any): UpdateActionChangeTransactionState[] => {
-  const changeTransactionStateUpdateActions: UpdateActionChangeTransactionState[] = [];
+export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: any): ChangeTransactionState[] => {
+  const changeTransactionStateUpdateActions: ChangeTransactionState[] = [];
   if (ctTransactions.length > 0) {
     for (let ctTransaction of ctTransactions) {
       let matchingMolliePayment = getMatchingMolliePayment(molliePayments, ctTransaction.interactionId || '');
@@ -215,7 +215,7 @@ export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
  * @param molliePayment
  * @returns UpdateAction or void
  */
-export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], molliePayment: Payment): UpdateActionChangeTransactionState | AddTransaction | void => {
+export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], molliePayment: Payment): ChangeTransactionState | AddTransaction | void => {
   const { id: molliePaymentId, status: molliePaymentStatus } = molliePayment;
   const matchingTransaction = ctTransactions.find(transaction => transaction.interactionId === molliePaymentId);
 
@@ -247,8 +247,8 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
  * @param ctTransactions
  * @param mollieRefunds
  */
-export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mollieRefunds: Refund[]): (UpdateActionChangeTransactionState | AddTransaction)[] => {
-  const updateActions: (UpdateActionChangeTransactionState | AddTransaction)[] = [];
+export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mollieRefunds: Refund[]): (ChangeTransactionState | AddTransaction)[] => {
+  const updateActions: (ChangeTransactionState | AddTransaction)[] = [];
   const refundTransactions = ctTransactions?.filter(ctTransaction => ctTransaction.type === CTTransactionType.Refund);
 
   mollieRefunds.forEach(mollieRefund => {

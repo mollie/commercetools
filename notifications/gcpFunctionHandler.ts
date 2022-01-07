@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import handleRequest from './src/requestHandlers/handleRequest'
-import { HandleRequestInput, HandleRequestSuccess } from './src/types/requestHandlerTypes';
+import { HandleRequestInput, HandleRequestSuccess } from './src/types/requestHandler';
 
 exports.handler = async (req: Request, res: Response) => {  
   const requestInput = new HandleRequestInput(req.path, req.method, req.body);

@@ -1,14 +1,7 @@
-import { CTTransactionState, CTTransactionDraft } from './ctPaymentTypes';
-
-// https://docs.commercetools.com/api/projects/payments#set-customfield
-export type UpdateActionSetCustomField = {
-  action: UpdateActionKey.SetCustomField;
-  name: string;
-  value: string;
-};
+import { CTTransactionState, CTTransactionDraft } from './ctPayment';
 
 // https://docs.commercetools.com/api/projects/payments#change-transactionstate
-export type UpdateActionChangeTransactionState = {
+export type ChangeTransactionState = {
   action: UpdateActionKey.ChangeTransactionState;
   transactionId: string;
   state: CTTransactionState;
@@ -31,4 +24,4 @@ export enum UpdateActionKey {
   SetStatusInterfaceText = 'setStatusInterfaceText',
 }
 
-export type CTUpdateAction = UpdateActionSetCustomField | UpdateActionChangeTransactionState | AddTransaction | SetStatusInterfaceText;
+export type CTUpdateAction = ChangeTransactionState | AddTransaction | SetStatusInterfaceText;

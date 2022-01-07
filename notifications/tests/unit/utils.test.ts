@@ -1,6 +1,6 @@
 import { PaymentStatus, Payment, RefundStatus, Refund } from '@mollie/api-client';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../../src/types/ctPaymentTypes';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from '../../src/types/ctPayment';
 import { UpdateActionKey } from '../../src/types/ctUpdateActions';
 import {
   isOrderOrPayment,

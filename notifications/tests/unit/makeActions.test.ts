@@ -1,5 +1,5 @@
 import { makeActions } from '../../src/makeActions';
-import { CTTransactionState, CTTransactionType } from '../../src/types/ctPaymentTypes';
+import { CTTransactionState, CTTransactionType } from '../../src/types/ctPayment';
 
 describe('makeActions', () => {
   it('addTransaction - should return update action with new transaction to be added', () => {
