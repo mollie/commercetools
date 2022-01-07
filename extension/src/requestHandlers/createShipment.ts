@@ -48,6 +48,7 @@ export function findInitialCharge(transactions: CTTransaction[]): CTTransaction 
 }
 
 export function isPartialCapture(transactions: CTTransaction[]): boolean {
+  if (!transactions) return false;
   const initialCharge = findInitialCharge(transactions);
   return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
 }
