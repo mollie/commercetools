@@ -1,7 +1,7 @@
 import { MollieClient } from '@mollie/api-client';
 import { CTUpdateAction } from '../../types/ctUpdateActions';
 import { WebhookHandlerResponse } from '../../types/requestHandler';
-import { getPaymentStatusUpdateAction, getRefundStatusUpdateActions } from '../../utils';
+import { getPaymentStatusUpdateAction, getRefundStatusUpdateActions } from './transactionFactory';
 import config from '../../../config/config';
 import actions from '../index';
 
