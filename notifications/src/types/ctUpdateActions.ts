@@ -1,7 +1,7 @@
 import { CTTransactionState, CTTransactionDraft } from './ctPayment';
 
 // https://docs.commercetools.com/api/projects/payments#change-transactionstate
-export type UpdateActionChangeTransactionState = {
+export type ChangeTransactionState = {
   action: UpdateActionKey.ChangeTransactionState;
   transactionId: string;
   state: CTTransactionState;
@@ -24,4 +24,4 @@ export enum UpdateActionKey {
   SetStatusInterfaceText = 'setStatusInterfaceText',
 }
 
-export type CTUpdateAction = UpdateActionChangeTransactionState | AddTransaction | SetStatusInterfaceText;
+export type CTUpdateAction = ChangeTransactionState | AddTransaction | SetStatusInterfaceText;

@@ -1,5 +1,5 @@
 import { CTTransactionState, CTTransactionType } from './types/ctPayment';
-import { AddTransaction, SetStatusInterfaceText, UpdateActionChangeTransactionState, UpdateActionKey } from './types/ctUpdateActions';
+import { AddTransaction, SetStatusInterfaceText, ChangeTransactionState, UpdateActionKey } from './types/ctUpdateActions';
 import { convertMollieAmountToCTMoney } from './utils';
 
 const addTransaction = (type: CTTransactionType, amount: { currency: string; value: string }, interactionId: string, state: CTTransactionState, timestamp: string): AddTransaction => {
@@ -23,7 +23,7 @@ const setStatusInterfaceText = (interfaceText: string): SetStatusInterfaceText =
   };
 };
 
-const changeTransactionState = (id: string, newState: CTTransactionState): UpdateActionChangeTransactionState => {
+const changeTransactionState = (id: string, newState: CTTransactionState): ChangeTransactionState => {
   return {
     action: UpdateActionKey.ChangeTransactionState,
     transactionId: id,
