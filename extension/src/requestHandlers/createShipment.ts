@@ -1,17 +1,20 @@
-import { isEmpty } from 'lodash';
-import { MollieClient, ShipmentCreateParams, Shipment } from '@mollie/api-client';
+import { isEmpty, trim } from 'lodash';
+import { MollieClient, ShipmentCreateParams, Shipment, Order, OrderLine } from '@mollie/api-client';
 import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import { createDateNowString } from '../utils';
 import Logger from '../../src/logger/logger';
 
-export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
+export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<ShipmentCreateParams> {
   try {
-    const parsedShipmentRequest = ctObj?.custom?.fields?.createCapture ? JSON.parse(ctObj?.custom?.fields?.createCapture) : '';
     const shipmentParams: ShipmentCreateParams = {
-      orderId: ctObj.key,
+      orderId: ctPayment.key,
     };
-    if (parsedShipmentRequest.lines?.length) Object.assign(shipmentParams, { lines: parsedShipmentRequest.lines });
+    if (isPartialCapture(ctPayment.transactions) && mollieOrder) {
+      const initialCharge = findInitialCharge(ctPayment.transactions);
+      const mollieLines = ctToMollieLines(initialCharge!, mollieOrder.lines);
+      Object.assign(shipmentParams, { lines: mollieLines });
+    }
     Logger.debug({ shipmentParams: shipmentParams });
     return Promise.resolve(shipmentParams);
   } catch (error) {
@@ -20,10 +23,34 @@ export function getShipmentParams(ctObj: any): Promise<ShipmentCreateParams> {
   }
 }
 
+export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: OrderLine[]): Object[] {
+  // Case 1: Comma separated string of line ids
+  const ctLinesArray = ctTransaction.custom?.fields?.lineIds?.split(',').map(trim) || [];
+  // Case 2: TODO - objects with ids, quantities and amounts
+
+  const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: string) => {
+    const mollieLine = mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLine || mollieLine.metadata?.cartCustomLineItemId === ctLine);
+    if (mollieLine) acc.push({ id: mollieLine.id, quantity: mollieLine.quantity, amount: mollieLine.totalAmount });
+    return acc;
+  }, []);
+
+  if (ctTransaction.custom?.fields?.includeShipping) {
+    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.name.startsWith('Shipping'));
+    shippingLine && mollieLines.push({ id: shippingLine.id });
+  }
+
+  return mollieLines;
+}
+
+export function findInitialCharge(transactions: CTTransaction[]): CTTransaction | undefined {
+  // Assumes one initial transaction, i.e. one capture being made at a time
+  return transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
+}
+
 export function isPartialCapture(transactions: CTTransaction[]): boolean {
-  // // Assumes only one initial transaction, i.e. only one capture being made at a time
-  const initialCharge = transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
-  return !isEmpty(initialCharge?.custom?.fields?.lineIds);
+  if (!transactions) return false;
+  const initialCharge = findInitialCharge(transactions);
+  return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
 }
 
 export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action[] {
@@ -50,16 +77,11 @@ export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action
   return result;
 }
 
-export default async function createShipment(ctPayment: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+export default async function createShipment(ctPayment: Required<CTPayment>, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     Logger.debug({ 'Payment object': ctPayment });
-    if (!ctPayment.key) {
-      return Promise.reject({ status: 400, title: 'Payment is missing key', field: 'payment.key' });
-    }
-
-    const molliePaymentRes = isPartialCapture(ctPayment.transactions ?? []) ? await mollieClient.orders.get(ctPayment.key) : undefined;
-    console.log('molliePaymentRes', molliePaymentRes);
-    const shipmentParams = await getShipmentParams(ctPayment);
+    const mollieOrderRes = isPartialCapture(ctPayment.transactions ?? []) ? await mollieClient.orders.get(ctPayment.key) : undefined;
+    const shipmentParams = await getShipmentParams(ctPayment, mollieOrderRes);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
     Logger.debug({ mollieShipmentRes: mollieShipmentRes });
     const ctActions = createCtActions(mollieShipmentRes, ctPayment);
