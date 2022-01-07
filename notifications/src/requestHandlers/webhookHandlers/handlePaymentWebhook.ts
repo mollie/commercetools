@@ -1,9 +1,9 @@
 import { MollieClient } from '@mollie/api-client';
-import { CTUpdateAction } from '../types/ctUpdateActions';
-import { WebhookHandlerResponse } from '../types/requestHandler';
-import { getPaymentStatusUpdateAction, getRefundStatusUpdateActions } from '../utils';
-import config from '../../config/config';
-import actions from './index';
+import { CTUpdateAction } from '../../types/ctUpdateActions';
+import { WebhookHandlerResponse } from '../../types/requestHandler';
+import { getPaymentStatusUpdateAction, getRefundStatusUpdateActions } from '../../utils';
+import config from '../../../config/config';
+import actions from '../index';
 
 const {
   commercetools: { projectKey },

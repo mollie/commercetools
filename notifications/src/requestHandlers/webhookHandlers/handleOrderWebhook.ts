@@ -1,12 +1,12 @@
 import Payment from '@mollie/api-client/dist/types/src/data/payments/Payment';
 import { MollieClient } from '@mollie/api-client';
-import { CTTransaction } from '../types/ctPayment';
-import { WebhookHandlerResponse } from '../types/requestHandler';
-import { CTUpdateAction } from '../types/ctUpdateActions';
-import actions from './index';
-import { getAddTransactionUpdateActions, getTransactionStateUpdateOrderActions } from '../utils';
-import { makeActions } from '../makeActions';
-import config from '../../config/config';
+import { CTTransaction } from '../../types/ctPayment';
+import { WebhookHandlerResponse } from '../../types/requestHandler';
+import { CTUpdateAction } from '../../types/ctUpdateActions';
+import actions from '../index';
+import { getAddTransactionUpdateActions, getTransactionStateUpdateOrderActions } from '../../utils';
+import { makeActions } from '../../makeActions';
+import config from '../../../config/config';
 
 const {
   commercetools: { projectKey },

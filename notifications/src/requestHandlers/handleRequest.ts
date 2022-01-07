@@ -4,8 +4,8 @@ import { initialiseCommercetoolsClient, initialiseMollieClient } from '../client
 import { isOrderOrPayment } from '../utils';
 import actions from './index';
 import Logger from '../logger/logger';
-import { handleOrderWebhook } from './handleOrderWebhook';
-import { handlePaymentWebhook } from './handlePaymentWebhook';
+import { handleOrderWebhook } from './webhookHandlers/handleOrderWebhook';
+import { handlePaymentWebhook } from './webhookHandlers/handlePaymentWebhook';
 
 const mollieClient = initialiseMollieClient();
 const commercetoolsClient = initialiseCommercetoolsClient();
