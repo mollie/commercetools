@@ -41,7 +41,7 @@ describe('getShipmentParams', () => {
         },
       ],
     } as Required<CTPayment>;
-    const mockMoOrderRes = {
+    const mockOrderRes = {
       lines: [
         {
           id: 'odl_1.tlaa3w',
@@ -85,7 +85,7 @@ describe('getShipmentParams', () => {
       orderId: 'ord_3uwvfd',
       lines: [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '1.42', currency: 'EUR' } }, { id: 'odl_1.6997yo', quantity: 1, amount: { value: '7.50', currency: 'EUR' } }, { id: 'odl_1.cgark2' }],
     };
-    await expect(getShipmentParams(mockCtPayment, mockMoOrderRes)).resolves.toEqual(expectedCreateShipmentParams);
+    await expect(getShipmentParams(mockCtPayment, mockOrderRes)).resolves.toEqual(expectedCreateShipmentParams);
   });
 });
 // describe('createCtActions', () => {
