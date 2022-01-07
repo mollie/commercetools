@@ -1,5 +1,5 @@
-import { makeActions } from '../src/makeActions';
-import { CTTransactionState, CTTransactionType } from '../src/types/ctPaymentTypes';
+import { makeActions } from '../../src/makeActions';
+import { CTTransactionState, CTTransactionType } from '../../src/types/ctPaymentTypes';
 
 describe('makeActions', () => {
   it('addTransaction - should return update action with new transaction to be added', () => {
@@ -39,7 +39,7 @@ describe('makeActions', () => {
   it('setStatusInterfaceText - should return update action with a mollie order status text', () => {
     const updateAction = makeActions.setStatusInterfaceText('paid');
     expect(updateAction).toEqual({
-      action: 'setMethodInfoName',
+      action: 'setStatusInterfaceText',
       interfaceText: 'paid',
     });
   });

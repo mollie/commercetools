@@ -43,7 +43,7 @@ export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: 
 }
 
 export function findInitialCharge(transactions: CTTransaction[]): CTTransaction | undefined {
-  // Only find the first transaction with initial state to overcome mistakes
+  // Assumes one initial transaction, i.e. one capture being made at a time
   return transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
 }
 

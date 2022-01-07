@@ -1,8 +1,8 @@
 import { MollieClient } from '@mollie/api-client';
-import { mocked } from 'ts-jest/utils';
-import getPaymentDetailsById from '../../../src/requestHandlers/mollie/getPaymentDetailsById';
 import PaymentsResource from '@mollie/api-client/dist/types/src/resources/payments/PaymentsResource';
-import Logger from '../../../src/logger/logger';
+import { mocked } from 'ts-jest/utils';
+import getPaymentDetailsById from '../../../../src/requestHandlers/mollie/getPaymentDetailsById';
+import Logger from '../../../../src/logger/logger';
 
 jest.mock('@mollie/api-client');
 

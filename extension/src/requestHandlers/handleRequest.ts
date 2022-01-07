@@ -31,7 +31,7 @@ export default async function handleRequest(input: HandleRequestInput): Promise<
     Logger.http(`Method ${input.httpMethod} not allowed`);
     return new HandleRequestFailure(405);
   }
-  // TODO - authentication check - CMI-95,96,97
+
   try {
     const ctPaymentObject = input.httpBody?.resource?.obj;
     if (!isMolliePaymentInterface(ctPaymentObject)) {
