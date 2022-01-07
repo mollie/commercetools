@@ -1,5 +1,5 @@
 import { updatePaymentByKey } from '../../../../src/requestHandlers/commercetools/updatePaymentByKey';
-import { CTPayment } from '../../../../src/types/ctPaymentTypes';
+import { CTPayment } from '../../../../src/types/ctPayment';
 import Logger from '../../../../src/logger/logger';
 
 jest.mock('../../../../src/logger/logger');

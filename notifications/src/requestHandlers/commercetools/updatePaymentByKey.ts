@@ -1,4 +1,4 @@
-import { CTPayment } from '../../types/ctPaymentTypes';
+import { CTPayment } from '../../types/ctPayment';
 import Logger from '../../logger/logger';
 
 /**

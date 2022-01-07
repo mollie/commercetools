@@ -1,4 +1,4 @@
-import { CTTransactionState, CTTransactionType } from './types/ctPaymentTypes';
+import { CTTransactionState, CTTransactionType } from './types/ctPayment';
 import { AddTransaction, SetStatusInterfaceText, UpdateActionChangeTransactionState, UpdateActionKey } from './types/ctUpdateActions';
 import { convertMollieAmountToCTMoney } from './utils';
 

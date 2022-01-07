@@ -1,9 +1,9 @@
 import { Payment, Order } from '@mollie/api-client';
-import { CTPayment } from '../../../src/types/ctPaymentTypes';
+import { CTPayment } from '../../../src/types/ctPayment';
 import actions from '../../../src/requestHandlers/index';
 import handleRequest from '../../../src/requestHandlers/handleRequest';
 import Logger from '../../../src/logger/logger';
-import { HandleRequestInput } from '../../../src/types/requestHandlerTypes';
+import { HandleRequestInput } from '../../../src/types/requestHandler';
 
 jest.mock('../../../src/requestHandlers/index');
 

@@ -8,7 +8,7 @@ export type CTPayment = {
     paymentInterface?: string;
     method?: string;
   };
-  paymentStatus: {
+  paymentStatus?: {
     interfaceCode?: string;
     interfaceText?: string;
     state?: Object;
