@@ -10,6 +10,7 @@ import Refund from '@mollie/api-client/dist/types/src/data/refunds/Refund';
 
 // SUPPORTING CAST //
 
+// FIND X IN Y, Y IN X //
 /**
  * @param molliePayments: array of mollie payments
  * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
@@ -30,6 +31,8 @@ export const existsInCtTransactionsArray = (molliePayment: Payment, ctTransactio
 export const getMatchingMolliePayment = (molliePayments: any[], ctInteractionId: string): any => {
   return molliePayments.find(payment => payment.id === ctInteractionId) || {};
 };
+
+// SHOULD STATUS UPDATE ? //
 
 /**
  * @param molliePaymentStatus
@@ -102,13 +105,18 @@ export const shouldRefundStatusUpdate = (mollieRefundStatus: RefundStatus, ctTra
   return shouldUpdate;
 };
 
-// ORDER //
+// ORDER FUNCTIONS //
 
 /**
- * Checks to see if there are new mollie payments that aren't present on the CT array, if not then adds an update action to create them in CT.
+ *
  * @param ctTransactions: array of commercetools transactions
  * @param molliePayments: array of mollie payments
  * @returns array of addTransaction updateActions.
+ *
+ * Checks to see if there are new payments against the mollie order that aren't present on commercetools Transactions.
+ * If there are, these will be created in commercetools
+ * This occurs when the customer fails to make a payment through the checkout url. A new payment is created under the order in mollie
+ * for each attempt.
  */
 export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], molliePayments: Payment[]): AddTransaction[] => {
   const updateActions: AddTransaction[] = [];
@@ -117,7 +125,7 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
       const addTransaction: AddTransaction = {
         action: UpdateActionKey.AddTransaction,
         transaction: {
-          type: CTTransactionType.Charge,
+          type: CTTransactionType.Authorization,
           amount: convertMollieAmountToCTMoney(molliePayment.amount),
           timestamp: molliePayment.createdAt,
           interactionId: molliePayment.id,
@@ -131,10 +139,11 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
 };
 
 /**
- * Gets an array of transactionStateUpdateOrderActions, a list of commands which tells CT to update transactions based on the corresponding mollie payment states.
  * @param ctTransactions: array of commercetools transactions
  * @param molliePayments: array of mollie payments
  * @returns ChangeTransactionState[]
+ *
+ * Gets an array of transactionStateUpdateOrderActions, a list of commands which tells CT to update transactions based on the corresponding mollie payment states.
  */
 export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: any): ChangeTransactionState[] => {
   const changeTransactionStateUpdateActions: ChangeTransactionState[] = [];
@@ -153,7 +162,7 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
   return changeTransactionStateUpdateActions;
 };
 
-// PAYMENT //
+// PAYMENT FUNCTIONS //
 
 /**
  *
@@ -173,7 +182,7 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
       transaction: {
         amount: convertMollieAmountToCTMoney(molliePayment.amount),
         state: newStatus,
-        type: CTTransactionType.Charge,
+        type: CTTransactionType.Authorization,
       },
     };
     return addTransaction;
@@ -187,11 +196,12 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
 };
 
 /**
+ * @param ctTransactions
+ * @param mollieRefunds
+ *
  * Process mollie refunds and match to corresponding commercetools transaction
  * Update the existing transactions if the status has changed
  * If there is a refund and no corresponding transaction, add it to commercetools
- * @param ctTransactions
- * @param mollieRefunds
  */
 export const getRefundStatusUpdateActions = (ctTransactions: CTTransaction[], mollieRefunds: Refund[]): (ChangeTransactionState | AddTransaction)[] => {
   const updateActions: (ChangeTransactionState | AddTransaction)[] = [];
