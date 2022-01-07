@@ -104,6 +104,7 @@ export function makeMollieLineShipping(shippingInfo: any): OrderLine {
   const { price, discountedPrice } = shippingInfo;
 
   const shippingLine = {
+    // Name has to start with "Shipping" to find the shipping line in createShipment
     name: `Shipping - ${shippingInfo?.shippingMethodName}`,
     quantity: 1,
     unitPrice: makeMollieAmount(price),
