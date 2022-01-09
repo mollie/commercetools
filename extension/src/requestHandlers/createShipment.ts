@@ -1,9 +1,10 @@
 import { isEmpty, trim } from 'lodash';
 import { MollieClient, ShipmentCreateParams, Shipment, Order, OrderLine } from '@mollie/api-client';
+import { v4 as uuid } from 'uuid';
 import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
-import { createDateNowString } from '../utils';
 import Logger from '../../src/logger/logger';
+import { makeActions } from '../makeActions';
 
 export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<ShipmentCreateParams> {
   try {
@@ -35,11 +36,22 @@ export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: 
   }, []);
 
   if (ctTransaction.custom?.fields?.includeShipping) {
-    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.name.startsWith('Shipping'));
+    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.name.startsWith('Shipping - '));
     shippingLine && mollieLines.push({ id: shippingLine.id });
   }
 
   return mollieLines;
+}
+
+export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
+  const ctLinesString = mollieOrderLines.reduce((acc: string, orderLine: OrderLine) => {
+    const ctLineId = orderLine.metadata?.cartLineItemId || orderLine.metadata?.cartCustomLineItemId;
+    if (ctLineId) acc += `${ctLineId},`;
+    if (orderLine.name.startsWith('Shipping - ')) acc += `${orderLine.name.split('Shipping - ')[1]},`;
+    return acc;
+  }, '');
+
+  return ctLinesString;
 }
 
 export function findInitialCharge(transactions: CTTransaction[]): CTTransaction | undefined {
@@ -53,27 +65,35 @@ export function isPartialCapture(transactions: CTTransaction[]): boolean {
   return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
 }
 
-export function createCtActions(mollieShipmentRes: Shipment, ctObj: any): Action[] {
-  const stringifiedShipmentResponse = JSON.stringify(mollieShipmentRes);
+export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPayment): Action[] {
+  const initialChargeTransaction = findInitialCharge(ctPayment.transactions!);
+  const inTransactionId = initialChargeTransaction!.id || '';
+  const mollieCreatedAt = mollieShipmentRes.createdAt;
+  const interfaceInteractionId = uuid();
+  const interfaceInteractionRequest = {
+    transactionId: inTransactionId,
+    createShipment: initialChargeTransaction?.custom?.fields,
+  };
+  const interfaceInteractionResponse = {
+    mollieShipmentId: mollieShipmentRes.id,
+    lineIds: mollieToCtLines(mollieShipmentRes.lines),
+  };
+  const interfaceInteractionParams = {
+    id: interfaceInteractionId,
+    actionType: ControllerAction.CreateShipment,
+    requestValue: JSON.stringify(initialChargeTransaction),
+    responseValue: JSON.stringify(interfaceInteractionResponse),
+    timestamp: mollieCreatedAt,
+  };
+
   const result: Action[] = [
-    {
-      action: 'addInterfaceInteraction',
-      type: {
-        key: 'ct-mollie-integration-interface-interaction-type',
-      },
-      fields: {
-        actionType: ControllerAction.CreateShipment,
-        createdAt: createDateNowString(),
-        request: ctObj?.custom?.fields?.createCapture,
-        response: stringifiedShipmentResponse,
-      },
-    },
-    {
-      action: 'setCustomField',
-      name: 'createShipmentResponse',
-      value: stringifiedShipmentResponse,
-    },
+    makeActions.changeTransactionState(inTransactionId, CTTransactionState.Success),
+    makeActions.changeTransactionTimestamp(inTransactionId, mollieCreatedAt),
+    makeActions.changeTransactionInteractionId(inTransactionId, interfaceInteractionId),
+    makeActions.setStatusInterfaceText('Shipping'),
+    makeActions.addInterfaceInteraction(interfaceInteractionParams),
   ];
+
   return result;
 }
 

@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 1`] = `
+Object {
+  "action": "changeTransactionState",
+  "state": "Success",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 2`] = `
+Object {
+  "action": "changeTransactionTimestamp",
+  "timestamp": "2021-10-27T10:25:24+00:00",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 3`] = `
+Object {
+  "action": "changeTransactionInteractionId",
+  "interactionId": "3fea7470-5434-4056-a829-a187339e94d8",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 4`] = `
+Object {
+  "action": "setStatusInterfaceText",
+  "interfaceText": "Shipping",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment 5`] = `
+Object {
+  "action": "addInterfaceInteraction",
+  "fields": Object {
+    "actionType": "createShipment",
+    "createdAt": "2021-10-27T10:25:24+00:00",
+    "id": "3fea7470-5434-4056-a829-a187339e94d8",
+    "request": "{\\"id\\":\\"869ea4f0-b9f6-4006-bf04-d8306b5c9564\\",\\"type\\":\\"Charge\\",\\"state\\":\\"Initial\\",\\"custom\\":{\\"fields\\":{\\"lineIds\\":\\"3e632c95-8dc6-459a-9edc-5e64760abf21,  31fb05cd-6e00-42b4-a25d-68cceef5a603\\",\\"includeShipping\\":true}}}",
+    "response": "{\\"mollieShipmentId\\":\\"shp_t72vlb\\",\\"lineIds\\":\\"3e632c95-8dc6-459a-9edc-5e64760abf21,31fb05cd-6e00-42b4-a25d-68cceef5a603,Test Shipping,\\"}",
+  },
+  "type": Object {
+    "key": "ct-mollie-integration-interface-interaction-type",
+  },
+}
+`;
