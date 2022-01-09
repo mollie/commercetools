@@ -1,12 +1,9 @@
-import { PaymentStatus } from '@mollie/api-client/dist/types/src/data/payments/data';
-import Payment from '@mollie/api-client/dist/types/src/data/payments/Payment';
-import { RefundStatus } from '@mollie/api-client/dist/types/src/data/refunds/data';
+import { PaymentStatus, RefundStatus, Payment, Refund } from '@mollie/api-client';
 import { mollieToCTStatusMap, mollieRefundToCTStatusMap } from './statusMaps';
 import { makeActions } from '../../makeActions';
 import { CTTransaction, CTTransactionState, CTTransactionType } from '../../types/ctPayment';
 import { AddTransaction, ChangeTransactionState, UpdateActionKey } from '../../types/ctUpdateActions';
 import { convertMollieAmountToCTMoney } from '../../utils';
-import Refund from '@mollie/api-client/dist/types/src/data/refunds/Refund';
 
 // SUPPORTING CAST //
 
