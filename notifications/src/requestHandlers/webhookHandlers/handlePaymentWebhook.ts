@@ -1,15 +1,15 @@
-import { MollieClient } from '@mollie/api-client';
+import { MollieClient, Payment } from '@mollie/api-client';
 import { CTUpdateAction } from '../../types/ctUpdateActions';
-import { WebhookHandlerResponse } from '../../types/requestHandler';
 import { getPaymentStatusUpdateAction, getRefundStatusUpdateActions } from './transactionFactory';
 import config from '../../../config/config';
 import actions from '../index';
+import { CTPayment } from '../../types/ctPayment';
 
 const {
   commercetools: { projectKey },
 } = config;
 
-export async function handlePaymentWebhook(molliePaymentId: string, mollieClient: MollieClient, commercetoolsClient: any): Promise<WebhookHandlerResponse> {
+export async function handlePaymentWebhook(molliePaymentId: string, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTPayment> {
   let updateActions: CTUpdateAction[] = [];
 
   // Get mollie payment info, including refunds
@@ -32,9 +32,7 @@ export async function handlePaymentWebhook(molliePaymentId: string, mollieClient
     updateActions.push(...refundUpdateActions);
   }
 
-  return {
-    actions: updateActions,
-    version: ctPayment.version,
-    orderId: mollieOrderId,
-  };
+  // Update the CT Payment
+  const updatedPayment = await actions.ctUpdatePaymentByKey(mollieOrderId!, commercetoolsClient, projectKey, ctPayment.version, updateActions);
+  return updatedPayment;
 }

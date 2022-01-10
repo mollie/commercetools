@@ -5,8 +5,12 @@ export default async function getOrderDetailsById(orderId: string, mollieClient:
   try {
     const order = await mollieClient.orders.get(orderId, { embed: [OrderEmbed.payments] });
     return order;
-  } catch (error) {
+  } catch (error: any) {
     Logger.debug('Error in getOrderDetailsById');
-    throw error;
+    if (error.status === 404) {
+      return Promise.reject({ status: 404, source: 'mollie', message: error.message });
+    } else {
+      throw error;
+    }
   }
 }
