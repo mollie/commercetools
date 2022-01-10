@@ -6,7 +6,7 @@ Creating a shipment on mollie is only required when paying with one of the pay l
 **Conditions**
 
 There should be at least one transaction type `Authorisation` with status `Success` present on the commercetools payment.
-Adding new transaction type `Charge` with status `Initial` triggers create shipment.
+Adding new transaction type `Charge` with status `Initial` triggers create shipment. Note that **amount** of this charge transaction is **not being passed through to mollie**, so make sure that amount corresponds to the total amount of all the lines being shipped with that shippment.
 
 Shipping the whole order is as simple as adding ne initial charge transaction.
 For shipping only certain order lines, we use custom fields on transactions. It is possible to specify which order lines, custom order lines should be charged and whether to charge shipping costs too.
