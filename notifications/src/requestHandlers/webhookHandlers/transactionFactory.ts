@@ -118,6 +118,7 @@ export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], mo
         amount: convertMollieAmountToCTMoney(molliePayment.amount),
         state: molliePaymentToCTStatusMap[molliePaymentStatus],
         type: isPayLater ? CTTransactionType.Authorization : CTTransactionType.Charge,
+        interactionId: molliePaymentId,
       },
     };
     return addTransaction;

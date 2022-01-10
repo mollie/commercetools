@@ -1,5 +1,5 @@
 import Payment from '@mollie/api-client/dist/types/src/data/payments/Payment';
-import { MollieClient, Order } from '@mollie/api-client';
+import { MollieClient } from '@mollie/api-client';
 import { CTPayment, CTTransaction } from '../../types/ctPayment';
 import { CTUpdateAction } from '../../types/ctUpdateActions';
 import actions from '../index';
@@ -46,7 +46,7 @@ export async function handleOrderWebhook(mollieOrderId: string, mollieClient: Mo
 
   // Create update actions for the commercetools transactions, to match the mollie order's payments
   const transactionUpdates = makeTransactionUpdateActions(molliePayments, ctPayment.transactions || ([] as CTTransaction[]));
-  updateActions.concat(transactionUpdates);
+  updateActions.push(...transactionUpdates);
 
   // Update commercetools Payment's status text to match the mollie order's status
   const ctOrderStatus = ctPayment.paymentStatus?.interfaceText;
