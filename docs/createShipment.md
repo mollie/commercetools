@@ -1,6 +1,6 @@
 # Creating Shipment/Capture on Mollie
 
-Creating a shipment on mollie is only required when paying with one of the pay later methods (Klarna Pay now, Klarna Pay later and Klarna Slice it). [As explained in the docs, creating a shipment creates a capture for the funds](https://docs.mollie.com/reference/v2/shipments-api/create-shipment).
+Creating a shipment on mollie is only required when paying with one of the pay later methods (e.g. Klarna Pay now, Klarna Pay later). [As explained in the docs, creating a shipment creates a capture for the funds](https://docs.mollie.com/reference/v2/shipments-api/create-shipment).
 
 
 **Conditions**
