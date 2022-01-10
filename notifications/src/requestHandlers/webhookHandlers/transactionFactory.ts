@@ -24,7 +24,7 @@ export const existsInCtTransactionsArray = (molliePayment: Payment, ctTransactio
  * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
  * @returns molliePayment
  */
-export const getMatchingMolliePayment = (molliePayments: any[], ctInteractionId: string): any => {
+export const getMatchingMolliePayment = (molliePayments: Payment[], ctInteractionId: string): any => {
   return molliePayments.find(payment => payment.id === ctInteractionId) || {};
 };
 
@@ -78,7 +78,7 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
  *
  * Gets an array of transactionStateUpdateOrderActions, a list of commands which tells CT to update transactions based on the corresponding mollie payment states.
  */
-export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: any): ChangeTransactionState[] => {
+export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: Payment[]): ChangeTransactionState[] => {
   const changeTransactionStateUpdateActions: ChangeTransactionState[] = [];
   if (ctTransactions.length > 0) {
     for (let ctTransaction of ctTransactions) {

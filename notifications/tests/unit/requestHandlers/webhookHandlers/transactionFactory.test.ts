@@ -93,7 +93,7 @@ describe('getMatchingMolliePayment', () => {
       id: 'tr_8A10GhvXAp',
       mode: 'test',
     },
-  ];
+  ] as Payment[];
   it('Should return the correct mollie payment object', () => {
     expect(getMatchingMolliePayment(mockedMolliePaymentsArray, 'tr_6M49TmvAEv')).toMatchObject({
       resource: 'payment',
@@ -120,7 +120,7 @@ describe('getTransactionStateUpdateOrderActions', () => {
       mode: 'test',
       status: 'paid',
     },
-  ];
+  ] as Payment[];
   const mockedCTTransactionsArray = [
     {
       id: '01ab9f97-45a3-4d64-92ae-d60e50533af3',
