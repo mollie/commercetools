@@ -81,7 +81,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPaymen
   const interfaceInteractionParams = {
     id: interfaceInteractionId,
     actionType: ControllerAction.CreateShipment,
-    requestValue: JSON.stringify(initialChargeTransaction),
+    requestValue: JSON.stringify(interfaceInteractionRequest),
     responseValue: JSON.stringify(interfaceInteractionResponse),
     timestamp: mollieCreatedAt,
   };
