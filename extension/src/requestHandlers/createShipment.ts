@@ -1,5 +1,5 @@
 import { isEmpty, trim } from 'lodash';
-import { MollieClient, ShipmentCreateParams, Shipment, Order, OrderLine } from '@mollie/api-client';
+import { MollieClient, ShipmentCreateParams, Shipment, Order, OrderLine, OrderLineType } from '@mollie/api-client';
 import { v4 as uuid } from 'uuid';
 import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
@@ -36,7 +36,7 @@ export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: 
   }, []);
 
   if (ctTransaction.custom?.fields?.includeShipping) {
-    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.name.startsWith('Shipping - '));
+    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.type === OrderLineType.shipping_fee);
     shippingLine && mollieLines.push({ id: shippingLine.id });
   }
 
@@ -47,7 +47,7 @@ export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
   const ctLinesString = mollieOrderLines.reduce((acc: string, orderLine: OrderLine) => {
     const ctLineId = orderLine.metadata?.cartLineItemId || orderLine.metadata?.cartCustomLineItemId;
     if (ctLineId) acc += `${ctLineId},`;
-    if (orderLine.name.startsWith('Shipping - ')) acc += `${orderLine.name.split('Shipping - ')[1]},`;
+    if (orderLine.type === OrderLineType.shipping_fee) acc += `${orderLine.name},`;
     return acc;
   }, '');
 
