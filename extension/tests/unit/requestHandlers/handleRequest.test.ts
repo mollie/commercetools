@@ -185,11 +185,6 @@ describe('processActions', () => {
     await processAction(ControllerAction.CreateShipment, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCreateShipment).toBeCalledTimes(1);
   });
-  it('should call UpdateShipment if the action is UpdateShipment', async () => {
-    const mockedUpdateShipment = mocked(actions.updateShipment);
-    await processAction(ControllerAction.UpdateShipment, {}, mockedMollieClient, mockedCommercetoolsClient);
-    expect(mockedUpdateShipment).toBeCalledTimes(1);
-  });
   it('should call CancelOrder if the action is CancelOrder', async () => {
     const mockedCancelOrder = mocked(actions.cancelOrder);
     await processAction(ControllerAction.CancelOrder, {}, mockedMollieClient, mockedCommercetoolsClient);
