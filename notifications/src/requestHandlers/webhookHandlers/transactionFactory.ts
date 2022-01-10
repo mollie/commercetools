@@ -1,12 +1,11 @@
-import { PaymentStatus, RefundStatus, Payment, Refund } from '@mollie/api-client';
-import { molliePaymentToCTStatusMap, mollieRefundToCTStatusMap } from './statusMaps';
+import { Payment, Refund, PaymentMethod } from '@mollie/api-client';
+import { molliePaymentToCTStatusMap, mollieRefundToCTStatusMap, shouldPaymentStatusUpdate, shouldRefundStatusUpdate } from './shouldStatusUpdate';
 import { makeActions } from '../../makeActions';
-import { CTTransaction, CTTransactionState, CTTransactionType } from '../../types/ctPayment';
+import { CTTransaction, CTTransactionType } from '../../types/ctPayment';
 import { AddTransaction, ChangeTransactionState, UpdateActionKey } from '../../types/ctUpdateActions';
 import { convertMollieAmountToCTMoney } from '../../utils';
 
-// SUPPORTING CAST //
-
+const PAY_LATER_ENUMS = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
 // FIND X IN Y, Y IN X //
 /**
  * @param molliePayments: array of mollie payments
@@ -29,79 +28,6 @@ export const getMatchingMolliePayment = (molliePayments: any[], ctInteractionId:
   return molliePayments.find(payment => payment.id === ctInteractionId) || {};
 };
 
-// SHOULD STATUS UPDATE ? //
-
-/**
- * @param molliePaymentStatus
- * @param cTPaymentStatus
- * @returns { shouldUpdate: boolean, newStatus: string}
- * Mollie payment status - https://docs.mollie.com/payments/status-changes
- * Commercetools Transaction states - https://docs.commercetools.com/api/projects/payments#transactionstate
- *
- * commercetools <-> Mollie
- * Success - paid, authorized
- * Failure - expired, canceled, failed
- *
- * N.B. There are other payment states in Mollie, but the webhook will not be called for them
- *
- */
-export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPaymentStatus: string): { shouldUpdate: boolean; newStatus: CTTransactionState } => {
-  let shouldUpdate: boolean;
-  let newStatus = molliePaymentToCTStatusMap[PaymentStatus.open];
-
-  switch (molliePaymentStatus) {
-    // Success statuses
-    case PaymentStatus.paid:
-    case PaymentStatus.authorized:
-      shouldUpdate = cTPaymentStatus === 'Success' ? false : true;
-      newStatus = molliePaymentToCTStatusMap[PaymentStatus.paid];
-      break;
-
-    // Failure statuses
-    case PaymentStatus.canceled:
-    case PaymentStatus.failed:
-    case PaymentStatus.expired:
-      shouldUpdate = cTPaymentStatus === 'Failure' ? false : true;
-      newStatus = molliePaymentToCTStatusMap[PaymentStatus.canceled];
-      break;
-
-    default:
-      shouldUpdate = false;
-      break;
-  }
-  return { shouldUpdate, newStatus };
-};
-
-/**
- * Returns true if mollie refund status has changed and the CT Transaction should be updated
- * @param mollieRefundStatus
- * @param ctTransactionStatus
- */
-export const shouldRefundStatusUpdate = (mollieRefundStatus: RefundStatus, ctTransactionStatus: CTTransactionState): boolean => {
-  let shouldUpdate: boolean;
-
-  switch (mollieRefundStatus) {
-    case RefundStatus.queued:
-    case RefundStatus.pending:
-    case RefundStatus.processing:
-      shouldUpdate = ctTransactionStatus === CTTransactionState.Pending ? false : true;
-      break;
-
-    case RefundStatus.refunded:
-      shouldUpdate = ctTransactionStatus === CTTransactionState.Success ? false : true;
-      break;
-
-    case RefundStatus.failed:
-      shouldUpdate = ctTransactionStatus === CTTransactionState.Failure ? false : true;
-      break;
-
-    default:
-      shouldUpdate = false;
-      break;
-  }
-  return shouldUpdate;
-};
-
 // ORDER FUNCTIONS //
 
 /**
@@ -114,15 +40,25 @@ export const shouldRefundStatusUpdate = (mollieRefundStatus: RefundStatus, ctTra
  * If there are, these will be created in commercetools
  * This occurs when the customer fails to make a payment through the checkout url. A new payment is created under the order in mollie
  * for each attempt.
+ *
+ * For pay now methods, this creates a corresponding Charge Transaciton in commercetools
+ * For pay later methods, this creates a corresponding Charge Transaciton in commercetools
  */
+
 export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], molliePayments: Payment[]): AddTransaction[] => {
+  // Determine if paynow or paylater method
+  const paymentMethod = molliePayments[0].method as PaymentMethod; // prevents typescript error that expects this to be PaymentMethod | HistoricPaymentMethod
+  const isPayLater = PAY_LATER_ENUMS.includes(paymentMethod);
+
+  // Find payments which do not exist in CT Transactions
   const updateActions: AddTransaction[] = [];
   for (let molliePayment of molliePayments) {
     if (!existsInCtTransactionsArray(molliePayment, ctTransactions)) {
+      // Add corresponding CT Transaction
       const addTransaction: AddTransaction = {
         action: UpdateActionKey.AddTransaction,
         transaction: {
-          type: CTTransactionType.Authorization,
+          type: isPayLater ? CTTransactionType.Authorization : CTTransactionType.Charge,
           amount: convertMollieAmountToCTMoney(molliePayment.amount),
           timestamp: molliePayment.createdAt,
           interactionId: molliePayment.id,
@@ -150,8 +86,8 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
       // Check if we found a matching mollie payment
       if (matchingMolliePayment.status) {
         let shouldOrderStatusUpdateObject = shouldPaymentStatusUpdate(matchingMolliePayment.status, ctTransaction.state);
-        if (shouldOrderStatusUpdateObject.shouldUpdate) {
-          changeTransactionStateUpdateActions.push(makeActions.changeTransactionState(ctTransaction.id, shouldOrderStatusUpdateObject.newStatus));
+        if (shouldOrderStatusUpdateObject) {
+          changeTransactionStateUpdateActions.push(makeActions.changeTransactionState(ctTransaction.id, molliePaymentToCTStatusMap[matchingMolliePayment.status]));
         }
       }
     }
@@ -168,27 +104,29 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
  * @returns UpdateAction or void
  */
 export const getPaymentStatusUpdateAction = (ctTransactions: CTTransaction[], molliePayment: Payment): ChangeTransactionState | AddTransaction | void => {
-  const { id: molliePaymentId, status: molliePaymentStatus } = molliePayment;
+  const { id: molliePaymentId, status: molliePaymentStatus, method: paymentMethod } = molliePayment;
+
+  // Determine if paynow or paylater method
+  const isPayLater = PAY_LATER_ENUMS.includes(paymentMethod as PaymentMethod);
   const matchingTransaction = ctTransactions.find(transaction => transaction.interactionId === molliePaymentId);
 
   // If no corresponding CT Transaction, create it
   if (matchingTransaction === undefined) {
-    const { newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, '');
     const addTransaction: AddTransaction = {
       action: UpdateActionKey.AddTransaction,
       transaction: {
         amount: convertMollieAmountToCTMoney(molliePayment.amount),
-        state: newStatus,
-        type: CTTransactionType.Authorization,
+        state: molliePaymentToCTStatusMap[molliePaymentStatus],
+        type: isPayLater ? CTTransactionType.Authorization : CTTransactionType.Charge,
       },
     };
     return addTransaction;
   }
 
   // Corresponding transaction, update it
-  const { shouldUpdate, newStatus } = shouldPaymentStatusUpdate(molliePaymentStatus, matchingTransaction.state);
+  const shouldUpdate = shouldPaymentStatusUpdate(molliePaymentStatus, matchingTransaction.state);
   if (shouldUpdate) {
-    return makeActions.changeTransactionState(matchingTransaction.id, newStatus);
+    return makeActions.changeTransactionState(matchingTransaction.id, molliePaymentToCTStatusMap[molliePaymentStatus]);
   }
 };
 
