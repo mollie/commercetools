@@ -262,6 +262,7 @@ describe('getPaymentStatusUpdateAction', () => {
           fractionDigits: 2,
           type: 'centPrecision',
         },
+        interactionId: 'tr_00000',
         state: 'Success',
         type: CTTransactionType.Charge,
       },
