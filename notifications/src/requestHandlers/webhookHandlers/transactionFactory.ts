@@ -1,5 +1,5 @@
 import { PaymentStatus, RefundStatus, Payment, Refund } from '@mollie/api-client';
-import { mollieToCTStatusMap, mollieRefundToCTStatusMap } from './statusMaps';
+import { molliePaymentToCTStatusMap, mollieRefundToCTStatusMap } from './statusMaps';
 import { makeActions } from '../../makeActions';
 import { CTTransaction, CTTransactionState, CTTransactionType } from '../../types/ctPayment';
 import { AddTransaction, ChangeTransactionState, UpdateActionKey } from '../../types/ctUpdateActions';
@@ -47,14 +47,14 @@ export const getMatchingMolliePayment = (molliePayments: any[], ctInteractionId:
  */
 export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPaymentStatus: string): { shouldUpdate: boolean; newStatus: CTTransactionState } => {
   let shouldUpdate: boolean;
-  let newStatus = mollieToCTStatusMap[PaymentStatus.open];
+  let newStatus = molliePaymentToCTStatusMap[PaymentStatus.open];
 
   switch (molliePaymentStatus) {
     // Success statuses
     case PaymentStatus.paid:
     case PaymentStatus.authorized:
       shouldUpdate = cTPaymentStatus === 'Success' ? false : true;
-      newStatus = mollieToCTStatusMap[PaymentStatus.paid];
+      newStatus = molliePaymentToCTStatusMap[PaymentStatus.paid];
       break;
 
     // Failure statuses
@@ -62,7 +62,7 @@ export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPayment
     case PaymentStatus.failed:
     case PaymentStatus.expired:
       shouldUpdate = cTPaymentStatus === 'Failure' ? false : true;
-      newStatus = mollieToCTStatusMap[PaymentStatus.canceled];
+      newStatus = molliePaymentToCTStatusMap[PaymentStatus.canceled];
       break;
 
     default:
@@ -126,7 +126,7 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
           amount: convertMollieAmountToCTMoney(molliePayment.amount),
           timestamp: molliePayment.createdAt,
           interactionId: molliePayment.id,
-          state: mollieToCTStatusMap[molliePayment.status],
+          state: molliePaymentToCTStatusMap[molliePayment.status],
         },
       };
       updateActions.push(addTransaction);

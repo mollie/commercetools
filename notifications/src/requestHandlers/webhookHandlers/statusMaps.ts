@@ -7,7 +7,7 @@ interface StatusMap {
 /**
  * Map of mollie status to commercetools Transaction Status
  */
-export const mollieToCTStatusMap: StatusMap = {
+export const molliePaymentToCTStatusMap: StatusMap = {
   paid: CTTransactionState.Success,
   authorized: CTTransactionState.Success,
   canceled: CTTransactionState.Failure,
