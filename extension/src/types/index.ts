@@ -145,7 +145,6 @@ export enum ControllerAction {
   CreateOrderRefund = 'createOrderRefund',
   CreateCustomRefund = 'createCustomRefund',
   CreateShipment = 'createShipment',
-  UpdateShipment = 'updateShipment',
   CancelOrder = 'cancelOrder',
   NoAction = 'noAction',
 }
