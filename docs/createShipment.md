@@ -26,7 +26,7 @@ For shipping only certain order lines, we use custom fields on transactions. It 
 
 ## Representation: CT Payment
 <details>
-  <summary>Payment example</summary>
+  <summary>Example Payment with initial charge transaction</summary>
 
 ```json
 {
