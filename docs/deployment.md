@@ -94,8 +94,7 @@ Log transports are where the logs are written to. If this isn't provided in the 
 ### HTTP Destination & Lambda destination
 
 #### Http Destination
-This configuration runs the extension via HTTP Calls. In this mode it is required
-to enable the basic authentication
+This configuration runs the extension via HTTP Calls. In this mode it is required to enable the basic authentication
 
 ```json
 {
