@@ -163,4 +163,4 @@ When shipment is successfully created on Mollie, we update commercetools payment
 |                                  | `request: {<CT transaction custom field in string format, transactionId>`  |
 |                                  | `response: <mollieShipmentId, lineIds>`                                    |
 
-\* Actions will always use first transaction
+\* Actions will always use first `Success` `Authorization` transaction. There should only be one per payment.
