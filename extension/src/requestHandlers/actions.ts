@@ -2,7 +2,6 @@ import getPaymentMethods from './getPaymentMethods';
 import createOrder from './createOrder';
 import createOrderPayment from './createOrderPayment';
 import createShipment from './createShipment';
-import updateShipment from './updateShipment';
 import createOrderRefund from './createOrderRefund';
 import { createCustomRefund } from './createCustomRefund';
 import { ControllerAction } from '../types/index';
@@ -13,7 +12,6 @@ export default {
   createOrder,
   createOrderPayment,
   createShipment,
-  updateShipment,
   createOrderRefund,
   createCustomRefund,
   cancelOrder,
@@ -42,10 +40,6 @@ export function validateAction(body: any): ControllerAction {
 
   if (requestFields?.createShipmentRequest && !requestFields?.createShipmentResponse) {
     return ControllerAction.CreateShipment;
-  }
-
-  if (requestFields?.updateShipmentRequest && !requestFields?.updateShipmentResponse) {
-    return ControllerAction.UpdateShipment;
   }
 
   if (requestFields?.createOrderRefundRequest && !requestFields?.createOrderRefundResponse) {
