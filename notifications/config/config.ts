@@ -7,7 +7,9 @@ const isConfigValid = (config: Config): { valid: boolean; message: string } => {
   if (!mollie?.apiKey) {
     message = message + 'No Mollie API Key found\n';
   }
-
+  if (!config.commercetools) {
+    message = message + 'No Commercetools configuration present\n';
+  }
   if (!commercetools?.host || !commercetools?.clientId || !commercetools?.clientSecret || !commercetools?.authUrl || !commercetools?.projectKey) {
     message = message + 'Commercetools configuration requires missing required key(s)\n';
   }
@@ -24,7 +26,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     const config: Config = {
       ...envConfig,
       service: {
-        port: envConfig.service?.port || 3000,
+        port: envConfig.service?.port || 3001,
         logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
         logTransports: envConfig.service?.logTransports || 'terminal',
       },
@@ -32,13 +34,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
 
     const localeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
-    Object.assign(
-      config.service,
-      envConfig.service?.webhookUrl && { webhookUrl: envConfig.service.webhookUrl },
-      envConfig.service?.redirectUrl && { redirectUrl: envConfig.service.redirectUrl },
-      envConfig.service?.locale && envConfig.service.locale.match(localeRegex) && { locale: envConfig.service.locale },
-    );
-    Object.assign(config.commercetools, envConfig.commercetools?.authentication ? { authentication: envConfig.commercetools.authentication } : { authentication: { isBasicAuth: false } });
+    Object.assign(config.service, envConfig.service?.locale && envConfig.service.locale.match(localeRegex) && { locale: envConfig.service.locale });
 
     const { valid, message } = isConfigValid(config);
 

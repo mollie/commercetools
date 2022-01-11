@@ -9,18 +9,11 @@ export interface Config {
     authUrl: string;
     host: string;
     scopes?: string[];
-    authentication: {
-      isBasicAuth: boolean;
-      username?: string;
-      password?: string;
-    };
   };
   service: {
     port: number | string;
     logLevel: 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug';
     logTransports?: 'all' | 'file' | 'terminal';
-    webhookUrl?: string;
-    redirectUrl?: string;
     locale?: string; // should match regex ^[a-z]{2}_[A-Z]{2}$
   };
 }
