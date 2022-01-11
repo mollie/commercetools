@@ -6,7 +6,7 @@ import { AddTransaction, ChangeTransactionState, UpdateActionKey } from '../../t
 import { convertMollieAmountToCTMoney } from '../../utils';
 
 const PAY_LATER_ENUMS = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
-// FIND X IN Y, Y IN X //
+
 /**
  * @param molliePayments: array of mollie payments
  * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
@@ -37,12 +37,12 @@ export const getMatchingMolliePayment = (molliePayments: Payment[], ctInteractio
  * @returns array of addTransaction updateActions.
  *
  * Checks to see if there are new payments against the mollie order that aren't present on commercetools Transactions.
- * If there are, these will be created in commercetools
+ * If there are, this function will return an array of addTransaction actions
  * This occurs when the customer fails to make a payment through the checkout url. A new payment is created under the order in mollie
  * for each attempt.
  *
- * For pay now methods, this creates a corresponding Charge Transaciton in commercetools
- * For pay later methods, this creates a corresponding Charge Transaciton in commercetools
+ * For pay now methods, this creates a corresponding Charge Transaction in commercetools
+ * For pay later methods, this creates a corresponding Authorization Transaction in commercetools
  */
 
 export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], molliePayments: Payment[]): AddTransaction[] => {
@@ -55,16 +55,13 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
   for (let molliePayment of molliePayments) {
     if (!existsInCtTransactionsArray(molliePayment, ctTransactions)) {
       // Add corresponding CT Transaction
-      const addTransaction: AddTransaction = {
-        action: UpdateActionKey.AddTransaction,
-        transaction: {
-          type: isPayLater ? CTTransactionType.Authorization : CTTransactionType.Charge,
-          amount: convertMollieAmountToCTMoney(molliePayment.amount),
-          timestamp: molliePayment.createdAt,
-          interactionId: molliePayment.id,
-          state: molliePaymentToCTStatusMap[molliePayment.status],
-        },
-      };
+      const addTransaction = makeActions.addTransaction(
+        isPayLater ? CTTransactionType.Authorization : CTTransactionType.Charge,
+        { currency: molliePayment.amount.currency, value: molliePayment.amount.value },
+        molliePayment.id,
+        molliePaymentToCTStatusMap[molliePayment.status],
+        molliePayment.createdAt,
+      );
       updateActions.push(addTransaction);
     }
   }
@@ -76,7 +73,7 @@ export const getAddTransactionUpdateActions = (ctTransactions: CTTransaction[], 
  * @param molliePayments: array of mollie payments
  * @returns ChangeTransactionState[]
  *
- * Gets an array of transactionStateUpdateOrderActions, a list of commands which tells CT to update transactions based on the corresponding mollie payment states.
+ * Creates an array of changeTransactionState actions, which update commercetools Transactions based on their corresponding mollie payment state.
  */
 export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransaction[], molliePayments: Payment[]): ChangeTransactionState[] => {
   const changeTransactionStateUpdateActions: ChangeTransactionState[] = [];
@@ -85,8 +82,8 @@ export const getTransactionStateUpdateOrderActions = (ctTransactions: CTTransact
       let matchingMolliePayment = getMatchingMolliePayment(molliePayments, ctTransaction.interactionId || '');
       // Check if we found a matching mollie payment
       if (matchingMolliePayment.status) {
-        let shouldOrderStatusUpdateObject = shouldPaymentStatusUpdate(matchingMolliePayment.status, ctTransaction.state);
-        if (shouldOrderStatusUpdateObject) {
+        let shouldUpdate = shouldPaymentStatusUpdate(matchingMolliePayment.status, ctTransaction.state);
+        if (shouldUpdate) {
           changeTransactionStateUpdateActions.push(makeActions.changeTransactionState(ctTransaction.id, molliePaymentToCTStatusMap[matchingMolliePayment.status]));
         }
       }

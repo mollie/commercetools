@@ -30,8 +30,8 @@ export const mollieRefundToCTStatusMap: StatusMap = {
 };
 
 /**
- * @param molliePaymentStatus
- * @param cTPaymentStatus
+ * @param PaymentStatus - mollie payment status
+ * @param ctTransactionState - commercetools Transaction state
  * @returns { shouldUpdate: boolean, newStatus: string}
  *
  * Mollie payment status - https://docs.mollie.com/payments/status-changes
@@ -45,21 +45,21 @@ export const mollieRefundToCTStatusMap: StatusMap = {
  *
  */
 
-export const shouldPaymentStatusUpdate = (molliePaymentStatus: string, cTPaymentStatus: string): boolean => {
+export const shouldPaymentStatusUpdate = (molliePaymentStatus: PaymentStatus, ctTransactionState: CTTransactionState): boolean => {
   let shouldUpdate: boolean;
 
   switch (molliePaymentStatus) {
     // Success statuses
     case PaymentStatus.paid:
     case PaymentStatus.authorized:
-      shouldUpdate = cTPaymentStatus === 'Success' ? false : true;
+      shouldUpdate = ctTransactionState !== CTTransactionState.Success;
       break;
 
     // Failure statuses
     case PaymentStatus.canceled:
     case PaymentStatus.failed:
     case PaymentStatus.expired:
-      shouldUpdate = cTPaymentStatus === 'Failure' ? false : true;
+      shouldUpdate = ctTransactionState !== CTTransactionState.Failure;
       break;
 
     default:
@@ -81,15 +81,15 @@ export const shouldRefundStatusUpdate = (mollieRefundStatus: RefundStatus, ctTra
     case RefundStatus.queued:
     case RefundStatus.pending:
     case RefundStatus.processing:
-      shouldUpdate = ctTransactionStatus === CTTransactionState.Pending ? false : true;
+      shouldUpdate = ctTransactionStatus !== CTTransactionState.Pending;
       break;
 
     case RefundStatus.refunded:
-      shouldUpdate = ctTransactionStatus === CTTransactionState.Success ? false : true;
+      shouldUpdate = ctTransactionStatus !== CTTransactionState.Success;
       break;
 
     case RefundStatus.failed:
-      shouldUpdate = ctTransactionStatus === CTTransactionState.Failure ? false : true;
+      shouldUpdate = ctTransactionStatus !== CTTransactionState.Failure;
       break;
 
     default:

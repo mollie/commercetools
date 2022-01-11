@@ -111,7 +111,6 @@ describe('handleRequest', () => {
       };
 
       const res = await handleRequest(mockInput);
-      console.log(res);
       expect(res.status).toBe(200);
     });
   });
