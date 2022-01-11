@@ -94,7 +94,7 @@ Log transports are where the logs are written to. If this isn't provided in the 
 ### HTTP Destination & Lambda destination
 
 #### Http Destination
-This configuration runs the extension via HTTP Calls. In this mode it is required to enable the basic authentication
+This configuration runs the extension via HTTP Calls. In this mode it is recommended to enable the basic authentication
 
 ```json
 {
@@ -117,7 +117,7 @@ This configuration runs the extension via AWS, therefore the lambda does not nee
 API Gateway.
 In this scenario CommerceTools uses an IAM user to run the function,
 the detailed guide is available [here](https://docs.commercetools.com/tutorials/extensions#setting-up-an-api-extension)
-In this mode it is required to disable the basic authentication
+In this mode the basic authentication is optional.
 ```json
 {
   "CT_MOLLIE_CONFIG": {
