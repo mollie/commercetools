@@ -9,7 +9,7 @@ const PAY_LATER_ENUMS = [PaymentMethod.klarnapaylater, PaymentMethod.klarnaslice
 
 /**
  * @param molliePayments: single mollie payment
- * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
+ * @param ctTransactions: array of commercetools transactions
  * @returns molliePayment
  */
 export const existsInCtTransactionsArray = (molliePayment: Payment, ctTransactions: CTTransaction[]): boolean => {
