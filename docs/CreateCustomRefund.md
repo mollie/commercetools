@@ -1,17 +1,17 @@
 # Custom Refund
 
-To refund part of an order, we usually use create an order refund. However, in some cases, we want to refund an arbitrary amount instead of a line, or part of a line. 
-
-For this scenario, `createCustomRefund` should be used instead. This custom field uses mollie's create payment refund [endpoint](https://docs.mollie.com/reference/v2/refunds-api/create-payment-refund). 
-
+To refund part of an order, we create a Refund transaction. This will call mollie's create payment refund [endpoint](https://docs.mollie.com/reference/v2/refunds-api/create-payment-refund). 
 
 ## How to use
 
-This assumes the customer has already placed an order and paid, so we need to refund money back to them. You will have a commercetools Payment, which maps to an order in mollie. If the customer's order is not paid for, then it should be canceled instead.
+This assumes the customer has already placed an order and paid, so we need to refund money back to them. You will have a commercetools Payment, which maps to an order in mollie. If the customer's order is not paid for, (i.e. when an authorization is made, but not captured), then it should be canceled instead.
 
-To trigger a custom refund, you will need to set the `createCustomRefundRequest` field on a commercetools payment. The response from this request will be saved on the `createCustomRefundResponse` custom field, and in the `interfaceInteractions`. 
+To trigger a refund, you will need to: 
+- create a refund transaction (state: Initial)
+- include the `interactoinId` as the paymentId on mollie
+(TBC - could update this to do a getOrder call, then get the mollie payment to refund against)
 
-(_If you want to make another custom refund against the same payment, you will need to set `createCustomRefundResponse` to `null`._)
+You can make many refunds against a Payment, but **only one refund at a time**. 
 
 ### Example
 
@@ -42,30 +42,19 @@ In commercetools, we have a Payment which has one Transaction. This maps to an o
             "interactionId": "tr_ganTmvwJFd",
             "state": "Success"
         }
-    ],
-    "custom": {
-        "type": {
-            "typeId": "type",
-            "id": "dfdb9b9c-e9b2-4d06-b365-5806ee5790d6",
-
-        },
-        "fields": {
-            ...
-        }
-    }
+    ]
 }
 ```
 
-To refund a custom amount, we make an update payment call to commerce tools and set the custom field `createCustomRefundRequest`. For example:
+To refund part of this, we make an update payment call to commerce tools and set the custom field `createCustomRefundRequest`. For example:
 
 ```
 {
     "version": 9,
     "actions": [
         {
-            "action": "setCustomField",
-            "name": "createCustomRefundRequest",
-            "value": "{\"interactionId\": \"tr_ganTmvwJFd\", \"amount\": { \"currencyCode\": \"EUR\", \"centAmount\": 567 }, \"description\": \"Custom refund\", \"metadata\": { \"reason\": \"Demo refund\", \"code\": \"BP_13ER\"}}"
+            "action": "addTransaction",
+            "transaction": {} // add this, with custom fields
         }
     ]
 }
@@ -86,10 +75,10 @@ transactions: [
                 "fractionDigits": 2
             },
             "interactionId": "re_5dqyEw9xNj",
-            "state": "Initial"
+            "state": "Pending"
     },
     ...
 ]
 ```
 
-When the refund is completed, this transaction's state will be updated by the notifications module.
+When the refund is completed, this transaction's state will be updated by the notifications module to "Success" or "Failure". 

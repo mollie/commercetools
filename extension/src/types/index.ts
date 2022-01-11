@@ -134,6 +134,8 @@ export type CTTransaction = {
     fields: {
       lineIds?: string;
       includeShipping?: boolean;
+      description?: string;
+      metadata?: string;
     };
   };
 };
