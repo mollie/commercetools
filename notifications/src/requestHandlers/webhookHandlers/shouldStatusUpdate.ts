@@ -32,7 +32,7 @@ export const mollieRefundToCTStatusMap: StatusMap = {
 /**
  * @param PaymentStatus - mollie payment status
  * @param ctTransactionState - commercetools Transaction state
- * @returns { shouldUpdate: boolean, newStatus: string}
+ * @returns shouldUpdate: boolean
  *
  * Mollie payment status - https://docs.mollie.com/payments/status-changes
  * Commercetools Transaction states - https://docs.commercetools.com/api/projects/payments#transactionstate
