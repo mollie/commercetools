@@ -175,6 +175,33 @@ Therefore the configuration must be defined in the same format as `local.setting
   }
 }
 ```
+
+### Authentication
+
+#### Azure Functions
+This method is supported as described in the following docs  
+[CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)  
+[CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azure-functions-authentication)
+[Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)  
+
+#### Basic
+This method is configurable via the following settings:
+```json
+{
+  "CT_MOLLIE_CONFIG": {
+    "mollie": {...},
+    "commercetools": {...
+      "authentication": {
+        "isBasicAuth": true,
+        "username": "username",
+        "password": "password"
+      }
+    },
+    "service": {...}
+  }
+}
+```
+
 ## Docker
 
 To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:
