@@ -30,6 +30,7 @@ winston.addColors(colors);
 const fileFormat = winston.format.combine(
   winston.format.uncolorize(),
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+  winston.format.splat(),
   winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`),
 );
 const currentDate = new Date();
@@ -40,6 +41,7 @@ const terminalFormat = winston.format.combine(
   winston.format.colorize({ all: true }),
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.simple(),
+  winston.format.splat(),
   winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`),
 );
 
