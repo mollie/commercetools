@@ -5,6 +5,7 @@ import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import Logger from '../../src/logger/logger';
 import { makeActions } from '../makeActions';
+import { makeMollieAmount } from '../utils';
 
 export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<ShipmentCreateParams> {
   try {
@@ -24,14 +25,28 @@ export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: O
   }
 }
 
-export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: OrderLine[]): Object[] {
-  // Case 1: Comma separated string of line ids
-  const ctLinesArray = ctTransaction.custom?.fields?.lineIds?.split(',').map(trim) || [];
-  // Case 2: TODO - objects with ids, quantities and amounts
+function tryParseJSON(jsonString: string | undefined) {
+  try {
+    const parsed = JSON.parse(jsonString!);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch (error) {
+    return false;
+  }
+}
 
-  const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: string) => {
-    const mollieLine = mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLine || mollieLine.metadata?.cartCustomLineItemId === ctLine);
-    if (mollieLine) acc.push({ id: mollieLine.id, quantity: mollieLine.quantity, amount: mollieLine.totalAmount });
+export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: OrderLine[]): Object[] {
+  const parsedOptions = tryParseJSON(ctTransaction.custom?.fields?.lineIds);
+  const ctLinesArray = parsedOptions ? parsedOptions : ctTransaction.custom?.fields?.lineIds?.split(',').map(trim);
+
+  const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: any) => {
+    const ctLineId = typeof ctLine === 'string' ? ctLine : ctLine.id;
+    const mollieLine = mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLineId || mollieLine.metadata?.cartCustomLineItemId === ctLineId);
+    if (mollieLine) {
+      const transformedLine = { id: mollieLine.id };
+      ctLine.quantity && Object.assign(transformedLine, { quantity: ctLine.quantity });
+      ctLine.totalPrice && Object.assign(transformedLine, { amount: makeMollieAmount(ctLine.totalPrice) });
+      acc.push(transformedLine);
+    }
     return acc;
   }, []);
 
