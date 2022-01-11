@@ -2,9 +2,7 @@ import getPaymentMethods from './getPaymentMethods';
 import createOrder from './createOrder';
 import createOrderPayment from './createOrderPayment';
 import createShipment from './createShipment';
-import createOrderRefund from './createOrderRefund';
 import { createCustomRefund } from './createCustomRefund';
-import { ControllerAction } from '../types/index';
 import cancelOrder from './cancelOrder';
 
 export default {
@@ -12,47 +10,6 @@ export default {
   createOrder,
   createOrderPayment,
   createShipment,
-  createOrderRefund,
   createCustomRefund,
   cancelOrder,
 };
-
-/**
- * validateAction expects CT formatted body with action (and later custom params)
- * @param body
- * Based on logic it then returns either an action string or undefined if no action could be determined
- * @returns ControllerAction
- */
-export function validateAction(body: any): ControllerAction {
-  const requestFields = body.resource?.obj?.custom?.fields;
-
-  if (requestFields?.paymentMethodsRequest && !requestFields?.paymentMethodsResponse) {
-    return ControllerAction.GetPaymentMethods;
-  }
-
-  if (requestFields?.createOrderRequest && !requestFields?.createOrderResponse) {
-    return ControllerAction.CreateOrder;
-  }
-
-  if (requestFields?.createOrderPaymentRequest && !requestFields?.createOrderPaymentResponse) {
-    return ControllerAction.CreateOrderPayment;
-  }
-
-  if (requestFields?.createShipmentRequest && !requestFields?.createShipmentResponse) {
-    return ControllerAction.CreateShipment;
-  }
-
-  if (requestFields?.createOrderRefundRequest && !requestFields?.createOrderRefundResponse) {
-    return ControllerAction.CreateOrderRefund;
-  }
-
-  if (requestFields?.createCustomRefundRequest && !requestFields?.createCustomRefundResponse) {
-    return ControllerAction.CreateCustomRefund;
-  }
-
-  if (requestFields?.createCancelOrderRequest && !requestFields?.createCancelOrderResponse) {
-    return ControllerAction.CancelOrder;
-  }
-
-  return ControllerAction.NoAction;
-}

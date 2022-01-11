@@ -142,7 +142,6 @@ export enum ControllerAction {
   GetPaymentMethods = 'getPaymentMethods',
   CreateOrder = 'createOrder',
   CreateOrderPayment = 'createOrderPayment',
-  CreateOrderRefund = 'createOrderRefund',
   CreateCustomRefund = 'createCustomRefund',
   CreateShipment = 'createShipment',
   CancelOrder = 'cancelOrder',

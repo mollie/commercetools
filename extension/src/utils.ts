@@ -27,9 +27,9 @@ export function convertMollieAmountToCTMoney(mollieAmount: Amount): CTMoney {
   };
 }
 
-export function convertCTToMollieAmountValue(ctValue: number, fractionDigits = 2): string {
+function convertCTToMollieAmountValue(ctValue: number, fractionDigits = 2): string {
   const divider = Math.pow(10, fractionDigits);
-  const mollieAmountValue = (ctValue / divider).toFixed(2);
+  const mollieAmountValue = (ctValue / divider).toFixed(fractionDigits);
   return mollieAmountValue;
 }
 
