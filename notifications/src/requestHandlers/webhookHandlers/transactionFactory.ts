@@ -8,7 +8,7 @@ import { convertMollieAmountToCTMoney } from '../../utils';
 const PAY_LATER_ENUMS = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
 
 /**
- * @param molliePayments: array of mollie payments
+ * @param molliePayments: single mollie payment
  * @param ctInteractionId: commercetools interaction id (same as mollie payment id)
  * @returns molliePayment
  */
