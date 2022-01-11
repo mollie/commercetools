@@ -1,6 +1,6 @@
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { Action, ControllerAction, CTMoney } from './types';
-import { PaymentMethod } from '@mollie/api-client';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types';
+import { isEmpty } from 'lodash';
 
 /**
  * Generates an ISO string date
@@ -53,4 +53,15 @@ export function isMolliePaymentInterface(ctObj: any): Boolean {
   if (!ctObj.paymentMethodInfo?.paymentInterface) return false;
   const normalizedInterface = ctObj.paymentMethodInfo?.paymentInterface.toLowerCase();
   return normalizedInterface === 'mollie' ? true : false;
+}
+
+export function findInitialCharge(transactions: CTTransaction[]): CTTransaction | undefined {
+  // Assumes one initial transaction, i.e. one capture being made at a time
+  return transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
+}
+
+export function isPartialCapture(transactions: CTTransaction[]): boolean {
+  if (!transactions) return false;
+  const initialCharge = findInitialCharge(transactions);
+  return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
 }

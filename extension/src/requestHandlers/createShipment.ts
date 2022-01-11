@@ -1,11 +1,11 @@
-import { isEmpty, trim } from 'lodash';
+import { trim } from 'lodash';
 import { MollieClient, ShipmentCreateParams, Shipment, Order, OrderLine, OrderLineType } from '@mollie/api-client';
 import { v4 as uuid } from 'uuid';
 import formatErrorResponse from '../errorHandlers';
-import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTUpdatesRequestedResponse } from '../types';
 import Logger from '../../src/logger/logger';
 import { makeActions } from '../makeActions';
-import { makeMollieAmount } from '../utils';
+import { findInitialCharge, isPartialCapture, makeMollieAmount } from '../utils';
 
 export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<ShipmentCreateParams> {
   try {
@@ -67,17 +67,6 @@ export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
   }, '');
 
   return ctLinesString;
-}
-
-export function findInitialCharge(transactions: CTTransaction[]): CTTransaction | undefined {
-  // Assumes one initial transaction, i.e. one capture being made at a time
-  return transactions.find(tr => tr.type === CTTransactionType.Charge && tr.state === CTTransactionState.Initial);
-}
-
-export function isPartialCapture(transactions: CTTransaction[]): boolean {
-  if (!transactions) return false;
-  const initialCharge = findInitialCharge(transactions);
-  return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
 }
 
 export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPayment): Action[] {
