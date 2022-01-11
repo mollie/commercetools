@@ -40,7 +40,7 @@ export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: 
 
   const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: any) => {
     const ctLineId = typeof ctLine === 'string' ? ctLine : ctLine.id;
-    const mollieLine = mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLineId || mollieLine.metadata?.cartCustomLineItemId === ctLineId);
+    const mollieLine = ctLineId && mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLineId || mollieLine.metadata?.cartCustomLineItemId === ctLineId);
     if (mollieLine) {
       const transformedLine = { id: mollieLine.id };
       ctLine.quantity && Object.assign(transformedLine, { quantity: ctLine.quantity });
