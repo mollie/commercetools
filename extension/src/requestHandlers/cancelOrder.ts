@@ -1,17 +1,16 @@
 import { MollieClient, Order, OrderLineCancelParams } from '@mollie/api-client';
 import Logger from '../logger/logger';
 import formatErrorResponse from '../errorHandlers';
-import { Action, ControllerAction, CTUpdatesRequestedResponse } from '../types';
-import { makeMollieLineAmounts } from '../utils';
+import { Action, ControllerAction, CTPayment, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import { isPartialTransaction, findInitialTransaction, ctToMollieLines } from '../utils';
 import { makeActions } from '../makeActions';
 
-export function getCancelOrderParams(ctObj: any): Promise<OrderLineCancelParams> {
+export function getCancelOrderParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<OrderLineCancelParams> {
   try {
-    const parsedCancelOrderRequest = JSON.parse(ctObj?.custom?.fields?.createCancelOrderRequest);
-    const mollieAdjustedLines = makeMollieLineAmounts(parsedCancelOrderRequest);
+    const initialCharge = findInitialTransaction(ctPayment.transactions, CTTransactionType.CancelAuthorization);
     const cancelOrderParams = {
-      orderId: ctObj?.key,
-      lines: mollieAdjustedLines,
+      orderId: ctPayment.key,
+      lines: ctToMollieLines(initialCharge!, mollieOrder!.lines),
     };
 
     return Promise.resolve(cancelOrderParams);
@@ -33,13 +32,15 @@ export function createCtActions(mollieCancelOrderRes: Order, ctObj: any): Action
 
   return actions;
 }
-
-export default async function cancelOrder(ctObj: any, mollieClient: MollieClient, getCancelOrderParams: Function, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
+export default async function cancelOrder(ctPayment: Required<CTPayment>, mollieClient: MollieClient, getCancelOrderParams: Function, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
   try {
-    const cancelOrderParams = await getCancelOrderParams(ctObj);
-    const mollieCancelOrderRes = cancelOrderParams.lines?.length ? await mollieClient.orders_lines.cancel(cancelOrderParams) : await mollieClient.orders.cancel(ctObj.key);
-    Logger.debug(mollieCancelOrderRes);
-    const ctActions = createCtActions(mollieCancelOrderRes, ctObj);
+    const mollieOrderRes = isPartialTransaction(ctPayment.transactions ?? [], CTTransactionType.CancelAuthorization) ? await mollieClient.orders.get(ctPayment.key) : undefined;
+    Logger.debug('mollieOrderRes: %o', mollieOrderRes);
+    const cancelOrderParams = mollieOrderRes ? await getCancelOrderParams(ctPayment, mollieOrderRes) : undefined;
+    Logger.debug('cancelOrderParams: %o', cancelOrderParams);
+    const mollieCancelOrderRes = cancelOrderParams ? await mollieClient.orders_lines.cancel(cancelOrderParams) : await mollieClient.orders.cancel(ctPayment.key);
+    Logger.debug('mollieCancelOrderRes: %o', mollieCancelOrderRes);
+    const ctActions = createCtActions(mollieCancelOrderRes, ctPayment);
     return {
       actions: ctActions,
       status: 200,
