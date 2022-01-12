@@ -4,7 +4,7 @@ import MethodsBinder from '@mollie/api-client/dist/types/src/binders/methods/Met
 // import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
 import { CTPayment } from '../../../src/types/index';
 import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
-import { convertCTToMollieAmountValue, createDateNowString } from '../../../src/utils';
+import { makeMollieAmount, createDateNowString } from '../../../src/utils';
 import { makeActions } from '../../../src/makeActions';
 import Logger from '../../../src/logger/logger';
 
@@ -28,7 +28,7 @@ describe('GetPaymentMethods', () => {
   });
   beforeEach(() => {
     mockMethodsBinder.list = mockList;
-    mocked(convertCTToMollieAmountValue).mockReturnValue('11.00');
+    mocked(makeMollieAmount).mockReturnValue({ value: '11.00', currency: 'EUR' });
   });
 
   afterAll(() => {
@@ -211,7 +211,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
 
   beforeEach(() => {
     mockMethodsBinder.list = mockList;
-    mocked(convertCTToMollieAmountValue).mockReturnValue('11.00');
+    mocked(makeMollieAmount).mockReturnValue({ value: '11.00', currency: 'EUR' });
   });
 
   afterAll(() => {
@@ -272,7 +272,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
   it('Should call mollie with correct locale', async () => {
     const expectedMockListOptions = {
       amount: {
-        currency: 'USD',
+        currency: 'EUR',
         value: '11.00',
       },
       resource: 'orders',
@@ -282,7 +282,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
     const ctObj: CTPayment = {
       id: '1234',
       amountPlanned: {
-        currencyCode: 'USD',
+        currencyCode: 'EUR',
         centAmount: 1100,
       },
       paymentMethodInfo: {

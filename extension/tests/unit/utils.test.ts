@@ -1,6 +1,5 @@
 import * as ut from '../../src/utils';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { PaymentMethod } from '@mollie/api-client';
 
 describe('Utils', () => {
   beforeAll(() => {
@@ -107,32 +106,18 @@ describe('convertMollieToCTPaymentAmount', () => {
   });
 });
 
-describe('convert CT to mollie amount value', () => {
-  it('should convert ct to mollie amount value', () => {
+describe('makeMollieAmount', () => {
+  it('should convert commercetools Money to mollie amount', () => {
     const testCases = [
-      { expectedMollieAmount: '10.00', centAmount: 1000, fractionDigits: 2 },
-      { expectedMollieAmount: '10.10', centAmount: 100987, fractionDigits: 4 },
-      { expectedMollieAmount: '-15.00', centAmount: -15, fractionDigits: 0 },
-      { expectedMollieAmount: '0.50', centAmount: 5, fractionDigits: 1 },
-      { expectedMollieAmount: '-19.99', centAmount: -1999, fractionDigits: 2 },
-      { expectedMollieAmount: '0.01', centAmount: 1 },
+      { ctMoney: { centAmount: 1000, fractionDigits: 2, currencyCode: 'EUR' }, mollie: { currency: 'EUR', value: '10.00' } },
+      { ctMoney: { centAmount: -999, fractionDigits: 2, currencyCode: 'EUR' }, mollie: { currency: 'EUR', value: '-9.99' } },
+      { ctMoney: { centAmount: 10089, fractionDigits: 2, currencyCode: 'EUR' }, mollie: { currency: 'EUR', value: '100.89' } },
+      { ctMoney: { centAmount: 200, fractionDigits: 0, currencyCode: 'ISK' }, mollie: { currency: 'ISK', value: '200' } },
     ];
-    testCases.forEach(({ expectedMollieAmount, centAmount, fractionDigits }) => {
-      expect(ut.convertCTToMollieAmountValue(centAmount, fractionDigits)).toStrictEqual(expectedMollieAmount);
+    testCases.forEach(({ ctMoney, mollie }) => {
+      const amount = ut.makeMollieAmount(ctMoney);
+      expect(amount.currency).toBe(mollie.currency);
+      expect(amount.value).toBe(mollie.value);
     });
   });
 });
-
-// describe('isPaymentMethodValidWithIssuer', () => {
-//   it('should validate correct issuer with payment method', () => {
-//     const testCases = [
-//       { method: PaymentMethod.ideal, result: true },
-//       { method: PaymentMethod.applepay, result: false },
-//       { method: PaymentMethod.giftcard, result: true },
-//       { method: 'something else' as PaymentMethod, result: false },
-//     ];
-//     testCases.forEach(({ method, result }) => {
-//       expect(ut.isPaymentMethodValidWithIssuer(method)).toBe(result);
-//     });
-//   });
-// });
