@@ -16,7 +16,7 @@ export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: O
       const mollieLines = ctToMollieLines(initialCharge!, mollieOrder.lines);
       Object.assign(shipmentParams, { lines: mollieLines });
     }
-    Logger.debug({ shipmentParams: shipmentParams });
+    Logger.debug('shipmentParams: %o', shipmentParams);
     return Promise.resolve(shipmentParams);
   } catch (error) {
     Logger.error({ error });
@@ -69,11 +69,11 @@ export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPaymen
 
 export default async function createShipment(ctPayment: Required<CTPayment>, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
-    Logger.debug({ 'Payment object': ctPayment });
+    Logger.debug('ctPayment: %o', ctPayment);
     const mollieOrderRes = isPartialTransaction(ctPayment.transactions ?? [], CTTransactionType.Charge) ? await mollieClient.orders.get(ctPayment.key) : undefined;
     const shipmentParams = await getShipmentParams(ctPayment, mollieOrderRes);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
-    Logger.debug({ mollieShipmentRes: mollieShipmentRes });
+    Logger.debug('mollieShipmentRes: %o', mollieShipmentRes);
     const ctActions = createCtActions(mollieShipmentRes, ctPayment);
     return {
       actions: ctActions,

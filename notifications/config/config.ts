@@ -21,20 +21,23 @@ const isConfigValid = (config: Config): { valid: boolean; message: string } => {
 
 export function loadConfig(ctMollieConfig: string | undefined) {
   try {
-    // Parse env config, don't allow running without config
     const envConfig = JSON.parse(ctMollieConfig || '');
 
-    // Allow missing parts of config and fill in with defaults
     const config: Config = {
+      ...envConfig,
       service: {
         port: envConfig.service?.port || 3001,
         logLevel: process.env.LOG_LEVEL || envConfig.service?.logLevel || 'info',
         logTransports: envConfig.service?.logTransports || 'terminal',
       },
-      ...envConfig,
     };
 
+    const localeRegex = /^[a-z]{2}_[A-Z]{2}$/;
+
+    Object.assign(config.service, envConfig.service?.locale && envConfig.service.locale.match(localeRegex) && { locale: envConfig.service.locale });
+
     const { valid, message } = isConfigValid(config);
+
     if (valid) {
       return config;
     } else {
@@ -42,7 +45,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     }
   } catch (e) {
     console.error(e);
-    throw new Error('Commercetools - Mollie Integration configuration is incomplete, missing or not provided in the valid JSON format');
+    throw new Error('Commercetools - Mollie Integration configuration is missing or not provided in the valid JSON format');
   }
 }
 
