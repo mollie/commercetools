@@ -1,4 +1,4 @@
-import { CTTransaction, CTPayment, CTTransactionType, ControllerAction } from '../../types/index';
+import { CTTransaction, CTPayment, CTTransactionType, ControllerAction, CTTransactionState } from '../../types/index';
 
 // Break up the error cases so that different error messages can get set
 export const handlePayLaterFlow = (paymentObject: CTPayment): { action: ControllerAction; errorMessage: string } => {
@@ -17,9 +17,15 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
     if (transaction.type === CTTransactionType.Refund) refundTransactions.push(transaction);
   });
 
+  const initialTransactions = transactions!.filter(({ state }) => state === CTTransactionState.Initial);
+
   let action;
   switch (true) {
     // Error cases
+    case initialTransactions.length > 1:
+      action = ControllerAction.NoAction;
+      errorMessage = 'Only one transaction can be in "Initial" state at any time';
+      break;
     case (!!cancelAuthorizationTransactions.length || !!chargeTransactions.length || !!refundTransactions.length) && authorizationTransactions.length === 0:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot add a refund, cancel or charge transaction without an Authorization transaction';
@@ -28,6 +34,7 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a capture without a successful Authorization';
       break;
+    // TODO - add error for Refund when the Authorization has no Capture
     case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Failure').length && !!cancelAuthorizationTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot cancel a failed Authorization';
