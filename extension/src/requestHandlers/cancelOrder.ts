@@ -23,11 +23,11 @@ export function getCancelOrderParams(ctPayment: Required<CTPayment>, mollieOrder
 
 export function createCtActions(mollieCancelOrderRes: Order | boolean, ctPayment: CTPayment): Action[] {
   const initialCancelAuthorization = findInitialTransaction(ctPayment.transactions!, CTTransactionType.CancelAuthorization);
-  const inTransactionId = initialCancelAuthorization!.id || '';
+  const inTransactionId = initialCancelAuthorization!.id!;
   const interfaceInteractionId = uuid();
   const interfaceInteractionRequest = {
     transactionId: inTransactionId,
-    cancelOrderLines: initialCancelAuthorization?.custom?.fields,
+    cancelOrder: initialCancelAuthorization?.custom?.fields,
   };
   const interfaceInteractionParams = {
     id: interfaceInteractionId,
