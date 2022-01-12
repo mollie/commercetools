@@ -16,7 +16,8 @@
     "test:unit": "jest --testPathPattern=unit",
     "test:component": "jest --testPathPattern=component",
     "lint": "prettier --check ./src ./tests ./config *Handler.ts ./**/*.md",
-    "lint:fix": "prettier --write ./src ./tests ./config *Handler.ts ./**/*.md"
+    "lint:fix": "prettier --write ./src ./tests ./config *Handler.ts ./**/*.md",
+    "setup-types": "node ./setup-custom-types.js"
   },
   "keywords": [],
   "author": "Mollie",
