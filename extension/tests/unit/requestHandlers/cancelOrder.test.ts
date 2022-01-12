@@ -27,10 +27,10 @@ describe('getCancelOrderParams', () => {
           includeShipping: true,
         },
       },
-    } as CTTransaction
-    const mockMollieLines = [{ id: 'odl_1.tlaa3w' }, { id: 'odl_1.6997yo' }, { id: 'odl_1.cgark2' }]
-    mocked(findInitialTransaction).mockReturnValue(mockTransaction)
-    mocked(ctToMollieLines).mockReturnValue(mockMollieLines)
+    } as CTTransaction;
+    const mockMollieLines = [{ id: 'odl_1.tlaa3w' }, { id: 'odl_1.6997yo' }, { id: 'odl_1.cgark2' }];
+    mocked(findInitialTransaction).mockReturnValue(mockTransaction);
+    mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
     const mockCtPayment = {
       key: 'ord_3uwvfd',
       transactions: [mockTransaction],
@@ -88,10 +88,10 @@ describe('getCancelOrderParams', () => {
           includeShipping: true,
         },
       },
-    } as CTTransaction
-    const mockMollieLines = [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '5.00', currency: 'EUR' } }, { id: 'odl_1.cgark2' }]
-    mocked(findInitialTransaction).mockReturnValue(mockTransaction)
-    mocked(ctToMollieLines).mockReturnValue(mockMollieLines)
+    } as CTTransaction;
+    const mockMollieLines = [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '5.00', currency: 'EUR' } }, { id: 'odl_1.cgark2' }];
+    mocked(findInitialTransaction).mockReturnValue(mockTransaction);
+    mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
 
     const mockCtPayment = {
       key: 'ord_3uwvfd',
@@ -150,16 +150,14 @@ describe('createCtActions', () => {
           includeShipping: true,
         },
       },
-    } as CTTransaction
+    } as CTTransaction;
     mocked(findInitialTransaction).mockReturnValue(initialTransaction);
     const mockCtPayment = {
       key: 'ord_3uwvfd',
-      transactions: [
-        initialTransaction
-      ],
+      transactions: [initialTransaction],
     } as Required<CTPayment>;
     // When cancelling order lines the response is 204 No content - comes out as true
-    const mockCancelOrderResponse = true
+    const mockCancelOrderResponse = true;
     const ctActions = createCtActions(mockCancelOrderResponse, mockCtPayment);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
@@ -171,14 +169,12 @@ describe('createCtActions', () => {
       type: 'CancelAuthorization',
       state: 'Initial',
       custom: { fields: {} },
-    } as CTTransaction
+    } as CTTransaction;
     mocked(findInitialTransaction).mockReturnValue(initialTransaction);
     mocked(mollieToCtLines).mockReturnValue('42c6d1fd-b942-433b-b6dd-41062c4b3a42');
     const mockCtPayment = {
       key: 'ord_1wg40y',
-      transactions: [
-        initialTransaction
-      ],
+      transactions: [initialTransaction],
     } as Required<CTPayment>;
     const mockCancelOrderResponse = {
       resource: 'order',
@@ -197,9 +193,9 @@ describe('createCtActions', () => {
           metadata: { cartLineItemId: '42c6d1fd-b942-433b-b6dd-41062c4b3a42' },
           quantity: 2,
           totalAmount: { value: '8.46', currency: 'EUR' },
-        }
+        },
       ],
-    } as Order
+    } as Order;
     const ctActions = createCtActions(mockCancelOrderResponse, mockCtPayment);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
@@ -217,7 +213,7 @@ describe('cancelOrder', () => {
     jest.clearAllMocks();
   });
   it('Should call mollie, handle response and return actions when cancelling complete order', async () => {
-    mocked(isPartialTransaction).mockReturnValue(false)
+    mocked(isPartialTransaction).mockReturnValue(false);
     const mockedCtPayment: any = {
       key: 'ord_jwtj05',
     };
@@ -251,7 +247,7 @@ describe('cancelOrder', () => {
     expect(cancelOrderRes.status).toBe(200);
   });
   it('Should call mollie, handle response and return actions when cancelling partial order', async () => {
-    mocked(isPartialTransaction).mockReturnValue(true)
+    mocked(isPartialTransaction).mockReturnValue(true);
     const mockedCtPayment: any = {
       key: 'ord_jwtj05',
       transactions: [
@@ -264,8 +260,8 @@ describe('cancelOrder', () => {
               includeShipping: true,
             },
           },
-        }
-      ]
+        },
+      ],
     };
     const mockedCancelOrderParams: any = {
       orderId: 'ord_jwtj05',
@@ -291,7 +287,7 @@ describe('cancelOrder', () => {
     const createCtActions = jest.fn().mockReturnValueOnce(mockedCtActions);
     const mollieClient = {
       orders: { get: jest.fn().mockResolvedValueOnce(mockedOrderResponse) },
-      orders_lines: { cancel: jest.fn().mockResolvedValueOnce(true) }
+      orders_lines: { cancel: jest.fn().mockResolvedValueOnce(true) },
     } as any;
 
     const cancelOrderRes = await cancelOrder(mockedCtPayment, mollieClient, getCancelOrderParams, createCtActions);
