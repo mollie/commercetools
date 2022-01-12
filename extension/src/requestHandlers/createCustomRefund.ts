@@ -16,7 +16,6 @@ import { makeMollieAmount } from '../utils';
 const extractRefundParameters = (refundTransaction: CTTransaction): Promise<CreateParameters> => {
   try {
     const { interactionId: molliePaymentId, amount, custom } = refundTransaction;
-
     // Check for required fields, throw error if not present
     if (!molliePaymentId || !amount?.centAmount || !amount?.currencyCode) {
       throw new Error();
@@ -32,7 +31,7 @@ const extractRefundParameters = (refundTransaction: CTTransaction): Promise<Crea
     }
     if (custom?.fields?.metadata) {
       const parsedMetadata = JSON.parse(custom.fields.metadata); // try / catch ?
-      Object.assign(refundParameters, { description: parsedMetadata });
+      Object.assign(refundParameters, { metadata: parsedMetadata });
     }
 
     return Promise.resolve(refundParameters);
@@ -66,15 +65,14 @@ export async function createCustomRefund(ctPayment: CTPayment, mollieClient: Mol
 
     // Call the refund
     const response = await mollieClient.payments_refunds.create(refundParams);
-    const { id: mollieRefundId } = response;
+    const { id: mollieRefundId, createdAt: refundCreatedAt } = response;
 
     // Create update actions
     const updateActions: any = [];
 
-    // Update status - pending
     updateActions.push(makeActions.changeTransactionState(refundTransaction!.id!, CTTransactionState.Pending));
-    // Update interaction -- refund id
-    updateActions.push(makeActions.changeTransactionInteractionId(refundTransaction!.id!, response.id));
+    updateActions.push(makeActions.changeTransactionInteractionId(refundTransaction!.id!, mollieRefundId));
+    updateActions.push(makeActions.changeTransactionTimestamp(refundTransaction!.id!, refundCreatedAt));
 
     // InterfaceInteraction - TODO
     const interfaceRequest = {};

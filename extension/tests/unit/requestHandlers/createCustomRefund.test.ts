@@ -1,94 +1,144 @@
-// import { MollieClient, Refund } from '@mollie/api-client';
-// import PaymentRefundsBinder from '@mollie/api-client/dist/types/src/binders/payments/refunds/PaymentRefundsBinder';
-// import Logger from '../../../src/logger/logger';
-// import { createCustomRefund } from '../../../src/requestHandlers/createCustomRefund';
-// import { CTPayment } from '../../../src/types';
+import { MollieClient, Refund } from '@mollie/api-client';
+import _ from 'lodash';
+import { mocked } from 'ts-jest/utils';
+import PaymentRefundsBinder from '@mollie/api-client/dist/types/src/binders/payments/refunds/PaymentRefundsBinder';
+import { ControllerAction, CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
+import Logger from '../../../src/logger/logger';
+import { makeActions } from '../../../src/makeActions';
+import { createCustomRefund } from '../../../src/requestHandlers/createCustomRefund';
 
-// describe('createCustomRefund', () => {
-//   const mockLogError = jest.fn();
+jest.mock('../../../src/makeActions');
 
-//   const mockMollieClient = {} as MollieClient;
-//   const mockPaymentRefunds = {} as PaymentRefundsBinder;
+describe('createCustomRefund', () => {
+  const mockLogError = jest.fn();
 
-//   const mockRefund = {} as Refund;
-//   mockMollieClient.payments_refunds = mockPaymentRefunds;
+  const mockMollieClient = {} as MollieClient;
+  const mockPaymentRefunds = {} as PaymentRefundsBinder;
 
-//   const mockCtObject = {
-//     key: 'ord_12345',
-//     custom: {
-//       fields: {
-//         createCustomRefundRequest: '',
-//       },
-//     },
-//   } as CTPayment;
-//   const createCustomRefundRequest = '{ "interactionId": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 } }';
-//   const createCustomRefundRequestWithDescriptionAndMetadata =
-//     '{ "interactionId": "tr_12345", "amount": { "currencyCode": "EUR", "centAmount": 1547 }, "description": "refund", "metadata": { "code": "HA_789"}}';
+  const paymentIdToBeRefunded = 'db041620-b9da-4b3a-82e6-5d8730a389bd';
+  const interactionId = '8b9b918f-c838-4faa-a717-e355ce39466f';
+  const refundTransactionId = 'f0f2feda-864a-4701-b323-2f1472ba30f0';
 
-//   const mockCreate = jest.fn().mockResolvedValue(() => mockRefund);
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//     Logger.error = mockLogError;
-//     mockPaymentRefunds.create = mockCreate;
-//   });
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+  const mockRefund = { id: '066fc1ad-7dfb-4f85-9d60-5ba26b22f0fa', paymentId: paymentIdToBeRefunded, createdAt: '2022-01-12T08:51:18.558' } as Refund;
+  mockMollieClient.payments_refunds = mockPaymentRefunds;
 
-//   // 2xx
-//   it('should successfully call mollie create payment refund and return stub 201 response', async () => {
-//     mockCtObject.custom.fields.createCustomRefundRequest = createCustomRefundRequest;
-//     const response = await createCustomRefund(mockCtObject, mockMollieClient);
+  const baseCTPayment: CTPayment = {
+    id: '6ebc82eb-a004-4328-b4e2-995bf4e3b3c2',
+    paymentMethodInfo: {
+      method: 'ideal',
+    },
+    key: 'ord_12345',
+    amountPlanned: {
+      centAmount: 2000,
+      currencyCode: 'EUR',
+      fractionDigits: 2,
+    },
+    transactions: [
+      {
+        id: '6f117c5e-eeef-4190-b3be-28380430521b',
+        type: CTTransactionType.Charge,
+        amount: {
+          centAmount: 2000,
+          currencyCode: 'EUR',
+        },
+        state: 'Success',
+      },
+    ],
+  };
 
-//     expect(mockCreate).toHaveBeenLastCalledWith({ paymentId: 'tr_12345', amount: { currency: 'EUR', value: '15.47' } });
-//     expect(response.status).toEqual(201);
-//   });
+  const mockCreate = jest.fn().mockResolvedValue(mockRefund);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Logger.error = mockLogError;
+    mockPaymentRefunds.create = mockCreate;
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   it('should successfully call mollie create payment refund with description and metadata if provided', async () => {
-//     mockCtObject.custom.fields.createCustomRefundRequest = createCustomRefundRequestWithDescriptionAndMetadata;
-//     const response = await createCustomRefund(mockCtObject, mockMollieClient);
+  describe('201 - Success', () => {
+    // Stub makeActions
+    mocked(makeActions.changeTransactionInteractionId).mockReturnValue({
+      action: 'changeTransactionInteractionId',
+      transactionId: 'f0f2feda-864a-4701-b323-2f1472ba30f0',
+      interactionId: mockRefund.id,
+    });
+    mocked(makeActions.changeTransactionState).mockReturnValue({
+      action: 'changeTransactionState',
+      transactionId: refundTransactionId,
+      state: CTTransactionState.Pending,
+    });
+    mocked(makeActions.changeTransactionTimestamp).mockReturnValue({
+      action: 'changeTransactionTimestamp',
+      transactionId: refundTransactionId,
+      timestamp: mockRefund.createdAt,
+    });
+    mocked(makeActions.addInterfaceInteraction).mockReturnValue({
+      action: 'addInterfaceInteraction',
+      type: {
+        key: 'ct-mollie-integration-interface-interaction-type',
+      },
+      fields: {
+        id: interactionId,
+        actionType: ControllerAction.CreateCustomRefund,
+        createdAt: mockRefund.createdAt,
+        request: 'requestValue',
+        response: 'responseValue',
+      },
+    });
 
-//     expect(mockCreate).toHaveBeenLastCalledWith({
-//       paymentId: 'tr_12345',
-//       amount: { currency: 'EUR', value: '15.47' },
-//       description: 'refund',
-//       metadata: {
-//         code: 'HA_789',
-//       },
-//     });
-//     expect(response.status).toEqual(201);
-//   });
+    it('should successfully call mollie create payment refund and return stub 201 response', async () => {
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions!.push({
+        id: refundTransactionId,
+        type: CTTransactionType.Refund,
+        amount: {
+          centAmount: 450,
+          currencyCode: 'EUR',
+        },
+        interactionId: paymentIdToBeRefunded,
+        state: 'Initial',
+      });
 
-//   // 4xx
-//   it('should throw error if the incoming ctObject does not contain valid createCustomRefundRequest JSON', async () => {
-//     mockCtObject.custom.fields.createCustomRefundRequest = '';
-//     const response = await createCustomRefund(mockCtObject, mockMollieClient);
-//     expect(response.status).toBe(400);
-//   });
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
 
-//   it('should throw error if the incoming createCustomRefundRequest does not contain required fields', async () => {
-//     mockCtObject.custom.fields.createCustomRefundRequest = '{ "interactionId": "ord_78932"}';
-//     const response = await createCustomRefund(mockCtObject, mockMollieClient);
-//     expect(mockCreate).not.toHaveBeenCalled();
-//     expect(mockLogError).toHaveBeenCalledTimes(2);
-//     expect(response.status).toBe(400);
-//   });
+      expect(mockPaymentRefunds.create).toHaveBeenLastCalledWith({ paymentId: paymentIdToBeRefunded, amount: { currency: 'EUR', value: '4.50' } });
+      expect(response.status).toEqual(201);
+      expect(response.actions).toHaveLength(4);
+    });
 
-//   // This will change in the future so disabling for now, but leaving for reference
-//   it.skip('should throw error if the call to mollie fails', async () => {
-//     mockPaymentRefunds.create = jest.fn().mockRejectedValueOnce({ status: 500, message: 'Mollie test error' });
-//     mockCtObject.custom.fields.createCustomRefundRequest = '';
+    it('should successfully call mollie create payment refund with description and metadata if provided as custom fields', async () => {
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions!.push({
+        id: refundTransactionId,
+        type: CTTransactionType.Refund,
+        amount: {
+          centAmount: 450,
+          currencyCode: 'EUR',
+        },
+        interactionId: paymentIdToBeRefunded,
+        state: 'Initial',
+        custom: {
+          fields: {
+            description: 'Refund due to late delivery',
+            metadata: '{"code": "DL_63", "authorized": true}',
+          },
+        },
+      });
 
-//     const { status, errors = [] } = await createCustomRefund(mockCtObject, mockMollieClient);
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
 
-//     expect(status).toBe(400);
-//     expect(errors[0]).toEqual({
-//       code: 'General',
-//       extensionExtraInfo: {
-//         originalStatusCode: 500,
-//       },
-//       message: 'Mollie test error',
-//     });
-//     expect(mockLogError).toHaveBeenCalledTimes(1);
-//   });
-// });
+      expect(mockPaymentRefunds.create).toHaveBeenLastCalledWith({
+        paymentId: paymentIdToBeRefunded,
+        amount: { currency: 'EUR', value: '4.50' },
+        description: 'Refund due to late delivery',
+        metadata: { authorized: true, code: 'DL_63' },
+      });
+      expect(response.status).toEqual(201);
+      expect(response.actions).toHaveLength(4);
+    });
+  });
+
+  // TODO
+  describe('400 - Error', () => {});
+});
