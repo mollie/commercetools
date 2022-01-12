@@ -138,7 +138,7 @@ describe('getCancelOrderParams', () => {
 
 describe.skip('createCtActions', () => {
   it('Should create correct ct actions from request and mollies response', () => {
-    const mockedCtObject = {
+    const mockedCtObject: any = {
       custom: {
         fields: {
           createCancelOrderRequest: '[]',
