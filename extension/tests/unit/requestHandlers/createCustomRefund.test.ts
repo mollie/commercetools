@@ -17,6 +17,8 @@ describe('createCustomRefund', () => {
 
   const paymentIdToBeRefunded = 'db041620-b9da-4b3a-82e6-5d8730a389bd';
   const interactionId = '8b9b918f-c838-4faa-a717-e355ce39466f';
+  const originalPaymentId = '721fea55-48a0-491c-aa29-a9117109eaa2';
+  const molliePaymentId = 'a5021f8f-cd3c-4574-ad87-b4d74270c432';
   const refundTransactionId = 'f0f2feda-864a-4701-b323-2f1472ba30f0';
 
   const mockRefund = { id: '066fc1ad-7dfb-4f85-9d60-5ba26b22f0fa', paymentId: paymentIdToBeRefunded, createdAt: '2022-01-12T08:51:18.558' } as Refund;
@@ -35,13 +37,14 @@ describe('createCustomRefund', () => {
     },
     transactions: [
       {
-        id: '6f117c5e-eeef-4190-b3be-28380430521b',
+        id: originalPaymentId,
+        interactionId: molliePaymentId,
         type: CTTransactionType.Charge,
         amount: {
           centAmount: 2000,
           currencyCode: 'EUR',
         },
-        state: 'Success',
+        state: CTTransactionState.Success,
       },
     ],
   };
@@ -96,13 +99,12 @@ describe('createCustomRefund', () => {
           centAmount: 450,
           currencyCode: 'EUR',
         },
-        interactionId: paymentIdToBeRefunded,
         state: 'Initial',
       });
 
       const response = await createCustomRefund(ctPayment, mockMollieClient);
 
-      expect(mockPaymentRefunds.create).toHaveBeenLastCalledWith({ paymentId: paymentIdToBeRefunded, amount: { currency: 'EUR', value: '4.50' } });
+      expect(mockPaymentRefunds.create).toHaveBeenLastCalledWith({ paymentId: molliePaymentId, amount: { currency: 'EUR', value: '4.50' } });
       expect(response.status).toEqual(201);
       expect(response.actions).toHaveLength(4);
     });
@@ -116,7 +118,6 @@ describe('createCustomRefund', () => {
           centAmount: 450,
           currencyCode: 'EUR',
         },
-        interactionId: paymentIdToBeRefunded,
         state: 'Initial',
         custom: {
           fields: {
@@ -129,7 +130,7 @@ describe('createCustomRefund', () => {
       const response = await createCustomRefund(ctPayment, mockMollieClient);
 
       expect(mockPaymentRefunds.create).toHaveBeenLastCalledWith({
-        paymentId: paymentIdToBeRefunded,
+        paymentId: molliePaymentId,
         amount: { currency: 'EUR', value: '4.50' },
         description: 'Refund due to late delivery',
         metadata: { authorized: true, code: 'DL_63' },
@@ -147,7 +148,6 @@ describe('createCustomRefund', () => {
           centAmount: 450,
           currencyCode: 'EUR',
         },
-        interactionId: paymentIdToBeRefunded,
         state: 'Initial',
         custom: {
           fields: {

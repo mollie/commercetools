@@ -54,3 +54,8 @@ export function isMolliePaymentInterface(ctObj: any): Boolean {
   const normalizedInterface = ctObj.paymentMethodInfo?.paymentInterface.toLowerCase();
   return normalizedInterface === 'mollie' ? true : false;
 }
+
+export const isPayLater = (method: PaymentMethod) => {
+  const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
+  return payLaterEnums.includes(method);
+};

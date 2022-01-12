@@ -1,10 +1,10 @@
-import { MollieClient } from '@mollie/api-client';
+import { MollieClient, PaymentMethod } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/refunds/parameters';
 import { ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
 import { makeActions } from '../makeActions';
-import { makeMollieAmount } from '../utils';
+import { makeMollieAmount, isPayLater } from '../utils';
 
 function tryParseJSON(jsonString: string | undefined) {
   try {
@@ -18,18 +18,17 @@ function tryParseJSON(jsonString: string | undefined) {
 /**
  *
  * @param refundTransaction CTTransaction
+ * @param molliePaymentId string - the id of the payment on mollie against which to make the refund
  *
- * This currencly uses the interactionId to get the correct mollie payment to refund
- * This must be passed by the merchant or the call will fail
  */
-const extractRefundParameters = (refundTransaction: CTTransaction): Promise<CreateParameters> => {
+const extractRefundParameters = (refundTransaction: CTTransaction, molliePaymentId: string): Promise<CreateParameters> => {
   try {
-    const { interactionId: molliePaymentId, amount, custom } = refundTransaction;
+    const { amount, custom } = refundTransaction;
     // Check for required fields, throw error if not present
     if (!molliePaymentId || !amount?.centAmount || !amount?.currencyCode) {
       throw new Error();
     }
-    // interactionId --> mollie payment to make the refund against, we can make a call to mollie later to make this more robust
+
     const refundParameters: CreateParameters = {
       paymentId: molliePaymentId,
       amount: makeMollieAmount(amount),
@@ -58,14 +57,31 @@ const extractRefundParameters = (refundTransaction: CTTransaction): Promise<Crea
   }
 };
 
+const findSuccessfulCharge = (transactions: CTTransaction[]) => {
+  return transactions.find(({ state, type }) => state === CTTransactionState.Success && type === CTTransactionType.Charge);
+};
+
+const findSuccessfulAuthorization = (transactions: CTTransaction[]) => {
+  return transactions.find(({ state, type }) => state === CTTransactionState.Success && type === CTTransactionType.Charge);
+};
+
+const findSuccessfulPayment = (isPayLater: boolean, transactions: CTTransaction[]): Promise<CTTransaction> => {
+  const successfulPayment = isPayLater ? findSuccessfulAuthorization(transactions) : findSuccessfulCharge(transactions);
+  if (successfulPayment) {
+    return Promise.resolve(successfulPayment);
+  } else {
+    return Promise.reject({ status: 400, title: 'Cannot find corresponding Payment to refund against' });
+  }
+};
+
 /**
  *
  * @param ctPayment
  * @param mollieClient
  * Creates a refund using the refunds API instead of the Orders API
  * Assumes one refund is requested at a time
- * This currencly uses the interactionId to get the correct mollie payment to refund
- * This must be passed by the merchant or the call will fail.
+ * This uses the Transaction (Charge or Authorization) which contained the original payment to
+ * get the mollie payment id.
  */
 export async function createCustomRefund(ctPayment: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
@@ -73,8 +89,12 @@ export async function createCustomRefund(ctPayment: CTPayment, mollieClient: Mol
     const { transactions } = ctPayment;
     const refundTransaction = transactions!.find(({ type, state }) => type === CTTransactionType.Refund && state === CTTransactionState.Initial);
 
+    // Get the payment transaction and its id
+    const isPayLaterMethod = isPayLater(ctPayment.paymentMethodInfo.method as PaymentMethod);
+    const paymentTransaction = await findSuccessfulPayment(isPayLaterMethod, transactions!);
+
     // Create refund parameters
-    const refundParams = await extractRefundParameters(refundTransaction!);
+    const refundParams = await extractRefundParameters(refundTransaction!, paymentTransaction.interactionId!);
 
     // Call the refund
     const response = await mollieClient.payments_refunds.create(refundParams);
@@ -87,9 +107,8 @@ export async function createCustomRefund(ctPayment: CTPayment, mollieClient: Mol
     updateActions.push(makeActions.changeTransactionInteractionId(refundTransaction!.id!, mollieRefundId));
     updateActions.push(makeActions.changeTransactionTimestamp(refundTransaction!.id!, refundCreatedAt));
 
-    // InterfaceInteraction - TODO
-    const interfaceRequest = {};
-    const interaceResponse = {};
+    const interfaceRequest = { refundTransaction: refundTransaction!.id!, refundRequested: refundTransaction?.amount };
+    const interaceResponse = { originalTransaction: paymentTransaction.id, molliePaymentId: paymentTransaction.interactionId, refundTransaction: refundTransaction!.id! };
     updateActions.push(
       makeActions.addInterfaceInteraction({
         actionType: ControllerAction.CreateCustomRefund,
