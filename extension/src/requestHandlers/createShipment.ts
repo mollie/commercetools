@@ -1,19 +1,18 @@
-import { trim } from 'lodash';
 import { MollieClient, ShipmentCreateParams, Shipment, Order, OrderLine, OrderLineType } from '@mollie/api-client';
 import { v4 as uuid } from 'uuid';
 import formatErrorResponse from '../errorHandlers';
-import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTPayment, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import Logger from '../../src/logger/logger';
 import { makeActions } from '../makeActions';
-import { findInitialCharge, isPartialCapture, makeMollieAmount } from '../utils';
+import { ctToMollieLines, findInitialTransaction, isPartialTransaction } from '../utils';
 
 export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<ShipmentCreateParams> {
   try {
     const shipmentParams: ShipmentCreateParams = {
       orderId: ctPayment.key,
     };
-    if (isPartialCapture(ctPayment.transactions) && mollieOrder) {
-      const initialCharge = findInitialCharge(ctPayment.transactions);
+    if (isPartialTransaction(ctPayment.transactions, CTTransactionType.Charge) && mollieOrder) {
+      const initialCharge = findInitialTransaction(ctPayment.transactions, CTTransactionType.Charge);
       const mollieLines = ctToMollieLines(initialCharge!, mollieOrder.lines);
       Object.assign(shipmentParams, { lines: mollieLines });
     }
@@ -23,39 +22,6 @@ export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: O
     Logger.error({ error });
     return Promise.reject({ status: 400, title: 'Could not make parameters needed to create Mollie shipment.', field: 'createShipmentRequest' });
   }
-}
-
-function tryParseJSON(jsonString: string | undefined) {
-  try {
-    const parsed = JSON.parse(jsonString!);
-    if (parsed && typeof parsed === 'object') return parsed;
-  } catch (error) {
-    return false;
-  }
-}
-
-export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: OrderLine[]): Object[] {
-  const parsedOptions = tryParseJSON(ctTransaction.custom?.fields?.lineIds);
-  const ctLinesArray = parsedOptions ? parsedOptions : ctTransaction.custom?.fields?.lineIds?.split(',').map(trim);
-
-  const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: any) => {
-    const ctLineId = typeof ctLine === 'string' ? ctLine : ctLine.id;
-    const mollieLine = ctLineId && mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLineId || mollieLine.metadata?.cartCustomLineItemId === ctLineId);
-    if (mollieLine) {
-      const transformedLine = { id: mollieLine.id };
-      ctLine.quantity && Object.assign(transformedLine, { quantity: ctLine.quantity });
-      ctLine.totalPrice && Object.assign(transformedLine, { amount: makeMollieAmount(ctLine.totalPrice) });
-      acc.push(transformedLine);
-    }
-    return acc;
-  }, []);
-
-  if (ctTransaction.custom?.fields?.includeShipping) {
-    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.type === OrderLineType.shipping_fee);
-    shippingLine && mollieLines.push({ id: shippingLine.id });
-  }
-
-  return mollieLines;
 }
 
 export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
@@ -70,7 +36,7 @@ export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
 }
 
 export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPayment): Action[] {
-  const initialChargeTransaction = findInitialCharge(ctPayment.transactions!);
+  const initialChargeTransaction = findInitialTransaction(ctPayment.transactions!, CTTransactionType.Charge);
   const inTransactionId = initialChargeTransaction!.id || '';
   const mollieCreatedAt = mollieShipmentRes.createdAt;
   const interfaceInteractionId = uuid();
@@ -104,7 +70,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPaymen
 export default async function createShipment(ctPayment: Required<CTPayment>, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
   try {
     Logger.debug({ 'Payment object': ctPayment });
-    const mollieOrderRes = isPartialCapture(ctPayment.transactions ?? []) ? await mollieClient.orders.get(ctPayment.key) : undefined;
+    const mollieOrderRes = isPartialTransaction(ctPayment.transactions ?? [], CTTransactionType.Charge) ? await mollieClient.orders.get(ctPayment.key) : undefined;
     const shipmentParams = await getShipmentParams(ctPayment, mollieOrderRes);
     const mollieShipmentRes = await mollieClient.orders_shipments.create(shipmentParams);
     Logger.debug({ mollieShipmentRes: mollieShipmentRes });
