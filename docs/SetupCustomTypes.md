@@ -2,7 +2,7 @@
 
 Every outgoing call to commercetools has an extension action. This extension action uses custom fields, which need to be created.
 
-In order to create these custom fields, first you should make sure your environment variables are correctly set, like so:
+In order to create these custom fields, first you should make sure your config is correctly set as an environment variable, like so:
 
 ```
 export CT_MOLLIE_CONFIG='{"mollie":{"apiKey":"<MOLLIE_API_KEY>"},"commercetools":{"authUrl":"<COMMERCETOOLS_AUTH_URL>","clientId":"<COMMERCETOOLS_CLIENT_ID>","clientSecret":"<COMMERCETOOLS_CLIENT_SECRET>","host":"<COMMERCETOOLS_HOST_URL>","projectKey":"<COMMERCETOOLS_PROJECT_KEY>"},"service":{"locale":"LOCALE"}}'

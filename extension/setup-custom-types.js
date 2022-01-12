@@ -1,5 +1,4 @@
-// List of custom fields we will use
-// This script will create those custom fields on CT
+// This script will create custom field types on commercetools.
 
 const axios = require('axios');
 const customTypes = require('./custom-types.json');
