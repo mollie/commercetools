@@ -6,6 +6,15 @@ import Logger from '../logger/logger';
 import { makeActions } from '../makeActions';
 import { makeMollieAmount } from '../utils';
 
+function tryParseJSON(jsonString: string | undefined) {
+  try {
+    const parsed = JSON.parse(jsonString!);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch (error) {
+    return false;
+  }
+}
+
 /**
  *
  * @param refundTransaction CTTransaction
@@ -29,9 +38,13 @@ const extractRefundParameters = (refundTransaction: CTTransaction): Promise<Crea
     if (custom?.fields?.description) {
       Object.assign(refundParameters, { description: custom.fields.description });
     }
+
+    // Mollie accepts JSON or string as metadata
+    // If metadata is incorrect stringified JSON, this string will be passed to mollie
     if (custom?.fields?.metadata) {
-      const parsedMetadata = JSON.parse(custom.fields.metadata); // try / catch ?
-      Object.assign(refundParameters, { metadata: parsedMetadata });
+      const parsedMetadata = tryParseJSON(custom.fields.metadata);
+      const metadata = parsedMetadata ? parsedMetadata : custom.fields.metadata;
+      Object.assign(refundParameters, { metadata: metadata });
     }
 
     return Promise.resolve(refundParameters);

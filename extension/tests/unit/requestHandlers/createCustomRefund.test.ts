@@ -2,7 +2,7 @@ import { MollieClient, Refund } from '@mollie/api-client';
 import _ from 'lodash';
 import { mocked } from 'ts-jest/utils';
 import PaymentRefundsBinder from '@mollie/api-client/dist/types/src/binders/payments/refunds/PaymentRefundsBinder';
-import { ControllerAction, CTPayment, CTTransactionState, CTTransactionType } from '../../../src/types';
+import { ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType } from '../../../src/types';
 import Logger from '../../../src/logger/logger';
 import { makeActions } from '../../../src/makeActions';
 import { createCustomRefund } from '../../../src/requestHandlers/createCustomRefund';
@@ -137,8 +137,61 @@ describe('createCustomRefund', () => {
       expect(response.status).toEqual(201);
       expect(response.actions).toHaveLength(4);
     });
+
+    it('should handle string metadata from the Transaction custom field', async () => {
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions!.push({
+        id: refundTransactionId,
+        type: CTTransactionType.Refund,
+        amount: {
+          centAmount: 450,
+          currencyCode: 'EUR',
+        },
+        interactionId: paymentIdToBeRefunded,
+        state: 'Initial',
+        custom: {
+          fields: {
+            metadata: 'metadata can be a string',
+          },
+        },
+      } as CTTransaction);
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
+
+      expect(response.status).toBe(201);
+    });
   });
 
-  // TODO
-  describe('400 - Error', () => {});
+  describe('400 - Error', () => {
+    it('should return error response with status 400 when the call to mollie fails', async () => {
+      mockPaymentRefunds.create = jest.fn().mockRejectedValue(() => new Error('Cannot refund'));
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions!.push({
+        id: refundTransactionId,
+        type: CTTransactionType.Refund,
+        amount: {
+          centAmount: 450,
+          currencyCode: 'EUR',
+        },
+        interactionId: paymentIdToBeRefunded,
+        state: 'Initial',
+      });
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should return error response if the transaction does not contain the required fields', async () => {
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions!.push({
+        id: refundTransactionId,
+        type: CTTransactionType.Refund,
+        amount: {},
+        interactionId: paymentIdToBeRefunded,
+        state: 'Initial',
+      } as CTTransaction);
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
+
+      expect(response.status).toBe(400);
+    });
+  });
 });
