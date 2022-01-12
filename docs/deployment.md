@@ -2,6 +2,9 @@
 
 **Work in progress**
 
+## NodeJS Runtime
+The recommended runtime version is 14
+
 ## Environment variables
 
 Commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure.
