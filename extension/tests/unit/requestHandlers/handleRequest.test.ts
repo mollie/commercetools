@@ -190,11 +190,6 @@ describe('processActions', () => {
     await processAction(ControllerAction.CancelOrder, {}, mockedMollieClient, mockedCommercetoolsClient);
     expect(mockedCancelOrder).toBeCalledTimes(1);
   });
-  it('should call CreateOrderRefund if the action is CreateOrderRefund', async () => {
-    const mockedCreateOrderRefund = mocked(actions.createOrderRefund);
-    await processAction(ControllerAction.CreateOrderRefund, {}, mockedMollieClient, mockedCommercetoolsClient);
-    expect(mockedCreateOrderRefund).toBeCalledTimes(1);
-  });
   it('should return status 200 and empty actions, (for now), if the action is createCustomRefund', async () => {
     const mockedCreateCustomRefund = mocked(actions.createCustomRefund);
     const result = await processAction(ControllerAction.CreateCustomRefund, {}, mockedMollieClient, mockedCommercetoolsClient);

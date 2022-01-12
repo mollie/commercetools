@@ -2,7 +2,7 @@ import { MollieClient, List, Method, MethodsListParams } from '@mollie/api-clien
 import { CTUpdatesRequestedResponse, Action, CTPayment, CTEnumErrors } from '../types';
 import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
-import { convertCTToMollieAmountValue } from '../utils';
+import { makeMollieAmount } from '../utils';
 import { makeActions } from '../makeActions';
 
 function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParams> {
@@ -12,10 +12,7 @@ function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParam
       return Promise.resolve({});
     }
     const mObject: MethodsListParams = {
-      amount: {
-        value: convertCTToMollieAmountValue(ctObj.amountPlanned.centAmount, ctObj.amountPlanned.fractionDigits),
-        currency: ctObj.amountPlanned.currencyCode,
-      },
+      amount: makeMollieAmount(ctObj.amountPlanned),
       // Resource is hardcoded, for the time being we only support Orders API
       resource: 'orders',
     };
