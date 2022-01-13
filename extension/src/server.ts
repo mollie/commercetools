@@ -12,7 +12,7 @@ const _exit = _.once(() => {
   });
 });
 
-const signals = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
+const signals : NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
 
 const server = app.listen(port, () => {
   Logger.info(`🚀 Server started on port: ${port} 🚀`);
