@@ -60,7 +60,6 @@ describe('createCustomRefund', () => {
   });
 
   describe('201 - Success', () => {
-    // Stub makeActions
     mocked(makeActions.changeTransactionInteractionId).mockReturnValue({
       action: 'changeTransactionInteractionId',
       transactionId: 'f0f2feda-864a-4701-b323-2f1472ba30f0',

@@ -1,6 +1,6 @@
 # Custom Refund
 
-To refund part of an order, we create a Refund transaction. This will call mollie's create payment refund [endpoint](https://docs.mollie.com/reference/v2/refunds-api/create-payment-refund). 
+To refund an order, or part of an order, we create a Refund transaction. This will call mollie's create payment refund [endpoint](https://docs.mollie.com/reference/v2/refunds-api/create-payment-refund). 
 
 ## How to use
 
@@ -8,10 +8,12 @@ This assumes the customer has already placed an order and paid, so we need to re
 
 To trigger a refund, you will need to: 
 - create a refund transaction (state: Initial)
-- include the `interactoinId` as the paymentId on mollie
+- include the `interactionId` as the paymentId on mollie
 (TBC - could update this to do a getOrder call, then get the mollie payment to refund against)
 
 You can make many refunds against a Payment, but **only one refund at a time**. 
+
+N.B. For pay now payment methods (e.g. PayPal, iDEAL), Refund transactions are used to refund and cancel orders. If a Refund transaction is added to an open payment, (i.e. the customer has not paid so the Charge transaction is still Pending), this will trigger cancel order. Only whole order cancelation is possible, not partial.
 
 ### Example
 
@@ -46,7 +48,7 @@ In commercetools, we have a Payment which has one Transaction. This maps to an o
 }
 ```
 
-To refund part of this, we make an update payment call to commerce tools and set the custom field `createCustomRefundRequest`. For example:
+To refund part of this, we make an update payment call to commercetools and set the custom field `createCustomRefundRequest`. For example:
 
 ```
 {
