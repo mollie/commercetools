@@ -1,6 +1,7 @@
 // This script will create custom field types on commercetools.
 
 const axios = require('axios');
+const fs = require('fs');
 const customTypes = require('./custom-types.json');
 
 function setup_types(options) {
@@ -9,22 +10,33 @@ function setup_types(options) {
       console.log(`Type ${response.data.key} setup correctly`);
     })
     .catch(function (error) {
-      console.log(`Type setup failed - ${error.message}. Check host and projectKey are correctly set in config.`);
+      if (error.response.status === 400) {
+        console.log(`Type setup failed - ${error.message}. Did you already set up custom types for this project?`);
+      } else if (error.response.status === 403) {
+        console.log(`Type setup failed - ${error.message}. Check API url and projectKey are correctly set in config.`);
+      } else {
+        console.log(`Type setup failed - ${error.message}.`);
+      }
     });
 }
 
-const ctMollieConfig = process.env.CT_MOLLIE_CONFIG;
-if (!ctMollieConfig) {
-  throw new Error('Config file not set');
+if (!process.env.CT_CREDENTIALS) {
+  throw new Error('Environment variable not set. Point it to the config file.');
 }
 
-const { commercetools } = JSON.parse(ctMollieConfig);
+var ctMollieConfig = fs
+  .readFileSync(process.env.CT_CREDENTIALS, 'utf8')
+  .split('\n')
+  .filter(item => item);
+ctMollieConfig = ctMollieConfig.filter(item => item);
 
-const host = commercetools.host;
-const authUrl = commercetools.authUrl;
-const projectKey = commercetools.projectKey;
-const clientId = commercetools.clientId;
-const clientSecret = commercetools.clientSecret;
+const ctMollieConfigObject = Object.fromEntries(ctMollieConfig.map(s => s.split('=')));
+
+const host = ctMollieConfigObject.CTP_API_URL;
+const authUrl = ctMollieConfigObject.CTP_AUTH_URL;
+const projectKey = ctMollieConfigObject.CTP_PROJECT_KEY;
+const clientId = ctMollieConfigObject.CTP_CLIENT_ID;
+const clientSecret = ctMollieConfigObject.CTP_CLIENT_SECRET;
 
 if (!host || !authUrl || !projectKey || !clientId || !clientSecret) {
   throw new Error('Config file missing parameters. Needs host, projectKey, clientId and clientSecret');
