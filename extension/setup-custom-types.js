@@ -1,8 +1,8 @@
 // This script will create custom field types on commercetools.
 
 const axios = require('axios');
-const fs = require('fs');
 const customTypes = require('./custom-types.json');
+require('dotenv').config();
 
 function setup_types(options) {
   axios(options)
@@ -12,7 +12,7 @@ function setup_types(options) {
     .catch(function (error) {
       if (error.response.status === 400) {
         console.log(`Type setup failed - ${error.message}. Did you already set up custom types for this project?`);
-      } else if (error.response.status === 403) {
+      } else if (error.response.status === 401 || error.response.status === 403) {
         console.log(`Type setup failed - ${error.message}. Check API url and projectKey are correctly set in config.`);
       } else {
         console.log(`Type setup failed - ${error.message}.`);
@@ -20,23 +20,11 @@ function setup_types(options) {
     });
 }
 
-if (!process.env.CT_CREDENTIALS) {
-  throw new Error('Environment variable not set. Point it to the config file.');
-}
-
-var ctMollieConfig = fs
-  .readFileSync(process.env.CT_CREDENTIALS, 'utf8')
-  .split('\n')
-  .filter(item => item);
-ctMollieConfig = ctMollieConfig.filter(item => item);
-
-const ctMollieConfigObject = Object.fromEntries(ctMollieConfig.map(s => s.split('=')));
-
-const host = ctMollieConfigObject.CTP_API_URL;
-const authUrl = ctMollieConfigObject.CTP_AUTH_URL;
-const projectKey = ctMollieConfigObject.CTP_PROJECT_KEY;
-const clientId = ctMollieConfigObject.CTP_CLIENT_ID;
-const clientSecret = ctMollieConfigObject.CTP_CLIENT_SECRET;
+const host = process.env.CTP_API_URL;
+const authUrl = process.env.CTP_AUTH_URL;
+const projectKey = process.env.CTP_PROJECT_KEY;
+const clientId = process.env.CTP_CLIENT_ID;
+const clientSecret = process.env.CTP_CLIENT_SECRET;
 
 if (!host || !authUrl || !projectKey || !clientId || !clientSecret) {
   throw new Error('Config file missing parameters. Needs host, projectKey, clientId and clientSecret');

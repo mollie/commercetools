@@ -38,28 +38,6 @@
         },
         "required": false,
         "inputHint": "MultiLine"
-      },
-      {
-        "type": {
-          "name": "String"
-        },
-        "name": "cancelPayment",
-        "label": {
-          "en": "Cancel payment"
-        },
-        "required": false,
-        "inputHint": "MultiLine"
-      },
-      {
-        "type": {
-          "name": "String"
-        },
-        "name": "createRefund",
-        "label": {
-          "en": "Create refund"
-        },
-        "required": false,
-        "inputHint": "MultiLine"
       }
     ]
   },
@@ -90,6 +68,28 @@
           "en": "Include shipping"
         },
         "required": false
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "description",
+        "label": {
+          "en": "description"
+        },
+        "required": false,
+        "inputHint": "SingleLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "metadata",
+        "label": {
+          "en": "metadata"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
       }
     ]
   },
