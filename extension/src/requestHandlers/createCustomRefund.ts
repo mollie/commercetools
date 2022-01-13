@@ -62,7 +62,7 @@ const findSuccessfulCharge = (transactions: CTTransaction[]) => {
 };
 
 const findSuccessfulAuthorization = (transactions: CTTransaction[]) => {
-  return transactions.find(({ state, type }) => state === CTTransactionState.Success && type === CTTransactionType.Charge);
+  return transactions.find(({ state, type }) => state === CTTransactionState.Success && type === CTTransactionType.Authorization);
 };
 
 const findSuccessfulPayment = (isPayLater: boolean, transactions: CTTransaction[]): Promise<CTTransaction> => {
