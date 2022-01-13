@@ -203,7 +203,7 @@ describe('createCtActions', () => {
   });
 });
 
-describe('cancelOrder', () => {
+describe.skip('cancelOrder', () => {
   const mockLoggerError = jest.fn();
   beforeEach(() => {
     Logger.error = mockLoggerError;
