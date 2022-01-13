@@ -195,7 +195,7 @@ To cancel the whole order line, commercetools (cart) line id can be provided as 
 </details>  
 <br />  
 
-Cancelling a single item on a line ('amount' parameter is only relevant if the original item had a 'discountAmount' field that was above 0)
+Canceling a single item on a line ('amount' parameter is only relevant if the original item had a 'discountAmount' field that was above 0)
 
 <details>
   <summary>Example addTransaction Action</summary>
