@@ -89,7 +89,7 @@ describe('createCustomRefund', () => {
       },
     });
 
-    it('should successfully call mollie create payment refund and return stub 201 response', async () => {
+    it('should successfully call mollie create payment refund and return 201 response - pay now', async () => {
       const ctPayment = _.cloneDeep(baseCTPayment);
       ctPayment.transactions!.push({
         id: refundTransactionId,
@@ -100,6 +100,39 @@ describe('createCustomRefund', () => {
         },
         state: 'Initial',
       });
+
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
+
+      expect(mockPaymentRefunds.create).toHaveBeenLastCalledWith({ paymentId: molliePaymentId, amount: { currency: 'EUR', value: '4.50' } });
+      expect(response.status).toEqual(201);
+      expect(response.actions).toHaveLength(4);
+    });
+
+    it('should successfully call mollie create payment refund and return 201 response - pay later', async () => {
+      // Set up test data - change base payment to be "pay later", with authorization transaction and correct payment method
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions!.push(
+        {
+          id: originalPaymentId,
+          interactionId: molliePaymentId,
+          type: CTTransactionType.Authorization,
+          amount: {
+            centAmount: 2000,
+            currencyCode: 'EUR',
+          },
+          state: CTTransactionState.Success,
+        },
+        {
+          id: refundTransactionId,
+          type: CTTransactionType.Refund,
+          amount: {
+            centAmount: 450,
+            currencyCode: 'EUR',
+          },
+          state: 'Initial',
+        },
+      );
+      ctPayment.paymentMethodInfo.method = 'klarnapaylater';
 
       const response = await createCustomRefund(ctPayment, mockMollieClient);
 
@@ -191,6 +224,26 @@ describe('createCustomRefund', () => {
       const response = await createCustomRefund(ctPayment, mockMollieClient);
 
       expect(response.status).toBe(400);
+      const error = response.errors![0];
+      expect(error?.extensionExtraInfo?.title).toBe('Could not extract valid parameters to create Mollie payment refund. This must contain interactionId, amount');
+    });
+
+    it('should return error response if the original Charge transaction is not found', async () => {
+      const ctPayment = _.cloneDeep(baseCTPayment);
+      ctPayment.transactions = [
+        {
+          id: refundTransactionId,
+          type: CTTransactionType.Refund,
+          amount: {},
+          interactionId: paymentIdToBeRefunded,
+          state: 'Initial',
+        } as CTTransaction,
+      ];
+      const response = await createCustomRefund(ctPayment, mockMollieClient);
+
+      expect(response.status).toBe(400);
+      const error = response.errors![0];
+      expect(error?.extensionExtraInfo?.title).toBe('Cannot find corresponding Payment to refund against');
     });
   });
 });
