@@ -105,11 +105,11 @@ const changeTransactionInteractionId = (id: string, interactionId: string) => {
  * @param timestamp CT DateTime is a JSON string representation of UTC date & time in ISO 8601 format (YYYY-MM-DDThh:mm:ss.sssZ)
  * for example: "2018-10-12T14:00:00.000Z"
  */
-const changeTransactionTimestamp = (id: string, timestamp: string) => {
+const changeTransactionTimestamp = (id: string, timestamp?: string) => {
   return {
     action: 'changeTransactionTimestamp',
     transactionId: id,
-    timestamp,
+    timestamp: timestamp ? timestamp : createDateNowString(),
   };
 };
 
