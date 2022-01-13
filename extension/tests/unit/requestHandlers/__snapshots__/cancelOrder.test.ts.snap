@@ -1,14 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createCtActions Should create correct ct actions from request and mollies response 1`] = `
+exports[`createCtActions Should create correct ct actions from request and mollies payment for order lines (mollie response is true) 1`] = `
+Object {
+  "action": "changeTransactionState",
+  "state": "Success",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment for order lines (mollie response is true) 2`] = `
+Object {
+  "action": "changeTransactionTimestamp",
+  "timestamp": "2021-10-08T12:12:02.625Z",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment for order lines (mollie response is true) 3`] = `
+Object {
+  "action": "changeTransactionInteractionId",
+  "interactionId": "3fea7470-5434-4056-a829-a187339e94d8",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment for order lines (mollie response is true) 4`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
     "actionType": "cancelOrder",
     "createdAt": "2021-10-08T12:12:02.625Z",
-    "id": "238e8459-06a1-46f6-95c6-cf3ce0998dce",
-    "request": "[]",
-    "response": "{\\"resource\\":\\"order\\",\\"id\\":\\"ord_jwtj05\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"amount\\":{\\"value\\":\\"20.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\",\\"canceledAt\\":\\"2021-11-02T12:26:44+00:00\\",\\"redirectUrl\\":\\"https://www.mollie.com/\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.694ky5\\",\\"orderId\\":\\"ord_jwtj05\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"quantityShipped\\":0,\\"quantityCanceled\\":1,\\"amountCanceled\\":{},\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\"}]}",
+    "id": "3fea7470-5434-4056-a829-a187339e94d8",
+    "request": "{\\"transactionId\\":\\"869ea4f0-b9f6-4006-bf04-d8306b5c9564\\",\\"cancelOrder\\":{\\"lineIds\\":\\"3e632c95-8dc6-459a-9edc-5e64760abf21,  31fb05cd-6e00-42b4-a25d-68cceef5a603\\",\\"includeShipping\\":true}}",
+    "response": "Ok",
   },
   "type": Object {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -16,10 +40,42 @@ Object {
 }
 `;
 
-exports[`createCtActions Should create correct ct actions from request and mollies response 2`] = `
+exports[`createCtActions Should create correct ct actions from request and mollies payment for whole cancel order (mollie response is object) 1`] = `
 Object {
-  "action": "setCustomField",
-  "name": "createCancelOrderResponse",
-  "value": "{\\"resource\\":\\"order\\",\\"id\\":\\"ord_jwtj05\\",\\"profileId\\":\\"pfl_VtWA783A63\\",\\"amount\\":{\\"value\\":\\"20.00\\",\\"currency\\":\\"EUR\\"},\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\",\\"canceledAt\\":\\"2021-11-02T12:26:44+00:00\\",\\"redirectUrl\\":\\"https://www.mollie.com/\\",\\"lines\\":[{\\"resource\\":\\"orderline\\",\\"id\\":\\"odl_1.694ky5\\",\\"orderId\\":\\"ord_jwtj05\\",\\"name\\":\\"apple\\",\\"sku\\":null,\\"type\\":\\"physical\\",\\"status\\":\\"canceled\\",\\"isCancelable\\":false,\\"quantity\\":1,\\"quantityShipped\\":0,\\"quantityCanceled\\":1,\\"amountCanceled\\":{},\\"createdAt\\":\\"2021-11-01T12:20:39+00:00\\"}]}",
+  "action": "changeTransactionState",
+  "state": "Success",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment for whole cancel order (mollie response is object) 2`] = `
+Object {
+  "action": "changeTransactionTimestamp",
+  "timestamp": "2021-10-08T12:12:02.625Z",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment for whole cancel order (mollie response is object) 3`] = `
+Object {
+  "action": "changeTransactionInteractionId",
+  "interactionId": "3fea7470-5434-4056-a829-a187339e94d8",
+  "transactionId": "869ea4f0-b9f6-4006-bf04-d8306b5c9564",
+}
+`;
+
+exports[`createCtActions Should create correct ct actions from request and mollies payment for whole cancel order (mollie response is object) 4`] = `
+Object {
+  "action": "addInterfaceInteraction",
+  "fields": Object {
+    "actionType": "cancelOrder",
+    "createdAt": "2021-10-08T12:12:02.625Z",
+    "id": "3fea7470-5434-4056-a829-a187339e94d8",
+    "request": "{\\"transactionId\\":\\"869ea4f0-b9f6-4006-bf04-d8306b5c9564\\",\\"cancelOrder\\":{}}",
+    "response": "{\\"lineIds\\":\\"42c6d1fd-b942-433b-b6dd-41062c4b3a42\\"}",
+  },
+  "type": Object {
+    "key": "ct-mollie-integration-interface-interaction-type",
+  },
 }
 `;
