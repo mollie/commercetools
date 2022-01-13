@@ -30,7 +30,7 @@ For cancelling only certain order lines, we use custom fields on transactions. I
 
 \* List of commercetools line item ids and custom line item ids. Accepts two formats:  
 (1) comma separated list of ct lineIds - `"line-id-1,line-id-2"`,  
-(2) stringified array of objects with id, quantity and total price - `'[{ "id": "line-id-1", "quantity": 2, "totalPrice": { "currencyCode": "EUR", "centAmount": 1000 }}]'`
+(2) stringified array of objects with id (required), quantity (optional) and total price (optional) - `'[{ "id": "line-id-1", "quantity": 2, "totalPrice": { "currencyCode": "EUR", "centAmount": 1000 }}]'`
 
 <br />
 
