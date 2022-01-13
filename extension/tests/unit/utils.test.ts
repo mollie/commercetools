@@ -1,5 +1,7 @@
 import * as ut from '../../src/utils';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import { CTTransaction, CTTransactionType } from '../../src/types';
+import { OrderLine } from '@mollie/api-client';
 
 describe('Utils', () => {
   beforeAll(() => {
@@ -77,5 +79,112 @@ describe('makeMollieAmount', () => {
       expect(amount.currency).toBe(mollie.currency);
       expect(amount.value).toBe(mollie.value);
     });
+  });
+});
+
+describe('isPartialTransaction', () => {
+  it('should return true if transaction has custom fields lineIds', () => {
+    const mockTransaction = [
+      {
+        type: 'Charge',
+        state: 'Initial',
+        custom: {
+          fields: {
+            lineIds: '3e632c95-8dc6-459a-9edc-5e64760abf21',
+          },
+        },
+      },
+    ] as CTTransaction[];
+    expect(ut.isPartialTransaction(mockTransaction, CTTransactionType.Charge)).toBe(true);
+  });
+  it('should return true if transaction has custom fields includeShipment', () => {
+    const mockTransaction = [
+      {
+        type: 'Charge',
+        state: 'Initial',
+        custom: {
+          fields: {
+            includeShipping: true,
+          },
+        },
+      },
+    ] as CTTransaction[];
+    expect(ut.isPartialTransaction(mockTransaction, CTTransactionType.Charge)).toBe(true);
+  });
+  it('should return false if no transaction is present', () => {
+    const mockTransaction = undefined as any as CTTransaction[];
+    expect(ut.isPartialTransaction(mockTransaction, CTTransactionType.Charge)).toBe(false);
+  });
+});
+
+describe('ctToMollieLines', () => {
+  it('should find mollie lines from commercetools partial lines', () => {
+    const mockTransaction = {
+      type: 'Charge',
+      state: 'Initial',
+      custom: {
+        fields: {
+          lineIds: '[{"id":"3e632c95-8dc6-459a-9edc-5e64760abf21","quantity": 1,"totalPrice": {"currencyCode": "EUR","centAmount": 250,"fractionDigits": 2 }}]',
+          includeShipping: true,
+        },
+      },
+    } as CTTransaction;
+    const mockMollieOrderLines = [
+      {
+        id: 'odl_1.tlaa3w',
+        metadata: { cartLineItemId: '3e632c95-8dc6-459a-9edc-5e64760abf21' },
+        quantity: 2,
+        totalAmount: { value: '5.00', currency: 'EUR' },
+      },
+      {
+        id: 'odl_1.cgark2',
+        name: 'Shipping - Standard Shipping',
+        type: 'shipping_fee',
+      },
+    ] as any as OrderLine[];
+    const expectedMollieLine = [{ id: 'odl_1.tlaa3w', quantity: 1, amount: { value: '2.50', currency: 'EUR' } }, { id: 'odl_1.cgark2' }];
+    expect(ut.ctToMollieLines(mockTransaction, mockMollieOrderLines)).toEqual(expectedMollieLine);
+  });
+  it('should find mollie lines from commercetools whole lines', () => {
+    const mockTransaction = {
+      type: 'Charge',
+      state: 'Initial',
+      custom: {
+        fields: {
+          lineIds: '3e632c95-8dc6-459a-9edc-5e64760abf21',
+          includeShipping: false,
+        },
+      },
+    } as CTTransaction;
+    const mockMollieOrderLines = [
+      {
+        id: 'odl_1.tlaa3w',
+        metadata: { cartCustomLineItemId: '3e632c95-8dc6-459a-9edc-5e64760abf21' },
+        quantity: 2,
+        totalAmount: { value: '5.00', currency: 'EUR' },
+      },
+    ] as any as OrderLine[];
+    const expectedMollieLine = [{ id: 'odl_1.tlaa3w' }];
+    expect(ut.ctToMollieLines(mockTransaction, mockMollieOrderLines)).toEqual(expectedMollieLine);
+  });
+});
+
+describe('mollieToCtLines', () => {
+  it('should return commercetools line ids from mollie lines', () => {
+    const mockMollieOrderLines = [
+      {
+        id: 'odl_1.tlaa3w',
+        metadata: { cartLineItemId: '3e632c95-8dc6-459a-9edc-5e64760abf21' },
+        quantity: 2,
+        totalAmount: { value: '5.00', currency: 'EUR' },
+      },
+      {
+        id: 'odl_1.cgark2',
+        name: 'Shipping - Standard Shipping',
+        type: 'shipping_fee',
+      },
+    ] as any as OrderLine[];
+    const expectedCommercetoolsIds = '3e632c95-8dc6-459a-9edc-5e64760abf21,Shipping - Standard Shipping,';
+    expect(ut.mollieToCtLines(mockMollieOrderLines)).toEqual(expectedCommercetoolsIds);
   });
 });
