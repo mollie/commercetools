@@ -16,7 +16,6 @@ describe('createCustomRefund', () => {
   const mockPaymentRefunds = {} as PaymentRefundsBinder;
 
   const paymentIdToBeRefunded = 'db041620-b9da-4b3a-82e6-5d8730a389bd';
-  const interactionId = '8b9b918f-c838-4faa-a717-e355ce39466f';
   const originalPaymentId = '721fea55-48a0-491c-aa29-a9117109eaa2';
   const molliePaymentId = 'a5021f8f-cd3c-4574-ad87-b4d74270c432';
   const refundTransactionId = 'f0f2feda-864a-4701-b323-2f1472ba30f0';
@@ -60,34 +59,10 @@ describe('createCustomRefund', () => {
   });
 
   describe('201 - Success', () => {
-    mocked(makeActions.changeTransactionInteractionId).mockReturnValue({
-      action: 'changeTransactionInteractionId',
-      transactionId: 'f0f2feda-864a-4701-b323-2f1472ba30f0',
-      interactionId: mockRefund.id,
-    });
-    mocked(makeActions.changeTransactionState).mockReturnValue({
-      action: 'changeTransactionState',
-      transactionId: refundTransactionId,
-      state: CTTransactionState.Pending,
-    });
-    mocked(makeActions.changeTransactionTimestamp).mockReturnValue({
-      action: 'changeTransactionTimestamp',
-      transactionId: refundTransactionId,
-      timestamp: mockRefund.createdAt,
-    });
-    mocked(makeActions.addInterfaceInteraction).mockReturnValue({
-      action: 'addInterfaceInteraction',
-      type: {
-        key: 'ct-mollie-integration-interface-interaction-type',
-      },
-      fields: {
-        id: interactionId,
-        actionType: ControllerAction.CreateCustomRefund,
-        createdAt: mockRefund.createdAt,
-        request: 'requestValue',
-        response: 'responseValue',
-      },
-    });
+    mocked(makeActions.changeTransactionInteractionId).mockReturnValue({} as any);
+    mocked(makeActions.changeTransactionState).mockReturnValue({} as any);
+    mocked(makeActions.changeTransactionTimestamp).mockReturnValue({} as any);
+    mocked(makeActions.addInterfaceInteraction).mockReturnValue({} as any);
 
     it('should successfully call mollie create payment refund and return 201 response - pay now', async () => {
       const ctPayment = _.cloneDeep(baseCTPayment);
