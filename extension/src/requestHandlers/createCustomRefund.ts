@@ -1,4 +1,4 @@
-import { MollieClient, PaymentMethod } from '@mollie/api-client';
+import { MollieClient, PaymentMethod, Refund } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/refunds/parameters';
 import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import formatErrorResponse from '../errorHandlers';
@@ -65,6 +65,28 @@ const findSuccessfulPayment = (isPayLater: boolean, transactions: CTTransaction[
   }
 };
 
+const createCtActions = (refundTransaction: CTTransaction, originalPaymentTransaction: CTTransaction, mollieRefund: Refund): Action[] => {
+  // Create update actions
+  const updateActions: Action[] = [];
+
+  updateActions.push(makeActions.changeTransactionState(refundTransaction!.id!, CTTransactionState.Pending));
+  updateActions.push(makeActions.changeTransactionInteractionId(refundTransaction!.id!, mollieRefund.id));
+  updateActions.push(makeActions.changeTransactionTimestamp(refundTransaction!.id!, mollieRefund.createdAt));
+
+  const interfaceRequest = { refundTransaction: refundTransaction!.id!, refundRequested: refundTransaction?.amount };
+  const interaceResponse = { originalTransaction: originalPaymentTransaction.id, molliePaymentId: originalPaymentTransaction.interactionId, refundTransaction: refundTransaction!.id! };
+  updateActions.push(
+    makeActions.addInterfaceInteraction({
+      actionType: ControllerAction.CreateCustomRefund,
+      requestValue: JSON.stringify(interfaceRequest),
+      responseValue: JSON.stringify(interaceResponse),
+      timestamp: mollieRefund.createdAt,
+    }),
+  );
+
+  return updateActions;
+};
+
 /**
  *
  * @param ctPayment
@@ -89,25 +111,9 @@ export async function createCustomRefund(ctPayment: CTPayment, mollieClient: Mol
 
     // Call the refund
     const response = await mollieClient.payments_refunds.create(refundParams);
-    const { id: mollieRefundId, createdAt: refundCreatedAt } = response;
 
     // Create update actions
-    const updateActions: Action[] = [];
-
-    updateActions.push(makeActions.changeTransactionState(refundTransaction!.id!, CTTransactionState.Pending));
-    updateActions.push(makeActions.changeTransactionInteractionId(refundTransaction!.id!, mollieRefundId));
-    updateActions.push(makeActions.changeTransactionTimestamp(refundTransaction!.id!, refundCreatedAt));
-
-    const interfaceRequest = { refundTransaction: refundTransaction!.id!, refundRequested: refundTransaction?.amount };
-    const interaceResponse = { originalTransaction: paymentTransaction.id, molliePaymentId: paymentTransaction.interactionId, refundTransaction: refundTransaction!.id! };
-    updateActions.push(
-      makeActions.addInterfaceInteraction({
-        actionType: ControllerAction.CreateCustomRefund,
-        requestValue: JSON.stringify(interfaceRequest),
-        responseValue: JSON.stringify(interaceResponse),
-        timestamp: response.createdAt,
-      }),
-    );
+    const updateActions = createCtActions(refundTransaction!, paymentTransaction, response);
 
     // Return correct status and updates for CT
     return {
