@@ -68,8 +68,9 @@ function tryParseJSON(jsonString: string | undefined) {
 }
 
 export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: OrderLine[]): { id: string; quantity?: number; amount?: Amount }[] {
-  const parsedOptions = tryParseJSON(ctTransaction.custom?.fields?.lineIds);
-  const ctLinesArray = parsedOptions ? parsedOptions : ctTransaction.custom?.fields?.lineIds?.split(',').map(trim);
+  const lineIds = ctTransaction.custom?.fields?.lineIds;
+  const parsedOptions = tryParseJSON(lineIds);
+  const ctLinesArray = parsedOptions ? parsedOptions : lineIds ? lineIds.split(',').map(trim) : [];
 
   const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: any) => {
     const ctLineId = typeof ctLine === 'string' ? ctLine : ctLine.id;
