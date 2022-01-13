@@ -5,7 +5,7 @@ import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
 import { createDateNowString } from '../utils';
 import { makeActions } from '../makeActions';
-import { convertCTToMollieAmountValue } from '../utils';
+import { makeMollieAmount } from '../utils';
 
 /**
  * @param ctObject
@@ -23,10 +23,7 @@ const extractParameters = (customRefundRequest: any): Promise<CreateParameters> 
     // Create refund parameters
     const refundParameters: CreateParameters = {
       paymentId: molliePaymentId,
-      amount: {
-        currency: amount?.currencyCode,
-        value: convertCTToMollieAmountValue(amount?.centAmount, amount?.fractionDigits),
-      },
+      amount: makeMollieAmount(amount),
     };
     if (description) Object.assign(refundParameters, { description });
     if (metadata) Object.assign(refundParameters, { metadata });

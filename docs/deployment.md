@@ -91,6 +91,46 @@ Log transports are where the logs are written to. If this isn't provided in the 
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
 5. Be aware that when adding a lambda as an extension, commercetools requires a different format than a regular HTTP. [More information can be found here](https://docs.commercetools.com/api/projects/api-extensions#aws-lambda-destination)
 
+### HTTP Destination & Lambda destination
+
+#### Http Destination
+This configuration runs the extension via HTTP Calls. In this mode it is recommended to enable the basic authentication
+
+```json
+{
+  "CT_MOLLIE_CONFIG": {
+    "mollie": {...},
+    "commercetools": {...
+      "authentication": {
+        "isBasicAuth": true,
+        "username": "username",
+        "password": "password"
+      }
+    },
+    "service": {...}
+  }
+}
+```
+
+#### Lambda destination
+This configuration runs the extension via AWS, therefore the lambda does not need to be exposed with
+API Gateway.
+In this scenario CommerceTools uses an IAM user to run the function,
+the detailed guide is available [here](https://docs.commercetools.com/tutorials/extensions#setting-up-an-api-extension)
+In this mode the basic authentication is optional.
+```json
+{
+  "CT_MOLLIE_CONFIG": {
+    "mollie": {...},
+    "commercetools": {...
+      "authentication": {
+        "isBasicAuth": false
+      }
+    },
+    "service": {...}
+  }
+}
+```
 ## GCP functions
 
 Setting up the extension as a google cloud function requires an existing function, setting up entry point and secrets and uploading the source code.
@@ -135,6 +175,33 @@ Therefore the configuration must be defined in the same format as `local.setting
   }
 }
 ```
+
+### Authentication
+
+#### Azure Functions
+This method is supported as described in the following docs  
+[CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)  
+[CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azure-functions-authentication)
+[Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)  
+
+#### Basic
+This method is configurable via the following settings:
+```json
+{
+  "CT_MOLLIE_CONFIG": {
+    "mollie": {...},
+    "commercetools": {...
+      "authentication": {
+        "isBasicAuth": true,
+        "username": "username",
+        "password": "password"
+      }
+    },
+    "service": {...}
+  }
+}
+```
+
 ## Docker
 
 To run using a docker container, navigate to the root directory of the repository (where the Dockerfile is located) and build the container:

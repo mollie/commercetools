@@ -79,7 +79,50 @@ describe('getShipmentParams', () => {
     } as Order;
     const expectedCreateShipmentParams = {
       orderId: 'ord_3uwvfd',
-      lines: [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '1.42', currency: 'EUR' } }, { id: 'odl_1.6997yo', quantity: 1, amount: { value: '7.50', currency: 'EUR' } }, { id: 'odl_1.cgark2' }],
+      lines: [{ id: 'odl_1.tlaa3w' }, { id: 'odl_1.6997yo' }, { id: 'odl_1.cgark2' }],
+    };
+    await expect(getShipmentParams(mockCtPayment, mockOrderRes)).resolves.toEqual(expectedCreateShipmentParams);
+  });
+  it('Should create all optional params for mollie createShipment call when shipping partial lines', async () => {
+    const mockCtPayment = {
+      key: 'ord_3uwvfd',
+      transactions: [
+        {
+          type: 'Charge',
+          state: 'Initial',
+          custom: {
+            fields: {
+              lineIds: '[{"id":"bfa19843-582e-4ba0-b72b-8e1ce156ad56","quantity": 2,"totalPrice": {"currencyCode": "EUR","centAmount": 500,"fractionDigits": 2 }}]',
+              includeShipping: true,
+            },
+          },
+        },
+      ],
+    } as Required<CTPayment>;
+    const mockOrderRes = {
+      lines: [
+        {
+          id: 'odl_1.tlaa3w',
+          orderId: 'ord_3uwvfd',
+          name: 'Banaan',
+          metadata: { cartLineItemId: 'bfa19843-582e-4ba0-b72b-8e1ce156ad56' },
+          quantity: 4,
+          totalAmount: { value: '10.00', currency: 'EUR' },
+        },
+        {
+          id: 'odl_1.cgark2',
+          orderId: 'ord_3uwvfd',
+          name: 'Shipping - Standard Shipping',
+          metadata: null,
+          type: 'shipping_fee',
+          quantity: 1,
+          totalAmount: { value: '0.00', currency: 'EUR' },
+        },
+      ],
+    } as Order;
+    const expectedCreateShipmentParams = {
+      orderId: 'ord_3uwvfd',
+      lines: [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '5.00', currency: 'EUR' } }, { id: 'odl_1.cgark2' }],
     };
     await expect(getShipmentParams(mockCtPayment, mockOrderRes)).resolves.toEqual(expectedCreateShipmentParams);
   });
@@ -162,7 +205,7 @@ describe('createShipment', () => {
     jest.clearAllMocks();
   });
   it('Should prepare params, call mollie, handle response and return actions', async () => {
-    const mockShipmentParams = { orderId: 'ord_qzwg9x', lines: [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '1.42', currency: 'EUR' } }] };
+    const mockShipmentParams = { orderId: 'ord_qzwg9x', lines: [{ id: 'odl_1.tlaa3w' }] };
     const mockCtPayment = {
       key: 'ord_qzwg9x',
       transactions: [

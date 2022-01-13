@@ -7,9 +7,6 @@ const isConfigValid = (config: Config): { valid: boolean; message: string } => {
   if (!mollie?.apiKey) {
     message = message + 'No Mollie API Key found\n';
   }
-  if (!config.commercetools) {
-    message = message + 'No Commercetools configuration present\n';
-  }
   if (!commercetools?.host || !commercetools?.clientId || !commercetools?.clientSecret || !commercetools?.authUrl || !commercetools?.projectKey) {
     message = message + 'Commercetools configuration requires missing required key(s)\n';
   }

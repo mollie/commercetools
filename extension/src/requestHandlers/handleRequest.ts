@@ -6,7 +6,6 @@ import formatErrorResponse from '../errorHandlers';
 import { getCreateOrderParams, createCtActions as createOrderActions } from './createOrder';
 import { getOrdersPaymentsParams, createCtActions as createOrderPaymentActions } from './createOrderPayment';
 import { getCancelOrderParams, createCtActions as cancelOrderActions } from './cancelOrder';
-import { createCtActions as createOrderRefundActions } from './createOrderRefund';
 import Logger from '../logger/logger';
 import { initialiseMollieClient, initialiseCommercetoolsClient } from '../client';
 import { isMolliePaymentInterface } from '../utils';
@@ -84,10 +83,6 @@ const processAction = async function (action: ControllerAction, ctPaymentObject:
     case ControllerAction.CreateShipment:
       Logger.debug(`action: ${ControllerAction.CreateShipment}`);
       result = await actions.createShipment(ctPaymentObject, mollieClient);
-      break;
-    case ControllerAction.CreateOrderRefund:
-      Logger.debug(`action: ${ControllerAction.CreateOrderRefund}`);
-      result = await actions.createOrderRefund(ctPaymentObject, mollieClient, createOrderRefundActions);
       break;
     case ControllerAction.CreateCustomRefund:
       Logger.debug(`action: ${ControllerAction.CreateCustomRefund}`);

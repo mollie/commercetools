@@ -35,6 +35,13 @@ describe('getOrderDetailsById', () => {
     expect(mockLogDebug).not.toHaveBeenCalled();
   });
 
+  it('should format 404 errors and add source information', async () => {
+    const orderNotFoundError = jest.fn().mockRejectedValue({ message: 'Order not found', status: 404 });
+    mockOrdersResource.get = orderNotFoundError;
+
+    await expect(getOrderDetailsById('ord_12345', mockMollieClient)).rejects.toEqual({ message: 'Order not found', source: 'mollie', status: 404 });
+  });
+
   it('should log full error (at debug level) then throw the error if mollie call fails', async () => {
     const getOrderFailure = jest.fn().mockRejectedValue(new Error('Mollie Error'));
     mockOrdersResource.get = getOrderFailure;

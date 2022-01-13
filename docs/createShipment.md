@@ -15,12 +15,14 @@ For shipping only certain order lines, we use custom fields on transactions. It 
 
 ## Parameters map
 
-| CT Charge transaction                      | Parameter (Mollie Order)                     | Required |
-|--------------------------------------------|----------------------------------------------|----------|
-| `custom.fields.lineIds: [array]` *         | `lines: [array of mollieLines]`              | NO       |
-| `custom.fields.includeShipping: true`      | `lines: [mollieLine type shipping_fee]`      | NO       |
+| CT Charge transaction                              | Parameter (Mollie Order)                     | Required |
+|----------------------------------------------------|----------------------------------------------|----------|
+| `custom.fields.lineIds: "lineIds" or "[array]"` *  | `lines: [array of mollieLines]`              | NO       |
+| `custom.fields.includeShipping: true`              | `lines: [mollieLine type shipping_fee]`      | NO       |
 
-\* Accepts comma separated list or commercetools line item ids and cusom line item ids.
+\* List of commercetools line item ids and cusom line item ids. Accepts two formats:  
+(1) comma separated list of ct lineIds - `"line-id-1,line-id-2"`,  
+(2) stringified array of objects with id, quantity and total price - `'[{ "id": "line-id-1", "quantity": 2, "totalPrice": { "currencyCode": "EUR", "centAmount": 1000 }}]'`
 
 <br />
 

@@ -35,11 +35,18 @@ describe('getOrderDetailsById', () => {
     expect(mockLogDebug).not.toHaveBeenCalled();
   });
 
+  it('should format 404 errors and add source information', async () => {
+    const orderNotFoundError = jest.fn().mockRejectedValue({ message: 'Payment not found', status: 404 });
+    mockPaymentsResource.get = orderNotFoundError;
+
+    await expect(getPaymentDetailsById('tr_12345', mockMollieClient)).rejects.toEqual({ message: 'Payment not found', source: 'mollie', status: 404 });
+  });
+
   it('should log full error (at debug level) then throw the error if mollie call fails', async () => {
     const getPaymentFailure = jest.fn().mockRejectedValue(new Error('Mollie Error'));
     mockPaymentsResource.get = getPaymentFailure;
 
-    await expect(getPaymentDetailsById('ord_12345', mockMollieClient)).rejects.toThrow(Error);
+    await expect(getPaymentDetailsById('tr_12345', mockMollieClient)).rejects.toThrow(Error);
     expect(mockLogDebug).toHaveBeenCalledTimes(1);
   });
 });

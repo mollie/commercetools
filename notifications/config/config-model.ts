@@ -14,5 +14,6 @@ export interface Config {
     port: number | string;
     logLevel: 'error' | 'warn' | 'info' | 'http' | 'verbose' | 'debug';
     logTransports?: 'all' | 'file' | 'terminal';
+    locale?: string; // should match regex ^[a-z]{2}_[A-Z]{2}$
   };
 }

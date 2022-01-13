@@ -1,53 +1,109 @@
 import { loadConfig } from '../../config/config';
 
-jest.mock('../../src/logger/logger');
-
 describe('Config test', () => {
-  const OLD_ENV = { ...process.env };
   const mockLogError = jest.fn();
+  const ctConfig = {
+    projectKey: 'test',
+    clientId: '123456789',
+    clientSecret: 'abcdefghi',
+    authUrl: 'https://auth.dummy.com',
+    host: 'https://api.dummy.com',
+    authentication: { isBasicAuth: false },
+  };
   beforeEach(() => {
-    process.env = OLD_ENV;
     console.error = mockLogError;
   });
-
-  afterAll(() => {
-    process.env = OLD_ENV;
+  afterEach(() => {
     jest.clearAllMocks();
   });
-
-  it('Should return config object with correct keys from process.env.CT_MOLLIE_CONFIG, and default port, logLevel and logTransports when not provided', async () => {
-    const config = loadConfig(process.env.CT_MOLLIE_CONFIG);
-
+  it('Should return correct config object including default settings', async () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: ctConfig,
+    });
     const expectedConfig = {
-      mollie: {
-        apiKey: 'testMollieApiKey',
-      },
-      commercetools: {
-        authUrl: 'https://auth.dummy.com',
-        clientId: '123456789',
-        clientSecret: 'abcdefghi',
-        host: 'https://api.dummy.com',
-        projectKey: 'test',
-      },
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: ctConfig,
       service: {
         port: 3001,
         logLevel: 'info',
         logTransports: 'terminal',
       },
     };
+    const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
     expect(config).toEqual(expectedConfig);
   });
 
-  it('Should throw error with a message when config does not have required fields', () => {
-    const temporaryCTConfig = JSON.stringify({
-      service: { port: 2000 },
+  it('Should return config with correct service and authentication properties', async () => {
+    const ctConfigAuth = { ...ctConfig, authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' } };
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: ctConfigAuth,
+      service: { port: 2000, locale: 'nl_NL' },
     });
-    process.env.CT_MOLLIE_CONFIG = temporaryCTConfig;
+    const expectedConfig = {
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: ctConfigAuth,
+      service: {
+        port: 2000,
+        logLevel: 'info',
+        logTransports: 'terminal',
+        locale: 'nl_NL',
+      },
+    };
+    const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
+    expect(config).toEqual(expectedConfig);
+  });
 
-    expect(() => loadConfig(process.env.CT_MOLLIE_CONFIG)).toThrowError();
+  it('Should return exclude locale from config if it does not match expected pattern', async () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: ctConfig,
+      service: { port: 2000, locale: 'nl' },
+    });
+    const expectedConfig = {
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: ctConfig,
+      service: {
+        port: 2000,
+        logLevel: 'info',
+        logTransports: 'terminal',
+      },
+    };
+    const config = loadConfig(CT_MOLLIE_TEST_CONFIG);
+    expect(config).toEqual(expectedConfig);
+  });
+
+  it('Should return an error if there is no api key present', () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: {},
+      commercetools: ctConfig,
+      service: { port: 2000, locale: 'nl' },
+    });
+
+    expect(() => loadConfig(CT_MOLLIE_TEST_CONFIG)).toThrowError();
+  });
+
+  it('Should return an error if there is no commercetools config', () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      service: { port: 2000, locale: 'nl' },
+    });
+
+    expect(() => loadConfig(CT_MOLLIE_TEST_CONFIG)).toThrowError();
+  });
+
+  it('Should return an error if the commercetools config is empty', () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: {},
+      service: { port: 2000, locale: 'nl' },
+    });
+
+    expect(() => loadConfig(CT_MOLLIE_TEST_CONFIG)).toThrowError();
   });
 
   it('Should return an error if no config is provided', async () => {
-    expect(() => loadConfig(undefined)).toThrowError('Commercetools - Mollie Integration configuration is incomplete, missing or not provided in the valid JSON format');
+    expect(() => loadConfig(undefined)).toThrowError('Commercetools - Mollie Integration configuration is missing or not provided in the valid JSON format');
   });
 });

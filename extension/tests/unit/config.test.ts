@@ -74,7 +74,36 @@ describe('Config test', () => {
     expect(config).toEqual(expectedConfig);
   });
 
+  it('Should return an error if there is no api key present', () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: {},
+      commercetools: ctConfig,
+      service: { port: 2000, locale: 'nl' },
+    });
+
+    expect(() => loadConfig(CT_MOLLIE_TEST_CONFIG)).toThrowError();
+  });
+
+  it('Should return an error if there is no commercetools config', () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      service: { port: 2000, locale: 'nl' },
+    });
+
+    expect(() => loadConfig(CT_MOLLIE_TEST_CONFIG)).toThrowError();
+  });
+
+  it('Should return an error if the commercetools config is empty', () => {
+    const CT_MOLLIE_TEST_CONFIG = JSON.stringify({
+      mollie: { apiKey: 'testMollieApiKey' },
+      commercetools: {},
+      service: { port: 2000, locale: 'nl' },
+    });
+
+    expect(() => loadConfig(CT_MOLLIE_TEST_CONFIG)).toThrowError();
+  });
+
   it('Should return an error if no config is provided', async () => {
-    expect(() => loadConfig(undefined)).toThrowError('configuration is missing');
+    expect(() => loadConfig(undefined)).toThrowError('Commercetools - Mollie Integration configuration is missing or not provided in the valid JSON format');
   });
 });
