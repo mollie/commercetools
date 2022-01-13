@@ -1,6 +1,6 @@
 import { MollieClient, PaymentMethod } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/refunds/parameters';
-import { ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
+import { Action, ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
 import { makeActions } from '../makeActions';
@@ -92,7 +92,7 @@ export async function createCustomRefund(ctPayment: CTPayment, mollieClient: Mol
     const { id: mollieRefundId, createdAt: refundCreatedAt } = response;
 
     // Create update actions
-    const updateActions: any = [];
+    const updateActions: Action[] = [];
 
     updateActions.push(makeActions.changeTransactionState(refundTransaction!.id!, CTTransactionState.Pending));
     updateActions.push(makeActions.changeTransactionInteractionId(refundTransaction!.id!, mollieRefundId));
