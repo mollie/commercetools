@@ -167,6 +167,26 @@ describe('ctToMollieLines', () => {
     const expectedMollieLine = [{ id: 'odl_1.tlaa3w' }];
     expect(ut.ctToMollieLines(mockTransaction, mockMollieOrderLines)).toEqual(expectedMollieLine);
   });
+  it('should find shipping line even if no lineIds', () => {
+    const mockTransaction = {
+      type: 'Charge',
+      state: 'Initial',
+      custom: {
+        fields: {
+          includeShipping: true,
+        },
+      },
+    } as CTTransaction;
+    const mockMollieOrderLines = [
+      {
+        id: 'odl_1.cgark2',
+        name: 'Shipping - Standard Shipping',
+        type: 'shipping_fee',
+      },
+    ] as any as OrderLine[];
+    const expectedMollieLine = [{ id: 'odl_1.cgark2' }];
+    expect(ut.ctToMollieLines(mockTransaction, mockMollieOrderLines)).toEqual(expectedMollieLine);
+  });
 });
 
 describe('mollieToCtLines', () => {
