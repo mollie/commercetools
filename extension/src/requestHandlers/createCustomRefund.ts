@@ -4,16 +4,7 @@ import { ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTrans
 import formatErrorResponse from '../errorHandlers';
 import Logger from '../logger/logger';
 import { makeActions } from '../makeActions';
-import { makeMollieAmount, isPayLater } from '../utils';
-
-function tryParseJSON(jsonString: string | undefined) {
-  try {
-    const parsed = JSON.parse(jsonString!);
-    if (parsed && typeof parsed === 'object') return parsed;
-  } catch (error) {
-    return false;
-  }
-}
+import { makeMollieAmount, isPayLater, tryParseJSON } from '../utils';
 
 /**
  *

@@ -10,48 +10,6 @@ describe('Utils', () => {
     jest.resetAllMocks();
   });
 
-  describe('makeMollieLineAmounts', () => {
-    it('Should transform commercetools money to mollie amount object on lines', () => {
-      const mockedLines = [
-        {
-          id: '1',
-          amount: {
-            fractionDigits: 2,
-            currencyCode: 'EUR',
-            centAmount: 1800,
-          },
-        },
-      ];
-      const expectedResult = [
-        {
-          id: '1',
-          amount: {
-            currency: 'EUR',
-            value: '18.00',
-          },
-        },
-      ];
-      const transformedLineAmounts = ut.makeMollieLineAmounts(mockedLines);
-      expect(transformedLineAmounts).toEqual(expectedResult);
-    });
-    it('Should not fail if no amounts are present', () => {
-      const mockedLines = [
-        {
-          id: '1',
-          name: 'apple',
-        },
-      ];
-      const expectedResult = [
-        {
-          id: '1',
-          name: 'apple',
-        },
-      ];
-      const transformedLineAmounts = ut.makeMollieLineAmounts(mockedLines);
-      expect(transformedLineAmounts).toEqual(expectedResult);
-    });
-  });
-
   describe('isMolliePaymentInterface', () => {
     it('must return true when payment interface is mollie', () => {
       const mockedCtObject = {

@@ -1,6 +1,8 @@
-import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { Action, ControllerAction, CTMoney } from './types';
 import { PaymentMethod } from '@mollie/api-client';
+import { Amount } from '@mollie/api-client/dist/types/src/data/global';
+import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types';
+import { isEmpty, trim } from 'lodash';
+import { OrderLine, OrderLineType } from '@mollie/api-client';
 
 /**
  * Generates an ISO string date
@@ -40,15 +42,6 @@ export function makeMollieAmount({ centAmount, fractionDigits, currencyCode }: C
   };
 }
 
-export function makeMollieLineAmounts(ctLines: any) {
-  return ctLines.map((line: any) => {
-    if (line.amount) {
-      line.amount = makeMollieAmount(line.amount);
-    }
-    return line;
-  });
-}
-
 export function isMolliePaymentInterface(ctObj: any): Boolean {
   if (!ctObj.paymentMethodInfo?.paymentInterface) return false;
   const normalizedInterface = ctObj.paymentMethodInfo?.paymentInterface.toLowerCase();
@@ -59,3 +52,58 @@ export const isPayLater = (method: PaymentMethod) => {
   const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
   return payLaterEnums.includes(method);
 };
+
+export function findInitialTransaction(transactions: CTTransaction[], type: CTTransactionType): CTTransaction | undefined {
+  // Assumes one initial transaction, i.e. one capture being made at a time
+  return transactions.find(tr => tr.type === type && tr.state === CTTransactionState.Initial);
+}
+
+export function isPartialTransaction(transactions: CTTransaction[], type: CTTransactionType): boolean {
+  if (!transactions) return false;
+  const initialCharge = findInitialTransaction(transactions, type);
+  return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
+}
+
+export function tryParseJSON(jsonString: string | undefined) {
+  try {
+    const parsed = JSON.parse(jsonString!);
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function ctToMollieLines(ctTransaction: CTTransaction, mollieOrderLines: OrderLine[]): { id: string; quantity?: number; amount?: Amount }[] {
+  const parsedOptions = tryParseJSON(ctTransaction.custom?.fields?.lineIds);
+  const ctLinesArray = parsedOptions ? parsedOptions : ctTransaction.custom?.fields?.lineIds?.split(',').map(trim);
+
+  const mollieLines = ctLinesArray.reduce((acc: Object[], ctLine: any) => {
+    const ctLineId = typeof ctLine === 'string' ? ctLine : ctLine.id;
+    const mollieLine = ctLineId && mollieOrderLines.find(mollieLine => mollieLine.metadata?.cartLineItemId === ctLineId || mollieLine.metadata?.cartCustomLineItemId === ctLineId);
+    if (mollieLine) {
+      const transformedLine = { id: mollieLine.id };
+      ctLine.quantity && Object.assign(transformedLine, { quantity: ctLine.quantity });
+      ctLine.totalPrice && Object.assign(transformedLine, { amount: makeMollieAmount(ctLine.totalPrice) });
+      acc.push(transformedLine);
+    }
+    return acc;
+  }, []);
+
+  if (ctTransaction.custom?.fields?.includeShipping) {
+    const shippingLine = mollieOrderLines.find(mollieLine => mollieLine.type === OrderLineType.shipping_fee);
+    shippingLine && mollieLines.push({ id: shippingLine.id });
+  }
+
+  return mollieLines;
+}
+
+export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
+  const ctLinesString = mollieOrderLines.reduce((acc: string, orderLine: OrderLine) => {
+    const ctLineId = orderLine.metadata?.cartLineItemId || orderLine.metadata?.cartCustomLineItemId;
+    if (ctLineId) acc += `${ctLineId},`;
+    if (orderLine.type === OrderLineType.shipping_fee) acc += `${orderLine.name},`;
+    return acc;
+  }, '');
+
+  return ctLinesString;
+}
