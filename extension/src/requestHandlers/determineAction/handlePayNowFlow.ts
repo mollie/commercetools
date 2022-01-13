@@ -1,4 +1,4 @@
-import { CTTransaction, CTPayment, CTTransactionType, ControllerAction } from '../../types/index';
+import { CTTransaction, CTPayment, CTTransactionType, ControllerAction, CTTransactionState } from '../../types/index';
 
 export const handlePayNowFlow = (paymentObject: CTPayment): { action: ControllerAction; errorMessage: string } => {
   let errorMessage = '';
@@ -18,6 +18,7 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
     if (transaction.state === 'Success') successChargeTransactions.push(transaction);
   });
 
+  const initialTransactions = transactions!.filter(({ state }) => state === CTTransactionState.Initial);
   const refundTransactions = transactions?.filter((transaction: any) => transaction.type === 'Refund') ?? [];
   const initialRefundTransactions = refundTransactions?.filter((transaction: any) => transaction.state === 'Initial');
 
@@ -25,6 +26,10 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
   // CHECK FOR PAYMENT KEY TOO
   switch (true) {
     // Error cases
+    case initialTransactions.length > 1:
+      action = ControllerAction.NoAction;
+      errorMessage = 'Only one transaction can be in "Initial" state at any time';
+      break;
     case !!authorizationTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Authorization and CancelAuthorization transactions are invalid for pay now methods';
@@ -51,7 +56,7 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
       action = ControllerAction.CreateCustomRefund;
       break;
     // Cancel Order
-    case (initialChargeTransactions.length === 1 || pendingChargeTransactions.length === 1) && !successChargeTransactions.length && !!initialRefundTransactions.length:
+    case pendingChargeTransactions.length === 1 && !successChargeTransactions.length && !!initialRefundTransactions.length:
       action = ControllerAction.CancelOrder;
       break;
     default:

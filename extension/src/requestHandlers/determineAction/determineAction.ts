@@ -2,6 +2,7 @@ import { PaymentMethod } from '@mollie/api-client';
 import { ControllerAction } from '../../types';
 import { handlePayLaterFlow } from './handlePayLaterFlow';
 import { handlePayNowFlow } from './handlePayNowFlow';
+import { isPayLater } from '../../utils';
 
 /**
  * @param paymentObject commercetools paymentObject, (from body.resource.obj)
@@ -86,9 +87,4 @@ const hasValidPaymentMethod = (method: string | undefined) => {
     return true;
   }
   return !!PaymentMethod[method as PaymentMethod];
-};
-
-const isPayLater = (method: PaymentMethod) => {
-  const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
-  return payLaterEnums.includes(method);
 };

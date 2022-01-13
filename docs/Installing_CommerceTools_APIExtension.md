@@ -81,18 +81,7 @@ Body:
             },
             "required": false,
             "inputHint": "MultiLine"
-        },
-        {
-            "type": {
-                "name": "String"
-            },
-            "name": "createRefund",
-            "label": {
-                "en": "Create refund"
-            },
-            "required": false,
-            "inputHint": "MultiLine"
-        },
+        }
     ]
 }
 ```
@@ -134,6 +123,28 @@ Body:
             },
             "required": false,
         },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "description",
+            "label": {
+                "en": "Optional description for refunds"
+            },
+            "required": false,
+            "inputHint": "SingleLine"
+        },
+        {
+            "type": {
+                "name": "String"
+            },
+            "name": "metadata",
+            "label": {
+                "en": "Optional metadata for refunds, can be string or stringified JSON"
+            },
+            "required": false,
+            "inputHint": "MultiLine"
+        }
     ]
 }
 ```

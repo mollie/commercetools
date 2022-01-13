@@ -1,3 +1,4 @@
+import { PaymentMethod } from '@mollie/api-client';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types';
 import { isEmpty, trim } from 'lodash';
@@ -47,6 +48,11 @@ export function isMolliePaymentInterface(ctObj: any): Boolean {
   return normalizedInterface === 'mollie' ? true : false;
 }
 
+export const isPayLater = (method: PaymentMethod) => {
+  const payLaterEnums: PaymentMethod[] = [PaymentMethod.klarnapaylater, PaymentMethod.klarnasliceit];
+  return payLaterEnums.includes(method);
+};
+
 export function findInitialTransaction(transactions: CTTransaction[], type: CTTransactionType): CTTransaction | undefined {
   // Assumes one initial transaction, i.e. one capture being made at a time
   return transactions.find(tr => tr.type === type && tr.state === CTTransactionState.Initial);
@@ -58,7 +64,7 @@ export function isPartialTransaction(transactions: CTTransaction[], type: CTTran
   return !isEmpty(initialCharge?.custom?.fields?.lineIds) || initialCharge?.custom?.fields?.includeShipping!;
 }
 
-function tryParseJSON(jsonString: string | undefined) {
+export function tryParseJSON(jsonString: string | undefined) {
   try {
     const parsed = JSON.parse(jsonString!);
     if (parsed && typeof parsed === 'object') return parsed;
