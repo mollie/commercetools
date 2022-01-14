@@ -41,10 +41,6 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a Refund without a successful capture';
       break;
-    case includesState(authorizationTransactions, CTTransactionState.Failure) && !!cancelAuthorizationTransactions.length:
-      action = ControllerAction.NoAction;
-      errorMessage = 'Cannot cancel a failed Authorization';
-      break;
     case !key && includesState(authorizationTransactions, CTTransactionState.Pending):
       errorMessage = 'Cannot create a Transaction in state "Pending". This state is reserved to indicate the transaction has been accepted by the payment service provider';
       action = ControllerAction.NoAction;
@@ -66,7 +62,7 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       break;
 
     // Cancel Authorization
-    case includesState(cancelAuthorizationTransactions, CTTransactionState.Initial) && !includesState(authorizationTransactions, CTTransactionState.Failure):
+    case includesState(cancelAuthorizationTransactions, CTTransactionState.Initial):
       action = ControllerAction.CancelOrder;
       break;
 

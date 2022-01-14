@@ -137,25 +137,6 @@ describe('handlePayLaterFlow - Error Cases', () => {
       expect(errorMessage).toBe('Cannot create a Refund without a successful capture');
     });
 
-    it('when a CancelAuthorization transaction is created when the Authorization transaction has failed - cannot cancel unauthorized funds', () => {
-      const cancelWhenAuthorizationHasFailed = {
-        key: 'ord_1234',
-        transactions: [
-          {
-            type: 'Authorization',
-            state: 'Failure',
-          },
-          {
-            type: 'CancelAuthorization',
-            state: 'Intial',
-          },
-        ],
-      };
-      const { action, errorMessage } = handlePayLaterFlow(cancelWhenAuthorizationHasFailed as CTPayment);
-      expect(action).toBe(ControllerAction.NoAction);
-      expect(errorMessage).toBe('Cannot cancel a failed Authorization');
-    });
-
     it('when an Authorization transaction is created in "Pending" state - this state is reserved for the API extension, to indicate that the payment service has accepted the transaction', () => {
       const authorizationCreatedInPendingState = {
         transactions: [
@@ -339,8 +320,31 @@ describe('handlePayLaterFlow - actions', () => {
       };
       expect(handlePayLaterFlow(cancelPendingAuthorization as CTPayment).action).toBe(ControllerAction.CancelOrder);
     });
+
+    // Example case:
+    // customer has failed to make a payment (Auth/Failure), create order payment has been triggered (Auth/Pending), then decides to cancel order (CancelAuth/Initial)
+    it('should return CancelOrder action when a CancelAuthorization transaction is added, and there is a Pending Authorization transaction and a previously failed Authorization', () => {
+      const cancelPendingAuthorization = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: 'Authorization',
+            state: 'Failure',
+          },
+          {
+            type: 'Authorization',
+            state: 'Pending',
+          },
+          {
+            type: 'CancelAuthorization',
+            state: 'Initial',
+          },
+        ],
+      };
+      expect(handlePayLaterFlow(cancelPendingAuthorization as CTPayment).action).toBe(ControllerAction.CancelOrder);
+    });
   });
-  // Create Refund
+
   describe('RefundOrder - for when funds have been captured and have to be returned to customer', () => {
     it('should return Refund action when there is a Successful Authorization and Charge transaction present', () => {
       const refundWithSuccessfulCharge = {
@@ -362,6 +366,7 @@ describe('handlePayLaterFlow - actions', () => {
       };
       expect(handlePayLaterFlow(refundWithSuccessfulCharge as CTPayment).action).toBe(ControllerAction.CreateCustomRefund);
     });
+
     it('should allow multiple refunds to be created against the same payment', () => {
       const multipleRefunds = {
         key: 'ord_1234',
@@ -386,6 +391,7 @@ describe('handlePayLaterFlow - actions', () => {
       };
       expect(handlePayLaterFlow(multipleRefunds as CTPayment).action).toBe(ControllerAction.CreateCustomRefund);
     });
+
     it('should allow a refund action when there are successful Authorization and Charge transactions, even if a CancelAuthorization transaction is also present', () => {
       // For example, an order is created in mollie.
       // Some order lines are 'captured', i.e. shipped and some are canceled
