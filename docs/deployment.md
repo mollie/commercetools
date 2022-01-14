@@ -80,9 +80,9 @@ There are 6 different levels of logging available - if this isn't provided in th
 - debug (the most explicit type of logging, should be used only for testing and not for production)
 
 #### Configuration
-The application looks for the `process.env.LOG_LEVEL` for the first source
-of logging configuration, in case this variable is not available then it looks for `logLevel` in the
-configuration.
+The application looks for the `process.env.LOG_LEVEL` for the first source of logging configuration.
+If this variable is not present, it looks for `logLevel` as part of the `CT_MOLLIE_CONFIG` environment variable.
+If this is also not present, it will default to "info" level.
 
 ### Log transports
 
