@@ -2,6 +2,9 @@
 
 **Work in progress**
 
+## NodeJS Runtime
+The recommended runtime version is 14
+
 ## Environment variables
 
 Commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure.
@@ -144,7 +147,7 @@ Setting up the extension as a google cloud function requires an existing functio
 
 1. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
 2. Upload the generated zip file to your azure cloud function ([Guide to creating cloud functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
-3. Set Runtime to `Node.js 16` and change entry point to `handler`
+3. Set Runtime to `Node.js 14` and change entry point to `handler`
 
 Add the following global variables into the config file:
 
