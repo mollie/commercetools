@@ -110,5 +110,5 @@ export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
 }
 
 export function hasTransactionState(transactions: CTTransaction[], state: CTTransactionState): boolean {
-  return true
+  return true;
 }
