@@ -1,24 +1,29 @@
-import { CTPayment } from '../../../../src/types/index';
+import { CTPayment, CTTransactionState, CTTransactionType } from '../../../../src/types/index';
 import { handlePayNowFlow } from '../../../../src/requestHandlers/determineAction/handlePayNowFlow';
 import { ControllerAction } from '../../../../src/types';
 
 describe('handlePayNowFlow - Error Cases', () => {
   describe('should return NoAction and errorMessage:', () => {
-    it('when an Authorization transaction type is created on a Payment with a "pay now" method', () => {
-      const authorizationPayment = {
+    it('when there is more than one Initial transaction present', () => {
+      const manyInitialTransactions = {
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Intial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
+          },
+          {
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
-      const { action, errorMessage } = handlePayNowFlow(authorizationPayment as CTPayment);
+      const { action, errorMessage } = handlePayNowFlow(manyInitialTransactions as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
-      expect(errorMessage).toBe('Authorization and CancelAuthorization transactions are invalid for pay now methods');
+      expect(errorMessage).toBe('Only one transaction can be in "Initial" state at any time');
     });
-    it('when an CancelAuthorization transaction type is created on a Payment with a "pay now" method', () => {
-      const cancelAuthorizationPayment = {
+
+    it('when a CancelAuthorization transaction type is created on a Payment with a "pay now" method', () => {
+      const authorizationPayment = {
         transactions: [
           {
             type: 'CancelAuthorization',
@@ -26,10 +31,11 @@ describe('handlePayNowFlow - Error Cases', () => {
           },
         ],
       };
-      const { action, errorMessage } = handlePayNowFlow(cancelAuthorizationPayment as CTPayment);
+      const { action, errorMessage } = handlePayNowFlow(authorizationPayment as CTPayment);
       expect(action).toBe(ControllerAction.NoAction);
-      expect(errorMessage).toBe('Authorization and CancelAuthorization transactions are invalid for pay now methods');
+      expect(errorMessage).toBe('CancelAuthorization transaction type is invalid for pay now methods');
     });
+
     it('when a Refund transaction is created and there is no Charge transaction', () => {
       const refundWithoutCharge = {
         transactions: [
@@ -43,6 +49,26 @@ describe('handlePayNowFlow - Error Cases', () => {
       expect(action).toBe(ControllerAction.NoAction);
       expect(errorMessage).toBe('Cannot create a Refund with no Charge');
     });
+
+    it('when a there is a "Pending" and "Initial" state charge at the same time', () => {
+      const pendingAndInitial = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
+          },
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Pending,
+          },
+        ],
+      };
+      const { action, errorMessage } = handlePayNowFlow(pendingAndInitial as CTPayment);
+      expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Must only have one Charge transaction processing (i.e. in state "Initial" or "Pending") at a time');
+    });
+
     it('when a Charge is created in a "Pending" state (the Pending state should only be set by the API extension as it means that the transaction was accepted by the payment service provider)', () => {
       const pendingChargeWithoutKey = {
         transactions: [
@@ -103,6 +129,48 @@ describe('handlePayNowFlow - actions', () => {
 
       const { action } = handlePayNowFlow(initialChargePayment as CTPayment);
       expect(action).toBe(ControllerAction.CreateOrder);
+    });
+  });
+
+  describe('CreateOrderPayment', () => {
+    // Example case - payment method changed from 'ideal' to 'paypal'
+    it('should return create order payment action when payment has key, an Initial Charge transaction and a previously failed Charge transaction', () => {
+      const initialChargePayment = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Failure,
+          },
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
+          },
+        ],
+      };
+
+      const { action } = handlePayNowFlow(initialChargePayment as CTPayment);
+      expect(action).toBe(ControllerAction.CreateOrderPayment);
+    });
+
+    // Example case - payment method changed from 'ideal' to 'klarnapaylater'
+    it('should return create order payment action when payment has key, an Initial Charge transaction and a previously failed Authorizaton transaction', () => {
+      const initialChargePayment = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Failure,
+          },
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
+          },
+        ],
+      };
+
+      const { action } = handlePayNowFlow(initialChargePayment as CTPayment);
+      expect(action).toBe(ControllerAction.CreateOrderPayment);
     });
   });
 

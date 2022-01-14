@@ -1,20 +1,54 @@
 import { CTPayment } from '../../../../src/types/index';
 import { handlePayLaterFlow } from '../../../../src/requestHandlers/determineAction/handlePayLaterFlow';
-import { ControllerAction } from '../../../../src/types';
+import { ControllerAction, CTTransactionState, CTTransactionType } from '../../../../src/types';
 
 describe('handlePayLaterFlow - Error Cases', () => {
   describe('should return no action and errorMessage:', () => {
+    it('when there is more than one Initial transaction', () => {
+      const multipleInitial = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Initial,
+          },
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
+          },
+        ],
+      };
+      const { action, errorMessage } = handlePayLaterFlow(multipleInitial as CTPayment);
+      expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Only one transaction can be in "Initial" state at any time');
+    });
+
+    it('when a Charge transaction is created and there is no Authorization transaction - cannot capture unauthorized funds', () => {
+      const chargeWithoutAuthorization = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: 'Charge',
+            state: 'Intial',
+          },
+        ],
+      };
+      const { action, errorMessage } = handlePayLaterFlow(chargeWithoutAuthorization as CTPayment);
+      expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot add a refund, cancel or charge transaction without an Authorization transaction');
+    });
+
     it('when a charge transaction is created when the Authorization transaction is still pending - cannot capture unauthorized funds', () => {
       const chargeWhenAuthorizationPending = {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Pending',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Pending,
           },
           {
-            type: 'Charge',
-            state: 'Intial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -22,17 +56,18 @@ describe('handlePayLaterFlow - Error Cases', () => {
       expect(action).toBe(ControllerAction.NoAction);
       expect(errorMessage).toBe('Cannot create a capture without a successful Authorization');
     });
+
     it('when a charge transaction is created when the Authorization transaction has failed - cannot capture unauthorized funds', () => {
       const chargeWhenAuthorizationHasFailed = {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Failure',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Failure,
           },
           {
-            type: 'Charge',
-            state: 'Intial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -40,6 +75,30 @@ describe('handlePayLaterFlow - Error Cases', () => {
       expect(action).toBe(ControllerAction.NoAction);
       expect(errorMessage).toBe('Cannot create a capture without a successful Authorization');
     });
+
+    it('when a Refund is created without a successful capture present', () => {
+      const refundWithoutCapture = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
+          },
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Failure,
+          },
+          {
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
+          },
+        ],
+      };
+      const { action, errorMessage } = handlePayLaterFlow(refundWithoutCapture as CTPayment);
+      expect(action).toBe(ControllerAction.NoAction);
+      expect(errorMessage).toBe('Cannot create a Refund without a successful capture');
+    });
+
     it('when a CancelAuthorization transaction is created when the Authorization transaction has failed - cannot cancel unauthorized funds', () => {
       const cancelWhenAuthorizationHasFailed = {
         key: 'ord_1234',
@@ -58,20 +117,7 @@ describe('handlePayLaterFlow - Error Cases', () => {
       expect(action).toBe(ControllerAction.NoAction);
       expect(errorMessage).toBe('Cannot cancel a failed Authorization');
     });
-    it('when a Charge transaction is created and there is no Authorization transaction - cannot capture unauthorized funds', () => {
-      const chargeWithoutAuthorization = {
-        key: 'ord_1234',
-        transactions: [
-          {
-            type: 'Charge',
-            state: 'Intial',
-          },
-        ],
-      };
-      const { action, errorMessage } = handlePayLaterFlow(chargeWithoutAuthorization as CTPayment);
-      expect(action).toBe(ControllerAction.NoAction);
-      expect(errorMessage).toBe('Cannot add a refund, cancel or charge transaction without an Authorization transaction');
-    });
+
     it('when an Authorization transaction is created in "Pending" state - this state is reserved for the API extension, to indicate that the payment service has accepted the transaction', () => {
       const authorizationCreatedInPendingState = {
         transactions: [
@@ -106,7 +152,7 @@ describe('handlePayLaterFlow - actions', () => {
   });
 
   describe('CreateOrder', () => {
-    it('should return create order action when an Initial Charge transaction is added to the Payment object', () => {
+    it('should return create order action when an Initial Authorization transaction is added to the Payment object and there is no key set', () => {
       const initialAuthorization = {
         transactions: [
           {
@@ -116,6 +162,39 @@ describe('handlePayLaterFlow - actions', () => {
         ],
       };
       expect(handlePayLaterFlow(initialAuthorization as CTPayment).action).toBe(ControllerAction.CreateOrder);
+    });
+  });
+
+  describe('CreateOrderPayment', () => {
+    it('should return create order payment action when payment has a key & one Initial Authorization transaction', () => {
+      const ctPayment = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Initial,
+          },
+        ],
+      };
+      expect(handlePayLaterFlow(ctPayment as CTPayment).action).toBe(ControllerAction.CreateOrderPayment);
+    });
+
+    // Case: payment method switched from pay now to pay later
+    it('should return create order payment action when payment has a key, one Initial Authorization transaction and previously failed Charge transaction', () => {
+      const ctPayment = {
+        key: 'ord_1234',
+        transactions: [
+          {
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Failure,
+          },
+          {
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Initial,
+          },
+        ],
+      };
+      expect(handlePayLaterFlow(ctPayment as CTPayment).action).toBe(ControllerAction.CreateOrderPayment);
     });
   });
 

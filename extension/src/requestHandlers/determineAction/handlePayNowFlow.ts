@@ -5,7 +5,7 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
   const { key, transactions } = paymentObject;
 
   // Check for invalid transaction types
-  const authorizationTransactions = transactions?.filter(transaction => transaction.type === CTTransactionType.Authorization || transaction.type === CTTransactionType.CancelAuthorization) ?? [];
+  const invalidTransactionTypes = transactions?.filter(transaction => transaction.type === CTTransactionType.CancelAuthorization) ?? [];
 
   const initialChargeTransactions: CTTransaction[] = [];
   const pendingChargeTransactions: CTTransaction[] = [];
@@ -30,15 +30,17 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
       action = ControllerAction.NoAction;
       errorMessage = 'Only one transaction can be in "Initial" state at any time';
       break;
-    case !!authorizationTransactions.length:
+    case !!invalidTransactionTypes.length:
       action = ControllerAction.NoAction;
-      errorMessage = 'Authorization and CancelAuthorization transactions are invalid for pay now methods';
+      errorMessage = 'CancelAuthorization transaction type is invalid for pay now methods';
       break;
     case !!refundTransactions.length && !chargeTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a Refund with no Charge';
       break;
-    case initialChargeTransactions.length > 1 || pendingChargeTransactions.length > 1:
+
+    // Bit unsure of this one....
+    case initialChargeTransactions.length === 1 && pendingChargeTransactions.length >= 1:
       action = ControllerAction.NoAction;
       errorMessage = 'Must only have one Charge transaction processing (i.e. in state "Initial" or "Pending") at a time';
       break;
@@ -48,8 +50,12 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
       break;
 
     // Create Order
-    case initialChargeTransactions.length === 1 && !successChargeTransactions.length && !pendingChargeTransactions.length:
+    case !key && initialChargeTransactions.length === 1 && !successChargeTransactions.length && !pendingChargeTransactions.length:
       action = ControllerAction.CreateOrder;
+      break;
+    // Create Order Payment
+    case !!key && initialChargeTransactions.length === 1 && !successChargeTransactions.length && !pendingChargeTransactions.length:
+      action = ControllerAction.CreateOrderPayment;
       break;
     // Create Refund
     case !initialChargeTransactions.length && !pendingChargeTransactions.length && successChargeTransactions.length === 1 && !!initialRefundTransactions.length:

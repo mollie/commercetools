@@ -30,7 +30,8 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot add a refund, cancel or charge transaction without an Authorization transaction';
       break;
-    case !authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length && !!chargeTransactions.length:
+    case !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Initial').length &&
+      !authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a capture without a successful Authorization';
       break;
@@ -50,6 +51,11 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
     // Create order
     case !key && authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
       action = ControllerAction.CreateOrder;
+      break;
+
+    // Create order payment
+    case key && authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
+      action = ControllerAction.CreateOrderPayment;
       break;
 
     // Create shipment
