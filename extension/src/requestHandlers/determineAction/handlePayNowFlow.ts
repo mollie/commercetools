@@ -4,7 +4,7 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
   let errorMessage = '';
   const { key, transactions } = paymentObject;
 
-  // Check for invalid transaction types
+  // CancelAuthorization is not used for "pay now" methods
   const invalidTransactionTypes = transactions?.filter(transaction => transaction.type === CTTransactionType.CancelAuthorization) ?? [];
 
   const initialChargeTransactions: CTTransaction[] = [];
@@ -23,7 +23,6 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
   const initialRefundTransactions = refundTransactions?.filter((transaction: any) => transaction.state === CTTransactionState.Initial);
 
   let action;
-  // CHECK FOR PAYMENT KEY TOO
   switch (true) {
     // Error cases
     case initialTransactions.length > 1:
@@ -38,8 +37,6 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a Refund with no Charge';
       break;
-
-    // Bit unsure of this one....
     case initialChargeTransactions.length === 1 && pendingChargeTransactions.length >= 1:
       action = ControllerAction.NoAction;
       errorMessage = 'Must only have one Charge transaction processing (i.e. in state "Initial" or "Pending") at a time';

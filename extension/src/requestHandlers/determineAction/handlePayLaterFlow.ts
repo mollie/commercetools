@@ -1,6 +1,9 @@
 import { CTTransaction, CTPayment, CTTransactionType, ControllerAction, CTTransactionState } from '../../types/index';
 
-// Break up the error cases so that different error messages can get set
+export const includesState = (transactions: CTTransaction[], type: CTTransactionState): boolean => {
+  return !!transactions.filter(({ state }) => state === type).length;
+};
+
 export const handlePayLaterFlow = (paymentObject: CTPayment): { action: ControllerAction; errorMessage: string } => {
   let errorMessage = '';
   const { key, transactions } = paymentObject;
@@ -30,51 +33,47 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot add a refund, cancel or charge transaction without an Authorization transaction';
       break;
-    case !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Initial).length &&
-      !authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Success).length:
+    case includesState(chargeTransactions, CTTransactionState.Initial) && !includesState(authorizationTransactions, CTTransactionState.Success):
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a capture without a successful Authorization';
       break;
-    case !!refundTransactions.length && !chargeTransactions.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Success).length:
+    case !!refundTransactions.length && !includesState(chargeTransactions, CTTransactionState.Success):
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a Refund without a successful capture';
       break;
-    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Failure).length && !!cancelAuthorizationTransactions.length:
+    case includesState(authorizationTransactions, CTTransactionState.Failure) && !!cancelAuthorizationTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot cancel a failed Authorization';
       break;
-    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Pending).length && !key:
+    case !key && includesState(authorizationTransactions, CTTransactionState.Pending):
       errorMessage = 'Cannot create a Transaction in state "Pending". This state is reserved to indicate the transaction has been accepted by the payment service provider';
       action = ControllerAction.NoAction;
       break;
 
     // Create order
-    case !key && authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Initial).length === 1:
+    case !key && includesState(authorizationTransactions, CTTransactionState.Initial):
       action = ControllerAction.CreateOrder;
       break;
 
     // Create order payment
-    case key && authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Initial).length === 1:
+    case key && includesState(authorizationTransactions, CTTransactionState.Initial):
       action = ControllerAction.CreateOrderPayment;
       break;
 
     // Create shipment
-    case key &&
-      authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Success).length === 1 &&
-      !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Initial).length:
+    case key && includesState(authorizationTransactions, CTTransactionState.Success) && includesState(chargeTransactions, CTTransactionState.Initial):
       action = ControllerAction.CreateShipment;
       break;
 
     // Cancel Authorization
-    case authorizationTransactions?.filter(authTransaction => authTransaction.state !== CTTransactionState.Failure).length >= 1 &&
-      !!cancelAuthorizationTransactions.filter(cancelTransaction => cancelTransaction.state === CTTransactionState.Initial).length:
+    case includesState(cancelAuthorizationTransactions, CTTransactionState.Initial) && !includesState(authorizationTransactions, CTTransactionState.Failure):
       action = ControllerAction.CancelOrder;
       break;
 
     // Create Refund
-    case authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Success).length === 1 &&
-      chargeTransactions?.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Success).length >= 1 &&
-      refundTransactions?.filter(refundTransaction => refundTransaction.state === CTTransactionState.Initial).length >= 1:
+    case includesState(authorizationTransactions, CTTransactionState.Success) &&
+      includesState(chargeTransactions, CTTransactionState.Success) &&
+      includesState(refundTransactions, CTTransactionState.Initial):
       action = ControllerAction.CreateCustomRefund;
       break;
     default:

@@ -1,6 +1,44 @@
-import { CTPayment } from '../../../../src/types/index';
-import { handlePayLaterFlow } from '../../../../src/requestHandlers/determineAction/handlePayLaterFlow';
+import { CTPayment, CTTransaction } from '../../../../src/types/index';
+import { handlePayLaterFlow, includesState } from '../../../../src/requestHandlers/determineAction/handlePayLaterFlow';
 import { ControllerAction, CTTransactionState, CTTransactionType } from '../../../../src/types';
+
+describe('includesState', () => {
+  it('should return true when the given transaction array contains >=1 transaction of the given state', () => {
+    const transactions = [
+      {
+        type: CTTransactionType.Charge,
+        state: CTTransactionState.Pending,
+      },
+      {
+        type: CTTransactionType.Charge,
+        state: CTTransactionState.Pending,
+      },
+      {
+        type: CTTransactionType.Charge,
+        state: CTTransactionState.Failure,
+      },
+    ] as CTTransaction[];
+    expect(includesState(transactions, CTTransactionState.Pending)).toBeTruthy();
+  });
+
+  it('should return false when the given transaction array contains 0 transactions of the given state', () => {
+    const transactions = [
+      {
+        type: CTTransactionType.Charge,
+        state: CTTransactionState.Pending,
+      },
+      {
+        type: CTTransactionType.Charge,
+        state: CTTransactionState.Pending,
+      },
+      {
+        type: CTTransactionType.Charge,
+        state: CTTransactionState.Failure,
+      },
+    ] as CTTransaction[];
+    expect(includesState(transactions, CTTransactionState.Success)).toBeFalsy();
+  });
+});
 
 describe('handlePayLaterFlow - Error Cases', () => {
   describe('should return no action and errorMessage:', () => {
