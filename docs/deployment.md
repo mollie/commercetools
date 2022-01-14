@@ -67,8 +67,9 @@ Below is an example of how these should be formatted:
 }
 ```
 
-### Log levels
+### Logging
 
+#### Levels
 There are 6 different levels of logging available - if this isn't provided in the environment, the level will default to 'info':
 
 - error (only errors will display)
@@ -77,6 +78,11 @@ There are 6 different levels of logging available - if this isn't provided in th
 - http
 - verbose
 - debug (the most explicit type of logging, should be used only for testing and not for production)
+
+#### Configuration
+The application looks for the `process.env.LOG_LEVEL` for the first source of logging configuration.
+If this variable is not present, it looks for `logLevel` as part of the `CT_MOLLIE_CONFIG` environment variable.
+If this is also not present, it will default to "info" level.
 
 ### Log transports
 
