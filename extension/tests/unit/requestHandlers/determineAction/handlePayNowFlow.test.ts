@@ -26,8 +26,8 @@ describe('handlePayNowFlow - Error Cases', () => {
       const authorizationPayment = {
         transactions: [
           {
-            type: 'CancelAuthorization',
-            state: 'Intial',
+            type: CTTransactionType.CancelAuthorization,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -40,8 +40,8 @@ describe('handlePayNowFlow - Error Cases', () => {
       const refundWithoutCharge = {
         transactions: [
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -73,8 +73,8 @@ describe('handlePayNowFlow - Error Cases', () => {
       const pendingChargeWithoutKey = {
         transactions: [
           {
-            type: 'Charge',
-            state: 'Pending',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Pending,
           },
         ],
       };
@@ -92,8 +92,8 @@ describe('handlePayNowFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Charge',
-            state: 'Pending',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Pending,
           },
         ],
       };
@@ -103,12 +103,12 @@ describe('handlePayNowFlow - actions', () => {
       const refundPending = {
         transactions: [
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Pending',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Pending,
           },
         ],
       };
@@ -121,8 +121,8 @@ describe('handlePayNowFlow - actions', () => {
       const initialChargePayment = {
         transactions: [
           {
-            type: 'Charge',
-            state: 'Initial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -180,12 +180,12 @@ describe('handlePayNowFlow - actions', () => {
         key: 'ord_12345',
         transactions: [
           {
-            type: 'Charge',
-            state: 'Pending',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Pending,
           },
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -199,12 +199,12 @@ describe('handlePayNowFlow - actions', () => {
       const oneRefundAgainstPayment = {
         transactions: [
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -214,20 +214,20 @@ describe('handlePayNowFlow - actions', () => {
       const multipleRefundsAgainstPayment = {
         transactions: [
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Success',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Failure',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Failure,
           },
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
