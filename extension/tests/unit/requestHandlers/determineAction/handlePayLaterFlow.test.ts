@@ -66,8 +66,8 @@ describe('handlePayLaterFlow - Error Cases', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Charge',
-            state: 'Intial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -141,8 +141,8 @@ describe('handlePayLaterFlow - Error Cases', () => {
       const authorizationCreatedInPendingState = {
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Pending',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Pending,
           },
         ],
       };
@@ -160,8 +160,8 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Pending',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Pending,
           },
         ],
       };
@@ -175,8 +175,8 @@ describe('handlePayLaterFlow - actions', () => {
       const initialAuthorization = {
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Initial',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -223,16 +223,16 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Failure',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Failure,
           },
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Initial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -244,16 +244,16 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Initial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -265,20 +265,20 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Pending',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Pending,
           },
           {
-            type: 'Charge',
-            state: 'Initial',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -292,12 +292,12 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'CancelAuthorization',
-            state: 'Initial',
+            type: CTTransactionType.CancelAuthorization,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -309,12 +309,12 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Pending',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Pending,
           },
           {
-            type: 'CancelAuthorization',
-            state: 'Initial',
+            type: CTTransactionType.CancelAuthorization,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -328,16 +328,16 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Failure',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Failure,
           },
           {
-            type: 'Authorization',
-            state: 'Pending',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Pending,
           },
           {
-            type: 'CancelAuthorization',
-            state: 'Initial',
+            type: CTTransactionType.CancelAuthorization,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -351,16 +351,16 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -372,20 +372,20 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Success',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
@@ -400,20 +400,20 @@ describe('handlePayLaterFlow - actions', () => {
         key: 'ord_1234',
         transactions: [
           {
-            type: 'Authorization',
-            state: 'Success',
+            type: CTTransactionType.Authorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'CancelAuthorization',
-            state: 'Success',
+            type: CTTransactionType.CancelAuthorization,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Charge',
-            state: 'Success',
+            type: CTTransactionType.Charge,
+            state: CTTransactionState.Success,
           },
           {
-            type: 'Refund',
-            state: 'Initial',
+            type: CTTransactionType.Refund,
+            state: CTTransactionState.Initial,
           },
         ],
       };
