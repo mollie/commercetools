@@ -11,16 +11,16 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
   const pendingChargeTransactions: CTTransaction[] = [];
   const successChargeTransactions: CTTransaction[] = [];
 
-  const chargeTransactions = transactions?.filter((transaction: any) => transaction.type === 'Charge') ?? [];
+  const chargeTransactions = transactions?.filter((transaction: any) => transaction.type === CTTransactionType.Charge) ?? [];
   chargeTransactions?.forEach((transaction: any) => {
-    if (transaction.state === 'Initial') initialChargeTransactions.push(transaction);
-    if (transaction.state === 'Pending') pendingChargeTransactions.push(transaction);
-    if (transaction.state === 'Success') successChargeTransactions.push(transaction);
+    if (transaction.state === CTTransactionState.Initial) initialChargeTransactions.push(transaction);
+    if (transaction.state === CTTransactionState.Pending) pendingChargeTransactions.push(transaction);
+    if (transaction.state === CTTransactionState.Success) successChargeTransactions.push(transaction);
   });
 
   const initialTransactions = transactions!.filter(({ state }) => state === CTTransactionState.Initial);
-  const refundTransactions = transactions?.filter((transaction: any) => transaction.type === 'Refund') ?? [];
-  const initialRefundTransactions = refundTransactions?.filter((transaction: any) => transaction.state === 'Initial');
+  const refundTransactions = transactions?.filter((transaction: any) => transaction.type === CTTransactionType.Refund) ?? [];
+  const initialRefundTransactions = refundTransactions?.filter((transaction: any) => transaction.state === CTTransactionState.Initial);
 
   let action;
   // CHECK FOR PAYMENT KEY TOO
@@ -32,13 +32,15 @@ export const handlePayNowFlow = (paymentObject: CTPayment): { action: Controller
       break;
     case !!invalidTransactionTypes.length:
       action = ControllerAction.NoAction;
-      errorMessage = 'CancelAuthorization transactions are invalid for pay now methods';
+      errorMessage = 'CancelAuthorization transaction type is invalid for pay now methods';
       break;
     case !!refundTransactions.length && !chargeTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a Refund with no Charge';
       break;
-    case initialChargeTransactions.length > 1 || pendingChargeTransactions.length > 1:
+
+    // Bit unsure of this one....
+    case initialChargeTransactions.length === 1 && pendingChargeTransactions.length >= 1:
       action = ControllerAction.NoAction;
       errorMessage = 'Must only have one Charge transaction processing (i.e. in state "Initial" or "Pending") at a time';
       break;

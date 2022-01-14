@@ -30,51 +30,51 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot add a refund, cancel or charge transaction without an Authorization transaction';
       break;
-    case !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Initial').length &&
-      !authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length:
+    case !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Initial).length &&
+      !authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Success).length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a capture without a successful Authorization';
       break;
-    case !!refundTransactions.length && !chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Success').length:
+    case !!refundTransactions.length && !chargeTransactions.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Success).length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot create a Refund without a successful capture';
       break;
-    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Failure').length && !!cancelAuthorizationTransactions.length:
+    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Failure).length && !!cancelAuthorizationTransactions.length:
       action = ControllerAction.NoAction;
       errorMessage = 'Cannot cancel a failed Authorization';
       break;
-    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Pending').length && !key:
+    case !!authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Pending).length && !key:
       errorMessage = 'Cannot create a Transaction in state "Pending". This state is reserved to indicate the transaction has been accepted by the payment service provider';
       action = ControllerAction.NoAction;
       break;
 
     // Create order
-    case !key && authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
+    case !key && authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Initial).length === 1:
       action = ControllerAction.CreateOrder;
       break;
 
     // Create order payment
-    case key && authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Initial').length === 1:
+    case key && authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Initial).length === 1:
       action = ControllerAction.CreateOrderPayment;
       break;
 
     // Create shipment
     case key &&
-      authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length === 1 &&
-      !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === 'Initial').length:
+      authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Success).length === 1 &&
+      !!chargeTransactions.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Initial).length:
       action = ControllerAction.CreateShipment;
       break;
 
     // Cancel Authorization
-    case authorizationTransactions?.filter(authTransaction => authTransaction.state !== 'Failure').length >= 1 &&
-      !!cancelAuthorizationTransactions.filter(cancelTransaction => cancelTransaction.state === 'Initial').length:
+    case authorizationTransactions?.filter(authTransaction => authTransaction.state !== CTTransactionState.Failure).length >= 1 &&
+      !!cancelAuthorizationTransactions.filter(cancelTransaction => cancelTransaction.state === CTTransactionState.Initial).length:
       action = ControllerAction.CancelOrder;
       break;
 
     // Create Refund
-    case authorizationTransactions?.filter(authTransaction => authTransaction.state === 'Success').length === 1 &&
-      chargeTransactions?.filter(chargeTransaction => chargeTransaction.state === 'Success').length >= 1 &&
-      refundTransactions?.filter(refundTransaction => refundTransaction.state === 'Initial').length >= 1:
+    case authorizationTransactions?.filter(authTransaction => authTransaction.state === CTTransactionState.Success).length === 1 &&
+      chargeTransactions?.filter(chargeTransaction => chargeTransaction.state === CTTransactionState.Success).length >= 1 &&
+      refundTransactions?.filter(refundTransaction => refundTransaction.state === CTTransactionState.Initial).length >= 1:
       action = ControllerAction.CreateCustomRefund;
       break;
     default:

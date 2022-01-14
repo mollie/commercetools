@@ -2,6 +2,9 @@
 
 **Work in progress**
 
+## NodeJS Runtime
+The recommended runtime version is 14
+
 ## Environment variables
 
 Commercetools Mollie integration requires 1 environment variable to start. This environment variable name is `CT_MOLLIE_CONFIG` and it must have keys as in a JSON structure.
@@ -64,8 +67,9 @@ Below is an example of how these should be formatted:
 }
 ```
 
-### Log levels
+### Logging
 
+#### Levels
 There are 6 different levels of logging available - if this isn't provided in the environment, the level will default to 'info':
 
 - error (only errors will display)
@@ -74,6 +78,11 @@ There are 6 different levels of logging available - if this isn't provided in th
 - http
 - verbose
 - debug (the most explicit type of logging, should be used only for testing and not for production)
+
+#### Configuration
+The application looks for the `process.env.LOG_LEVEL` for the first source of logging configuration.
+If this variable is not present, it looks for `logLevel` as part of the `CT_MOLLIE_CONFIG` environment variable.
+If this is also not present, it will default to "info" level.
 
 ### Log transports
 
@@ -144,7 +153,7 @@ Setting up the extension as a google cloud function requires an existing functio
 
 1. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
 2. Upload the generated zip file to your azure cloud function ([Guide to creating cloud functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
-3. Set Runtime to `Node.js 16` and change entry point to `handler`
+3. Set Runtime to `Node.js 14` and change entry point to `handler`
 
 Add the following global variables into the config file:
 
