@@ -1,7 +1,7 @@
 import { CTTransaction, CTPayment, CTTransactionType, ControllerAction, CTTransactionState } from '../../types/index';
 
-export const includesState = (transactions: CTTransaction[], type: CTTransactionState): boolean => {
-  return !!transactions.filter(({ state }) => state === type).length;
+export const includesState = (transactions: CTTransaction[], state: CTTransactionState): boolean => {
+  return transactions.filter(transaction => transaction.state === state).length > 0;
 };
 
 export const handlePayLaterFlow = (paymentObject: CTPayment): { action: ControllerAction; errorMessage: string } => {
