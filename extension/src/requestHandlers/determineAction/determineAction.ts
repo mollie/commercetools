@@ -29,7 +29,7 @@ export const determineAction = (paymentObject: any): { action: ControllerAction;
       errorMessage,
     };
   } else {
-    // Check payment method and issuer (if present) are valid
+    // Check if payment method is valid
     const method = paymentObject?.paymentMethodInfo?.method;
     const { isValid, errorMessage } = checkPaymentMethodInput(method);
     if (!isValid) {

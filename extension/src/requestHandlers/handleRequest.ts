@@ -78,9 +78,7 @@ const processAction = async function (action: ControllerAction, ctPaymentObject:
       break;
     case ControllerAction.CreateOrderPayment:
       Logger.debug(`action: ${ControllerAction.CreateOrderPayment}`);
-      // result = await actions.createOrderPayment(ctPaymentObject, mollieClient, getOrdersPaymentsParams, createOrderPaymentActions);
-      // Return empty result for now - createOrderPayment is being updated in CMI-133
-      result = { status: 200 };
+      result = await actions.createOrderPayment(ctPaymentObject, mollieClient, getOrdersPaymentsParams, createOrderPaymentActions);
       break;
     case ControllerAction.CreateShipment:
       Logger.debug(`action: ${ControllerAction.CreateShipment}`);
