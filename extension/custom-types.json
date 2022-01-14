@@ -1,0 +1,159 @@
+{
+  "paymentType": {
+    "key": "ct-mollie-integration-payment-type",
+    "name": {
+      "en": "Mollie Integration payment type"
+    },
+    "resourceTypeIds": ["payment"],
+    "fieldDefinitions": [
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "paymentMethodsRequest",
+        "label": {
+          "en": "Payment methods request"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "paymentMethodsResponse",
+        "label": {
+          "en": "Payment methods response"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "createPayment",
+        "label": {
+          "en": "Create payment"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      }
+    ]
+  },
+  "transactionType": {
+    "key": "ct-mollie-integration-transaction-type",
+    "name": {
+      "en": "Mollie Integration transaction type"
+    },
+    "resourceTypeIds": ["transaction"],
+    "fieldDefinitions": [
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "lineIds",
+        "label": {
+          "en": "Line IDs and Custom Line IDs"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      },
+      {
+        "type": {
+          "name": "Boolean"
+        },
+        "name": "includeShipping",
+        "label": {
+          "en": "Include shipping"
+        },
+        "required": false
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "description",
+        "label": {
+          "en": "description"
+        },
+        "required": false,
+        "inputHint": "SingleLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "metadata",
+        "label": {
+          "en": "metadata"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      }
+    ]
+  },
+  "interactionType": {
+    "key": "ct-mollie-integration-interface-interaction-type",
+    "name": {
+      "en": "Mollie Integration payment interface interaction type"
+    },
+    "resourceTypeIds": ["payment-interface-interaction"],
+    "fieldDefinitions": [
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "id",
+        "label": {
+          "en": "id"
+        },
+        "required": true,
+        "inputHint": "SingleLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "actionType",
+        "label": {
+          "en": "action type"
+        },
+        "required": true,
+        "inputHint": "SingleLine"
+      },
+      {
+        "type": {
+          "name": "DateTime"
+        },
+        "name": "createdAt",
+        "label": {
+          "en": "created at"
+        },
+        "required": false
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "request",
+        "label": {
+          "en": "request"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "response",
+        "label": {
+          "en": "response"
+        },
+        "required": false,
+        "inputHint": "MultiLine"
+      }
+    ]
+  }
+}
