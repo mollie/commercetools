@@ -105,7 +105,6 @@ describe('determineAction', () => {
           paymentInterface: 'mollie',
           method: 'ideal,ideal_ASNBNL21',
         },
-        key: 'ord_1234',
         transactions: [
           {
             type: 'Charge',
