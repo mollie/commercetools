@@ -1,12 +1,13 @@
 import { Payment } from '@mollie/api-client';
+import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import createOrderPayment, { getOrdersPaymentsParams, createCtActions } from '../../../src/requestHandlers/createOrderPayment';
 import { Action, CTPayment } from '../../../src/types';
 import { makeActions } from '../../../src/makeActions';
-import { createDateNowString } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('../../../src/makeActions');
+jest.mock('uuid');
 
 describe('getOrdersPaymentsParams', () => {
   it('Should create required params for mollie createOrderPayment call', async () => {
@@ -94,9 +95,16 @@ describe('createCtActions', () => {
     const expectedError = { status: 400, title: 'Cannot find original transaction', field: 'Payment.transactions' };
     await expect(createCtActions({} as any as Payment, mockCtPayment)).rejects.toMatchObject(expectedError);
   });
-  it('Should return an error if no payment method is present', async () => {
+  it('Should return an error when generating actions fails', async () => {
+    mocked(uuid).mockImplementationOnce(() => {
+      throw new Error('Test error');
+    });
     const mockCtPayment = {
       key: 'ord_3uwvfd',
+      paymentMethodInfo: {
+        paymentInterface: 'Mollie',
+        method: 'ideal',
+      },
       transactions: [
         {
           id: 'b8243016-fc80-4af8-a273-47801f72ac31',
@@ -113,7 +121,7 @@ describe('createCtActions', () => {
         },
       ],
     } as CTPayment;
-    await expect(createCtActions({} as any as Payment, mockCtPayment)).rejects.toEqual(TypeError("Cannot read property 'method' of undefined"));
+    await expect(createCtActions({} as any as Payment, mockCtPayment)).rejects.toEqual(Error('Test error'));
   });
 });
 describe('createOrderPayment', () => {
