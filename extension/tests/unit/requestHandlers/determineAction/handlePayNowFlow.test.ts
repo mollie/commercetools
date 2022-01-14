@@ -4,7 +4,7 @@ import { ControllerAction } from '../../../../src/types';
 
 describe('handlePayNowFlow - Error Cases', () => {
   describe('should return NoAction and errorMessage:', () => {
-    it('when an Authorization transaction type is created on a Payment with a "pay now" method', () => {
+    it.skip('when an Authorization transaction type is created on a Payment with a "pay now" method', () => {
       const authorizationPayment = {
         transactions: [
           {
@@ -17,7 +17,7 @@ describe('handlePayNowFlow - Error Cases', () => {
       expect(action).toBe(ControllerAction.NoAction);
       expect(errorMessage).toBe('Authorization and CancelAuthorization transactions are invalid for pay now methods');
     });
-    it('when an CancelAuthorization transaction type is created on a Payment with a "pay now" method', () => {
+    it.skip('when an CancelAuthorization transaction type is created on a Payment with a "pay now" method', () => {
       const cancelAuthorizationPayment = {
         transactions: [
           {

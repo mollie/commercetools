@@ -99,7 +99,7 @@ describe('determineAction', () => {
       expect(action).toBe(ControllerAction.CreateOrder);
     });
 
-    it('should return Create Order action when there is an Initial Charge transaction and method is pay now', () => {
+    it.skip('should return Create Order action when there is an Initial Charge transaction and method is pay now', () => {
       const mockPaymentObject = {
         paymentMethodInfo: {
           paymentInterface: 'mollie',
