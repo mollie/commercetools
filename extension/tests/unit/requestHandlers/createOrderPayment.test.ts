@@ -61,10 +61,8 @@ describe('createCtActions', () => {
       orderId: 'ord_3uwvfd',
     } as any as Payment;
     const ctActions = await createCtActions(mockOrderPaymentRes, mockCtPayment);
-    expect(ctActions).toHaveLength(4);
+    expect(ctActions).toHaveLength(3);
     expect(makeActions.addInterfaceInteraction).toHaveBeenCalledTimes(1);
-    expect(makeActions.setStatusInterfaceText).toHaveBeenCalledTimes(1);
-    expect(makeActions.setStatusInterfaceText).toHaveBeenCalledWith(mockOrderPaymentRes.status);
     expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledTimes(1);
     expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledWith(mockCtPayment.transactions![0].id, mockOrderPaymentRes.id);
     expect(makeActions.changeTransactionTimestamp).toHaveBeenCalledTimes(1);

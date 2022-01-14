@@ -50,8 +50,6 @@ export function createCtActions(orderPaymentRes: Payment, ctPayment: CTPayment):
     const result: Action[] = [
       // Add interface interaction
       makeActions.addInterfaceInteraction(interfaceInteractionParams),
-      // Set status interface text
-      makeActions.setStatusInterfaceText(orderPaymentRes.status),
       // Update transaction interactionId
       makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
       // Update transaction timestamp

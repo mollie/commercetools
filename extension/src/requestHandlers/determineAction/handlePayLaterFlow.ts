@@ -52,12 +52,12 @@ export const handlePayLaterFlow = (paymentObject: CTPayment): { action: Controll
       break;
 
     // Create order payment
-    case key && includesState(authorizationTransactions, CTTransactionState.Initial):
+    case !!key && includesState(authorizationTransactions, CTTransactionState.Initial):
       action = ControllerAction.CreateOrderPayment;
       break;
 
     // Create shipment
-    case key && includesState(authorizationTransactions, CTTransactionState.Success) && includesState(chargeTransactions, CTTransactionState.Initial):
+    case !!key && includesState(authorizationTransactions, CTTransactionState.Success) && includesState(chargeTransactions, CTTransactionState.Initial):
       action = ControllerAction.CreateShipment;
       break;
 
