@@ -2,7 +2,7 @@
 
 This functionality is used to add a payment or change the payment method to existing order on Mollie:
 
-This calls Mollie's endpoints [create order payment](https://docs.mollie.com/reference/v2/orders-api/create-order-payment).
+This calls Mollie's [create order payment](https://docs.mollie.com/reference/v2/orders-api/create-order-payment) endpoint.
 
 <br />
 
