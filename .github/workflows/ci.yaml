@@ -35,6 +35,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test with code coverage
+        run: npm run test:coverage
+
+      - name: Generating coverage badges
+        uses: jpb06/jest-badges-action@latest
+
   Dev-Notification-Build:
     name: notifications
     concurrency: Dev-Notification-Build
