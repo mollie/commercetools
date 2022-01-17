@@ -2,7 +2,7 @@ import { Payment } from '@mollie/api-client';
 import { v4 as uuid } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 import createOrderPayment, { getOrdersPaymentsParams, createCtActions } from '../../../src/requestHandlers/createOrderPayment';
-import { Action, CTPayment } from '../../../src/types';
+import { Action, CTPayment, CTTransactionState } from '../../../src/types';
 import { makeActions } from '../../../src/makeActions';
 import Logger from '../../../src/logger/logger';
 
@@ -62,12 +62,14 @@ describe('createCtActions', () => {
       orderId: 'ord_3uwvfd',
     } as any as Payment;
     const ctActions = await createCtActions(mockOrderPaymentRes, mockCtPayment);
-    expect(ctActions).toHaveLength(3);
+    expect(ctActions).toHaveLength(4);
     expect(makeActions.addInterfaceInteraction).toHaveBeenCalledTimes(1);
     expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledTimes(1);
     expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledWith(mockCtPayment.transactions![0].id, mockOrderPaymentRes.id);
     expect(makeActions.changeTransactionTimestamp).toHaveBeenCalledTimes(1);
     expect(makeActions.changeTransactionTimestamp).toHaveBeenCalledWith(mockCtPayment.transactions![0]?.id, mockOrderPaymentRes.createdAt);
+    expect(makeActions.changeTransactionState).toHaveBeenCalledTimes(1);
+    expect(makeActions.changeTransactionState).toHaveBeenCalledWith(mockCtPayment.transactions![0]?.id, CTTransactionState.Pending);
   });
   it('Should return an error if no initial transaction is found', async () => {
     const mockCtPayment = {
