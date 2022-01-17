@@ -10,6 +10,7 @@
     "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && cp -R node_modules build/ && cd build && rm gcpFunctionHandler.js lambdaHandler.js && zip -r ../notification-module.zip .",
     "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
     "test": "jest",
+    "test:coverage": "jest --coverage --coverageReporters='text-summary'",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=unit",
     "test:component": "jest --testPathPattern=component",
