@@ -27,7 +27,23 @@ describe('getOrdersPaymentsParams', () => {
 });
 
 describe('createCtActions', () => {
-  it('Should create correct ct actions from request and mollies payment response', async () => {
+  const mockOrderPaymentRes = {
+    resource: 'payment',
+    id: 'tr_mAmMrPGnxe',
+    createdAt: '2021-10-20T15:35:13+00:00',
+    amount: { value: '4.20', currency: 'EUR' },
+    description: 'Order 1001',
+    method: null,
+    status: 'open',
+    profileId: 'pfl_VtWA783A63',
+    orderId: 'ord_3uwvfd',
+  } as any as Payment;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('Should create correct ct actions from request with Charge transaction and mollies payment response', async () => {
     const mockCtPayment = {
       key: 'ord_3uwvfd',
       paymentMethodInfo: {
@@ -50,27 +66,53 @@ describe('createCtActions', () => {
         },
       ],
     } as CTPayment;
-    const mockOrderPaymentRes = {
-      resource: 'payment',
-      id: 'tr_mAmMrPGnxe',
-      createdAt: '2021-10-20T15:35:13+00:00',
-      amount: { value: '4.20', currency: 'EUR' },
-      description: 'Order 1001',
-      method: null,
-      status: 'open',
-      profileId: 'pfl_VtWA783A63',
-      orderId: 'ord_3uwvfd',
-    } as any as Payment;
+
     const ctActions = await createCtActions(mockOrderPaymentRes, mockCtPayment);
     expect(ctActions).toHaveLength(4);
     expect(makeActions.addInterfaceInteraction).toHaveBeenCalledTimes(1);
     expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledTimes(1);
-    expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledWith(mockCtPayment.transactions![0].id, mockOrderPaymentRes.id);
+    expect(makeActions.changeTransactionInteractionId).toHaveBeenLastCalledWith(mockCtPayment.transactions![0].id, mockOrderPaymentRes.id);
     expect(makeActions.changeTransactionTimestamp).toHaveBeenCalledTimes(1);
-    expect(makeActions.changeTransactionTimestamp).toHaveBeenCalledWith(mockCtPayment.transactions![0]?.id, mockOrderPaymentRes.createdAt);
+    expect(makeActions.changeTransactionTimestamp).toHaveBeenLastCalledWith(mockCtPayment.transactions![0]?.id, mockOrderPaymentRes.createdAt);
     expect(makeActions.changeTransactionState).toHaveBeenCalledTimes(1);
-    expect(makeActions.changeTransactionState).toHaveBeenCalledWith(mockCtPayment.transactions![0]?.id, CTTransactionState.Pending);
+    expect(makeActions.changeTransactionState).toHaveBeenLastCalledWith(mockCtPayment.transactions![0]?.id, CTTransactionState.Pending);
   });
+
+  it('Should create correct ct actions from request with Authorization transaction and mollies payment response', async () => {
+    const mockCtPayment = {
+      key: 'ord_3uwvfd',
+      paymentMethodInfo: {
+        paymentInterface: 'Mollie',
+        method: 'klarnapaylater',
+      },
+      transactions: [
+        {
+          id: 'b8243016-fc80-4af8-a273-47801f72ac31',
+          timestamp: '2022-01-10T07:14:27.000Z',
+          type: 'Authorization',
+          amount: {
+            type: 'centPrecision',
+            currencyCode: 'EUR',
+            centAmount: 1104,
+            fractionDigits: 2,
+          },
+          interactionId: 'tr_HfGsMew6vQ',
+          state: 'Initial',
+        },
+      ],
+    } as CTPayment;
+
+    const ctActions = await createCtActions(mockOrderPaymentRes, mockCtPayment);
+    expect(ctActions).toHaveLength(4);
+    expect(makeActions.addInterfaceInteraction).toHaveBeenCalledTimes(1);
+    expect(makeActions.changeTransactionInteractionId).toHaveBeenCalledTimes(1);
+    expect(makeActions.changeTransactionInteractionId).toHaveBeenLastCalledWith(mockCtPayment.transactions![0].id, mockOrderPaymentRes.id);
+    expect(makeActions.changeTransactionTimestamp).toHaveBeenCalledTimes(1);
+    expect(makeActions.changeTransactionTimestamp).toHaveBeenLastCalledWith(mockCtPayment.transactions![0]?.id, mockOrderPaymentRes.createdAt);
+    expect(makeActions.changeTransactionState).toHaveBeenCalledTimes(1);
+    expect(makeActions.changeTransactionState).toHaveBeenLastCalledWith(mockCtPayment.transactions![0]?.id, CTTransactionState.Pending);
+  });
+
   it('Should return an error if no initial transaction is found', async () => {
     const mockCtPayment = {
       key: 'ord_3uwvfd',
