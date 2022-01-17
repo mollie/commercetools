@@ -54,6 +54,8 @@ export function createCtActions(orderPaymentRes: Payment, ctPayment: CTPayment):
       makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
       // Update transaction timestamp
       makeActions.changeTransactionTimestamp(originalTransaction.id, mollieCreatedAt),
+      // Update transaction state
+      makeActions.changeTransactionState(originalTransaction.id, CTTransactionState.Pending),
     ];
     return Promise.resolve(result);
   } catch (error: any) {
