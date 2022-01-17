@@ -6,7 +6,7 @@ import { mockPaidPayment } from './mockResponses/mollieData/payment.data';
 import { ctPaymentResponse } from './mockResponses/commercetoolsData/payment.data';
 import Logger from '../../src/logger/logger';
 
-describe('Webhook triggered with existing Mollie ID as payload', () => {
+describe('Webhook triggered with Mollie payment ID as payload', () => {
   const {
     commercetools: { host, projectKey, authUrl },
   } = config;
@@ -30,7 +30,7 @@ describe('Webhook triggered with existing Mollie ID as payload', () => {
     jest.resetAllMocks();
   });
 
-  it('should return 200 when called with existing payment id', async () => {
+  it('should update the commercetools transaction state when transaction state is different than Mollie payment status', async () => {
     const mockBody = { id: 'tr_ncaPcAhuUV' };
     const expectedUpdateBody = {
       version: 25,
