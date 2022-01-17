@@ -30,7 +30,7 @@ describe('Webhook triggered with Mollie order ID as payload', () => {
     jest.resetAllMocks();
   });
 
-  it('should return 200 when called with existing order id', async () => {
+  it('should update the CT Payment correctly including changing transaction state to "Success" and setting interface text', async () => {
     const mockBody = { id: 'ord_12345' };
     const expectedUpdateBody = {
       version: 25,
