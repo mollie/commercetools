@@ -10,7 +10,9 @@ This calls Mollie's [create order payment](https://docs.mollie.com/reference/v2/
 
 To use this functionality, the order (on Mollie) must already exist. The customer must have tried and failed paying - i.e. none of the commercetools transactions can have status `Pending` or `Success`.
 
-Adding new transaction on existing order of type `Authorization` or `Charge` with status `Initial` triggers create order payment. Note that **amount** of this transaction is **not being passed through to Mollie**. Payment method is required and always passed though to Mollie.
+Adding a new transaction to an existing order with status `Initial` triggers create order payment. The transaction type should align with the payment method, e.g. `Authorization` for `klarnapaylater` and `Charge` for `ideal`. 
+
+Note that **amount** of this transaction is **not being passed through to Mollie**. Payment method is required and always passed though to Mollie.
 
 
 <br />
