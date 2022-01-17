@@ -8,7 +8,7 @@ This calls Mollie's endpoints [create order payment](https://docs.mollie.com/ref
 
 **Conditions**
 
-To use this functionality, the order (on Mollie) must already exist. The customer must have tried and failed paying - none of the transactions can have status `Pending` or `Success`.
+To use this functionality, the order (on Mollie) must already exist. The customer must have tried and failed paying - i.e. none of the commercetools transactions can have status `Pending` or `Success`.
 
 Adding new transaction on existing order of type `Authorization` or `Charge` with status `Initial` triggers create order payment. Note that **amount** of this transaction is **not being passed through to Mollie**. Payment method is required and always passed though to Mollie.
 
