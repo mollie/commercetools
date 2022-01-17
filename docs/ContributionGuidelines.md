@@ -1,12 +1,3 @@
-**Table of Contents**
-
-- [Contribution Guide](#contribution-guide)
-    - [Contents](#contents)
-    - [Prerequisites](#prerequisites)
-    - [Development](#development)
-        - [E2E tests (Extension module only)](#e2e-tests-extension-module-only)
-            - [Debugging](#debugging)
-            
 # Contribution Guide
 
 ## Contents
