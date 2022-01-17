@@ -55,8 +55,7 @@ export const ctPaymentResponse = {
         id: '6b313771-78b8-40f7-a3d2-b066df7ec852',
       },
       fields: {
-        request:
-          '{"transactionId":"2020335e-1ea2-4d49-b45b-14a078f589a6","createPayment":{}}',
+        request: '{"transactionId":"2020335e-1ea2-4d49-b45b-14a078f589a6","createPayment":{}}',
         actionType: 'createOrder',
         createdAt: '2022-01-03T15:49:11+00:00',
         response: '{"mollieOrderId":"ord_gm9r1k","checkoutUrl":"https://www.mollie.com/checkout/order/gm9r1k","transactionId":"2020335e-1ea2-4d49-b45b-14a078f589a6"}',
