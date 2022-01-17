@@ -12,6 +12,7 @@
     "zip-aws-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
     "zip-azure-function": "npm ci && npm run build && cp build/azureHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
     "test": "jest",
+    "test:coverage": "jest --coverage --coverageReporters='text-summary'",
     "test:watch": "jest --watch",
     "test:unit": "jest --testPathPattern=unit",
     "test:component": "jest --testPathPattern=component",
