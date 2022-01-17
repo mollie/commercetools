@@ -28,9 +28,7 @@ export const ctPaymentResponse = {
       typeId: 'type',
       id: 'c11764fa-4e07-4cc0-ba40-e7dfc8d67b4e',
     },
-    fields: {
-      createPayment: '{"redirectUrl":"https://www.google.com/","webhookUrl":"https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification","locale":"nl_NL"}',
-    },
+    fields: {},
   },
   paymentStatus: {
     interfaceText: 'created',
@@ -58,7 +56,7 @@ export const ctPaymentResponse = {
       },
       fields: {
         request:
-          '{"transactionId":"2020335e-1ea2-4d49-b45b-14a078f589a6","createPayment":{"redirectUrl":"https://www.google.com/","webhookUrl":"https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification","locale":"nl_NL"}}',
+          '{"transactionId":"2020335e-1ea2-4d49-b45b-14a078f589a6","createPayment":{}}',
         actionType: 'createOrder',
         createdAt: '2022-01-03T15:49:11+00:00',
         response: '{"mollieOrderId":"ord_gm9r1k","checkoutUrl":"https://www.mollie.com/checkout/order/gm9r1k","transactionId":"2020335e-1ea2-4d49-b45b-14a078f589a6"}',

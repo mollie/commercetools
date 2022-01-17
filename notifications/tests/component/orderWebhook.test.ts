@@ -6,7 +6,7 @@ import { mockPaidOrder } from './mockResponses/mollieData/order.data';
 import { ctPaymentResponse } from './mockResponses/commercetoolsData/payment.data';
 import Logger from '../../src/logger/logger';
 
-describe('Webhook triggered with existing Mollie ID as payload', () => {
+describe('Webhook triggered with Mollie order ID as payload', () => {
   const {
     commercetools: { host, projectKey, authUrl },
   } = config;
@@ -30,7 +30,7 @@ describe('Webhook triggered with existing Mollie ID as payload', () => {
     jest.resetAllMocks();
   });
 
-  it('should return 200 when called with existing order id', async () => {
+  it('should update the CT Payment correctly including changing transaction state to "Success" and setting interface text', async () => {
     const mockBody = { id: 'ord_12345' };
     const expectedUpdateBody = {
       version: 25,
