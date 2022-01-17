@@ -6,7 +6,7 @@ import { mockPaidOrder } from './mockResponses/mollieData/order.data';
 import { ctPaymentResponse } from './mockResponses/commercetoolsData/payment.data';
 import Logger from '../../src/logger/logger';
 
-describe('Webhook triggered with existing Mollie ID as payload', () => {
+describe('Webhook triggered with Mollie order ID as payload', () => {
   const {
     commercetools: { host, projectKey, authUrl },
   } = config;
