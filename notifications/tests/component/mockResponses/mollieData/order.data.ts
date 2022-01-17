@@ -283,3 +283,210 @@ export const mockOrderResponse = {
     },
   },
 };
+export const mockPaidOrder = {
+  resource: 'order',
+  id: 'ord_12345',
+  profileId: 'pfl_VtWA783A63',
+  method: 'ideal',
+  amount: {
+    value: '31.04',
+    currency: 'EUR',
+  },
+  status: 'paid',
+  isCancelable: false,
+  metadata: {
+    cartId: '7e3fc8b1-f3e8-49d3-b86b-2fd152d66bfe',
+  },
+  createdAt: '2021-12-23T09:18:26+00:00',
+  mode: 'test',
+  locale: 'nl_NL',
+  billingAddress: {
+    streetAndNumber: 'Keizersgracht 126',
+    postalCode: '1234AB',
+    city: 'Amsterdam',
+    country: 'NL',
+    givenName: 'Piet',
+    familyName: 'Mondriaan',
+    email: 'coloured_square_lover@basicart.com',
+  },
+  shopperCountryMustMatchBillingCountry: false,
+  orderNumber: '18e822de-e148-4579-aaa4-e5bb08ac90e4',
+  shippingAddress: {
+    streetAndNumber: 'Keizersgracht 126',
+    postalCode: '1234AB',
+    city: 'Amsterdam',
+    country: 'NL',
+    givenName: 'Piet',
+    familyName: 'Mondriaan',
+    email: 'coloured_square_lover@basicart.com',
+  },
+  amountCaptured: {
+    value: '31.04',
+    currency: 'EUR',
+  },
+  paidAt: '2022-01-03T15:42:58+00:00',
+  redirectUrl: 'https://www.google.com/',
+  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+  lines: [
+    {
+      resource: 'orderline',
+      id: 'odl_1.3r22qe',
+      orderId: 'ord_mgkfh2',
+      name: 'Apple',
+      sku: '21345',
+      type: 'physical',
+      status: 'paid',
+      metadata: {
+        cartLineItemId: 'd0e4da93-54f6-4042-818d-59b90ddf6344',
+      },
+      isCancelable: false,
+      quantity: 4,
+      quantityShipped: 0,
+      amountShipped: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityRefunded: 0,
+      amountRefunded: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      quantityCanceled: 0,
+      amountCanceled: {
+        value: '0.00',
+        currency: 'EUR',
+      },
+      shippableQuantity: 4,
+      refundableQuantity: 4,
+      cancelableQuantity: 0,
+      unitPrice: {
+        value: '2.50',
+        currency: 'EUR',
+      },
+      vatRate: '21.00',
+      vatAmount: {
+        value: '1.24',
+        currency: 'EUR',
+      },
+      totalAmount: {
+        value: '7.12',
+        currency: 'EUR',
+      },
+      createdAt: '2021-12-23T09:18:26+00:00',
+      discountAmount: {
+        value: '2.88',
+        currency: 'EUR',
+      },
+    },
+  ],
+  _embedded: {
+    payments: [
+      {
+        resource: 'payment',
+        id: 'tr_PT2VFFtKEu',
+        mode: 'test',
+        createdAt: '2021-12-23T09:18:26+00:00',
+        amount: {
+          value: '31.04',
+          currency: 'EUR',
+        },
+        description: 'Order 18e822de-e148-4579-aaa4-e5bb08ac90e4',
+        method: 'ideal',
+        metadata: null,
+        status: 'expired',
+        expiredAt: '2021-12-23T09:35:02+00:00',
+        locale: 'nl_NL',
+        profileId: 'pfl_VtWA783A63',
+        orderId: 'ord_mgkfh2',
+        sequenceType: 'oneoff',
+        redirectUrl: 'https://www.google.com/',
+        webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+        _links: {
+          self: {
+            href: 'https://api.mollie.com/v2/payments/tr_PT2VFFtKEu',
+            type: 'application/hal+json',
+          },
+          dashboard: {
+            href: 'https://www.mollie.com/dashboard/org_12932188/payments/tr_PT2VFFtKEu',
+            type: 'text/html',
+          },
+          order: {
+            href: 'https://api.mollie.com/v2/orders/ord_mgkfh2',
+            type: 'application/hal+json',
+          },
+        },
+      },
+      {
+        resource: 'payment',
+        id: 'tr_ncaPcAhuUV',
+        mode: 'test',
+        createdAt: '2022-01-03T15:42:47+00:00',
+        amount: {
+          value: '31.04',
+          currency: 'EUR',
+        },
+        description: 'Order 18e822de-e148-4579-aaa4-e5bb08ac90e4',
+        method: 'klarnapaylater',
+        metadata: null,
+        status: 'paid',
+        paidAt: '2022-01-03T15:42:58+00:00',
+        amountRefunded: {
+          value: '0.00',
+          currency: 'EUR',
+        },
+        amountRemaining: {
+          value: '31.04',
+          currency: 'EUR',
+        },
+        locale: 'nl_NL',
+        countryCode: 'NL',
+        profileId: 'pfl_VtWA783A63',
+        orderId: 'ord_mgkfh2',
+        sequenceType: 'oneoff',
+        redirectUrl: 'https://www.google.com/',
+        webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+        settlementAmount: {
+          value: '31.04',
+          currency: 'EUR',
+        },
+        details: {
+          consumerName: 'T. TEST',
+          consumerAccount: 'NL61RABO0915599902',
+          consumerBic: 'ABNANL2A',
+        },
+        _links: {
+          self: {
+            href: 'https://api.mollie.com/v2/payments/tr_ncaPcAhuUV',
+            type: 'application/hal+json',
+          },
+          dashboard: {
+            href: 'https://www.mollie.com/dashboard/org_12932188/payments/tr_ncaPcAhuUV',
+            type: 'text/html',
+          },
+          changePaymentState: {
+            href: 'https://www.mollie.com/checkout/test-mode?method=ideal&token=3.5dtbc0',
+            type: 'text/html',
+          },
+          order: {
+            href: 'https://api.mollie.com/v2/orders/ord_mgkfh2',
+            type: 'application/hal+json',
+          },
+        },
+      },
+    ],
+  },
+  _links: {
+    self: {
+      href: 'https://api.mollie.com/v2/orders/ord_mgkfh2?embed=payments',
+      type: 'application/hal+json',
+    },
+    dashboard: {
+      href: 'https://www.mollie.com/dashboard/org_12932188/orders/ord_mgkfh2',
+      type: 'text/html',
+    },
+    documentation: {
+      href: 'https://docs.mollie.com/reference/v2/orders-api/get-order',
+      type: 'text/html',
+    },
+  },
+};
