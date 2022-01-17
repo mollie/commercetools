@@ -165,3 +165,4 @@ When shipment is successfully created on Mollie, we update commercetools payment
 |                                  | `response: <mollieShipmentId, lineIds>`                                    |
 
 \* Actions will always use first `Success` `Authorization` transaction. There should only be one per payment.
+diff --git a/docs/createShipment.md b/docs/createShipment.md

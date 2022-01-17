@@ -224,3 +224,4 @@ Note that the environment variables that are required should be passed with the 
 
 When finished, to stop the container, run:
 `docker stop ct-mollie-extension`
+diff --git a/docs/deployment.md b/docs/deployment.md
