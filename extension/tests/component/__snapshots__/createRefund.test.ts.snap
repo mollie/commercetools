@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay later order 1`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 1`] = `
 Object {
   "action": "changeTransactionState",
   "state": "Pending",
@@ -8,7 +8,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay later order 2`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 2`] = `
 Object {
   "action": "changeTransactionInteractionId",
   "interactionId": "re_sANm7WTxRm",
@@ -16,7 +16,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay later order 3`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 3`] = `
 Object {
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T11:12:45+00:00",
@@ -24,7 +24,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay later order 4`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 4`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {
@@ -40,7 +40,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay now order 1`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 1`] = `
 Object {
   "action": "changeTransactionState",
   "state": "Pending",
@@ -48,7 +48,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay now order 2`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 2`] = `
 Object {
   "action": "changeTransactionInteractionId",
   "interactionId": "re_sANm7WTxRm",
@@ -56,7 +56,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay now order 3`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 3`] = `
 Object {
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T11:12:45+00:00",
@@ -64,7 +64,7 @@ Object {
 }
 `;
 
-exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund is added against a pay now order 4`] = `
+exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 4`] = `
 Object {
   "action": "addInterfaceInteraction",
   "fields": Object {

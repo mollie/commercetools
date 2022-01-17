@@ -67,9 +67,17 @@ describe('Create Refund', () => {
   });
 
   describe('Happy Path', () => {
-    it('should return 201 and correct update actions when a partial refund is added against a pay later order', async () => {
+    it('should return 201 and correct update actions when a partial refund with description is added against a pay later order', async () => {
       const molliePaymentId = 'tr_vsfkQmj4Fd';
-      const createRefundScope = nock('https://api.mollie.com/v2').post(`/payments/${molliePaymentId}/refunds`).reply(201, refundCreated);
+      const createRefundScope = nock('https://api.mollie.com/v2')
+        .post(`/payments/${molliePaymentId}/refunds`, {
+          amount: {
+            currency: 'EUR',
+            value: '55.00',
+          },
+          description: 'Discount due to late delivery',
+        })
+        .reply(201, refundCreated);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
       mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnapaylater';
@@ -102,6 +110,11 @@ describe('Create Refund', () => {
             currencyCode: 'EUR',
             centAmount: 5500,
           },
+          custom: {
+            fields: {
+              description: 'Discount due to late delivery',
+            },
+          },
         },
       ];
 
@@ -124,9 +137,20 @@ describe('Create Refund', () => {
       expect(createRefundScope.isDone()).toBeTruthy();
     });
 
-    it('should return 201 and correct update actions when a partial refund is added against a pay now order', async () => {
+    it('should return 201 and correct update actions when a partial refund with metadata is added against a pay now order', async () => {
       const molliePaymentId = 'tr_kT7USTNHzR';
-      const createRefundScope = nock('https://api.mollie.com/v2').post(`/payments/${molliePaymentId}/refunds`).reply(201, refundCreated);
+      const createRefundScope = nock('https://api.mollie.com/v2')
+        .post(`/payments/${molliePaymentId}/refunds`, {
+          amount: {
+            currency: 'EUR',
+            value: '55.00',
+          },
+          metadata: {
+            code: 'LI_243',
+            customerRequested: true,
+          },
+        })
+        .reply(201, refundCreated);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
       mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
@@ -149,6 +173,11 @@ describe('Create Refund', () => {
           amount: {
             currencyCode: 'EUR',
             centAmount: 5500,
+          },
+          custom: {
+            fields: {
+              metadata: '{"code": "LI_243", "customerRequested": true}',
+            },
           },
         },
       ];
