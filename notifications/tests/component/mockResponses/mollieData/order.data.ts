@@ -325,8 +325,8 @@ export const mockPaidOrder = {
     currency: 'EUR',
   },
   paidAt: '2022-01-03T15:42:58+00:00',
-  redirectUrl: 'https://www.google.com/',
-  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+  redirectUrl: 'https://www.redirect.url/',
+  webhookUrl: 'https://www.webhook.url',
   lines: [
     {
       resource: 'orderline',
@@ -399,8 +399,8 @@ export const mockPaidOrder = {
         profileId: 'pfl_VtWA783A63',
         orderId: 'ord_mgkfh2',
         sequenceType: 'oneoff',
-        redirectUrl: 'https://www.google.com/',
-        webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+        redirectUrl: 'https://www.redirect.url/',
+        webhookUrl: 'https://www.webhook.url',
         _links: {
           self: {
             href: 'https://api.mollie.com/v2/payments/tr_PT2VFFtKEu',
@@ -443,8 +443,8 @@ export const mockPaidOrder = {
         profileId: 'pfl_VtWA783A63',
         orderId: 'ord_mgkfh2',
         sequenceType: 'oneoff',
-        redirectUrl: 'https://www.google.com/',
-        webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+        redirectUrl: 'https://www.redirect.url/',
+        webhookUrl: 'https://www.webhook.url',
         settlementAmount: {
           value: '31.04',
           currency: 'EUR',
