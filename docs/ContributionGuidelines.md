@@ -1,5 +1,3 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
 - [Contribution Guide](#contribution-guide)
@@ -8,9 +6,7 @@
     - [Development](#development)
         - [E2E tests (Extension module only)](#e2e-tests-extension-module-only)
             - [Debugging](#debugging)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
+            
 # Contribution Guide
 
 ## Contents
