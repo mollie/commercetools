@@ -129,7 +129,6 @@ describe('Create Refund', () => {
       expect(updateStateAction.state).toBe('Pending');
       const updateIteractionIdAction = actions.find((action: any) => action.action === 'changeTransactionInteractionId');
       expect(updateIteractionIdAction.interactionId).toBe(refundCreated.id);
-      expect(updateStateAction.state).toBe('Pending');
       actions.forEach((action: any) => {
         expect(action).toMatchSnapshot();
       });
