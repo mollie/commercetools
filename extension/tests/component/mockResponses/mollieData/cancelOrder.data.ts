@@ -1,4 +1,4 @@
-export const orderCanceled = {
+export const wholeOrderCanceled = {
   resource: 'order',
   id: 'ord_8wmqcHMN4U',
   profileId: 'pfl_URR55HPMGx',

@@ -103,8 +103,8 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
     familyName: 'Ruiz y Picasso',
     email: 'picasso@mail.com',
   },
-  redirectUrl: 'https://www.google.com/',
-  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/lb-maurice',
+  redirectUrl: 'https://www.redirect.url/',
+  webhookUrl: 'https://www.webhook.url',
   lines: [
     {
       resource: 'orderline',
@@ -224,8 +224,8 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
         profileId: 'pfl_a2jBK6dR32',
         orderId: 'ord_l2idwq',
         sequenceType: 'oneoff',
-        redirectUrl: 'https://www.google.com/',
-        webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/lb-maurice',
+        redirectUrl: 'https://www.redirect.url/',
+        webhookUrl: 'https://www.webhook.url',
         settlementAmount: {
           value: '900.00',
           currency: 'EUR',
@@ -310,8 +310,8 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
     familyName: 'Ruiz y Picasso',
     email: 'picasso@mail.com',
   },
-  redirectUrl: 'https://www.google.com/',
-  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/lb-maurice',
+  redirectUrl: 'https://www.redirect.url/',
+  webhookUrl: 'https://www.webhook.url',
   lines: [
     {
       resource: 'orderline',
@@ -427,8 +427,8 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
         profileId: 'pfl_a2jBK6dR32',
         orderId: 'ord_8xnw8a',
         sequenceType: 'oneoff',
-        redirectUrl: 'https://www.google.com/',
-        webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/lb-maurice',
+        redirectUrl: 'https://www.redirect.url/',
+        webhookUrl: 'https://www.webhook.url',
         _links: {
           self: {
             href: 'https://api.mollie.com/v2/payments/tr_J5R48EP58J',

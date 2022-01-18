@@ -7,7 +7,7 @@ import { mocked } from 'ts-jest/utils';
 import app from '../../src/app';
 import config from '../../config/config';
 import Logger from '../../src/logger/logger';
-import { orderCanceled, cancelOrderError } from './mockResponses/mollieData/cancelOrder.data';
+import { wholeOrderCanceled, cancelOrderError } from './mockResponses/mollieData/cancelOrder.data';
 
 jest.mock('uuid');
 
@@ -70,7 +70,7 @@ describe('Create Refund', () => {
 
   describe('Happy Path', () => {
     it('should cancel whole order when "Refund" transaction is added to an unpaid pay now order', async () => {
-      const cancelOrderScope = nock('https://api.mollie.com/v2').delete(`/orders/${mollieOrderId}`).reply(200, orderCanceled);
+      const cancelOrderScope = nock('https://api.mollie.com/v2').delete(`/orders/${mollieOrderId}`).reply(200, wholeOrderCanceled);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
       mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'ideal';
@@ -113,7 +113,7 @@ describe('Create Refund', () => {
     });
 
     it('should cancel whole order when "CancelAuthorization" transaction is added to an unauthorized pay later order', async () => {
-      const cancelOrderScope = nock('https://api.mollie.com/v2').delete(`/orders/${mollieOrderId}`).reply(200, orderCanceled);
+      const cancelOrderScope = nock('https://api.mollie.com/v2').delete(`/orders/${mollieOrderId}`).reply(200, wholeOrderCanceled);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
       mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnapaylater';
@@ -156,7 +156,7 @@ describe('Create Refund', () => {
     });
 
     it('should cancel whole order when "CancelAuthorization" transaction is added to an authorized, but not captured, pay later order', async () => {
-      const cancelOrderScope = nock('https://api.mollie.com/v2').delete(`/orders/${mollieOrderId}`).reply(200, orderCanceled);
+      const cancelOrderScope = nock('https://api.mollie.com/v2').delete(`/orders/${mollieOrderId}`).reply(200, wholeOrderCanceled);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
       mockCTPaymentObj.resource.obj.paymentMethodInfo.method = 'klarnapaylater';
