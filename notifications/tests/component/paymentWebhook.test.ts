@@ -58,4 +58,43 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
     expect(ctGetPaymentScope.isDone()).toBe(true);
     expect(ctUpdatePaymentScope.isDone()).toBe(true);
   });
+  it('should add the commercetools transaction when none of existing transactions correspond to Mollie payment', async () => {
+    const newId = 'tr_3nPcU3Epcj';
+    const mockBody = { id: newId };
+    mockPaidPayment.id = newId;
+    const expectedUpdateBody = {
+      version: 25,
+      actions: [
+        {
+          action: 'addTransaction',
+          transaction: {
+            amount: {
+              type: 'centPrecision',
+              currencyCode: 'EUR',
+              centAmount: 1000,
+              fractionDigits: 2,
+            },
+            state: 'Success',
+            type: 'Charge',
+            interactionId: newId,
+          },
+        },
+      ],
+    };
+    const molliePaymentScope = nock('https://api.mollie.com/v2')
+      .get(uri => uri.includes(`payments/${newId}`))
+      .reply(200, mockPaidPayment);
+    const ctGetPaymentScope = nock(`${host}/${projectKey}`)
+      .get(uri => uri.includes('key=ord_12345'))
+      .reply(200, ctPaymentResponse);
+    const ctUpdatePaymentScope = nock(`${host}/${projectKey}`)
+      .post(uri => uri.includes('key=ord_12345'), expectedUpdateBody)
+      .reply(200, {});
+
+    const { status } = await request(app).post('/').send(mockBody);
+    expect(status).toBe(200);
+    expect(molliePaymentScope.isDone()).toBe(true);
+    expect(ctGetPaymentScope.isDone()).toBe(true);
+    expect(ctUpdatePaymentScope.isDone()).toBe(true);
+  });
 });
