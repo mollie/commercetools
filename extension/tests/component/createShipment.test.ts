@@ -27,7 +27,7 @@ describe('Capture Funds', () => {
         },
         amountPlanned: {
           currencyCode: 'EUR',
-          centAmount: 50000,
+          centAmount: 224,
         },
       },
     },
