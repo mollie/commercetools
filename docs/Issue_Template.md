@@ -21,6 +21,6 @@ _Please explain what is happening instead. Provide a log message if relevant._
 
 _Please explain what you've done so far to try and fix the problem._
 
-**Please provide more information about how this can be reproduced. Please include jsfiddle links/code snippets/any extra information that's necessary**
+**Please provide more information about how this can be reproduced. Please include jsfiddle links, code snippets or any other necessary information**
 
 _Include extra info here._
