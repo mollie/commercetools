@@ -22,7 +22,7 @@ This project provides a [Hosted checkout](https://docs.mollie.com/payments/hoste
 This repository contains two standalone modules that interact with commercetools and Mollie.
 Complete integration requires running both of the modules.
 
-PAYMENT FLOW TBD
+![Payment flow](./docs/img/MollieCTFlow.drawio.png)
 
 ## Extension module
 Once [this commercetools API Extension](https://docs.commercetools.com/http-api-projects-api-extensions) is configured, it will be triggered on every Payment create or update request. Based on the body of that request, it will make call(s) to mollie's API.
