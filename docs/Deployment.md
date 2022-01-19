@@ -34,8 +34,6 @@ Here is a table to show which environment variables are necessary, and which are
 
 - Valid tags are available here on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order).
 
-<!-- Notes - describe env, not structure in json -->
-
 Below is an example of how these should be formatted:
 
 ```json
