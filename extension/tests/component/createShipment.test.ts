@@ -1,18 +1,13 @@
+import _ from 'lodash';
 import nock from 'nock';
 import request from 'supertest';
-import { v4 as uuid } from 'uuid';
 import { CTTransactionState, CTTransactionType } from '../../src/types';
-import _ from 'lodash';
-import { mocked } from 'ts-jest/utils';
 import app from '../../src/app';
 import Logger from '../../src/logger/logger';
 import { orderAuthorized, orderShipmentSuccess, shipmentError } from './mockResponses/mollieData/createShipment.data';
 
-jest.mock('uuid');
-
 describe('Capture Funds', () => {
   const mockLogError = jest.fn();
-
   const ctPaymentId = 'dfc2dcb0-10b8-4091-8334-687ce9db16ed';
   const mollieOrderId = 'ord_8wmqcHMN4U';
   const molliePaymentId = 'tr_GrP6dJRf3U';
@@ -34,9 +29,6 @@ describe('Capture Funds', () => {
   };
 
   beforeAll(() => {
-    // Ensure consistent uuid and datetime
-    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
-    mocked(uuid).mockReturnValue('b2bd1698-9923-4704-9729-02db2de495d1');
     Logger.error = mockLogError;
   });
 
