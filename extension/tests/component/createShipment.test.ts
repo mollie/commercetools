@@ -91,7 +91,7 @@ describe('Capture Funds', () => {
 
       expect(createShipmentScope.isDone()).toBe(true);
     });
-    it('should ship partial order line when charge transaction is added to authorized order and custom fields are specified', async () => {
+    it('should capture funds for part of an order when charge transaction is added to authorized order and valid cart lineIds are specified', async () => {
       const getOrderScope = nock('https://api.mollie.com/v2').get(`/orders/${mollieOrderId}`).reply(200, orderAuthorized);
       const createShipmentScope = nock('https://api.mollie.com/v2').post(`/orders/${mollieOrderId}/shipments`).reply(200, orderShipmentSuccess);
 
