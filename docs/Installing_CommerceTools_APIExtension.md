@@ -14,7 +14,7 @@ To enable Authentication on an HTTP trigger API Extension, make sure you add the
 https://docs.commercetools.com/api/projects/api-extensions#http-destination-authentication
 Authentication configuration should also be added to `CT_MOLLIE_CONFIG` as described in [deployment documentation](./deployment.md)
 
-We should then make a POST request to `<host>/<project-key>/extensions` with the body as follows:
+We should then make a POST request to `<host>/<project-key>/extensions` (NB these variables were set up in deployment, in the environment variables) with the body as follows:
 
 ### GCP/Azure/HTTP trigger (docker) json body
 
