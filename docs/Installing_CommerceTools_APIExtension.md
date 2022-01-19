@@ -1,18 +1,70 @@
 # Setting up the API Extension on commercetools
 
-**Work in progress**
-
 ## Installing API Extension
 
-**TODO** Add installation steps here
+In order to install the extension module, it should first be deployed, either using docker or as a cloud deployment service. For more information about how to do this, please refer to the [deployment documentation](./deployment.md)
 
-### Authentication - HTTP Destination
+Once it is deployed, we need to make a request to commercetools to point to the deployment.
 
-For HTTP Destination API Extensions, we can add an authorization header. We use Basic authorization, configured with a username and password which is set in the environment variables.
+### HTTP Destination (GCP, Azure, Docker)
 
-To enable Authentication on an HTTP trigger API Extension, make sure you add the `Authorization Header` as per the docs:
-https://docs.commercetools.com/api/projects/api-extensions#http-destination-authentication
-Authentication configuration should also be added to `CT_MOLLIE_CONFIG` as described in [deployment docsumentation](./deployment.md)
+#### _Authentication_
+
+For HTTP Destination API Extensions, we can add an optional authorization header. We use Basic authorization, configured with a username and password which is set in the environment variables. This is recommended, in order to prevent potential malicious actors from accessing your extension deployment.
+
+To enable Authentication on an HTTP trigger API Extension, make sure you add the `Authorization Header` [as per the docs](https://docs.commercetools.com/api/projects/api-extensions#http-destination-authentication).
+
+Authentication configuration should also be added to `CT_MOLLIE_CONFIG` as described in [deployment documentation](./deployment.md)
+
+We should then make a POST request to `<host>/<project-key>/extensions`. (N.B. these variables were set up in deployment, in the environment variables) with the body as follows:
+
+#### _Example JSON body_
+
+```json
+{
+  "destination": {
+    "type": "HTTP",
+    "url": "<my-deployed-extension-trigger>",
+    "authentication": { (Only necessary if the CT_MOLLIE_CONFIG.commercetools.authentication.isBasicAuth is set to TRUE)
+      "type": "AuthorizationHeader",
+      "headerValue": "Basic <my-access-token>" (This access token is an encoded base64 value of the username & password set in CT_MOLLIE_CONFIG)
+    }
+  },
+  "triggers": [
+    {
+      "resourceTypeId": "payment",
+      "actions": ["Create", "Update"]
+    }
+  ],
+  "key": "<my-extension-key>"
+}
+```
+
+### AWS Lambda Destination
+
+#### _Authentication_
+
+AWS Lambda destinations use accessKey and accessSecret for authentication. Refer to the [Commercetools guide for setting up an AWS lambda extension for more information](https://docs.commercetools.com/api/projects/api-extensions#aws-lambda-destination)
+
+#### _Example JSON body_
+
+```json
+{
+  "destination": {
+    "type": "AWSLambda",
+    "arn": "<my-lambda-arn>",
+    "accessKey": "<my-aws-access-key>",
+    "accessSecret": "<my-aws-access-secret>"
+  },
+  "triggers": [
+    {
+      "resourceTypeId": "payment",
+      "actions": ["Create", "Update"]
+    }
+  ],
+  "key": "<my-extension-key>"
+}
+```
 
 ## Configure custom fields for your project
 
