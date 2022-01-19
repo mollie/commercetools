@@ -31,7 +31,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
     jest.resetAllMocks();
   });
 
-  it('should update the commercetools transaction state when transaction state is different than Mollie payment status and update refund status', async () => {
+  it('should update the commercetools transaction state when transaction state is different than Mollie payment status', async () => {
     const mockBody = { id: 'tr_ncaPcAhuUV' };
     const mockPaidPaymentNoRefund = omit(mockPaidPayment, '_embedded');
     const expectedUpdateBody = {
