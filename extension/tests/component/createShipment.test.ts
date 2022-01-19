@@ -45,7 +45,7 @@ describe('Capture Funds', () => {
   });
 
   describe('Happy Path', () => {
-    it('should ship whole order when charge transaction is added to authorized order and no custom fields are specified', async () => {
+    it('should capture funds for the whole order when charge transaction is added to authorized order and no custom fields are specified', async () => {
       const createShipmentScope = nock('https://api.mollie.com/v2').post(`/orders/${mollieOrderId}/shipments`).reply(200, orderShipmentSuccess);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
