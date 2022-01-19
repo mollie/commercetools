@@ -1,8 +1,7 @@
 # Deployment
 
-**Work in progress**
-
 ## NodeJS Runtime
+
 The recommended runtime version is 14
 
 ## Environment variables
@@ -12,10 +11,10 @@ Commercetools Mollie integration requires 1 environment variable to start. This 
 Here is a table to show which environment variables are necessary, and which are optional:
 
 | Env variable name  | Required | Notes                                                                                                       |
-|--------------------| -------- |-------------------------------------------------------------------------------------------------------------|
+| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
 | `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                       |
 | `mollie`           | YES      | Contains Mollie-specific project variables                                                                  |
-| `apiKey`           | YES      | API key for interacting with mollie                                                                         |
+| `apiKey`           | YES      | API key for interacting with mollie, [found on the mollie dashboard](https://www.mollie.com/dashboard/)     |
 | `commercetools`    | YES      | Contains commercetools-specific project variables                                                           |
 | `projectKey`       | YES      | Commercetools project key                                                                                   |
 | `clientId`         | YES      | Commercetools client id, unique to the client                                                               |
@@ -28,12 +27,12 @@ Here is a table to show which environment variables are necessary, and which are
 | `username`         | NO       | Username as configured in Commercetools                                                                     |
 | `password`         | NO       | Password as configured in Commercetools                                                                     |
 | `service`          | NO       | Contains service-specific project variables                                                                 |
-| `locale`           | NO       | Locale language tag, in `aa_AA` format, based on tags mollie supports *                                     |
+| `locale`           | NO       | Locale language tag, in `aa_AA` format, based on tags mollie supports \*                                    |
 | `port`             | NO       | Defaults to 3000 (extension) and 3001 (notifications)                                                       |
 | `logLevel`         | NO       | Specifies how verbose logs should be. Options are listed below.                                             |
 | `logTransports`    | NO       | Specifies where the logs are written to/stored. Options listed below                                        |
 
-* Valid tags are available here on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order).         
+- Valid tags are available here on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order).
 
 <!-- Notes - describe env, not structure in json -->
 
@@ -70,6 +69,7 @@ Below is an example of how these should be formatted:
 ### Logging
 
 #### Levels
+
 There are 6 different levels of logging available - if this isn't provided in the environment, the level will default to 'info':
 
 - error (only errors will display)
@@ -80,6 +80,7 @@ There are 6 different levels of logging available - if this isn't provided in th
 - debug (the most explicit type of logging, should be used only for testing and not for production)
 
 #### Configuration
+
 The application looks for the `process.env.LOG_LEVEL` for the first source of logging configuration.
 If this variable is not present, it looks for `logLevel` as part of the `CT_MOLLIE_CONFIG` environment variable.
 If this is also not present, it will default to "info" level.
@@ -103,6 +104,7 @@ Log transports are where the logs are written to. If this isn't provided in the 
 ### HTTP Destination & Lambda destination
 
 #### Http Destination
+
 This configuration runs the extension via HTTP Calls. In this mode it is recommended to enable the basic authentication
 
 ```json
@@ -122,11 +124,13 @@ This configuration runs the extension via HTTP Calls. In this mode it is recomme
 ```
 
 #### Lambda destination
+
 This configuration runs the extension via AWS, therefore the lambda does not need to be exposed with
 API Gateway.
 In this scenario CommerceTools uses an IAM user to run the function,
 the detailed guide is available [here](https://docs.commercetools.com/tutorials/extensions#setting-up-an-api-extension)
 In this mode the basic authentication is optional.
+
 ```json
 {
   "CT_MOLLIE_CONFIG": {
@@ -140,6 +144,7 @@ In this mode the basic authentication is optional.
   }
 }
 ```
+
 ## GCP functions
 
 Setting up the extension as a google cloud function requires an existing function, setting up entry point and secrets and uploading the source code.
@@ -162,8 +167,10 @@ Add the following global variables into the config file:
     AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> _Optional_
 
 ### [Config](#azureConfig)
+
 [Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
 Therefore the configuration must be defined in the same format as `local.settings.json` file
+
 ```
 {
   "IsEncrypted": false,
@@ -188,13 +195,16 @@ Therefore the configuration must be defined in the same format as `local.setting
 ### Authentication
 
 #### Azure Functions
+
 This method is supported as described in the following docs  
 [CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)  
 [CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azure-functions-authentication)
-[Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)  
+[Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)
 
 #### Basic
+
 This method is configurable via the following settings:
+
 ```json
 {
   "CT_MOLLIE_CONFIG": {
