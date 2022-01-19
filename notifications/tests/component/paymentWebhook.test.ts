@@ -52,7 +52,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
               fractionDigits: 2,
             },
             interactionId: 're_8eP2Kzt9G9',
-            state: 'Pending',
+            state: 'Success',
           },
         },
       ],
@@ -98,7 +98,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
       ],
     };
     const molliePaymentScope = nock('https://api.mollie.com/v2')
-      .get(uri => uri.includes(`payments/${newId}`))
+      .get(uri => uri.includes(`payments/${newId}?embed=refunds`))
       .reply(200, mockPaidPaymentNoRefund);
     const ctGetPaymentScope = nock(`${host}/${projectKey}`)
       .get(uri => uri.includes('key=ord_12345'))

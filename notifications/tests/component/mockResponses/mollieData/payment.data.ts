@@ -59,7 +59,7 @@ export const mockPaidPayment = {
           value: '1.42',
           currency: 'EUR',
         },
-        status: 'pending',
+        status: 'refunded',
         createdAt: '2022-01-19T08:42:47+00:00',
         description: 'Stort bestelling 18e822de-e148-4579-aaa4-e5bb08ac90e4 terug',
         metadata: null,
