@@ -4,7 +4,7 @@
 Initial development is in progress, there is not yet a stable public release. 
 # commercetools-Mollie Integration
 ___
-`commercetools` provides an [Hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based integration between the commercetools and Mollie PSP.
+This project provides a [Hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based integration between the commercetools and Mollie PSP.
 - [Supported features](#supported-features)
 - [Overview](#overview)
     - [Extension module](#extension-module)
