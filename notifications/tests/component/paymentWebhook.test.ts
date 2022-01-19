@@ -1,5 +1,6 @@
 import nock from 'nock';
 import request from 'supertest';
+import { omit } from 'lodash';
 import app from '../../src/app';
 import config from '../../config/config';
 import { mockPaidPayment } from './mockResponses/mollieData/payment.data';
@@ -30,7 +31,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
     jest.resetAllMocks();
   });
 
-  it('should update the commercetools transaction state when transaction state is different than Mollie payment status', async () => {
+  it('should update the commercetools transaction state when transaction state is different than Mollie payment status and update refund status', async () => {
     const mockBody = { id: 'tr_ncaPcAhuUV' };
     const expectedUpdateBody = {
       version: 25,
@@ -39,6 +40,20 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
           action: 'changeTransactionState',
           transactionId: '2020335e-1ea2-4d49-b45b-14a078f589a6',
           state: 'Success',
+        },
+        {
+          action: 'addTransaction',
+          transaction: {
+            type: 'Refund',
+            amount: {
+              type: 'centPrecision',
+              currencyCode: 'EUR',
+              centAmount: 142,
+              fractionDigits: 2,
+            },
+            interactionId: 're_8eP2Kzt9G9',
+            state: 'Pending',
+          },
         },
       ],
     };
@@ -61,7 +76,8 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
   it('should add the commercetools transaction when none of existing transactions correspond to Mollie payment', async () => {
     const newId = 'tr_3nPcU3Epcj';
     const mockBody = { id: newId };
-    mockPaidPayment.id = newId;
+    const mockPaidPaymentNoRefund = omit(mockPaidPayment, '_embedded');
+    mockPaidPaymentNoRefund.id = newId;
     const expectedUpdateBody = {
       version: 25,
       actions: [
@@ -83,7 +99,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
     };
     const molliePaymentScope = nock('https://api.mollie.com/v2')
       .get(uri => uri.includes(`payments/${newId}`))
-      .reply(200, mockPaidPayment);
+      .reply(200, mockPaidPaymentNoRefund);
     const ctGetPaymentScope = nock(`${host}/${projectKey}`)
       .get(uri => uri.includes('key=ord_12345'))
       .reply(200, ctPaymentResponse);

@@ -23,24 +23,6 @@ export const mockPaymentResponse = {
   sequenceType: 'oneoff',
   redirectUrl: 'https://webshop.example.org/order/12345/',
   webhookUrl: 'https://webshop.example.org/payments/webhook/',
-  _links: {
-    self: {
-      href: 'https://api.mollie.com/v2/payments/tr_WDqYK6vllg',
-      type: 'application/hal+json',
-    },
-    checkout: {
-      href: 'https://www.mollie.com/payscreen/select-method/WDqYK6vllg',
-      type: 'text/html',
-    },
-    dashboard: {
-      href: 'https://www.mollie.com/dashboard/org_12345678/payments/tr_WDqYK6vllg',
-      type: 'application/json',
-    },
-    documentation: {
-      href: 'https://docs.mollie.com/reference/v2/payments-api/get-payment',
-      type: 'text/html',
-    },
-  },
 };
 
 export const mockPaidPayment = {
@@ -68,22 +50,26 @@ export const mockPaidPayment = {
   sequenceType: 'oneoff',
   redirectUrl: 'https://webshop.example.org/order/12345/',
   webhookUrl: 'https://webshop.example.org/payments/webhook/',
-  _links: {
-    self: {
-      href: 'https://api.mollie.com/v2/payments/tr_ncaPcAhuUV',
-      type: 'application/hal+json',
-    },
-    checkout: {
-      href: 'https://www.mollie.com/payscreen/select-method/WDqYK6vllg',
-      type: 'text/html',
-    },
-    dashboard: {
-      href: 'https://www.mollie.com/dashboard/org_12345678/payments/tr_ncaPcAhuUV',
-      type: 'application/json',
-    },
-    documentation: {
-      href: 'https://docs.mollie.com/reference/v2/payments-api/get-payment',
-      type: 'text/html',
-    },
+  _embedded: {
+    refunds: [
+      {
+        resource: 'refund',
+        id: 're_8eP2Kzt9G9',
+        amount: {
+          value: '1.42',
+          currency: 'EUR',
+        },
+        status: 'pending',
+        createdAt: '2022-01-19T08:42:47+00:00',
+        description: 'Stort bestelling 18e822de-e148-4579-aaa4-e5bb08ac90e4 terug',
+        metadata: null,
+        orderId: 'ord_12345',
+        paymentId: 'tr_fDBQGs7j87',
+        settlementAmount: {
+          value: '-1.42',
+          currency: 'EUR',
+        },
+      },
+    ],
   },
 };
