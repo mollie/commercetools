@@ -116,7 +116,7 @@ describe('Capture Funds', () => {
           custom: {
             fields: {
               lineIds:
-                '[{"id":"83bdde2b-99fb-4e60-a172-00e0b694be72","quantity": 1,"totalPrice": {"currencyCode": "EUR","centAmount": 112,"fractionDigits": 2 }},{"id":"bc49e041-539b-4127-b813-ba52b7728c71","quantity": 2,"totalPrice": {"currencyCode": "EUR","centAmount": 820,"fractionDigits": 2 }}]',
+                '[{"id":"83bdde2b-99fb-4e60-a172-00e0b694be72","quantity": 1,"totalPrice": {"currencyCode": "EUR","centAmount": 112,"fractionDigits": 2 }}]',
               includeShipping: true,
             },
           },
