@@ -149,7 +149,7 @@ describe('Capture Funds', () => {
   });
 
   describe('Unhappy Path', () => {
-    it('should return Mollie error when shipping already shipped order fails', async () => {
+    it('should return mollie error when attempting to capture funds that have already been captured', async () => {
       const createShipmentScope = nock('https://api.mollie.com/v2').post(`/orders/${mollieOrderId}/shipments`).reply(422, shipmentError);
 
       const mockCTPaymentObj = _.cloneDeep(baseMockCTPayment);
