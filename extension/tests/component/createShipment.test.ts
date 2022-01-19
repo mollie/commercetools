@@ -10,7 +10,7 @@ import { orderAuthorized, orderShipmentSuccess, shipmentError } from './mockResp
 
 jest.mock('uuid');
 
-describe('Create Shipment', () => {
+describe('Capture Funds', () => {
   const mockLogError = jest.fn();
 
   const ctPaymentId = 'dfc2dcb0-10b8-4091-8334-687ce9db16ed';
