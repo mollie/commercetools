@@ -32,8 +32,8 @@ export const orderAuthorized = {
     email: 'coloured_square_lover@basicart.com',
   },
   authorizedAt: '2022-01-19T10:48:34+00:00',
-  redirectUrl: 'https://www.google.com/',
-  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/dd-demo-notification',
+  redirectUrl: 'https://www.redirect.url/',
+  webhookUrl: 'https://www.webhook.url',
   lines: [
     {
       resource: 'orderline',
@@ -90,20 +90,6 @@ export const orderAuthorized = {
       discountAmount: { value: '40.00', currency: 'EUR' },
     },
   ],
-  _links: {
-    self: {
-      href: 'https://api.mollie.com/v2/orders/ord_v0wv0w',
-      type: 'application/hal+json',
-    },
-    dashboard: {
-      href: 'https://www.mollie.com/dashboard/org_12932188/orders/ord_v0wv0w',
-      type: 'text/html',
-    },
-    documentation: {
-      href: 'https://docs.mollie.com/reference/v2/orders-api/get-order',
-      type: 'text/html',
-    },
-  },
   _embedded: undefined,
 };
 export const orderShipmentSuccess = {
@@ -131,20 +117,6 @@ export const orderShipmentSuccess = {
       discountAmount: { value: '2.76', currency: 'EUR' },
     },
   ],
-  _links: {
-    self: {
-      href: 'https://api.mollie.com/v2/orders/ord_v0wv0w/shipments/shp_c1hs2y',
-      type: 'application/hal+json',
-    },
-    order: {
-      href: 'https://api.mollie.com/v2/orders/ord_v0wv0w',
-      type: 'application/hal+json',
-    },
-    documentation: {
-      href: 'https://docs.mollie.com/reference/v2/shipments-api/create-shipment',
-      type: 'text/html',
-    },
-  },
 };
 export const shipmentError = {
   status: 422,
