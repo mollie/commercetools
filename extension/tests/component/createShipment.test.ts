@@ -115,8 +115,7 @@ describe('Capture Funds', () => {
           state: CTTransactionState.Initial,
           custom: {
             fields: {
-              lineIds:
-                '[{"id":"83bdde2b-99fb-4e60-a172-00e0b694be72","quantity": 1,"totalPrice": {"currencyCode": "EUR","centAmount": 112,"fractionDigits": 2 }}]',
+              lineIds: '[{"id":"83bdde2b-99fb-4e60-a172-00e0b694be72","quantity": 1,"totalPrice": {"currencyCode": "EUR","centAmount": 112,"fractionDigits": 2 }}]',
               includeShipping: true,
             },
           },
