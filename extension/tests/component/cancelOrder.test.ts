@@ -229,7 +229,7 @@ describe('Cancel Order', () => {
         expect(getOrderScope.isDone()).toBe(true);
         expect(cancelOrderScope.isDone()).toBe(true);
       });
-      it('should cancel whole order line when lineIds contains id strings, shipping is included and "CancelAuthorization" transaction is added to an authorized pay later order', async () => {
+      it('should cancel whole order line when Transaction lineIds contains id strings, shipping is included and "CancelAuthorization" transaction is added to an authorized pay later order', async () => {
         const expectedDeleteParams = '{"lines":[{"id":"odl_1.pdue8w"},{"id":"odl_1.vfuxoy"}]}';
         const getOrderScope = nock('https://api.mollie.com/v2')
           .get(uri => uri.includes(mollieOrderId))
