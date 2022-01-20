@@ -175,7 +175,7 @@ describe('Cancel Order', () => {
       });
     });
     describe('Cancel partial order', () => {
-      it('should cancel partial order line when lineIds contains objects and "CancelAuthorization" transaction is added to an authorized pay later order', async () => {
+      it('should cancel partial order line when a "CancelAuthorization" transaction is added, with lineIds field is set with quantity and amount, to an authorized pay later order', async () => {
         const expectedDeleteParams = '{"lines":[{"id":"odl_1.pdue8w","quantity":1,"amount":{"value":"2.50","currency":"EUR"}}]}';
         const getOrderScope = nock('https://api.mollie.com/v2')
           .get(uri => uri.includes(mollieOrderId))
