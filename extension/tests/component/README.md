@@ -22,7 +22,7 @@ npm run test:component
 npm run test:component -- --watch
 ```
 
-These also run as a step in our CI pipeline. As each journey is updated / completed, it must have a corresponding component test, which should run in the pipeline.
+These also run as a step in our CI pipeline.
 
 ## Maintaining the tests
 

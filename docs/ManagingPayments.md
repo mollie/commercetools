@@ -1,4 +1,4 @@
-# Making Payments using the API Extension
+# Managing Payments through API Extension
 
 ## Available Functionality
 
@@ -20,7 +20,7 @@ This integration includes the following functionality:
 
 You will need the [API Extension](./extension/Readme.md) and [notifications module](./notifications/Readme.md) installed and configured.
 
-The extension uses mollie's [orders API]() to make payments. It is triggered when a commercetools [Payment](https://docs.commercetools.com/api/projects/payments) object is created or updated. 
+The extension uses mollie's [orders API](https://docs.mollie.com/reference/v2/orders-api/overview) to make payments. It is triggered by create and update requests on commercetools [Payments](https://docs.commercetools.com/api/projects/payments). 
 
 ### Cart setup
 
