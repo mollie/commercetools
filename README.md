@@ -36,8 +36,8 @@ The API extension is found in the [extension](./extension/README.md) folder.
 The Notification module is a publicly exposed service which receives asynchronous notifications sent by Mollie.  
 Through notifications, Mollie provides asynchronous payment status changes like authorized, captured, or refunded.  
 The notification module will process the notification sent by Mollie and match the commercetools payment for this notification, and modify commercetools payment accordingly.
-- Follow [Integration Guide](./docs/Installing_CommerceTools_APIExtension.md) for information how to integrate with notification module.
-- Follow [How to run](./docs/Deployment.md) the notification module.
+- Follow [Integration Guide](./notifications/docs/IntegrationGuide.md) for information on how this flow works.
+- Follow [How to run](./notifications/docs/HowToRun.md) for how set up the notification module.
 
 ## Contribution Guidelines
 Please see the [Contribution Guide](./docs/ContributionGuidelines.md).
