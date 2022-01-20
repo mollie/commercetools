@@ -52,7 +52,7 @@ export const cancelOrderError = {
 
 export const mockAuthorizedOrder = {
   resource: 'order',
-  id: 'ord_123456',
+  id: 'ord_8wmqcHMN4U',
   profileId: 'pfl_VtWA783A63',
   method: 'klarnapaylater',
   amount: {
@@ -95,7 +95,7 @@ export const mockAuthorizedOrder = {
     {
       resource: 'orderline',
       id: 'odl_1.pdue8w',
-      orderId: 'ord_123456',
+      orderId: 'ord_8wmqcHMN4U',
       name: 'Apple',
       sku: '21345',
       type: 'physical',
@@ -145,7 +145,7 @@ export const mockAuthorizedOrder = {
     {
       resource: 'orderline',
       id: 'odl_1.vfuxoy',
-      orderId: 'ord_123456',
+      orderId: 'ord_8wmqcHMN4U',
       name: 'Shipping - Standard Shipping',
       sku: null,
       type: 'shipping_fee',
