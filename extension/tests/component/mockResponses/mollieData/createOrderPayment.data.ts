@@ -22,7 +22,7 @@ export const orderPaymentWithKlarna = {
   orderId: 'ord_vgk506',
   sequenceType: 'oneoff',
   redirectUrl: 'https://www.mollie.com/',
-  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/lb-maurice',
+  webhookUrl: 'https://www.webhook.url',
   settlementAmount: {
     value: '790.00',
     currency: 'EUR',
@@ -75,7 +75,7 @@ export const orderPaymentWithIDEAL = {
   orderId: 'ord_vgk506',
   sequenceType: 'oneoff',
   redirectUrl: 'https://www.mollie.com/',
-  webhookUrl: 'https://europe-west1-profound-yew-326712.cloudfunctions.net/lb-maurice',
+  webhookUrl: 'https://www.webhook.url',
   settlementAmount: {
     value: '790.00',
     currency: 'EUR',
