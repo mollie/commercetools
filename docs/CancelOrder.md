@@ -1,5 +1,11 @@
 # Cancel Order
 
+  * [Parameters map](#parameters-map)
+  * [Representation: CT Payment](#representation--ct-payment)
+  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
+  * [Add transaction action examples](#add-transaction-action-examples)
+
+## Overview
 This functionality is used to cancel:
 
 - the whole order

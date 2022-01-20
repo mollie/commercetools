@@ -1,5 +1,23 @@
 # Managing Payments through API Extension
 
+* [Available Functionality](#available-functionality)
+* [Terminology](#terminology)
+* [How it works](#how-it-works)
+  + [Cart setup](#cart-setup)
+  + [List Payment Methods](#list-payment-methods)
+  + [Making a payment](#making-a-payment)
+    - [Pay later](#pay-later)
+    - [Pay now](#pay-now)
+  + [Cancelations](#cancelations)
+  + [Manual Capture](#manual-capture)
+  + [Refunds](#refunds)
+    - [Pay now methods](#pay-now-methods)
+    - [Pay later methods](#pay-later-methods)
+* [General Rules and error guidance](#general-rules-and-error-guidance)
++ [Payment](#payment)
++ [Transactions](#transactions)
++ [Errors](#errors)
+
 ## Available Functionality
 
 This integration includes the following functionality:

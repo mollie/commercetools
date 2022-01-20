@@ -1,8 +1,19 @@
 # Creating an Order on Mollie
 
-To create an order on Mollie, we get required parameters from the commercetools Cart and Payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the Payment's custom field `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
+  * [Overview](#overview)
+  * [Parameters map](#parameters-map)
+  * [Line Items object](#line-items-object)
+  * [Custom Line Items object](#custom-line-items-object)
+  * [Shipping Info object](#shipping-info-object)
+  * [Billing / Shipping Address object](#billing---shipping-address-object)
+  * [Representation: CT Cart](#representation--ct-cart)
+  * [Representation: CT Payment](#representation--ct-payment)
+  * [Representation: Mollie Order Parameters](#representation--mollie-order-parameters)
+  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
 
-<br />
+## Overview
+
+To create an order on Mollie, we get required parameters from the commercetools Cart and Payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the Payment's custom field `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
 
 ## Parameters map
 
