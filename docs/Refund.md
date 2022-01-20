@@ -1,5 +1,12 @@
 # Refund
 
+* [Overview](#overview)
+  + [Pay Later](#pay-later)
+  + [Pay Now](#pay-now)
+* [Parameters map](#parameters-map)
+* [Example Usage](#example-usage)
+* [Canceling a Refund](#canceling-a-refund)
+
 ## Overview
 
 To refund an order, or part of an order, we create a Refund transaction. This will call mollie's create payment refund [endpoint](https://docs.mollie.com/reference/v2/refunds-api/create-payment-refund). 
@@ -9,27 +16,27 @@ This assumes the customer has already placed an order and paid, so we need to re
 ### Pay Later
 
 _E.g. if the order was paid for using Klarna_
-You can make a Refund for any amount that has been captured. If the customer's order is not paid for, (i.e. when an authorization is made, there is no capture), then it should be canceled instead.
+You can make a Refund for any amount that has been captured. If the amount you are trying to refund is not captured, (i.e. an Authorization is made, but there is no Charge transaction), then it should be [canceled](./CancelOrder.md) instead.
 
 ### Pay Now
 
 _E.g. if the order was paid for using PayPayl_
 For pay now, Refund transactions are used to trigger refunds and canceling the whole order. 
 
-If a Refund transaction is added to an open Payment, (i.e. the customer has not paid so the Charge transaction is still Pending), this will trigger cancel order. Only whole order cancelation is possible, not partial.
+If a Refund transaction is added to an open Payment, (i.e. the customer has not paid so the Charge transaction is still Pending), this will trigger mollie's cancel order. Only whole order cancelation is possible, not partial.
 
-If a Refund transaction is added to a paid Payment, (i.e. the Charge transaction is successful), this will trigger a refund. You can part or all of the amount.
+If a Refund transaction is added to a paid Payment, (i.e. the Charge transaction is successful), this will trigger a refund. You can refund all or part of the total order amount.
 
-### Parameters map
+## Parameters map
 
 | CT Charge transaction                                  | Parameter (Mollie Order)                     | Required |
 |--------------------------------------------------------|----------------------------------------------|----------|
 | `custom.fields.description: "string description"`      | `description`                                | NO       |
-| `custom.fields.metadata: string or stringified JSON` * | `metadata  string or JSON)`                  | NO       |
+| `custom.fields.metadata: string or stringified JSON` * | `metadata  string or JSON`                   | NO       |
 
 `metadata` Please note, if the stringified JSON is malformed, then it will be passed to mollie as a string. 
 
-### Example Usage
+## Example Usage
 
 In commercetools, we have a Payment which has one Transaction. This maps to an order in mollie. The commercetools Payment's key is the mollie orderId, and the commercetools Transaction maps to the payment in mollie.
 
@@ -126,4 +133,28 @@ You can also pass an optional description & metadata as part of the refund. This
         }
     ]
 }
+```
+
+### Canceling a Refund
+
+Canceling a refund is not yet available functionality in this integration. 
+
+However, you can still manually cancel a refund via the mollie dashboard if needed. In this scenario, you should also manually update your Payment in commercetools to keep the data aligned. It is recommended to update your Refund transaction to "Failure" and add an note saying that this refund was cancelled. 
+
+Example update actions: 
+
+```
+[
+    {
+        action: "setTransactionCustomField",
+        transactionId: <refund-transaction-id>,
+        name: "description",
+        value: "Refund canceled manually on mollie dashboard"
+    },
+    {
+        action: "changeTransactionState",
+        transactionId: <refund-transaction-id>,
+        state: "Failure"
+    }
+]
 ```
