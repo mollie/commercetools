@@ -1,16 +1,38 @@
 # Making Payments using the API Extension
 
-*WIP* 
+## Available Functionality
 
-To trigger the mollie API in commercetools, everything is done on the commercetools Payment object. 
+This integration includes the following functionality:
 
-This will have an `amountPlanned` which matches the total of the cart the customer wishes to pay for. The Payment object must be linked to its Cart object for the extension to work. The only journey which does not need the Cart linked is _list payment methods_. 
+- list payment methods
+- make a payment
+- authorize funds
+- capture funds
+- cancel authorization
+- cancel order
+- refund
 
-## List Payment Methods
+## Terminology
 
-Add a custom field on the payment object `paymentMethodsRequest`. The API extension will call mollie and return the count and available payment methods, and save this onto the custom field `paymentMethodsResponse`.
+**Pay later** refers to payment methods which authorize then capture funds, e.g. Klarna
+**Pay now** refers to payment methods which take the funds immediately, e.g. iDEAL.
+## How it works
 
-To trigger this again, (for example, if you now have more information about the location of the customer), you will need to set the `paymentMethodsResponse` field to `null`.
+You will need the [API Extension](./extension/Readme.md) and [notifications module](./notifications/Readme.md) installed and configured.
+
+The extension uses mollie's [orders API]() to make payments. It is triggered when a commercetools [Payment](https://docs.commercetools.com/api/projects/payments) object is created or updated. 
+
+### Cart setup
+
+On your webshop, a customer will add items to their basket. This is reflected in a [Cart](https://docs.commercetools.com/api/projects/carts) on commercetools. Before checkout, make sure the Cart is up to date, including shipping information and amount. The lines and totals in the Cart are used to make the order in mollie. 
+
+In order to checkout, this Cart needs to be linked to a Payment. This Payment should have `amountPlanned` set to the total amount of the Cart. It must also have its [payment method interface](https://docs.commercetools.com/api/projects/payments#paymentmethodinfo) must be set to "mollie", (this is to allow for other API extensions on the same commercetools project, and prevent unintended updates).
+
+### List Payment Methods
+
+You can get available payment methods by using the custom field `paymentMethodsRequest` on the Payment object. The extension will call mollie and return the count and available payment methods, and save this onto the custom field `paymentMethodsResponse`.
+
+To trigger this again, (for example, if you now have more information about the location of the customer), you will need to reset the `paymentMethodsResponse` field to `null`.
 
 Example incoming payment object: 
 ```
@@ -27,236 +49,88 @@ Example incoming payment object:
 }
 ```
 
-## Creating a transaction payment
 
-The payment will be collected using mollie. For now, we are using the mollie Orders API. 
-
-To trigger payment, first ensure the CT Payment object is linked to the correct Cart, or the API extension will return an error. 
-
-Then, set the payment method. This must be only **one** payment method, and match the mollie payment method enums. If this is not set correctly, the API extension will return an error. 
-
-There are two types of methods, "pay now" and "pay later". Pay now immediately takes the funds, whereas pay later means the customer is authorizing the funds. We will then need to create a capture later on to take those funds. 
-
-We use commercetools Transactions on the Payment to trigger different actions in mollie.
-
-### Pay now methods
-
-For example, _iDEAL_. 
-
-To create the payment, add a "Charge" transaction for the whole amount on your Payment object. For example: 
+Example payment object with response: 
 ```
 {
     amountPlanned: {
         currencyCode: "EUR",
         centAmount: 5000
     }, 
-    transactions: [
-        {
-            type: "Charge",
-            state: "Initial",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
+    custom: {
+        fields: {
+            paymentMethodsRequest: "{\"locale\": \"de_DE\"}",
+            paymentMethodsResponse: ""
         }
-    ]
+    }
 }
 ```
 
-This will create an order in mollie and return the response, including checkoutUrl on this Payment object. The transaction's state will be updated to "Pending", to indicate that it has been accepted by mollie.
+### Making a payment
 
-### Pay later methods
+To create an order in mollie, you must add a [Transaction](https://docs.commercetools.com/api/projects/payments#transaction) to the Payment. You must also set the payment method that the customer wishes to use.
 
-For example, _klarnasliceit_. 
+This will create the order in mollie and save response details onto an `interfaceInteraction` on the Payment. For full details on making a payment, see the [create order](./createOrder.md) documentation.
+#### Pay later
 
-To create the authorization, add an "Authorization" transaction for the whole amount on your Payment object. For example: 
-```
-{
-    amountPlanned: {
-        currencyCode: "EUR",
-        centAmount: 5000
-    }, 
-    transactions: [
-        {
-            type: "Authorization",
-            state: "Initial",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        }
-    ]
-}
-```
+If the customer wishes to pay with a "pay later" method, then an Authorization transaction should be added. The funds will then be captured using "Charge" transactions. 
+#### Pay now
 
-This will create an order in mollie and return the response, including checkoutUrl on this Payment object. The transaction's state will be updated to "Pending", to indicate that it has been accepted by mollie.
+If the customer wishes to pay with a "pay now" method, then an Charge transaction should be added.
 
-## Cancelations
+### Cancelations
 
-### Pay later methods
+If the customer changes their mind, you can cancel the order, or part of the order, depending on the payment method. 
 
-To cancel an Authorization, add a "CancelAuthorization" transaction onto your Payment object. This can be either whole or partial. 
+For full details, see the [cancel order](./cancelOrder.md) docs. 
 
-For whole, add a "CancelAuthorization" transaction for the whole amount of the order. For example: 
-```
-{
-    amountPlanned: {
-        currencyCode: "EUR",
-        centAmount: 5000
-    }, 
-    key: "ord_1234",
-    transactions: [
-        {
-            type: "Authorization",
-            state: "Pending",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        },
-        {
-            type: "CancelAuthorization",
-            state: "Initial",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        }
-    ]
-}
-```
-
-For partial, add a "CancelAuthorization" transaction for the amount you wish to cancel. You also need to provide a custom field that says which cart line items this cancelation corresponds to. Without this, the API extension will return an error. 
-
-_example here_
-
-## Manual Capture
+### Manual Capture
 
 This only applies to **pay later** methods. 
 
-To capture the funds, add a "Charge" transaction to the Payment. There must already be a Successful Authorization transaction present. This will make a call to mollie's Shipment API. 
+Once a payment has been `authorized`, you will need to capture the funds. To do so, add a "Charge" transaction to the Payment, which will make a call to mollie's Shipment API. 
 
-This can be done for the whole amount, or only part. 
+This can be done for the whole amount, or only part of the order. 
 
-For whole, add a "Charge" transaction for the whole amount of the order. For example: 
-```
-{
-    amountPlanned: {
-        currencyCode: "EUR",
-        centAmount: 5000
-    }, 
-    key: "ord_1234",
-    transactions: [
-        {
-            type: "Authorization",
-            state: "Pending",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        },
-        {
-            type: "Charge",
-            state: "Initial",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        }
-    ]
-}
-```
+For full details, see the [manual capture](./createShipment.md) docs.
 
-For partial, add a "Charge" transaction for the amount you wish to create a capture for. You also need to provide a custom field that says which cart line items this capture corresponds to. Without this, the API extension will return an error. 
+### Refunds
 
-_example here_
+This uses mollie's [create payment refund](https://docs.mollie.com/reference/v2/refunds-api/create-payment-refund) endpoint. For full details, see the [refund](./Refund.md) docs.
+#### Pay now methods
 
-## Refunds
+You can only refund if the initial Charge has been sucessful. Add a "Refund" transaction onto the Payment object. This can be for the whole, or partial amount of the Cart. 
 
-### Pay now methods
+If the original Charge transaction is still pending, then the API extension will make a call to mollie to attempt to _cancel_ the payment. Only some payment types are cancelable. If the payment method is not cancelable, you will receive an error message.
 
-You can only refund if the initial Charge has been sucessful. 
-
-Add a "Refund" transaction onto the Payment object. This can be for the whole, or partial amount of the Cart. 
-
-```
-{
-    amountPlanned: {
-        currencyCode: "EUR",
-        centAmount: 5000
-    }, 
-    key: "ord_1234",
-    transactions: [
-        {
-            type: "Charge",
-            state: "Success",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        },
-        {
-            type: "Refund",
-            state: "Initial",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 3500
-            }
-        }
-    ]
-}
-```
-
-If the original Charge transaction is still pending, then the API extension will make a call to mollie to attempt to _cancel_ the payment. Only some payment types are cancelable. If the payment method is not cancelable, you will receive an error message saying so. 
 Non-cancelable payment methods will simply expire after a certain timeframe. You can see this when the transaction state is updated to "Failure". 
 
-### Pay later methods
+#### Pay later methods
 
-You can only refund if the initial Authorization has been sucessful and at least some of the funds have been captured. You can only refund money that's already captured.
+You can only refund if the initial Authorization has been sucessful and at least some of the funds have been captured. Only captured funds can be refunded.
 
 Add a "Refund" transaction onto the Payment object. This can be for the whole, or partial amount of the Cart. 
 
-```
-{
-    amountPlanned: {
-        currencyCode: "EUR",
-        centAmount: 5000
-    }, 
-    transactions: [
-        {
-            type: "Authorization",
-            state: "Successful",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        },
-        {
-            type: "Charge",
-            state: "Successful",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 5000
-            }
-        },
-        {
-            type: "Refund",
-            state: "Initial",
-            amount: {
-                currencyCode: "EUR",
-                centAmount: 1000
-            }
-        }
-    ]
-}
-```
 
 ## General Rules and error guidance
 
-You should not create a transaction in state "Pending". This state is reserved for the API extension, to indicate that the request has been sent to mollie and accepted.
+Not following these guidelines may result in an error, or unexpected behaviour. 
 
-For pay now, you cannot use the transaction types "Authorization" or "CancelAuthorization", these are reserved for pay later methods.
+### Payment
 
 The Payment object's key will be set to the mollie `order_id`, to link the data across the systems, once the order is made in mollie. Please do not override this value. 
+### Transactions
 
-Not following these guidelines will result in an error, or unexpected behaviour. 
+The API extension only allows one Transaction in an `Initial` state at a time. If you add multiple `Initial` tranasactions, it will return an error.
+
+This is to allow each action to be processed and the data's state to "settle" before trying to process the next. 
+
+You should not create a transaction in state "Pending". This state is reserved for the API extension, to indicate that the request has been sent to mollie and accepted.
+
+For pay now, you cannot use the transaction type "CancelAuthorization" as this is reserved for pay later methods.
+
+### Errors
+
+If an error occurs, you will receive a 400 response and an error message. This means commercetools will not persist the result of the original call, (see the [API Extension documentation](https://docs.commercetools.com/api/projects/api-extensions#the-api-extension-within-the-flow-of-the-api-call) for more details).
+
+If the mollie API returns an error, this message will be returned within the `extraInfo` section of the error response. This will include the reason, field (if applicable) and links to the appropriate mollie documentation.

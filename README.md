@@ -1,7 +1,6 @@
 [![GitHub Actions](https://github.com/mollie/commercetools/actions/workflows/ci.yaml/badge.svg)](https://github.com/mollie/commercetools/actions/workflows/ci.yaml/badge.svg)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
-Initial development is in progress, there is not yet a stable public release. 
 # commercetools-mollie Integration
 ___
 This project provides a [Hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based integration between the commercetools and Mollie PSP.
