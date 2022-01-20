@@ -1,5 +1,23 @@
 # Deployment
 
+  * [NodeJS Runtime](#nodejs-runtime)
+  * [Environment variables](#environment-variables)
+    + [Logging](#logging)
+      - [Levels](#levels)
+      - [Configuration](#configuration)
+    + [Log transports](#log-transports)
+  * [AWS Lambda](#aws-lambda)
+    + [HTTP Destination & Lambda destination](#http-destination---lambda-destination)
+      - [Http Destination](#http-destination)
+      - [Lambda destination](#lambda-destination)
+  * [GCP functions](#gcp-functions)
+  * [Azure](#azure)
+    + [[Config](#azureConfig)](#-config---azureconfig-)
+    + [Authentication](#authentication)
+      - [Azure Functions](#azure-functions)
+      - [Basic](#basic)
+  * [Docker](#docker)
+
 ## NodeJS Runtime
 
 The recommended runtime version is 14

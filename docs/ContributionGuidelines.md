@@ -1,8 +1,7 @@
 # Contribution Guide
 
-## Contents
-- [Prerequisites](#prerequisites)
-- [Development](#development)
+* [Prerequisites](#prerequisites)
+* [Development](#development)
 
 ## Prerequisites
 

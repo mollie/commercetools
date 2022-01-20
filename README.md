@@ -1,7 +1,6 @@
 [![GitHub Actions](https://github.com/mollie/commercetools/actions/workflows/ci.yaml/badge.svg)](https://github.com/mollie/commercetools/actions/workflows/ci.yaml/badge.svg)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
-Initial development is in progress, there is not yet a stable public release. 
 # commercetools-mollie Integration
 ___
 This project provides a [Hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based integration between the commercetools and Mollie PSP.
@@ -15,10 +14,13 @@ This project provides a [Hosted checkout](https://docs.mollie.com/payments/hoste
 - [Mollie hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based payment methods.
     - Note: since the integration relies on the usage of Mollie checkout environment it does not need to process sensitive credit card data and thus is fully PCI DSS **compliant**.
 - Asynchronous notifications handling via [notification module](#notification-module).
-- [Refunding](./docs/Refund.md) a payment back to the shopper.
-- Authorisation [cancellation](./docs/CancelOrder.md) on a payment that has not yet been captured.
+- Making payments
+- Cancelations
+- Refunds
 
-## Overview
+For an overview of how the payment flow works, see the [managing payments](./docs/ManagingPayments.md) documentation.
+
+## Architecture Overview
 This repository contains two standalone modules that interact with commercetools and Mollie.
 Complete integration requires running both of the modules.
 

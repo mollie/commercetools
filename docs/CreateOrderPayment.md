@@ -1,5 +1,12 @@
 # Create Order Payment
 
+  * [Overview](#overview)
+  * [Parameters map](#parameters-map)
+  * [Representation: CT Payment](#representation--ct-payment)
+  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
+
+## Overview
+
 This functionality is used to add a payment or change the payment method to existing order on Mollie:
 
 This calls Mollie's [create order payment](https://docs.mollie.com/reference/v2/orders-api/create-order-payment) endpoint.

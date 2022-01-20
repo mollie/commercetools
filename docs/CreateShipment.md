@@ -1,5 +1,13 @@
 # Creating Shipment/Capture on Mollie
 
+* [Overview](#overview)
+* [Parameters map](#parameters-map)
+* [Representation: CT Payment](#representation--ct-payment)
+* [Representation: Mollie Shipment Response](#representation--mollie-shipment-response)
+* [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
+
+## Overview
+
 Creating a shipment on mollie is only required when paying with one of the pay later methods (e.g. Klarna Pay now, Klarna Pay later). [As explained in the docs, creating a shipment creates a capture for the funds](https://docs.mollie.com/reference/v2/shipments-api/create-shipment).
 
 
