@@ -2,14 +2,14 @@
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 Initial development is in progress, there is not yet a stable public release. 
-# commercetools-Mollie Integration
+# commercetools-mollie Integration
 ___
 This project provides a [Hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based integration between the commercetools and Mollie PSP.
 - [Supported features](#supported-features)
 - [Overview](#overview)
     - [Extension module](#extension-module)
     - [Notification module](#notification-module)
-- [Other guides](#other-guides)
+- [Other guides](#support--other-guides)
 
 ## Supported features
 - [Mollie hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based payment methods.
@@ -42,5 +42,5 @@ The notification module will process the notification sent by Mollie and match t
 ## Contribution Guidelines
 Please see the [Contribution Guide](./docs/ContributionGuidelines.md).
 
-## Support & Other guides
+## Support & other guides
 [Mollie's support page](https://help.mollie.com/hc/en-us)
