@@ -14,9 +14,9 @@
     - [Pay now methods](#pay-now-methods)
     - [Pay later methods](#pay-later-methods)
 * [General Rules and error guidance](#general-rules-and-error-guidance)
-+ [Payment](#payment)
-+ [Transactions](#transactions)
-+ [Errors](#errors)
+  + [Payment](#payment)
+  + [Transactions](#transactions)
+  + [Errors](#errors)
 
 ## Available Functionality
 
@@ -33,10 +33,11 @@ This integration includes the following functionality:
 ## Terminology
 
 **Pay later** refers to payment methods which authorize then capture funds, e.g. Klarna
+
 **Pay now** refers to payment methods which take the funds immediately, e.g. iDEAL.
 ## How it works
 
-You will need the [API Extension](./extension/Readme.md) and [notifications module](./notifications/Readme.md) installed and configured.
+You will need the [API Extension](../extension/Readme.md) and [notifications module](../notifications/Readme.md) installed and configured.
 
 The extension uses mollie's [orders API](https://docs.mollie.com/reference/v2/orders-api/overview) to make payments. It is triggered by create and update requests on commercetools [Payments](https://docs.commercetools.com/api/projects/payments). 
 
@@ -134,6 +135,9 @@ Add a "Refund" transaction onto the Payment object. This can be for the whole, o
 
 Not following these guidelines may result in an error, or unexpected behaviour. 
 
+### Carts and Orders on commercetools
+
+An Order can be created from a Cart on commercetools. This integration expects the Order to be created from the Cart **after** the Cart has been used to trigger payment in mollie. 
 ### Payment
 
 The Payment object's key will be set to the mollie `order_id`, to link the data across the systems, once the order is made in mollie. Please do not override this value. 
