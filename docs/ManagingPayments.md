@@ -108,14 +108,6 @@ Inside `paymentMethodsRequest`, we can pass custom fields to the extension, to p
 | pricing             | boolean | true                                                                                                                    |
 | sequenceType        | string  | first, recurring                                                                                                        |
 
-NB - as these values are passed inside a stringified JSON object, the values should given be as strings - for example:
-
-```
-{
-    paymentMethodsRequest: "{\"issuers\": \"true\"}"
-}
-```
-
 For more information about these fields, refer to [Mollie's list payment methods documentation](https://docs.mollie.com/reference/v2/methods-api/list-methods).
 
 ### Making a payment
