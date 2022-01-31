@@ -2,7 +2,7 @@
   "name": "mollie-commercetools-extension-module",
   "version": "1.0.0-beta.1",
   "author": "Mollie",
-  "description": "Integration between commercetools and Mollie payment service provider",
+  "description": "Integration between commercetools and mollie payment service provider",
   "license": "MIT",
   "scripts": {
     "build": "node_modules/typescript/bin/tsc",
