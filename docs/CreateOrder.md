@@ -25,13 +25,13 @@ To create an order on Mollie, we get required parameters from the commercetools 
 | `custom.fields.createPayment.locale: "nl_NL"` *                            | `locale: nl_NL`                              | NO       |
 | `custom.fields.createPayment.webhookUrl: "https://www.webhook.com"` *      | `webhookUrl: "https://www.webhook.com"`      | NO       |
 | `custom.fields.createPayment.redirectUrl: "https://www.redirectUrl.com"` * | `redirectUrl: "https://www.redirectUrl.com"` | NO       |
-| `paymentMethodInfo.method: "ideal"` **                                     | `method: ideal`                              | YES      |
 | `paymentMethodInfo.interface: "mollie"` **                                 |                                              | YES      |
+| `paymentMethodInfo.method: "ideal"` ***                                    | `method: ideal`                              | YES      |
 |                                                                            |                                              |          |
 | Parameter (CT Cart)                                                        |                                              |          |
 | `lineItems: [array]`                                                       | `lines: [array of mollieLines]`              | NO       |
 | `customLineItems: [array]`                                                 | `lines: [array of mollieLines]`              | NO       |
-| `shippingInfo: [shippingInfo]` ***                                         | `lines: [mollieLine type shipping_fee]`      | NO       |
+| `shippingInfo: [shippingInfo]` ****                                        | `lines: [mollieLine type shipping_fee]`      | NO       |
 | `billingAddress: [billingAddress]`                                         | `billingAddress: [billingAddress]`           | YES      |
 | `shippingAddress: [shippingAddress]`                                       | `shippingAddress: [shippingAddress]`         | YES      |
 | `id: "09f525b2-b739-4168"`                                                 | `metadata: {cartId: "09f525b2-b739-4168"}`   | YES      |
@@ -39,9 +39,13 @@ To create an order on Mollie, we get required parameters from the commercetools 
 \* This field can be set in config as well, putting it on createPayment will override config value. Locale should be one of the valid "locale" tags that mollie supports. The list is available on mollie's documentation under [locale](https://docs.mollie.com/reference/v2/orders-api/create-order). 
 This field is used to extract the `LineItem` and `CustomLineItem` name. The API extension will try to use the localized string that is closest to locale, if this value is set in config.
 
-\** The `PaymentMethodInfo.method` accepts a single [mollie payment method](https://docs.mollie.com/reference/v2/orders-api/create-order). If not provided, you will receive an error. `PaymentMethodInfo.interface` is checked on every request and must be set to `mollie`.
+\** `PaymentMethodInfo.interface` is checked on every request and must be set to `mollie`.
 
-\*** If charging shipping fees, this information must be on the Cart object **before** triggering creating a Payment.
+\*** The `PaymentMethodInfo.method` accepts a single [mollie payment method](https://docs.mollie.com/reference/v2/orders-api/create-order). If not provided, you will receive an error.  
+For some payment methods, an _issuer_ can also be included. Only one issuer can be provided, in the format `"payment_method,issuer_id"`, for example, `"ideal,ideal_ABNANL2A"`.  
+Available issuers can be listed as part of the [list payment methods](./ManagingPayments.md#list-payment-methods) call.  
+
+\**\** If charging shipping fees, this information must be on the Cart object **before** triggering creating a Payment.
 
 ## Line Items object
 
