@@ -91,22 +91,30 @@ Example payment object with response:
 
 | Parameter                                  | Structure               | Required |
 | ------------------------------------------ | ----------------------- | -------- |
-| Amount planned for payment (amountPlanned) | JSON object             | NO       |
+| Amount planned for payment (amountPlanned) | JSON object             | YES      |
 | paymentMethodsRequest for custom fields    | stringified JSON object | YES      |
 
-The paymentMethodsRequest field must be present for the extension to trigger mollie's list of available payment methods. If no custom fields are required, this field must be present as an empty object.
+The `paymentMethodsRequest` field must be present for the extension to trigger mollie's list of available payment methods. If no custom fields are required, this field must be present as an empty object.
 
-Inside paymentMethodsRequest, we can pass custom fields to the extension, to pass along to mollie:
+Inside `paymentMethodsRequest`, we can pass custom fields to the extension, to pass along to mollie:
 
-| Parameter           | Example     | Possible values/more info                                                                                                     |
-| ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| locale              | "nl_NL"     | en_US nl_NL nl_BE fr_FR fr_BE de_DE de_AT de_CH es_ES ca_ES pt_PT it_IT nb_NO sv_SE fi_FI da_DK is_IS hu_HU pl_PL lv_LV lt_LT |
-| billingCountry      | "NL"        | [Billing country in ISO3166-1 format](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)                                       |
-| includeWallets      | "applepay"  | applepay                                                                                                                      |
-| orderLineCategories | "eco,meal"  | meal eco gift                                                                                                                 |
-| issuers             | "true"      | true false                                                                                                                    |
-| pricing             | "false"     | true false                                                                                                                    |
-| sequenceType        | "recurring" | first, recurring                                                                                                              |
+| Parameter           | Type    | Example/more info                                                                                                       |
+| ------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| locale              | string  | [See Mollie's list of accepted locale values](https://docs.mollie.com/reference/v2/methods-api/list-methods#parameters) |
+| billingCountry      | string  | [Billing country in ISO3166-1 format](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)                                 |
+| includeWallets      | string  | applepay                                                                                                                |
+| orderLineCategories | string  | meal, eco, gift                                                                                                         |
+| issuers             | boolean | true                                                                                                                    |
+| pricing             | boolean | true                                                                                                                    |
+| sequenceType        | string  | first, recurring                                                                                                        |
+
+NB - as these values are passed inside a stringified JSON object, the values should given be as strings - for example:
+
+```
+{
+    paymentMethodsRequest: "{\"issuers\": \"true\"}"
+}
+```
 
 For more information about these fields, refer to [Mollie's list payment methods documentation](https://docs.mollie.com/reference/v2/methods-api/list-methods).
 
