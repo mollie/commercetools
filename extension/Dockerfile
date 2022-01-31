@@ -6,8 +6,10 @@ WORKDIR /app
 # Copy all needed files from current directory to working dir in image
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY expressHandler.ts ./
 COPY src ./src
 COPY config ./config
+COPY typings ./typings
 
 # Install node modules and build assets, remove dev dependencies
 RUN npm ci && npm run build && npm prune --production
