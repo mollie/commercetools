@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy all needed files from current directory to working dir in image
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY expressHandler.ts ./
 COPY src ./src
 COPY config ./config
 COPY typings ./typings
