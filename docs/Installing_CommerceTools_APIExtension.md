@@ -11,7 +11,7 @@
 
 ## Installing API Extension
 
-In order to install the extension module, it should first be deployed, either using docker or as a cloud deployment service. For more information about how to do this, please refer to the [deployment documentation](./deployment.md)
+In order to install the extension module, it should first be deployed, either using docker or as a cloud deployment service. For more information about how to do this, please refer to the [deployment documentation](./Deployment.md)
 
 Once it is deployed, we need to make a request to commercetools to point to the deployment.
 
