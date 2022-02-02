@@ -45,7 +45,7 @@ This field is used to extract the `LineItem` and `CustomLineItem` name. The API 
 For some payment methods, an _issuer_ can also be included. Only one issuer can be provided, in the format `"payment_method,issuer_id"`, for example, `"ideal,ideal_ABNANL2A"`.  
 Available issuers can be listed as part of the [list payment methods](./ManagingPayments.md#list-payment-methods) call.  
 
-\**\** If charging shipping fees, this information must be on the Cart object **before** triggering creating a Payment.
+\*\*** If charging shipping fees, this information must be on the Cart object **before** triggering creating a Payment.
 
 ## Line Items object
 
