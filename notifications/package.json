@@ -1,14 +1,17 @@
 {
   "name": "mollie-commercetools-notification-module",
-  "version": "0.0.1",
-  "description": "",
+  "version": "1.0.0-beta.2",
+  "author": "Mollie",
+  "description": "Integration between commercetools and mollie payment service provider",
+  "license": "MIT",
   "scripts": {
     "build": "node_modules/typescript/bin/tsc",
     "start": "node build/src/server.js",
     "develop": "nodemon src/server.ts",
-    "develop:default-config": "CT_MOLLIE_CONFIG='{\"mollieApiKey\": \"default-api-key\"}' npm run develop",
-    "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && cp -R node_modules build/ && cd build && rm gcpFunctionHandler.js lambdaHandler.js && zip -r ../notification-module.zip .",
-    "zip-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
+    "delete-specific-cloud-handlers": "rm build/*Handler.js",
+    "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
+    "zip-aws-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
+    "zip-azure-function": "npm ci && npm run build && cp build/azureHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
     "test": "jest",
     "test:coverage": "jest --coverage --coverageReporters='text-summary'",
     "test:watch": "jest --watch",
@@ -17,9 +20,13 @@
     "lint": "prettier --check ./src ./tests ./config ./**/*.md",
     "lint:fix": "prettier --write ./src ./tests ./config ./**/*.md"
   },
-  "keywords": [],
-  "author": "Mollie",
-  "license": "MIT",
+  "keywords": [
+    "commercetools",
+    "mollie",
+    "payment",
+    "payment integration",
+    "payment provider"
+  ],
   "devDependencies": {
     "@types/aws-lambda": "8.10.89",
     "@types/express": "4.17.13",
@@ -46,6 +53,7 @@
     "@commercetools/sdk-middleware-user-agent": "2.1.5",
     "@mollie/api-client": "3.5.1",
     "express": "4.17.2",
+    "lodash": "4.17.21",
     "node-fetch-commonjs": "3.1.1",
     "winston": "3.4.0"
   }

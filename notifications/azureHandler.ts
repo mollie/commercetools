@@ -1,5 +1,5 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { HandleRequestInput, HandleRequestSuccess } from './src/types/requestHandlerTypes';
+import { HandleRequestInput, HandleRequestSuccess } from './src/types/requestHandler';
 
 loadSettings();
 
