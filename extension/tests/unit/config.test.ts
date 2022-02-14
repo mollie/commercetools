@@ -9,7 +9,7 @@ describe('Config test', () => {
     authUrl: 'https://auth.dummy.com',
     host: 'https://api.dummy.com',
     authentication: { isBasicAuth: false },
-    enableRetry: true
+    enableRetry: true,
   };
   beforeEach(() => {
     console.error = mockLogError;
@@ -90,7 +90,15 @@ describe('Config test', () => {
     });
     const expectedConfig = {
       mollie: { apiKey: 'testMollieApiKey' },
-      commercetools: { projectKey: 'test', clientId: '123456789', clientSecret: 'abcdefghi', authUrl: 'https://auth.dummy.com', host: 'https://api.dummy.com', enableRetry: false, authentication: { isBasicAuth: false } },
+      commercetools: {
+        projectKey: 'test',
+        clientId: '123456789',
+        clientSecret: 'abcdefghi',
+        authUrl: 'https://auth.dummy.com',
+        host: 'https://api.dummy.com',
+        enableRetry: false,
+        authentication: { isBasicAuth: false },
+      },
       service: {
         port: 2000,
         logLevel: 'info',
