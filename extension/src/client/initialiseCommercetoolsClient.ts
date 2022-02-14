@@ -9,7 +9,7 @@ import { version } from '../../package.json';
 
 export default function initialiseCommercetoolsClient(): any {
   const {
-    commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes },
+    commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes, enableRetry },
   } = config;
 
   const userAgentMiddleware = createUserAgentMiddleware({
@@ -30,6 +30,7 @@ export default function initialiseCommercetoolsClient(): any {
 
   const ctHttpMiddleWare = createHttpMiddleware({
     host,
+    enableRetry,
     fetch,
   });
 

@@ -14,6 +14,7 @@ export interface Config {
       username?: string;
       password?: string;
     };
+    enableRetry?: boolean;
   };
   service: {
     port: number | string;

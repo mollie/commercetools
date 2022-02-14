@@ -35,6 +35,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
     const localeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
     Object.assign(config.service, envConfig.service?.locale && envConfig.service.locale.match(localeRegex) && { locale: envConfig.service.locale });
+    Object.assign(config.commercetools, { enableRetry: envConfig.commercetools.enableRetry ?? true });
 
     const { valid, message } = isConfigValid(config);
 

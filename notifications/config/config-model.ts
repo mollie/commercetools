@@ -9,6 +9,7 @@ export interface Config {
     authUrl: string;
     host: string;
     scopes?: string[];
+    enableRetry?: boolean;
   };
   service: {
     port: number | string;

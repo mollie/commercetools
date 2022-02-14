@@ -38,6 +38,7 @@ export function loadConfig(ctMollieConfig: string | undefined) {
       envConfig.service?.locale && envConfig.service.locale.match(localeRegex) && { locale: envConfig.service.locale },
     );
     Object.assign(config.commercetools, envConfig.commercetools?.authentication ? { authentication: envConfig.commercetools.authentication } : { authentication: { isBasicAuth: false } });
+    Object.assign(config.commercetools, { enableRetry: envConfig.commercetools.enableRetry ?? true });
 
     const { valid, message } = isConfigValid(config);
 
