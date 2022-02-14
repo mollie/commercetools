@@ -10,7 +10,7 @@ import Logger from '../logger/logger';
 
 export function initialiseCommercetoolsClient(): any {
   const {
-    commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes },
+    commercetools: { projectKey, clientId, clientSecret, host, authUrl, scopes, enableRetry },
   } = config;
 
   const userAgentMiddleware = createUserAgentMiddleware({
@@ -31,6 +31,7 @@ export function initialiseCommercetoolsClient(): any {
 
   const ctHttpMiddleWare = createHttpMiddleware({
     host,
+    enableRetry,
     fetch,
   });
 
