@@ -38,6 +38,7 @@
     "@types/supertest": "2.0.11",
     "@types/uuid": "8.3.4",
     "axios": "0.24.0",
+    "dotenv": "^16.0.0",
     "jest": "27.4.7",
     "nock": "13.2.2",
     "node-mocks-http": "1.11.0",
