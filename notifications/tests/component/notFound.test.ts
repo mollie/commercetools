@@ -102,7 +102,6 @@ describe('Commercetools Payment object not found', () => {
     expect(ctPaymentNotFoundScope.isDone()).toBeTruthy();
   });
 
-  // TODO - mock CT calls correctly using config API and project key
   it('should return 200 and log NotFound error when payment webhook is triggered and the CT Payment is not found', async () => {
     const mockBody = { id: 'tr_WDqYK6vllg' };
     const mollieGetPaymentScope = nock('https://api.mollie.com/v2')
