@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { v4 as uuid } from 'uuid';
 import handleRequest from './src/requestHandlers/handleRequest';
 import { HandleRequestInput, HandleRequestSuccess } from './src/types';
 
@@ -12,6 +13,7 @@ exports.handler = async (event: APIGatewayProxyEvent) => {
 
   if (result instanceof HandleRequestSuccess) {
     return {
+      headers: { ...event.headers, 'x-correlation-id': event.headers['x-correlation-id'] ?? `mollie-integration-${uuid()}` },
       statusCode: result.status,
       body: JSON.stringify({
         responseType: 'UpdateRequest',
@@ -20,6 +22,7 @@ exports.handler = async (event: APIGatewayProxyEvent) => {
     };
   } else {
     return {
+      headers: { ...event.headers, 'x-correlation-id': event.headers['x-correlation-id'] ?? `mollie-integration-${uuid()}` },
       statusCode: result.status,
       body: JSON.stringify({
         responseType: 'FailedValidation',
