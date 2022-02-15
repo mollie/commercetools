@@ -28,11 +28,17 @@ export default function initialiseCommercetoolsClient(): any {
     fetch,
   });
 
-  const ctHttpMiddleWare = createHttpMiddleware({
+  // Retries are enabled with exponential backoff (recommended to prevent spamming of the server)
+  // The maxDelay sets an upper limit on long to wait before retrying, useful when the delay time grows
+  // exponentialy more than reasonable.
+  // https://commercetools.github.io/nodejs/sdk/api/sdkMiddlewareHttp.html#named-arguments-options
+  const httpOptions = {
     host,
     enableRetry,
     fetch,
-  });
+  };
+  enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
+  const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
 
   const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
   return commercetoolsClient;
