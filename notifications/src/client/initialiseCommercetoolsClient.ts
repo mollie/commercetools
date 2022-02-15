@@ -43,8 +43,8 @@ export function initialiseCommercetoolsClient(): any {
   enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
   const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
   const correlationIdMiddleWare = createCorrelationIdMiddleware({
-    generate: () => `mollie-integration-${uuid()}`
-  })
+    generate: () => `mollie-integration-${uuid()}`,
+  });
 
   let commercetoolsClient: any;
 

@@ -8,7 +8,7 @@ export default async function handler(req: Request, res: Response) {
   const requestInput = new HandleRequestInput(req.path, req.method, req.body, headers);
 
   const result = await handleRequest(requestInput);
-  res.setHeader('x-correlation-id', req?.headers?.['x-correlation-id'] ?? `mollie-integration-${uuid()}`)
+  res.setHeader('x-correlation-id', req?.headers?.['x-correlation-id'] ?? `mollie-integration-${uuid()}`);
   if (result instanceof HandleRequestSuccess) {
     if (result.actions && result.actions.length > 0) {
       return res.status(result.status).send({ actions: result.actions });

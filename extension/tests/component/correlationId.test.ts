@@ -43,16 +43,13 @@ describe('Correlation Id headers', () => {
   });
 
   it('Should return original correlation id header in case it is present', async () => {
-    const testCorrelationId = 'test-correlation-id'
+    const testCorrelationId = 'test-correlation-id';
     const availablePaymentMethodsScope = nock('https://api.mollie.com/v2')
       .get(/methods*/)
       .reply(200, paymentMethodsAvailableResponse);
 
     // Call API extension & trigger payment methods request
-    const res = await request(app)
-      .post('/')
-      .set('x-correlation-id', testCorrelationId)
-      .send(mockCTPaymentObj);
+    const res = await request(app).post('/').set('x-correlation-id', testCorrelationId).send(mockCTPaymentObj);
 
     const { status, headers } = res;
     expect(status).toBe(200);

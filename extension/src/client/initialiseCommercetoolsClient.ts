@@ -42,8 +42,8 @@ export default function initialiseCommercetoolsClient(): any {
   enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
   const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
   const correlationIdMiddleWare = createCorrelationIdMiddleware({
-    generate: () => `mollie-integration-${uuid()}`
-  })
+    generate: () => `mollie-integration-${uuid()}`,
+  });
 
   const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, correlationIdMiddleWare] });
   return commercetoolsClient;
