@@ -32,12 +32,13 @@ export default function initialiseCommercetoolsClient(): any {
   // The maxDelay sets an upper limit on long to wait before retrying, useful when the delay time grows
   // exponentialy more than reasonable.
   // https://commercetools.github.io/nodejs/sdk/api/sdkMiddlewareHttp.html#named-arguments-options
-  const ctHttpMiddleWare = createHttpMiddleware({
+  const httpOptions = {
     host,
     enableRetry,
-    maxDelay: 10000,
     fetch,
-  });
+  };
+  enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
+  const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
 
   const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
   return commercetoolsClient;
