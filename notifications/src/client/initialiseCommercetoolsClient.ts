@@ -1,5 +1,4 @@
 import fetch from 'node-fetch-commonjs';
-import { v4 as uuid } from 'uuid';
 import config from '../../config/config';
 import { version } from '../../package.json';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
@@ -8,6 +7,7 @@ import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
+import { createCorrelationId } from './src/utils';
 import Logger from '../logger/logger';
 
 export function initialiseCommercetoolsClient(): any {
@@ -43,7 +43,7 @@ export function initialiseCommercetoolsClient(): any {
   enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
   const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
   const correlationIdMiddleWare = createCorrelationIdMiddleware({
-    generate: () => `mollie-integration-${uuid()}`,
+    generate: () => createCorrelationId(),
   });
 
   let commercetoolsClient: any;
