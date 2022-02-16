@@ -1,4 +1,5 @@
 import { PaymentMethod } from '@mollie/api-client';
+import { v4 as uuid } from 'uuid';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { CTMoney, CTTransaction, CTTransactionState, CTTransactionType } from './types';
 import { isEmpty, trim } from 'lodash';
@@ -10,6 +11,10 @@ import { OrderLine, OrderLineType } from '@mollie/api-client';
  */
 export function createDateNowString(): string {
   return new Date().toISOString();
+}
+
+export function createCorrelationId(): string {
+  return `mollie-integration-${uuid()}`;
 }
 
 /**

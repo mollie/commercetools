@@ -1,10 +1,12 @@
 import fetch from 'node-fetch-commonjs';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
+import { createCorrelationIdMiddleware } from '@commercetools/sdk-middleware-correlation-id';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
 
 import config from '../../config/config';
+import { createCorrelationId } from '../utils';
 import { version } from '../../package.json';
 
 export default function initialiseCommercetoolsClient(): any {
@@ -39,7 +41,10 @@ export default function initialiseCommercetoolsClient(): any {
   };
   enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
   const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
+  const correlationIdMiddleWare = createCorrelationIdMiddleware({
+    generate: createCorrelationId,
+  });
 
-  const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
+  const commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, correlationIdMiddleWare, ctHttpMiddleWare] });
   return commercetoolsClient;
 }

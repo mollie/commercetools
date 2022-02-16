@@ -2,10 +2,12 @@ import fetch from 'node-fetch-commonjs';
 import config from '../../config/config';
 import { version } from '../../package.json';
 import { createAuthMiddlewareForClientCredentialsFlow } from '@commercetools/sdk-middleware-auth';
+import { createCorrelationIdMiddleware } from '@commercetools/sdk-middleware-correlation-id';
 import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
+import { createCorrelationId } from '../utils';
 import Logger from '../logger/logger';
 
 export function initialiseCommercetoolsClient(): any {
@@ -40,13 +42,16 @@ export function initialiseCommercetoolsClient(): any {
   };
   enableRetry && Object.assign(httpOptions, { retryConfig: { maxDelay: 10000 } });
   const ctHttpMiddleWare = createHttpMiddleware(httpOptions);
+  const correlationIdMiddleWare = createCorrelationIdMiddleware({
+    generate: () => createCorrelationId(),
+  });
 
   let commercetoolsClient: any;
 
   if (Logger.level === 'http' || Logger.level === 'verbose' || Logger.level === 'debug') {
-    commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, createLoggerMiddleware()] });
+    commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, correlationIdMiddleWare, ctHttpMiddleWare, createLoggerMiddleware()] });
   } else {
-    commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare] });
+    commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, correlationIdMiddleWare] });
   }
   return commercetoolsClient;
 }
