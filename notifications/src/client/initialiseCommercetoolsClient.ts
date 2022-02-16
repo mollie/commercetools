@@ -7,7 +7,7 @@ import { createHttpMiddleware } from '@commercetools/sdk-middleware-http';
 import { createLoggerMiddleware } from '@commercetools/sdk-middleware-logger';
 import { createUserAgentMiddleware } from '@commercetools/sdk-middleware-user-agent';
 import { createClient } from '@commercetools/sdk-client';
-import { createCorrelationId } from './src/utils';
+import { createCorrelationId } from '../utils';
 import Logger from '../logger/logger';
 
 export function initialiseCommercetoolsClient(): any {
