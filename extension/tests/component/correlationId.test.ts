@@ -32,14 +32,12 @@ describe('Correlation Id headers', () => {
       .get(/methods*/)
       .reply(200, paymentMethodsAvailableResponse);
 
-    // Call API extension & trigger payment methods request
     const res = await request(app).post('/').send(mockCTPaymentObj);
 
     const { status, headers } = res;
     expect(status).toBe(200);
     expect(headers['x-correlation-id'].startsWith('mollie-integration-')).toBe(true);
-
-    // Check the update action
+    expect(availablePaymentMethodsScope.isDone()).toBe(true);
   });
 
   it('Should return original correlation id header in case it is present', async () => {
@@ -48,13 +46,11 @@ describe('Correlation Id headers', () => {
       .get(/methods*/)
       .reply(200, paymentMethodsAvailableResponse);
 
-    // Call API extension & trigger payment methods request
     const res = await request(app).post('/').set('x-correlation-id', testCorrelationId).send(mockCTPaymentObj);
 
     const { status, headers } = res;
     expect(status).toBe(200);
     expect(headers['x-correlation-id']).toBe(testCorrelationId);
-
-    // Check the update action
+    expect(availablePaymentMethodsScope.isDone()).toBe(true);
   });
 });
