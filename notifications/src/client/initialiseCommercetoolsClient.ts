@@ -49,7 +49,7 @@ export function initialiseCommercetoolsClient(): any {
   let commercetoolsClient: any;
 
   if (Logger.level === 'http' || Logger.level === 'verbose' || Logger.level === 'debug') {
-    commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, correlationIdMiddleWare, createLoggerMiddleware()] });
+    commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, correlationIdMiddleWare, ctHttpMiddleWare, createLoggerMiddleware()] });
   } else {
     commercetoolsClient = createClient({ middlewares: [userAgentMiddleware, ctAuthMiddleware, ctHttpMiddleWare, correlationIdMiddleWare] });
   }
