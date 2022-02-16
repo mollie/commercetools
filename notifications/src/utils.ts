@@ -21,7 +21,7 @@ export const isOrderOrPayment = (resourceId: string): string => {
 };
 
 export function createCorrelationId(): string {
-  return `mollie-integration-${uuid()}`
+  return `mollie-integration-${uuid()}`;
 }
 
 /**
