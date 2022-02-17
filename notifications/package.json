@@ -1,6 +1,6 @@
 {
   "name": "mollie-commercetools-notification-module",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "author": "Mollie",
   "description": "Integration between commercetools and mollie payment service provider",
   "license": "MIT",
