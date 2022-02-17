@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { CTMoney } from './types/ctPayment';
 
@@ -18,6 +19,10 @@ export const isOrderOrPayment = (resourceId: string): string => {
   }
   return result;
 };
+
+export function createCorrelationId(): string {
+  return `mollie-integration-${uuid()}`;
+}
 
 /**
  * Converts a Mollie payment object to a commercetools money object
