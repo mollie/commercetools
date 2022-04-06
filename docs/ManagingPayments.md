@@ -42,6 +42,8 @@ You will need the [API Extension](../extension/Readme.md) and [notifications mod
 
 The extension uses mollie's [orders API](https://docs.mollie.com/reference/v2/orders-api/overview) to make payments. It is triggered by create and update requests on commercetools [Payments](https://docs.commercetools.com/api/projects/payments).
 
+The extension checks every incoming payment request for payment interface name, which must be set to `Mollie`.
+
 ### Cart setup
 
 On your webshop, a customer will add items to their basket. This is reflected in a [Cart](https://docs.commercetools.com/api/projects/carts) on commercetools. Before checkout, make sure the Cart is up to date, including shipping information and amount. The lines and totals in the Cart are used to make the order in mollie.
@@ -62,6 +64,9 @@ Example incoming payment object:
         currencyCode: "EUR",
         centAmount: 5000
     },
+    "paymentMethodInfo": {
+        "paymentInterface": "Mollie"
+    },
     custom: {
         fields: {
             paymentMethodsRequest: "{\"locale\": \"de_DE\"}"
@@ -78,6 +83,9 @@ Example payment object with response:
         currencyCode: "EUR",
         centAmount: 5000
     },
+    "paymentMethodInfo": {
+        "paymentInterface": "Mollie"
+    },
     custom: {
         fields: {
             paymentMethodsRequest: "{\"locale\": \"de_DE\"}",
@@ -93,6 +101,7 @@ Example payment object with response:
 | ------------------------------------------ | ----------------------- | -------- |
 | Amount planned for payment (amountPlanned) | JSON object             | YES      |
 | paymentMethodsRequest for custom fields    | stringified JSON object | YES      |
+| paymentMethodInfo.paymentInterface         | string === `Mollie`     | YES      |
 
 The `paymentMethodsRequest` field must be present for the extension to trigger mollie's list of available payment methods. If no custom fields are required, this field must be present as an empty object.
 
