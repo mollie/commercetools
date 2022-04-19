@@ -13,11 +13,11 @@ const {
   service: { webhookUrl, locale: configLocale, redirectUrl },
 } = config;
 
-export function makeMollieAddress(ctAddress: any): OrderAddress {
+export function makeMollieAddress(ctAddress: any, fallbackEmail?: string): OrderAddress {
   let mollieAddress: OrderAddress = {
     givenName: ctAddress.firstName,
     familyName: ctAddress.lastName,
-    email: ctAddress.email,
+    email: ctAddress.email || fallbackEmail,
     streetAndNumber: ctAddress.streetName && ctAddress.streetNumber ? `${ctAddress.streetName} ${ctAddress.streetNumber}` : '',
     city: ctAddress.city,
     postalCode: ctAddress.postalCode,
@@ -142,12 +142,13 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     const [paymentMethod, paymentIssuer] = ctPayment.paymentMethodInfo.method.split(',');
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment || '{}');
     const locale = parsedCtPayment.locale || configLocale;
+    const fallbackEmail = cart.customerEmail || cart.customer?.email;
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
       lines: makeMollieLines(cart, locale, makeMollieLine, makeMollieLineCustom),
       locale,
-      billingAddress: makeMollieAddress(cart.billingAddress),
+      billingAddress: makeMollieAddress(cart.billingAddress, fallbackEmail),
       method: paymentMethod as PaymentMethod,
 
       webhookUrl: parsedCtPayment.webhookUrl || webhookUrl,
@@ -162,7 +163,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     };
 
     if (cart.shippingAddress) {
-      orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress);
+      orderParams.shippingAddress = makeMollieAddress(cart.shippingAddress, fallbackEmail);
     }
     return Promise.resolve(orderParams);
   } catch (error) {

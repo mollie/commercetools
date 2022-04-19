@@ -90,6 +90,10 @@ export type CTCart = {
   billingAddress?: Object;
   locale?: string;
   shippingInfo?: Object;
+  customerEmail?: string;
+  customer?: {
+    email: string;
+  };
 };
 
 export type CTPayment = {
