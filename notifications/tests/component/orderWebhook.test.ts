@@ -31,7 +31,7 @@ describe('Webhook triggered with Mollie order ID as payload', () => {
   });
 
   it('should update the CT Payment correctly including changing transaction state to "Success" and setting interface text', async () => {
-    const mockBody = { id: 'ord_12345' };
+    const mockBody = 'id=ord_12345';
     const expectedUpdateBody = {
       version: 25,
       actions: [
