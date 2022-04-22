@@ -42,7 +42,7 @@ You will need the [API Extension](../extension/Readme.md) and [notifications mod
 
 The extension uses mollie's [orders API](https://docs.mollie.com/reference/v2/orders-api/overview) to make payments. It is triggered by create and update requests on commercetools [Payments](https://docs.commercetools.com/api/projects/payments).
 
-The extension checks every incoming payment request for payment interface name, which must be set to `Mollie`.
+The extension checks every incoming payment request for payment interface name, which must be set to `mollie` (case-insensitive).
 
 ### Cart setup
 
