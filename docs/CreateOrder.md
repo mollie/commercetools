@@ -15,7 +15,7 @@
 
 To create an order on Mollie, we get required parameters from the commercetools Cart and Payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the Payment's custom field `createPayment`. 
 
-Triggering create order on Mollie from commercetools should therefore happen in these consecutive steps:
+These steps must be followed to trigger order creation on mollie from commercetools:
 1. Create a Cart
 2. Create a Payment
 3. Link the Payment to the Cart (ref Payment ID)
