@@ -252,3 +252,7 @@ Note that the environment variables that are required should be passed with the 
 
 When finished, to stop the container, run:
 `docker stop ct-mollie-extension`
+
+## Prerequisites
+
+Commands and scripts in this documentation require bash shell, nodejs with npm, zip and docker.
