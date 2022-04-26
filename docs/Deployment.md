@@ -12,7 +12,7 @@
       - [Lambda destination](#lambda-destination)
   * [GCP functions](#gcp-functions)
   * [Azure](#azure)
-    + [[Config](#azureConfig)](#-config---azureconfig-)
+    + [Config](#config)
     + [Authentication](#authentication)
       - [Azure Functions](#azure-functions)
       - [Basic](#basic)
@@ -177,7 +177,7 @@ Add the following global variables into the config file:
     AZURE_FUNCTIONAPP_PACKAGE_PATH=<> _Optional_
     AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> _Optional_
 
-### [Config](#azureConfig)
+### Config
 
 [Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
 Therefore the configuration must be defined in the same format as `local.settings.json` file
