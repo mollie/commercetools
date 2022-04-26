@@ -31,7 +31,7 @@ describe('Commercetools tries multiple times on 503 or network errors', () => {
   });
 
   it('should retry when call to commercetools responds with 503', async () => {
-    const mockBody = { id: 'ord_12345' };
+    const mockBody = 'id=ord_12345';
     const mollieOrderScope = nock('https://api.mollie.com/v2')
       .get(/orders\/ord_12345\?embed=payments*/)
       .reply(200, mockPaidOrder);

@@ -25,7 +25,7 @@ describe('Webhook triggered with non-existent mollie ID as payload', () => {
   });
 
   it('should return 200 when called with non existent order id', async () => {
-    const mockBody = { id: 'ord_12345' };
+    const mockBody = 'id=ord_12345';
     const orderNotFoundScope = nock('https://api.mollie.com/v2')
       .get(/orders\/ord_12345\?embed=payments*/)
       .reply(404, orderNotFoundResponse);
@@ -37,7 +37,7 @@ describe('Webhook triggered with non-existent mollie ID as payload', () => {
   });
 
   it('should return 200 when called with non existent payment id', async () => {
-    const mockBody = { id: 'tr_12345' };
+    const mockBody = 'id=tr_12345';
     const paymentNotFoundScope = nock('https://api.mollie.com/v2')
       .get(/payments\/tr_12345\?embed=refunds*/)
       .reply(404, paymentNotFoundResponse);
@@ -49,7 +49,7 @@ describe('Webhook triggered with non-existent mollie ID as payload', () => {
   });
 
   it('should return 200 when called with invalid id', async () => {
-    const mockBody = { id: 'pr_12345' };
+    const mockBody = 'id=pr_12345';
 
     const { status } = await request(app).post('/').send(mockBody);
     expect(status).toBe(200);
@@ -86,7 +86,7 @@ describe('Commercetools Payment object not found', () => {
   });
 
   it('should return 200 and log NotFound error when order webhook is triggered and the CT Payment is not found', async () => {
-    const mockBody = { id: 'ord_12345' };
+    const mockBody = 'id=ord_12345';
     const mollieGetOrderScope = nock('https://api.mollie.com/v2')
       .get(/orders\/ord_12345\?embed=payments*/)
       .reply(200, mockOrderResponse);
@@ -103,7 +103,7 @@ describe('Commercetools Payment object not found', () => {
   });
 
   it('should return 200 and log NotFound error when payment webhook is triggered and the CT Payment is not found', async () => {
-    const mockBody = { id: 'tr_WDqYK6vllg' };
+    const mockBody = 'id=tr_WDqYK6vllg';
     const mollieGetPaymentScope = nock('https://api.mollie.com/v2')
       .get(/payments\/tr_WDqYK6vllg\?embed=refunds*/)
       .reply(200, mockPaymentResponse);
