@@ -28,7 +28,6 @@ Here is a table to show which environment variables are necessary, and which are
 
 | Env variable name  | Required | Notes                                                                                                       |
 | ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
-| `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                       |
 | `mollie`           | YES      | Contains Mollie-specific project variables                                                                  |
 | `apiKey`           | YES      | API key for interacting with mollie                                                                         |
 | `commercetools`    | YES      | Contains commercetools-specific project variables                                                           |
@@ -46,29 +45,27 @@ Here is a table to show which environment variables are necessary, and which are
 Below is an example of how these should be formatted:
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {
-      "apiKey": "mollieApiKey"
-    },
-    "commercetools": {
-      "projectKey": "example_project_key",
-      "clientId": "example_client_id",
-      "clientSecret": "example_client_secret",
-      "authUrl": "example_auth_url",
-      "host": "example_host",
-      "scopes": "example_scopes",
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      }
-    },
-    "service": {
-      "port": 3050,
-      "logLevel": "info",
-      "logTransports": "terminal"
+"CT_MOLLIE_CONFIG": {
+  "mollie": {
+    "apiKey": "mollieApiKey"
+  },
+  "commercetools": {
+    "projectKey": "example_project_key",
+    "clientId": "example_client_id",
+    "clientSecret": "example_client_secret",
+    "authUrl": "example_auth_url",
+    "host": "example_host",
+    "scopes": "example_scopes",
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
     }
+  },
+  "service": {
+    "port": 3050,
+    "logLevel": "info",
+    "logTransports": "terminal"
   }
 }
 ```
