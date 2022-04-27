@@ -134,7 +134,7 @@ export function makeMollieLines(cart: CTCart, locale: string, makeMollieLine: Fu
   return lines.concat(lineItems, customLineItems, shippingLine);
 }
 
-export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promise<OrderCreateParams> {
+export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart, customerEmail?: string): Promise<OrderCreateParams> {
   if (!cart.billingAddress) {
     return Promise.reject({ status: 400, title: 'Cart associated with this payment is missing billingAddress', field: 'cart.billingAddress' });
   }
@@ -142,7 +142,7 @@ export function getCreateOrderParams(ctPayment: CTPayment, cart: CTCart): Promis
     const [paymentMethod, paymentIssuer] = ctPayment.paymentMethodInfo.method.split(',');
     const parsedCtPayment = JSON.parse(ctPayment.custom?.fields?.createPayment || '{}');
     const locale = parsedCtPayment.locale || configLocale;
-    const fallbackEmail = cart.customerEmail || cart.customer?.email;
+    const fallbackEmail = cart.customerEmail || customerEmail;
     const orderParams: OrderCreateParams = {
       amount: makeMollieAmount(ctPayment.amountPlanned),
       orderNumber: ctPayment.id,
@@ -241,13 +241,16 @@ export default async function createOrder(
 ): Promise<CTUpdatesRequestedResponse> {
   const paymentId = ctPayment?.id;
   try {
-    const getCartByPaymentOptions = {
-      uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
+    const baseRequestParams = {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-      },
+      }
+    };
+    const getCartByPaymentOptions = {
+      ...baseRequestParams,
+      uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
     if (!cartByPayment.body.results.length) {
@@ -255,11 +258,24 @@ export default async function createOrder(
       return error;
     }
 
-    const orderParams = await getCreateOrderParams(ctPayment, cartByPayment.body.results[0]);
+    const cart = cartByPayment.body.results[0];
+    let customerEmail;
+    if (cart.customerId) {
+      const getCustomerById = {
+        ...baseRequestParams,
+        uri: `/${projectKey}/customers/${cart.customerId}`
+      };
+      const customerById = await commercetoolsClient.execute(getCustomerById);
+      if (customerById.body && customerById.body.email) {
+        customerEmail = customerById.body.email;
+      }
+    }
+
+    const orderParams = await getCreateOrderParams(ctPayment, cart, customerEmail);
     Logger.debug('orderParams: %o', orderParams);
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
     Logger.debug('mollieCreatedOrder: %o', mollieCreatedOrder);
-    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment, cartByPayment.body.results[0].id);
+    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment, cart.id);
     return {
       actions: ctActions,
       status: 201,
