@@ -91,9 +91,6 @@ export type CTCart = {
   locale?: string;
   shippingInfo?: Object;
   customerEmail?: string;
-  customer?: {
-    email: string;
-  };
 };
 
 export type CTPayment = {

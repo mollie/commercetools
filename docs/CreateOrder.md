@@ -109,7 +109,7 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 
 Mollie only requires billing address to create the order. However, we require shipping address as commercetools does not calculate the tax price for each line item without the shipping address being set.
 
-| Parameter (CT Cart billingAddress/shippingAddress/customerEmail) | Parameter (Mollie)                            | Required |
+| Parameter (CT Cart billingAddress/shippingAddress/customerEmail/customer's email) | Parameter (Mollie)                            | Required |
 | -------------------------------------------------- | --------------------------------------------- | -------- |
 | `firstName: "Piet"`                                | `givenName: "Piet"`                           | YES      |
 | `lastName: "Mondriaan"`                            | `familyName: "Mondriaan"`                     | YES      |
