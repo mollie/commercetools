@@ -149,7 +149,7 @@ describe('getCreateOrderParams', () => {
 
     await expect(getCreateOrderParams(ctPayment as CTPayment, ctCart as CTCart)).resolves.toMatchObject(mollieCreateOrderParams);
   });
-  it('Should make create order parameters using cart.customer.email field', async () => {
+  it('Should make create order parameters using customerEmail optional third argument', async () => {
     mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
       .mockReturnValueOnce({ value: '2.00', currency: 'EUR' })
@@ -167,9 +167,6 @@ describe('getCreateOrderParams', () => {
     const customerEmail = 'coloured_square_lover@basicart.com';
     const response = await getCreateOrderParams(ctPayment as CTPayment, {
       ...ctCart,
-      customer: {
-        email: customerEmail
-      },
       billingAddress: {
         ...ctCart.billingAddress,
         email: null
@@ -178,7 +175,7 @@ describe('getCreateOrderParams', () => {
         ...ctCart.shippingAddress,
         email: null
       }
-    } as CTCart);
+    } as CTCart, customerEmail);
 
     expect(response).toMatchObject(mollieCreateOrderParams);
   });
