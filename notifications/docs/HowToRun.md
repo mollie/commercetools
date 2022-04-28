@@ -26,49 +26,46 @@ Commercetools Mollie integration requires one environment variable to start. Thi
 
 Here is a table to show which environment variables are necessary, and which are optional:
 
-| Env variable name  | Required | Notes                                                                                                       |
-| ------------------ | -------- | ----------------------------------------------------------------------------------------------------------- |
-| `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                       |
-| `mollie`           | YES      | Contains Mollie-specific project variables                                                                  |
-| `apiKey`           | YES      | API key for interacting with mollie                                                                         |
-| `commercetools`    | YES      | Contains commercetools-specific project variables                                                           |
-| `projectKey`       | YES      | Commercetools project key                                                                                   |
-| `clientId`         | YES      | Commercetools client id, unique to the client                                                               |
-| `clientSecret`     | YES      | Commercetools client secret, unique to the client                                                           |
-| `authUrl`          | YES      | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
-| `host`             | YES      | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
-| `scopes`           | NO       | Constrains endpoints the client has access to in commercetools                                              |
-| `service`          | NO       | Contains service-specific project variables                                                                 |
-| `port`             | NO       | Which port notifications should run on                                                                      |
-| `logLevel`         | NO       | Specifies how verbose logs should be. Options are listed below.                                             |
-| `logTransports`    | NO       | Specifies where the logs are written to/stored. Options listed below                                        |
+| Env variable name | Required | Notes                                                                                                       |
+| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `mollie`          | YES      | Contains Mollie-specific project variables                                                                  |
+| `apiKey`          | YES      | API key for interacting with mollie                                                                         |
+| `commercetools`   | YES      | Contains commercetools-specific project variables                                                           |
+| `projectKey`      | YES      | Commercetools project key                                                                                   |
+| `clientId`        | YES      | Commercetools client id, unique to the client                                                               |
+| `clientSecret`    | YES      | Commercetools client secret, unique to the client                                                           |
+| `authUrl`         | YES      | Commercetools authentication URL, something like https://auth.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com |
+| `host`            | YES      | Commercetools host, something like https://api.{LOCATION}.{CLOUD_PLATFORM}.commercetools.com                |
+| `scopes`          | NO       | Constrains endpoints the client has access to in commercetools                                              |
+| `service`         | NO       | Contains service-specific project variables                                                                 |
+| `port`            | NO       | Which port notifications should run on                                                                      |
+| `logLevel`        | NO       | Specifies how verbose logs should be. Options are listed below.                                             |
+| `logTransports`   | NO       | Specifies where the logs are written to/stored. Options listed below                                        |
 
 Below is an example of how these should be formatted:
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {
-      "apiKey": "mollieApiKey"
-    },
-    "commercetools": {
-      "projectKey": "example_project_key",
-      "clientId": "example_client_id",
-      "clientSecret": "example_client_secret",
-      "authUrl": "example_auth_url",
-      "host": "example_host",
-      "scopes": "example_scopes",
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      }
-    },
-    "service": {
-      "port": 3050,
-      "logLevel": "info",
-      "logTransports": "terminal"
+"CT_MOLLIE_CONFIG": {
+  "mollie": {
+    "apiKey": "mollieApiKey"
+  },
+  "commercetools": {
+    "projectKey": "example_project_key",
+    "clientId": "example_client_id",
+    "clientSecret": "example_client_secret",
+    "authUrl": "example_auth_url",
+    "host": "example_host",
+    "scopes": "example_scopes",
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
     }
+  },
+  "service": {
+    "port": 3050,
+    "logLevel": "info",
+    "logTransports": "terminal"
   }
 }
 ```

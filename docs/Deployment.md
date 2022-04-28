@@ -12,7 +12,7 @@
       - [Lambda destination](#lambda-destination)
   * [GCP functions](#gcp-functions)
   * [Azure](#azure)
-    + [[Config](#azureConfig)](#-config---azureconfig-)
+    + [Config](#config)
     + [Authentication](#authentication)
       - [Azure Functions](#azure-functions)
       - [Basic](#basic)
@@ -30,7 +30,6 @@ Here is a table to show which environment variables are necessary, and which are
 
 | Env variable name  | Required | Notes                                                                                                         |
 | ------------------ | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                         |
 | `mollie`           | YES      | Contains Mollie-specific project variables                                                                    |
 | `apiKey`           | YES      | API key for interacting with mollie, [found on the mollie dashboard](https://www.mollie.com/dashboard/)       |
 | `commercetools`    | YES      | Contains commercetools-specific project variables                                                             |
@@ -56,30 +55,28 @@ Here is a table to show which environment variables are necessary, and which are
 Below is an example of how these should be formatted:
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {
-      "apiKey": "mollieApiKey"
+"CT_MOLLIE_CONFIG": {
+  "mollie": {
+    "apiKey": "mollieApiKey"
+  },
+  "commercetools": {
+    "projectKey": "example_project_key",
+    "clientId": "example_client_id",
+    "clientSecret": "example_client_secret",
+    "authUrl": "example_auth_url",
+    "host": "example_host",
+    "scopes": "example_scopes",
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
     },
-    "commercetools": {
-      "projectKey": "example_project_key",
-      "clientId": "example_client_id",
-      "clientSecret": "example_client_secret",
-      "authUrl": "example_auth_url",
-      "host": "example_host",
-      "scopes": "example_scopes",
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      },
-      "enableRetry": true,
-    },
-    "service": {
-      "port": 3050,
-      "logLevel": "info",
-      "logTransports": "terminal"
-    }
+    "enableRetry": true,
+  },
+  "service": {
+    "port": 3050,
+    "logLevel": "info",
+    "logTransports": "terminal"
   }
 }
 ```
@@ -126,18 +123,16 @@ Log transports are where the logs are written to. If this isn't provided in the 
 This configuration runs the extension via HTTP Calls. In this mode it is recommended to enable the basic authentication
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {...},
-    "commercetools": {...
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      }
-    },
-    "service": {...}
-  }
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "service": {...}
 }
 ```
 
@@ -150,16 +145,14 @@ the detailed guide is available [here](https://docs.commercetools.com/tutorials/
 In this mode the basic authentication is optional.
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {...},
-    "commercetools": {...
-      "authentication": {
-        "isBasicAuth": false
-      }
-    },
-    "service": {...}
-  }
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": false
+    }
+  },
+  "service": {...}
 }
 ```
 
@@ -184,12 +177,12 @@ Add the following global variables into the config file:
     AZURE_FUNCTIONAPP_PACKAGE_PATH=<> _Optional_
     AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> _Optional_
 
-### [Config](#azureConfig)
+### Config
 
 [Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
 Therefore the configuration must be defined in the same format as `local.settings.json` file
 
-```
+```json
 {
   "IsEncrypted": false,
   "Values": {
@@ -200,7 +193,7 @@ Therefore the configuration must be defined in the same format as `local.setting
     "CT_MOLLIE_CONFIG:commercetools:clientId": "example_client_id",
     "CT_MOLLIE_CONFIG:commercetools:clientSecret": "example_client_secret",
     "CT_MOLLIE_CONFIG:commercetools:host": "example_host",
-    "CT_MOLLIE_CONFIG:commercetools:projectKey": "example_project_key"
+    "CT_MOLLIE_CONFIG:commercetools:projectKey": "example_project_key",
     "CT_MOLLIE_CONFIG:service:port": "example_port",
     "CT_MOLLIE_CONFIG:service:logLevel": "example_logLevel",
     "CT_MOLLIE_CONFIG:service:logTransports": "example_logTransports",
@@ -224,18 +217,16 @@ This method is supported as described in the following docs
 This method is configurable via the following settings:
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {...},
-    "commercetools": {...
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      }
-    },
-    "service": {...}
-  }
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "service": {...}
 }
 ```
 
