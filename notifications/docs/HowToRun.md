@@ -110,7 +110,7 @@ Setting up the extension as a google cloud function requires an existing functio
 
 ## Azure (experimental)
 
-Support for Azure functions will be fully supported in version 1.1.0
+Azure functions will be fully supported from version 1.1.0
 
 1. Create function named `notifications` based on HTTP trigger template. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
 3. Add the `CT_MOLLIE_CONFIG` to the function `Application settings`
