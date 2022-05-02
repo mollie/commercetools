@@ -108,43 +108,16 @@ Setting up the extension as a google cloud function requires an existing functio
 3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables`
 4. Set Runtime to `Node.js 14` and change entry point to `handler`
 
-## Azure
+## Azure (experimental)
 
-1. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
-2. Upload the generated zip file to your azure cloud function ([Guide to creating cloud functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
-3. Set Runtime to `Node.js 14` and change entry point to `handler`
+Support for Azure functions will be fully supported in version 1.1.0
 
-Add the following global variables into the config file:
+1. Create function named `notifications` based on HTTP trigger template. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+3. Add the `CT_MOLLIE_CONFIG` to the function `Application settings`
+3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the function `Application settings` and assign it value `1` 
+2. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
+3. Upload the generated zip file to your azure cloud function
 
-    AZURE_FUNCTIONAPP_NAME=<>
-    AZURE_FUNCTIONAPP_PACKAGE_PATH=<> _Optional_
-    AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> _Optional_
-
-### Azure Config
-
-[Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
-Therefore the configuration must be defined in the same format as `local.settings.json` file
-
-```
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "",
-    "CT_MOLLIE_CONFIG:mollie:apiKey": "mollieApiKey",
-    "CT_MOLLIE_CONFIG:commercetools:authUrl": "example_auth_url",
-    "CT_MOLLIE_CONFIG:commercetools:clientId": "example_client_id",
-    "CT_MOLLIE_CONFIG:commercetools:clientSecret": "example_client_secret",
-    "CT_MOLLIE_CONFIG:commercetools:host": "example_host",
-    "CT_MOLLIE_CONFIG:commercetools:projectKey": "example_project_key"
-    "CT_MOLLIE_CONFIG:service:port": "example_port",
-    "CT_MOLLIE_CONFIG:service:logLevel": "example_logLevel",
-    "CT_MOLLIE_CONFIG:service:logTransports": "example_logTransports",
-    "CT_MOLLIE_CONFIG:service:webhookUrl": "example_webhookUrl",
-    "CT_MOLLIE_CONFIG:service:redirectUrl": "example_redirectUrl",
-  }
-}
-```
 
 ## Logging
 

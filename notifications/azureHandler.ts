@@ -1,9 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { HandleRequestInput, HandleRequestSuccess } from './src/types/requestHandler';
 import querystring from 'querystring';
-
-loadSettings();
-
 import handleRequest from './src/requestHandlers/handleRequest';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
@@ -25,32 +22,5 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     };
   }
 };
-
-/*
-    Azure settings do not support nested json configuration, so it needs manual object creation
-    https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code
- */
-function loadSettings() {
-  const config = {
-    commercetools: {
-      authUrl: process.env['CT_MOLLIE_CONFIG:commercetools:authUrl'],
-      clientId: process.env['CT_MOLLIE_CONFIG:commercetools:clientId'],
-      clientSecret: process.env['CT_MOLLIE_CONFIG:commercetools:clientSecret'],
-      host: process.env['CT_MOLLIE_CONFIG:commercetools:host'],
-      projectKey: process.env['CT_MOLLIE_CONFIG:commercetools:projectKey'],
-    },
-    mollie: {
-      apiKey: process.env['CT_MOLLIE_CONFIG:mollie:apiKey'],
-    },
-    service: {
-      port: process.env['CT_MOLLIE_CONFIG:service:port'],
-      logLevel: process.env['CT_MOLLIE_CONFIG:service:logLevel'],
-      logTransports: process.env['CT_MOLLIE_CONFIG:service:logTransports'],
-      webhookUrl: process.env['CT_MOLLIE_CONFIG:service:webhookUrl'],
-      redirectUrl: process.env['CT_MOLLIE_CONFIG:service:redirectUrl'],
-    },
-  };
-  process.env.CT_MOLLIE_CONFIG = JSON.stringify(config);
-}
 
 export default httpTrigger;
