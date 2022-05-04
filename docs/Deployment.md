@@ -18,9 +18,11 @@
       - [Basic](#basic)
   * [Docker](#docker)
 
-## NodeJS Runtime
 
-The recommended runtime version is 14
+## Prerequisites
+
+Commands and scripts in this documentation require bash shell, nodejs with npm, zip and docker.
+The recommended NodeJS runtime version is 14
 
 ## Environment variables
 
