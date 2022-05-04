@@ -259,8 +259,10 @@ export default async function createOrder(
     }
 
     const cart = cartByPayment.body.results[0];
+    const missingShippingOrBillingEmail = (!cart.billingAddress.email || !cart.shippingAddress.email);
+    const shouldFetchCustomerEmail = !cart.customerEmail && missingShippingOrBillingEmail && cart.customerId;
     let customerEmail;
-    if (cart.customerId) {
+    if (shouldFetchCustomerEmail) {
       const getCustomerById = {
         ...baseRequestParams,
         uri: `/${projectKey}/customers/${cart.customerId}`
