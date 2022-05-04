@@ -75,6 +75,16 @@ AWS Lambda destinations use accessKey and accessSecret for authentication. Refer
 }
 ```
 
+## Commercetools scopes
+
+It is highly recommended to limit commercetools API client to only the scopes the project needs.
+
+The scopes needed for extension module are `manage_payments` and `view_orders` and the scope needed for notification module is `manage_payments`.
+
+If you use our script to [configure custom fields for your project](#configure-custom-fields-for-your-project), you will also need `manage_types` scope. For that we suggest creating a separate API client.
+
+You can read more about the scopes [here](https://docs.commercetools.com/api/scopes).
+
 ## Configure custom fields for your project
 
 This integration works by creating an API Extension on commercetools. This is triggered on every create and update call to Payments. It uses custom fields, which need to be created on the commercetools project.
