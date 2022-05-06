@@ -28,17 +28,22 @@ describe('makeMollieAddress', () => {
 
   it('Should use fallbackEmail if provided and its missing in ctAddress', () => {
     const fallbackEmail = 'mail@mail.mail';
-    expect(makeMollieAddress({
-      ...ctAddress,
-      email: null
-    }, fallbackEmail)).toEqual({
-      "city": "Amsterdam",
-      "country": "NL",
-      "email": fallbackEmail,
-      "familyName": "Mondriaan",
-      "givenName": "Piet",
-      "postalCode": "1234AB",
-      "streetAndNumber": "Keizersgracht 126",
+    expect(
+      makeMollieAddress(
+        {
+          ...ctAddress,
+          email: null,
+        },
+        fallbackEmail,
+      ),
+    ).toEqual({
+      city: 'Amsterdam',
+      country: 'NL',
+      email: fallbackEmail,
+      familyName: 'Mondriaan',
+      givenName: 'Piet',
+      postalCode: '1234AB',
+      streetAndNumber: 'Keizersgracht 126',
     });
   });
 });
@@ -165,17 +170,21 @@ describe('getCreateOrderParams', () => {
       .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' });
 
     const customerEmail = 'coloured_square_lover@basicart.com';
-    const response = await getCreateOrderParams(ctPayment as CTPayment, {
-      ...ctCart,
-      billingAddress: {
-        ...ctCart.billingAddress,
-        email: null
-      },
-      shippingAddress: {
-        ...ctCart.shippingAddress,
-        email: null
-      }
-    } as CTCart, customerEmail);
+    const response = await getCreateOrderParams(
+      ctPayment as CTPayment,
+      {
+        ...ctCart,
+        billingAddress: {
+          ...ctCart.billingAddress,
+          email: null,
+        },
+        shippingAddress: {
+          ...ctCart.shippingAddress,
+          email: null,
+        },
+      } as CTCart,
+      customerEmail,
+    );
 
     expect(response).toMatchObject(mollieCreateOrderParams);
   });
@@ -195,18 +204,21 @@ describe('getCreateOrderParams', () => {
       .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' });
 
     const customerEmail = 'coloured_square_lover@basicart.com';
-    const response = await getCreateOrderParams(ctPayment as CTPayment, {
-      ...ctCart,
-      customerEmail,
-      billingAddress: {
-        ...ctCart.billingAddress,
-        email: null
-      },
-      shippingAddress: {
-        ...ctCart.shippingAddress,
-        email: null
-      }
-    } as CTCart);
+    const response = await getCreateOrderParams(
+      ctPayment as CTPayment,
+      {
+        ...ctCart,
+        customerEmail,
+        billingAddress: {
+          ...ctCart.billingAddress,
+          email: null,
+        },
+        shippingAddress: {
+          ...ctCart.shippingAddress,
+          email: null,
+        },
+      } as CTCart,
+    );
 
     expect(response).toMatchObject(mollieCreateOrderParams);
   });

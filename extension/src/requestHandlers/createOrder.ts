@@ -246,11 +246,11 @@ export default async function createOrder(
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-      }
+      },
     };
     const getCartByPaymentOptions = {
       ...baseRequestParams,
-      uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`
+      uri: `/${projectKey}/carts?where=paymentInfo(payments(id%3D%22${paymentId}%22))`,
     };
     const cartByPayment = await commercetoolsClient.execute(getCartByPaymentOptions);
     if (!cartByPayment.body.results.length) {
@@ -259,13 +259,13 @@ export default async function createOrder(
     }
 
     const cart = cartByPayment.body.results[0];
-    const missingShippingOrBillingEmail = (!cart.billingAddress.email || !cart.shippingAddress.email);
+    const missingShippingOrBillingEmail = !cart.billingAddress.email || !cart.shippingAddress.email;
     const shouldFetchCustomerEmail = !cart.customerEmail && missingShippingOrBillingEmail && cart.customerId;
     let customerEmail;
     if (shouldFetchCustomerEmail) {
       const getCustomerById = {
         ...baseRequestParams,
-        uri: `/${projectKey}/customers/${cart.customerId}`
+        uri: `/${projectKey}/customers/${cart.customerId}`,
       };
       const customerById = await commercetoolsClient.execute(getCustomerById);
       if (customerById.body && customerById.body.email) {
