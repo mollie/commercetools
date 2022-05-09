@@ -277,7 +277,7 @@ export default async function createOrder(
     Logger.debug('orderParams: %o', orderParams);
     const mollieCreatedOrder = await mollieClient.orders.create(orderParams);
     Logger.debug('mollieCreatedOrder: %o', mollieCreatedOrder);
-    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment, cartByPayment.id);
+    const ctActions = await createCtActions(mollieCreatedOrder, ctPayment, cart.id);
     return {
       actions: ctActions,
       status: 201,
