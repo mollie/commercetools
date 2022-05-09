@@ -1,6 +1,6 @@
 {
   "name": "mollie-commercetools-notification-module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Mollie",
   "description": "Integration between commercetools and mollie payment service provider",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "delete-specific-cloud-handlers": "rm build/*Handler.js",
     "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
     "zip-aws-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
-    "zip-azure-function": "npm ci && npm run build && cp build/azureHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../notification-module.zip . && rm index.js",
+    "zip-azure-function": "npm ci && npm run build && mkdir -p notifications-azure/notifications && cp build/azureHandler.js notifications-azure/notifications/index.js && npm run delete-specific-cloud-handlers && cp -r build/ notifications-azure/notifications/ && cp -R node_modules notifications-azure/notifications/ && cp -r config/azureFunction/ notifications-azure/ && cd notifications-azure && mv function.json notifications/ && zip -r ../notification-module-azure.zip . && cd .. && rm -r notifications-azure",
     "test": "jest",
     "test:coverage": "jest --coverage --coverageReporters='text-summary'",
     "test:watch": "jest --watch",

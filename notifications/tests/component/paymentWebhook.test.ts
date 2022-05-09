@@ -32,7 +32,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
   });
 
   it('should update the commercetools transaction state when transaction state is different than Mollie payment status', async () => {
-    const mockBody = { id: 'tr_ncaPcAhuUV' };
+    const mockBody = 'id=tr_ncaPcAhuUV';
     const mockPaidPaymentNoRefund = omit(mockPaidPayment, '_embedded');
     const expectedUpdateBody = {
       version: 25,
@@ -62,7 +62,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
   });
   it('should add the commercetools transaction when none of existing transactions correspond to Mollie payment', async () => {
     const newId = 'tr_3nPcU3Epcj';
-    const mockBody = { id: newId };
+    const mockBody = `id=${newId}`;
     const mockPaidPaymentNoRefund = omit(mockPaidPayment, '_embedded');
     mockPaidPaymentNoRefund.id = newId;
     const expectedUpdateBody = {
@@ -101,7 +101,7 @@ describe('Webhook triggered with Mollie payment ID as payload', () => {
     expect(ctUpdatePaymentScope.isDone()).toBe(true);
   });
   it('should update refund status', async () => {
-    const mockBody = { id: 'tr_ncaPcAhuUV' };
+    const mockBody = 'id=tr_ncaPcAhuUV';
     ctPaymentResponse.transactions = [
       {
         id: '2020335e-1ea2-4d49-b45b-14a078f589a6',

@@ -13,7 +13,15 @@
 
 ## Overview
 
-To create an order on Mollie, we get required parameters from the commercetools Cart and Payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the Payment's custom field `createPayment`. Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
+To create an order on Mollie, we get required parameters from the commercetools Cart and Payment. Payment must be added to a cart on commercetools before adding the initial transaction. Additionally, some parameters can be passed on the Payment's custom field `createPayment`. 
+
+These steps must be followed to trigger order creation on mollie from commercetools:
+1. Create a Cart
+2. Create a Payment
+3. Link the Payment to the Cart (ref Payment ID)
+4. Add Transaction to the Payment (this triggers extension to create an order on Mollie)
+
+Below are some conversion tables, as well as JSON representations of the calls being mapped from commercetools to Mollie.
 
 ## Parameters map
 
@@ -101,7 +109,7 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 
 Mollie only requires billing address to create the order. However, we require shipping address as commercetools does not calculate the tax price for each line item without the shipping address being set.
 
-| Parameter (CT Cart billingAddress/shippingAddress) | Parameter (Mollie)                            | Required |
+| Parameter (CT Cart billingAddress/shippingAddress/customerEmail/customer's email) | Parameter (Mollie)                            | Required |
 | -------------------------------------------------- | --------------------------------------------- | -------- |
 | `firstName: "Piet"`                                | `givenName: "Piet"`                           | YES      |
 | `lastName: "Mondriaan"`                            | `familyName: "Mondriaan"`                     | YES      |
@@ -126,6 +134,7 @@ Mollie only requires billing address to create the order. However, we require sh
     "lastMessageSequenceNumber": 1,
     "createdAt": "2021-12-16T08:19:12.591Z",
     "lastModifiedAt": "2021-12-16T08:21:09.902Z",
+    "customerEmail": "coloured_square_lover@basicart.com",
     "lastModifiedBy": {
         "clientId": "A-7gCPuzUQnNSdDwlOCC",
         "isPlatformClient": false

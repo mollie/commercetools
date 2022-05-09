@@ -12,15 +12,17 @@
       - [Lambda destination](#lambda-destination)
   * [GCP functions](#gcp-functions)
   * [Azure](#azure)
-    + [[Config](#azureConfig)](#-config---azureconfig-)
+    + [Config](#config)
     + [Authentication](#authentication)
       - [Azure Functions](#azure-functions)
       - [Basic](#basic)
   * [Docker](#docker)
 
-## NodeJS Runtime
 
-The recommended runtime version is 14
+## Prerequisites
+
+Commands and scripts in this documentation require bash shell, nodejs with npm, zip and docker.
+The recommended NodeJS runtime version is 14
 
 ## Environment variables
 
@@ -30,7 +32,6 @@ Here is a table to show which environment variables are necessary, and which are
 
 | Env variable name  | Required | Notes                                                                                                         |
 | ------------------ | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `CT_MOLLIE_CONFIG` | YES      | Contains the commercetools & mollie project variables                                                         |
 | `mollie`           | YES      | Contains Mollie-specific project variables                                                                    |
 | `apiKey`           | YES      | API key for interacting with mollie, [found on the mollie dashboard](https://www.mollie.com/dashboard/)       |
 | `commercetools`    | YES      | Contains commercetools-specific project variables                                                             |
@@ -56,30 +57,28 @@ Here is a table to show which environment variables are necessary, and which are
 Below is an example of how these should be formatted:
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {
-      "apiKey": "mollieApiKey"
+"CT_MOLLIE_CONFIG": {
+  "mollie": {
+    "apiKey": "mollieApiKey"
+  },
+  "commercetools": {
+    "projectKey": "example_project_key",
+    "clientId": "example_client_id",
+    "clientSecret": "example_client_secret",
+    "authUrl": "example_auth_url",
+    "host": "example_host",
+    "scopes": "example_scopes",
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
     },
-    "commercetools": {
-      "projectKey": "example_project_key",
-      "clientId": "example_client_id",
-      "clientSecret": "example_client_secret",
-      "authUrl": "example_auth_url",
-      "host": "example_host",
-      "scopes": "example_scopes",
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      },
-      "enableRetry": true,
-    },
-    "service": {
-      "port": 3050,
-      "logLevel": "info",
-      "logTransports": "terminal"
-    }
+    "enableRetry": true,
+  },
+  "service": {
+    "port": 3050,
+    "logLevel": "info",
+    "logTransports": "terminal"
   }
 }
 ```
@@ -126,18 +125,16 @@ Log transports are where the logs are written to. If this isn't provided in the 
 This configuration runs the extension via HTTP Calls. In this mode it is recommended to enable the basic authentication
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {...},
-    "commercetools": {...
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      }
-    },
-    "service": {...}
-  }
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "service": {...}
 }
 ```
 
@@ -150,16 +147,14 @@ the detailed guide is available [here](https://docs.commercetools.com/tutorials/
 In this mode the basic authentication is optional.
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {...},
-    "commercetools": {...
-      "authentication": {
-        "isBasicAuth": false
-      }
-    },
-    "service": {...}
-  }
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": false
+    }
+  },
+  "service": {...}
 }
 ```
 
@@ -172,50 +167,23 @@ Setting up the extension as a google cloud function requires an existing functio
 3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables`
 4. Set Runtime to `Node.js 14` and change entry point to `handler`
 
-## Azure
+## Azure (experimental)
 
-1. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
-2. Upload the generated zip file to your azure cloud function ([Guide to creating cloud functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
-3. Set Runtime to `Node.js 14` and change entry point to `handler`
+Azure functions will be fully supported from version 1.1.0
 
-Add the following global variables into the config file:
+1. Create functions named `extension` and `notifications` based on HTTP trigger template. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+2. Add the `CT_MOLLIE_CONFIG` to the functions `Application settings`
+3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the functions `Application settings` and assign it value `1` 
+4. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
+5. Upload the generated zip file to your azure cloud function
 
-    AZURE_FUNCTIONAPP_NAME=<>
-    AZURE_FUNCTIONAPP_PACKAGE_PATH=<> _Optional_
-    AZURE_FUNCTIONAPP_PUBLISH_PROFILE=<> _Optional_
-
-### [Config](#azureConfig)
-
-[Azure config doesn't support nested json configurations](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node?tabs=v2#access-environment-variables-in-code)
-Therefore the configuration must be defined in the same format as `local.settings.json` file
-
-```
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "",
-    "CT_MOLLIE_CONFIG:mollie:apiKey": "mollieApiKey",
-    "CT_MOLLIE_CONFIG:commercetools:authUrl": "example_auth_url",
-    "CT_MOLLIE_CONFIG:commercetools:clientId": "example_client_id",
-    "CT_MOLLIE_CONFIG:commercetools:clientSecret": "example_client_secret",
-    "CT_MOLLIE_CONFIG:commercetools:host": "example_host",
-    "CT_MOLLIE_CONFIG:commercetools:projectKey": "example_project_key"
-    "CT_MOLLIE_CONFIG:service:port": "example_port",
-    "CT_MOLLIE_CONFIG:service:logLevel": "example_logLevel",
-    "CT_MOLLIE_CONFIG:service:logTransports": "example_logTransports",
-    "CT_MOLLIE_CONFIG:service:webhookUrl": "example_webhookUrl",
-    "CT_MOLLIE_CONFIG:service:redirectUrl": "example_redirectUrl",
-  }
-}
-```
 
 ### Authentication
 
 #### Azure Functions
 
-This method is supported as described in the following docs  
-[CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)  
+This method is currently not supported out of the box, but it can be manually added as described in the following docs: 
+[CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)
 [CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azure-functions-authentication)
 [Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)
 
@@ -224,18 +192,16 @@ This method is supported as described in the following docs
 This method is configurable via the following settings:
 
 ```json
-{
-  "CT_MOLLIE_CONFIG": {
-    "mollie": {...},
-    "commercetools": {...
-      "authentication": {
-        "isBasicAuth": true,
-        "username": "username",
-        "password": "password"
-      }
-    },
-    "service": {...}
-  }
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "service": {...}
 }
 ```
 

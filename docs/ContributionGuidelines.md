@@ -5,9 +5,13 @@
 
 ## Prerequisites
 
+To merge your changes, your commits must be [signed](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
+
 Minimum requirements are:
-- **Node.js** version 14.
+- **Node.js** version 14
 - **Npm** version 8.1.0
+- **Bash** shell
+- **Signed** git commits
 
 You can install all dependencies using `npm` with following command:
 

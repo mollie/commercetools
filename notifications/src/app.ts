@@ -3,7 +3,7 @@ import handler from '../expressHandler';
 
 const app: Application = express();
 
-app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', (req, res) => {
   res.send('Ok');
