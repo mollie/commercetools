@@ -25,6 +25,27 @@ describe('makeMollieAddress', () => {
   it('Should properly map address fields', () => {
     expect(makeMollieAddress(ctAddress)).toMatchSnapshot();
   });
+
+  it('Should use fallbackEmail if provided and its missing in ctAddress', () => {
+    const fallbackEmail = 'mail@mail.mail';
+    expect(
+      makeMollieAddress(
+        {
+          ...ctAddress,
+          email: null,
+        },
+        fallbackEmail,
+      ),
+    ).toEqual({
+      city: 'Amsterdam',
+      country: 'NL',
+      email: fallbackEmail,
+      familyName: 'Mondriaan',
+      givenName: 'Piet',
+      postalCode: '1234AB',
+      streetAndNumber: 'Keizersgracht 126',
+    });
+  });
 });
 
 describe('extractLocalizedName', () => {
@@ -132,6 +153,74 @@ describe('getCreateOrderParams', () => {
       .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' });
 
     await expect(getCreateOrderParams(ctPayment as CTPayment, ctCart as CTCart)).resolves.toMatchObject(mollieCreateOrderParams);
+  });
+  it('Should make create order parameters using customerEmail optional third argument', async () => {
+    mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '1.42', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '0.25', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.58', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.50', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '7.12', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '1.24', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.88', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '-1.50', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '-1.50', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' });
+
+    const customerEmail = 'coloured_square_lover@basicart.com';
+    const response = await getCreateOrderParams(
+      ctPayment as CTPayment,
+      {
+        ...ctCart,
+        billingAddress: {
+          ...ctCart.billingAddress,
+          email: null,
+        },
+        shippingAddress: {
+          ...ctCart.shippingAddress,
+          email: null,
+        },
+      } as CTCart,
+      customerEmail,
+    );
+
+    expect(response).toMatchObject(mollieCreateOrderParams);
+  });
+  it('Should make create order parameters using cart.customerEmail field', async () => {
+    mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '1.42', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '0.25', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.58', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.50', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '7.12', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '1.24', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '2.88', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '-1.50', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '-1.50', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' });
+
+    const customerEmail = 'coloured_square_lover@basicart.com';
+    const response = await getCreateOrderParams(
+      ctPayment as CTPayment,
+      {
+        ...ctCart,
+        customerEmail,
+        billingAddress: {
+          ...ctCart.billingAddress,
+          email: null,
+        },
+        shippingAddress: {
+          ...ctCart.shippingAddress,
+          email: null,
+        },
+      } as CTCart,
+    );
+
+    expect(response).toMatchObject(mollieCreateOrderParams);
   });
   it('Should return error if no billing address on cart', async () => {
     const expectedError = {
