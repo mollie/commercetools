@@ -11,7 +11,7 @@
     "delete-specific-cloud-handlers": "rm build/*Handler.js",
     "zip-gcp-function": "npm ci && npm run build && cp build/gcpFunctionHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
     "zip-aws-lambda": "npm ci && npm run build && cp build/lambdaHandler.js build/index.js && npm run delete-specific-cloud-handlers && cp -R node_modules build/ && cd build && zip -r ../extension-module.zip . && rm index.js",
-    "zip-azure-function": "npm ci && npm run build && mkdir -p extension-azure/extension && cp build/azureHandler.js extension-azure/extension/index.js && npm run delete-specific-cloud-handlers && cp -r build/ extension-azure/extension/ && cp -R node_modules extension-azure/extension/ && cp -r config/azureFunction/ extension-azure/ && cd extension-azure && mv function.json extension/ && zip -r ../extension-module-azure.zip . && cd .. && rm -r extension-azure",
+    "zip-azure-function": "npm ci && npm run build && mkdir -p extension-azure/extension && cp build/azureHandler.js extension-azure/extension/index.js && npm run delete-specific-cloud-handlers && cp -R build/. extension-azure/extension/. && cp -R node_modules extension-azure/extension/. && cp -R config/azureFunction/. extension-azure/. && cd extension-azure && mv function.json extension/ && zip -r ../extension-module-azure.zip . && cd .. && rm -r extension-azure",
     "test": "jest",
     "test:coverage": "jest --coverage --coverageReporters='text-summary'",
     "test:watch": "jest --watch",
