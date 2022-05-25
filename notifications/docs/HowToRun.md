@@ -105,7 +105,7 @@ Setting up the extension as a google cloud function requires an existing functio
 
 1. Run `npm run zip-gcp-function` from the repository root directory (where package.json is located)
 2. Upload the generated zip file to your google cloud function ([Guide to creating cloud functions](https://cloud.google.com/functions/docs#training-and-tutorials))
-3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables`
+3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables` as JSON object.
 4. Set Runtime to `Node.js 14` and change entry point to `handler`
 
 ## Azure (experimental)
@@ -113,7 +113,7 @@ Setting up the extension as a google cloud function requires an existing functio
 Azure functions will be fully supported from version 1.1.0
 
 1. Create function named `notifications` based on HTTP trigger template. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
-2. Add the `CT_MOLLIE_CONFIG` to the function `Application settings`
+2. Add the `CT_MOLLIE_CONFIG` to the function `Application settings` as JSON object.
 3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the function `Application settings` and assign it value `1`
 4. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
 5. Upload the generated zip file to your azure cloud function
