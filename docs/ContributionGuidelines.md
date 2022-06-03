@@ -33,7 +33,7 @@ At the moment there is no automated release scripts, which means we do releases 
 
 Release following these steps:
 
-1. Create anc check out release branch off develop once it is ready `release/<tag>`.
+1. Create and check out release branch off develop once new features are ready to be released (`release/<tag>`).
 2. Bump [version](https://semver.org/) on npm packages (both extension and notifications). Commit changes on release branch.
 3. Create PR and merge release branch to main. Do not squash commits at this stage.
 4. Create a new tag on main and create release on [GitHub](https://github.com/mollie/commercetools/releases).
