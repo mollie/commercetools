@@ -4,7 +4,7 @@ import { version } from '../../package.json';
 
 export default function initialiseMollieClient(): MollieClient {
   const mollieApiKey = config.mollie.apiKey;
-  const mollieUserAgentString = `MollieCommercetools-extension/${version}`;
-  const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentString });
+  const mollieUserAgentStrings = [`MollieCommercetools-extension/${version}`, 'uap/NJTCs6RvSnqbvawh'];
+  const mollieClient = createMollieClient({ apiKey: mollieApiKey, versionStrings: mollieUserAgentStrings });
   return mollieClient;
 }
