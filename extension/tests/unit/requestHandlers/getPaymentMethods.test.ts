@@ -1,7 +1,5 @@
-import { mocked } from 'ts-jest/utils';
 import { MollieClient } from '@mollie/api-client';
 import MethodsBinder from '@mollie/api-client/dist/types/src/binders/methods/MethodsBinder';
-// import MethodsResource from '@mollie/api-client/dist/types/src/resources/methods/MethodsResource';
 import { CTPayment } from '../../../src/types/index';
 import getPaymentMethods from '../../../src/requestHandlers/getPaymentMethods';
 import { makeMollieAmount, createDateNowString } from '../../../src/utils';
@@ -24,11 +22,11 @@ describe('GetPaymentMethods', () => {
 
   beforeAll(() => {
     Logger.error = mockLogError;
-    mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
+    jest.mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   beforeEach(() => {
     mockMethodsBinder.list = mockList;
-    mocked(makeMollieAmount).mockReturnValue({ value: '11.00', currency: 'EUR' });
+    jest.mocked(makeMollieAmount).mockReturnValue({ value: '11.00', currency: 'EUR' });
   });
 
   afterAll(() => {
@@ -43,7 +41,7 @@ describe('GetPaymentMethods', () => {
   });
 
   it('Should return status and one update action for commercetools', async () => {
-    mocked(makeActions.setCustomField).mockReturnValueOnce({
+    jest.mocked(makeActions.setCustomField).mockReturnValueOnce({
       action: 'setCustomField',
       name: 'paymentMethodsResponse',
       value:
@@ -97,7 +95,7 @@ describe('GetPaymentMethods', () => {
   });
 
   it('Should return NO_PAYMENT_METHODS when methods returned are empty', async () => {
-    mocked(makeActions.setCustomField).mockReturnValueOnce({
+    jest.mocked(makeActions.setCustomField).mockReturnValueOnce({
       action: 'setCustomField',
       name: 'paymentMethodsResponse',
       value: '{"count":0,"methods":"NO_AVAILABLE_PAYMENT_METHODS"}',
@@ -211,7 +209,7 @@ describe('Get Payment Methods - extractMethodListParameters', () => {
 
   beforeEach(() => {
     mockMethodsBinder.list = mockList;
-    mocked(makeMollieAmount).mockReturnValue({ value: '11.00', currency: 'EUR' });
+    jest.mocked(makeMollieAmount).mockReturnValue({ value: '11.00', currency: 'EUR' });
   });
 
   afterAll(() => {

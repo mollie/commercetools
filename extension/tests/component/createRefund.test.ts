@@ -3,7 +3,7 @@ import request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import { CTTransactionState, CTTransactionType } from '../../src/types';
 import _ from 'lodash';
-import { mocked } from 'ts-jest/utils';
+
 import app from '../../src/app';
 import config from '../../config/config';
 import Logger from '../../src/logger/logger';
@@ -45,7 +45,7 @@ describe('Create Refund', () => {
   beforeAll(() => {
     // Ensure consistent uuid and datetime
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-11-10T14:02:45.858Z');
-    mocked(uuid).mockReturnValue('b2bd1698-9923-4704-9729-02db2de495d1');
+    jest.mocked(uuid).mockReturnValue('b2bd1698-9923-4704-9729-02db2de495d1');
     // Credentials authentication flow is called first by commercetools client
     authTokenScope = nock(`${authUrl}`).persist().post('/oauth/token').reply(200, {
       access_token: 'vkFuQ6oTwj8_Ye4eiRSsqMeqLYNeQRJi',

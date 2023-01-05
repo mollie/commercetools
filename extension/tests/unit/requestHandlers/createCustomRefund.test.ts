@@ -1,6 +1,5 @@
 import { MollieClient, Refund } from '@mollie/api-client';
 import _ from 'lodash';
-import { mocked } from 'ts-jest/utils';
 import PaymentRefundsBinder from '@mollie/api-client/dist/types/src/binders/payments/refunds/PaymentRefundsBinder';
 import { ControllerAction, CTPayment, CTTransaction, CTTransactionState, CTTransactionType } from '../../../src/types';
 import Logger from '../../../src/logger/logger';
@@ -59,10 +58,10 @@ describe('createCustomRefund', () => {
   });
 
   describe('201 - Success', () => {
-    mocked(makeActions.changeTransactionInteractionId).mockReturnValue({} as any);
-    mocked(makeActions.changeTransactionState).mockReturnValue({} as any);
-    mocked(makeActions.changeTransactionTimestamp).mockReturnValue({} as any);
-    mocked(makeActions.addInterfaceInteraction).mockReturnValue({} as any);
+    jest.mocked(makeActions.changeTransactionInteractionId).mockReturnValue({} as any);
+    jest.mocked(makeActions.changeTransactionState).mockReturnValue({} as any);
+    jest.mocked(makeActions.changeTransactionTimestamp).mockReturnValue({} as any);
+    jest.mocked(makeActions.addInterfaceInteraction).mockReturnValue({} as any);
 
     it('should successfully call mollie create payment refund and return 201 response - pay now', async () => {
       const ctPayment = _.cloneDeep(baseCTPayment);
