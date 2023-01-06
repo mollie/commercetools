@@ -1,5 +1,4 @@
 import { v4 as uuid } from 'uuid';
-import { mocked } from 'ts-jest/utils';
 import { CTPayment } from '../../../src/types';
 import createShipment, { getShipmentParams, createCtActions } from '../../../src/requestHandlers/createShipment';
 import Logger from '../../../src/logger/logger';
@@ -134,7 +133,7 @@ describe('getShipmentParams', () => {
 describe('createCtActions', () => {
   beforeAll(() => {
     const mockUuid = '3fea7470-5434-4056-a829-a187339e94d8';
-    mocked(uuid).mockReturnValue(mockUuid);
+    jest.mocked(uuid).mockReturnValue(mockUuid);
   });
   afterAll(() => {
     jest.clearAllMocks();

@@ -1,5 +1,4 @@
 import { v4 as uuid } from 'uuid';
-import { mocked } from 'ts-jest/utils';
 import { Order, OrderLineType } from '@mollie/api-client';
 import { cloneDeep, omit } from 'lodash';
 import { makeMollieAmount } from '../../../src/utils';
@@ -81,7 +80,8 @@ describe('extractLocalizedName', () => {
 
 describe('makeMollieLineCustom', () => {
   it('Should make correct customLineItem parameters', () => {
-    mocked(makeMollieAmount)
+    jest
+      .mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '-1.50', currency: 'EUR' }) // unitPrice
       .mockReturnValueOnce({ value: '-1.50', currency: 'EUR' }) // totalAmount
       .mockReturnValueOnce({ value: '-0.26', currency: 'EUR' }); // vatAmount
@@ -104,7 +104,8 @@ describe('makeMollieLineCustom', () => {
 
 describe('makeMollieLine', () => {
   it('Should make correct lineItem parameters', () => {
-    mocked(makeMollieAmount)
+    jest
+      .mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '2.00', currency: 'EUR' }) // unitPrice
       .mockReturnValueOnce({ value: '1.42', currency: 'EUR' }) // totalAmount
       .mockReturnValueOnce({ value: '0.25', currency: 'EUR' }) // vatAmount
@@ -138,7 +139,8 @@ describe('getCreateOrderParams', () => {
     jest.clearAllMocks();
   });
   it('Should make create order parameters', async () => {
-    mocked(makeMollieAmount)
+    jest
+      .mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
       .mockReturnValueOnce({ value: '2.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '1.42', currency: 'EUR' })
@@ -155,7 +157,8 @@ describe('getCreateOrderParams', () => {
     await expect(getCreateOrderParams(ctPayment as CTPayment, ctCart as CTCart)).resolves.toMatchObject(mollieCreateOrderParams);
   });
   it('Should make create order parameters using customerEmail optional third argument', async () => {
-    mocked(makeMollieAmount)
+    jest
+      .mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
       .mockReturnValueOnce({ value: '2.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '1.42', currency: 'EUR' })
@@ -189,7 +192,8 @@ describe('getCreateOrderParams', () => {
     expect(response).toMatchObject(mollieCreateOrderParams);
   });
   it('Should make create order parameters using cart.customerEmail field', async () => {
-    mocked(makeMollieAmount)
+    jest
+      .mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '7.04', currency: 'EUR' })
       .mockReturnValueOnce({ value: '2.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '1.42', currency: 'EUR' })
@@ -243,8 +247,8 @@ describe('getCreateOrderParams', () => {
 describe('createCTActions', () => {
   beforeAll(() => {
     const mockUuid = '3fea7470-5434-4056-a829-a187339e94d8';
-    mocked(uuid).mockReturnValue(mockUuid);
-    // mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
+    jest.mocked(uuid).mockReturnValue(mockUuid);
+    // jest.mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-12-15T08:21:15.495Z');
   });
 
@@ -425,7 +429,11 @@ describe('makeMollieLines - shipping', () => {
   };
 
   it('should create mollie order line for shipping with correct amount', () => {
-    mocked(makeMollieAmount).mockReturnValueOnce({ value: '10.00', currency: 'EUR' }).mockReturnValueOnce({ value: '10.00', currency: 'EUR' }).mockReturnValueOnce({ value: '1.74', currency: 'EUR' });
+    jest
+      .mocked(makeMollieAmount)
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
+      .mockReturnValueOnce({ value: '1.74', currency: 'EUR' });
     const orderLine = makeMollieLineShipping(shippingInfo);
     expect(orderLine).toEqual({
       type: OrderLineType.shipping_fee,
@@ -448,7 +456,8 @@ describe('makeMollieLines - shipping', () => {
   });
 
   it('should create mollie order line for shipping and handle discount amount', () => {
-    mocked(makeMollieAmount)
+    jest
+      .mocked(makeMollieAmount)
       .mockReturnValueOnce({ value: '10.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '0.00', currency: 'EUR' })
       .mockReturnValueOnce({ value: '0.00', currency: 'EUR' })

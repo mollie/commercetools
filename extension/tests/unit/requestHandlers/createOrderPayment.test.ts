@@ -1,6 +1,5 @@
 import { Payment } from '@mollie/api-client';
 import { v4 as uuid } from 'uuid';
-import { mocked } from 'ts-jest/utils';
 import createOrderPayment, { getOrdersPaymentsParams, createCtActions } from '../../../src/requestHandlers/createOrderPayment';
 import { Action, CTPayment, CTTransactionState } from '../../../src/types';
 import { makeActions } from '../../../src/makeActions';
@@ -140,7 +139,7 @@ describe('createCtActions', () => {
     await expect(createCtActions({} as any as Payment, mockCtPayment)).rejects.toMatchObject(expectedError);
   });
   it('Should return an error when generating actions fails', async () => {
-    mocked(uuid).mockImplementationOnce(() => {
+    jest.mocked(uuid).mockImplementationOnce(() => {
       throw new Error('Test error');
     });
     const mockCtPayment = {

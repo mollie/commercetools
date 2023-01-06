@@ -7,7 +7,7 @@ export default async function getPaymentDetailsById(paymentId: string, mollieCli
     return payment;
   } catch (error: any) {
     Logger.debug('Error in getPaymentDetailsById');
-    if (error.status === 404) {
+    if (error.statusCode === 404) {
       return Promise.reject({ status: 404, source: 'mollie', message: error.message });
     } else {
       throw error;

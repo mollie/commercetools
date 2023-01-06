@@ -1,5 +1,4 @@
 import { v4 as uuid } from 'uuid';
-import { mocked } from 'ts-jest/utils';
 import { Order } from '@mollie/api-client';
 import { Action, CTPayment, CTTransaction } from '../../../src/types';
 import cancelOrder, { getCancelOrderParams, createCtActions } from '../../../src/requestHandlers/cancelOrder';
@@ -29,8 +28,8 @@ describe('getCancelOrderParams', () => {
       },
     } as CTTransaction;
     const mockMollieLines = [{ id: 'odl_1.tlaa3w' }, { id: 'odl_1.6997yo' }, { id: 'odl_1.cgark2' }];
-    mocked(findInitialTransaction).mockReturnValue(mockTransaction);
-    mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
+    jest.mocked(findInitialTransaction).mockReturnValue(mockTransaction);
+    jest.mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
     const mockCtPayment = {
       key: 'ord_3uwvfd',
       transactions: [mockTransaction],
@@ -90,8 +89,8 @@ describe('getCancelOrderParams', () => {
       },
     } as CTTransaction;
     const mockMollieLines = [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '5.00', currency: 'EUR' } }, { id: 'odl_1.cgark2' }];
-    mocked(findInitialTransaction).mockReturnValue(mockTransaction);
-    mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
+    jest.mocked(findInitialTransaction).mockReturnValue(mockTransaction);
+    jest.mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
 
     const mockCtPayment = {
       key: 'ord_3uwvfd',
@@ -133,8 +132,8 @@ describe('getCancelOrderParams', () => {
 describe('createCtActions', () => {
   beforeEach(() => {
     const mockUuid = '3fea7470-5434-4056-a829-a187339e94d8';
-    mocked(uuid).mockReturnValue(mockUuid);
-    mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
+    jest.mocked(uuid).mockReturnValue(mockUuid);
+    jest.mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -151,7 +150,7 @@ describe('createCtActions', () => {
         },
       },
     } as CTTransaction;
-    mocked(findInitialTransaction).mockReturnValue(initialTransaction);
+    jest.mocked(findInitialTransaction).mockReturnValue(initialTransaction);
     const mockCtPayment = {
       key: 'ord_3uwvfd',
       transactions: [initialTransaction],
@@ -170,8 +169,8 @@ describe('createCtActions', () => {
       state: 'Initial',
       custom: { fields: {} },
     } as CTTransaction;
-    mocked(findInitialTransaction).mockReturnValue(initialTransaction);
-    mocked(mollieToCtLines).mockReturnValue('42c6d1fd-b942-433b-b6dd-41062c4b3a42');
+    jest.mocked(findInitialTransaction).mockReturnValue(initialTransaction);
+    jest.mocked(mollieToCtLines).mockReturnValue('42c6d1fd-b942-433b-b6dd-41062c4b3a42');
     const mockCtPayment = {
       key: 'ord_1wg40y',
       transactions: [initialTransaction],
@@ -207,13 +206,13 @@ describe('cancelOrder', () => {
   const mockLoggerError = jest.fn();
   beforeEach(() => {
     Logger.error = mockLoggerError;
-    mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
+    jest.mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterEach(() => {
     jest.clearAllMocks();
   });
   it('Should call mollie, handle response and return actions when cancelling complete order', async () => {
-    mocked(isPartialTransaction).mockReturnValue(false);
+    jest.mocked(isPartialTransaction).mockReturnValue(false);
     const mockedCtPayment: any = {
       key: 'ord_jwtj05',
     };
@@ -247,7 +246,7 @@ describe('cancelOrder', () => {
     expect(cancelOrderRes.status).toBe(200);
   });
   it('Should call mollie, handle response and return actions when cancelling partial order', async () => {
-    mocked(isPartialTransaction).mockReturnValue(true);
+    jest.mocked(isPartialTransaction).mockReturnValue(true);
     const mockedCtPayment: any = {
       key: 'ord_jwtj05',
       transactions: [
