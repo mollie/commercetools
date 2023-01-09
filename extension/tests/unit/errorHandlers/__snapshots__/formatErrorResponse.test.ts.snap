@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`formatErrorResponse should return Bad request when error's status is 400 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "SyntaxError",
-    "extensionExtraInfo": Object {
+    "extensionExtraInfo": {
       "field": "amount.value",
-      "links": Object {
-        "documentation": Object {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/overview/handling-errors",
           "type": "text/html",
         },
@@ -21,12 +21,12 @@ Array [
 `;
 
 exports[`formatErrorResponse should return Forbidden when error's status is 403 or 4O1 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "Unauthorized",
-    "extensionExtraInfo": Object {
-      "links": Object {
-        "documentation": Object {
+    "extensionExtraInfo": {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/overview/authentication",
           "type": "text/html",
         },
@@ -40,12 +40,12 @@ Array [
 `;
 
 exports[`formatErrorResponse should return General error when the error's status is greater or equal to 500 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "General",
-    "extensionExtraInfo": Object {
-      "links": Object {
-        "documentation": Object {
+    "extensionExtraInfo": {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/overview/handling-errors",
           "type": "text/html",
         },
@@ -59,12 +59,12 @@ Array [
 `;
 
 exports[`formatErrorResponse should return InvalidOperation when error's status is 409 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "InvalidOperation",
-    "extensionExtraInfo": Object {
-      "links": Object {
-        "documentation": Object {
+    "extensionExtraInfo": {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/overview/handling-errors",
           "type": "text/html",
         },
@@ -78,12 +78,12 @@ Array [
 `;
 
 exports[`formatErrorResponse should return Not Found when error's status is 404 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "ObjectNotFound",
-    "extensionExtraInfo": Object {
-      "links": Object {
-        "documentation": Object {
+    "extensionExtraInfo": {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/overview/handling-errors",
           "type": "text/html",
         },
@@ -97,12 +97,12 @@ Array [
 `;
 
 exports[`formatErrorResponse should return Unprocessable Entity when error's status is 422 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "SemanticError",
-    "extensionExtraInfo": Object {
-      "links": Object {
-        "documentation": Object {
+    "extensionExtraInfo": {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/reference/v2/orders-api/create-order-payment",
           "type": "text/html",
         },
@@ -116,13 +116,13 @@ Array [
 `;
 
 exports[`formatErrorResponse should return a general 4xx error when the error's status is 4xx, but not 400, 401 or 403 1`] = `
-Array [
-  Object {
+[
+  {
     "code": "SyntaxError",
-    "extensionExtraInfo": Object {
+    "extensionExtraInfo": {
       "field": "amount.value",
-      "links": Object {
-        "documentation": Object {
+      "links": {
+        "documentation": {
           "href": "https://docs.mollie.com/overview/handling-errors",
           "type": "text/html",
         },
