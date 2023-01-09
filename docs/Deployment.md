@@ -1,18 +1,17 @@
 # Deployment
 
-  * [NodeJS Runtime](#nodejs-runtime)
+  * [Prerequisites](#prerequisites)
   * [Environment variables](#environment-variables)
     + [Logging](#logging)
       - [Levels](#levels)
       - [Configuration](#configuration)
     + [Log transports](#log-transports)
   * [AWS Lambda](#aws-lambda)
-    + [HTTP Destination & Lambda destination](#http-destination---lambda-destination)
+    + [HTTP Destination & Lambda destination](#http-destination--lambda-destination)
       - [Http Destination](#http-destination)
       - [Lambda destination](#lambda-destination)
   * [GCP functions](#gcp-functions)
-  * [Azure](#azure)
-    + [Config](#config)
+  * [Azure](#azure-experimental)
     + [Authentication](#authentication)
       - [Azure Functions](#azure-functions)
       - [Basic](#basic)
@@ -22,7 +21,7 @@
 ## Prerequisites
 
 Commands and scripts in this documentation require bash shell, nodejs with npm, zip and docker.
-The recommended NodeJS runtime version is 14
+The recommended NodeJS runtime version is 16
 
 ## Environment variables
 
@@ -116,7 +115,7 @@ Log transports are where the logs are written to. If this isn't provided in the 
 2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 14.x.
 3. Upload the 'extension-module.zip' file to the lambda function (in the code section, select upload from zip file)
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
-5. Be aware that when adding a lambda as an extension, commercetools requires a different format than a regular HTTP. [More information can be found here](https://docs.commercetools.com/api/projects/api-extensions#aws-lambda-destination)
+5. Be aware that when adding a lambda as an extension, commercetools requires a different format than a regular HTTP. [More information can be found here](https://docs.commercetools.com/api/projects/api-extensions#awslambdadestination)
 
 ### HTTP Destination & Lambda destination
 
@@ -184,7 +183,7 @@ Azure functions will be fully supported from version 1.1.0
 
 This method is currently not supported out of the box, but it can be manually added as described in the following docs: 
 [CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)
-[CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azure-functions-authentication)
+[CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
 [Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)
 
 #### Basic
