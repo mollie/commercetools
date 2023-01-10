@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createOrderPayment Should return commercetools formated error if one of the functions fails 1`] = `
-Object {
-  "errors": Array [
-    Object {
+{
+  "errors": [
+    {
       "code": "ObjectNotFound",
-      "extensionExtraInfo": Object {
+      "extensionExtraInfo": {
         "originalStatusCode": 404,
         "title": "Not found",
       },

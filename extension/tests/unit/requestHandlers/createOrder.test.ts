@@ -248,7 +248,6 @@ describe('createCTActions', () => {
   beforeAll(() => {
     const mockUuid = '3fea7470-5434-4056-a829-a187339e94d8';
     jest.mocked(uuid).mockReturnValue(mockUuid);
-    // jest.mocked(createDateNowString).mockReturnValue('2021-12-15T08:21:15.495Z');
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2021-12-15T08:21:15.495Z');
   });
 
