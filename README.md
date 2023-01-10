@@ -5,7 +5,7 @@
 ___
 This project provides a [Hosted checkout](https://docs.mollie.com/payments/hosted-checkout) based integration between the commercetools and Mollie PSP.
 - [Supported features](#supported-features)
-- [Overview](#overview)
+- [Overview](#architecture-overview)
     - [Extension module](#extension-module)
     - [Notification module](#notification-module)
 - [Other guides](#support--other-guides)
@@ -27,7 +27,7 @@ Complete integration requires running both of the modules.
 ![Payment flow](./docs/img/MollieCTFlow.drawio.png)
 
 ## Extension module
-Once [this commercetools API Extension](https://docs.commercetools.com/http-api-projects-api-extensions) is configured, it will be triggered on every Payment create or update request. Based on the body of that request, it will make call(s) to mollie's API.
+Once [this commercetools API Extension](https://docs.commercetools.com/api/projects/api-extensions) is configured, it will be triggered on every Payment create or update request. Based on the body of that request, it will make call(s) to mollie's API.
 
 - Follow [Integration Guide](./docs/Installing_CommerceTools_APIExtension.md) for information how to integrate your shop with this module.
 - Follow [How to run](./docs/Deployment.md) the extension module.
