@@ -49,7 +49,7 @@
     "@commercetools/platform-sdk": "2.1.0",
     "@commercetools/sdk-client": "2.1.2",
     "@commercetools/sdk-middleware-auth": "6.2.0",
-    "@commercetools/sdk-middleware-correlation-id": "2.1.4",
+    "@commercetools/sdk-middleware-correlation-id": "3.0.0",
     "@commercetools/sdk-middleware-http": "7.0.1",
     "@commercetools/sdk-middleware-logger": "2.1.1",
     "@commercetools/sdk-middleware-user-agent": "3.0.0",
