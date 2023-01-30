@@ -56,7 +56,7 @@
     "@commercetools/sdk-middleware-auth": "6.2.0",
     "@commercetools/sdk-middleware-correlation-id": "2.1.4",
     "@commercetools/sdk-middleware-http": "6.1.0",
-    "@commercetools/sdk-middleware-user-agent": "2.1.5",
+    "@commercetools/sdk-middleware-user-agent": "3.0.0",
     "@mollie/api-client": "3.6.0-beta.3",
     "express": "4.18.2",
     "lodash": "4.17.21",
