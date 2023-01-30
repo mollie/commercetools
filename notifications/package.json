@@ -47,7 +47,7 @@
   "dependencies": {
     "@azure/functions": "3.0.0",
     "@commercetools/platform-sdk": "2.1.0",
-    "@commercetools/sdk-client": "2.1.2",
+    "@commercetools/sdk-client": "3.0.0",
     "@commercetools/sdk-middleware-auth": "7.0.1",
     "@commercetools/sdk-middleware-correlation-id": "3.0.0",
     "@commercetools/sdk-middleware-http": "7.0.1",
