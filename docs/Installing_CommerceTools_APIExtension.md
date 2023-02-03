@@ -75,6 +75,34 @@ AWS Lambda destinations use accessKey and accessSecret for authentication. Refer
 }
 ```
 
+### Azure Functions Destination
+
+#### _Authentication_
+
+If your Azure function has authentication enabled, it is recommended to not leave authentication key in the url. Refer to the [Commercetools guide for setting up an Azure functions authentication for more information](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
+
+#### _Example JSON body_
+
+```json
+{
+  "destination": {
+    "type": "HTTP",
+    "url": "<my-deployed-extension-trigger>",
+    "authentication": {
+      "type": "AzureFunctions",
+      "key": "<my-azure-function-code>"
+    }
+  },
+  "triggers": [
+    {
+      "resourceTypeId": "payment",
+      "actions": ["Create", "Update"]
+    }
+  ],
+  "key": "<my-extension-key>"
+}
+```
+
 ## Commercetools scopes
 
 It is highly recommended to limit commercetools API client to only the scopes the project needs.
