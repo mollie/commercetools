@@ -113,7 +113,7 @@ Setting up the extension as a google cloud function requires an existing functio
 2. Add the `CT_MOLLIE_CONFIG` to the function `Application settings` as JSON object.
 3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the function `Application settings` and assign it value `1`
 4. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
-5. [Deploy the generated zip file to your azure cloud function]((https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push))
+5. [Deploy the generated zip file to your azure cloud function](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 
 ## Logging
 
