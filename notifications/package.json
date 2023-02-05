@@ -45,7 +45,7 @@
     "typescript": "4.9.4"
   },
   "dependencies": {
-    "@azure/functions": "3.0.0",
+    "@azure/functions": "3.5.0",
     "@commercetools/platform-sdk": "2.1.0",
     "@commercetools/sdk-client": "2.1.2",
     "@commercetools/sdk-middleware-auth": "6.2.0",

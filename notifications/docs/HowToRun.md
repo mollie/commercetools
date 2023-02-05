@@ -109,7 +109,7 @@ Setting up the extension as a google cloud function requires an existing functio
 
 ## Azure
 
-1. Create function named `notifications` based on HTTP trigger template. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+1. Create function named `notifications` based on HTTP trigger template. Set runtime node, runtime-version 18 and functions-version 4. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
 2. Add the `CT_MOLLIE_CONFIG` to the function `Application settings` as JSON object.
 3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the function `Application settings` and assign it value `1`
 4. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
