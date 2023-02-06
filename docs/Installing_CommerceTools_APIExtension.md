@@ -79,7 +79,7 @@ AWS Lambda destinations use accessKey and accessSecret for authentication. Refer
 
 #### _Authentication_
 
-If your Azure function has authentication enabled, it is recommended to not leave authentication key in the url. Refer to the [Commercetools guide for setting up an Azure functions authentication for more information](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
+If your Azure function has authentication enabled, it is recommended to not leave the authentication key in the url. Refer to the [Commercetools guide for setting up an Azure functions authentication for more information](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
 
 #### _Example JSON body_
 
