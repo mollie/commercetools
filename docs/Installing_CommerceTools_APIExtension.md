@@ -15,7 +15,7 @@ In order to install the extension module, it should first be deployed, either us
 
 Once it is deployed, we need to make a request to commercetools to point to the deployment.
 
-### HTTP Destination (GCP, Azure, Docker)
+### HTTP Destination (GCP, Docker)
 
 #### _Authentication_
 
@@ -64,6 +64,34 @@ AWS Lambda destinations use accessKey and accessSecret for authentication. Refer
     "arn": "<my-lambda-arn>",
     "accessKey": "<my-aws-access-key>",
     "accessSecret": "<my-aws-access-secret>"
+  },
+  "triggers": [
+    {
+      "resourceTypeId": "payment",
+      "actions": ["Create", "Update"]
+    }
+  ],
+  "key": "<my-extension-key>"
+}
+```
+
+### Azure Functions Destination
+
+#### _Authentication_
+
+If your Azure function has authentication enabled, it is recommended to not leave the authentication key in the url. Refer to the [Commercetools guide for setting up an Azure functions authentication for more information](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
+
+#### _Example JSON body_
+
+```json
+{
+  "destination": {
+    "type": "HTTP",
+    "url": "<my-deployed-extension-trigger>",
+    "authentication": {
+      "type": "AzureFunctions",
+      "key": "<my-azure-function-code>"
+    }
   },
   "triggers": [
     {

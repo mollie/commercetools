@@ -111,7 +111,7 @@ Log transports are where the logs are written to. If this isn't provided in the 
 
 ## AWS Lambda
 
-1. Run `npm run zip-aws-lambda` from the repository root directory (where package.json is located), to zip the contents in preparation for uploading to AWS
+1. Run `npm run zip-aws-lambda` from the [repository root directory](../extension), to zip the contents in preparation for uploading to AWS
 2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 14.x.
 3. Upload the 'extension-module.zip' file to the lambda function (in the code section, select upload from zip file)
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
@@ -161,48 +161,22 @@ In this mode the basic authentication is optional.
 
 Setting up the extension as a google cloud function requires an existing function, setting up entry point and secrets and uploading the source code.
 
-1. Run `npm run zip-gcp-function` from the repository root directory (where package.json is located)
+1. Run `npm run zip-gcp-function` from the [repository root directory](../extension)
 2. Upload the generated zip file to your google cloud function ([Guide to creating cloud functions](https://cloud.google.com/functions/docs#training-and-tutorials))
 3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables` as JSON object.
 4. Set Runtime to `Node.js 14` and change entry point to `handler`
 
-## Azure (experimental)
+## Azure
 
-Azure functions will be fully supported from version 1.1.0
+1. Create function named `extension` based on HTTP trigger template. Set runtime node, runtime-version 18 and functions-version 4. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+2. Add the `CT_MOLLIE_CONFIG` to the functions `Application settings` as JSON object
+3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the functions `Application settings` and assign it value `1`
+4. Run `npm run zip-azure-function-auth` from the [repository root directory](../extension). If you do not want to have authentication enabled, (not recommended), use `npm run zip-azure-function`
+5. [Deploy the generated zip file to your azure cloud function](https://learn.microsoft.com/en-us/azure/azure-functions/deployment-zip-push)
 
-1. Create functions named `extension` and `notifications` based on HTTP trigger template. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
-2. Add the `CT_MOLLIE_CONFIG` to the functions `Application settings` as JSON object.
-3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the functions `Application settings` and assign it value `1` 
-4. Run `npm run zip-azure-function` from the repository root directory (where package.json is located)
-5. Upload the generated zip file to your azure cloud function
+### Azure Authentication
 
-
-### Authentication
-
-#### Azure Functions
-
-This method is currently not supported out of the box, but it can be manually added as described in the following docs: 
-[CommerceTools Tutorial](https://docs.commercetools.com/tutorials/extensions)
-[CommerceTools Spec](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
-[Azure Auth Level Docs](https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook#keys)
-
-#### Basic
-
-This method is configurable via the following settings:
-
-```json
-"CT_MOLLIE_CONFIG": {
-  "mollie": {...},
-  "commercetools": {...
-    "authentication": {
-      "isBasicAuth": true,
-      "username": "username",
-      "password": "password"
-    }
-  },
-  "service": {...}
-}
-```
+Authentication for Azure functions is set in the `function.json` file that is added to the zip package. That happens when running `npm run zip-azure-function-auth`. When the package is deployed to Azure functions it creates function level authentication. Authentication key from function url should be used when [creating extension](./Installing_CommerceTools_APIExtension.md#azure-functions-destination). Deployment configuration object (`CT_MOLLIE_CONFIG`) does not need specific authentication property.
 
 ## Docker
 
