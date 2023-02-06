@@ -15,7 +15,7 @@ In order to install the extension module, it should first be deployed, either us
 
 Once it is deployed, we need to make a request to commercetools to point to the deployment.
 
-### HTTP Destination (GCP, Azure, Docker)
+### HTTP Destination (GCP, Docker)
 
 #### _Authentication_
 
