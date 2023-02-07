@@ -29,8 +29,8 @@ Complete integration requires running both of the modules.
 ## Extension module
 Once [this commercetools API Extension](https://docs.commercetools.com/api/projects/api-extensions) is configured, it will be triggered on every Payment create or update request. Based on the body of that request, it will make call(s) to mollie's API.
 
-- Follow [Integration Guide](./docs/Installing_CommerceTools_APIExtension.md) for information how to integrate your shop with this module.
-- Follow [How to run](./docs/Deployment.md) the extension module.
+- Follow [Integration Guide](./extension/docs/Installing_CommerceTools_APIExtension.md) for information how to integrate your shop with this module.
+- Follow [How to run](./extension/docs/Deployment.md) the extension module.
 
 The API extension is found in the [extension](./extension/README.md) folder.
 

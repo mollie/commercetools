@@ -9,7 +9,7 @@
   - [Deployment](#deployment)
   - [AWS Lambda](#aws-lambda)
   - [GCP](#gcp)
-  - [Azure](#azure-experimental)
+  - [Azure](#azure)
   - [Logging](#logging)
     - [Levels](#levels)
     - [Configuration](#configuration)
@@ -17,7 +17,7 @@
 
 ## Requirements on commercetools project
 
-The notifications module works in tandem with the API Extension. It assumes this commercetools project is set up with the correct custom types, as described in API Extension's [installation guide](../../docs/Installing_CommerceTools_APIExtension.md#configure-custom-fields-for-your-project).
+The notifications module works in tandem with the API Extension. It assumes this commercetools project is set up with the correct custom types, as described in API Extension's [installation guide](../../extension/docs/Installing_CommerceTools_APIExtension.md#configure-custom-fields-for-your-project).
 
 ## Environment Variables
 
