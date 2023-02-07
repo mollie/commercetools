@@ -1,5 +1,7 @@
 # Deployment
 
+Extension module can be deployed as a function (GCP Functions, AWS Lambda, Azure Functions) or as a standalone application (Docker)
+
   * [Prerequisites](#prerequisites)
   * [Environment variables](#environment-variables)
     + [Logging](#logging)
@@ -7,21 +9,19 @@
       - [Configuration](#configuration)
     + [Log transports](#log-transports)
   * [AWS Lambda](#aws-lambda)
-    + [HTTP Destination & Lambda destination](#http-destination--lambda-destination)
-      - [Http Destination](#http-destination)
-      - [Lambda destination](#lambda-destination)
+    + [Lambda Authentication](#lambda-authentication)
   * [GCP functions](#gcp-functions)
-  * [Azure](#azure-experimental)
-    + [Authentication](#authentication)
-      - [Azure Functions](#azure-functions)
-      - [Basic](#basic)
+    + [GCP functions Authentication](#gcp-functions-authentication)
+  * [Azure](#azure)
+    + [Azure Authentication](#azure-authentication)
   * [Docker](#docker)
+    + [Basic Authentication](#basic-authentication)
 
 
 ## Prerequisites
 
 Commands and scripts in this documentation require bash shell, nodejs with npm, zip and docker.
-The required NodeJS runtime version is 14 or higher
+The required NodeJS runtime version is 14 or higher, recommended NodeJS version is 18.
 
 ## Environment variables
 
@@ -112,38 +112,16 @@ Log transports are where the logs are written to. If this isn't provided in the 
 ## AWS Lambda
 
 1. Run `npm run zip-aws-lambda` from the [repository root directory](../extension), to zip the contents in preparation for uploading to AWS
-2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 14.x.
+2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js, recommended version is 18.x.
 3. Upload the 'extension-module.zip' file to the lambda function (in the code section, select upload from zip file)
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
 5. Be aware that when adding a lambda as an extension, commercetools requires a different format than a regular HTTP. [More information can be found here](https://docs.commercetools.com/api/projects/api-extensions#awslambdadestination)
 
-### HTTP Destination & Lambda destination
+### Lambda Authentication
 
-#### Http Destination
-
-This configuration runs the extension via HTTP Calls. In this mode it is recommended to enable the basic authentication
-
-```json
-"CT_MOLLIE_CONFIG": {
-  "mollie": {...},
-  "commercetools": {...
-    "authentication": {
-      "isBasicAuth": true,
-      "username": "username",
-      "password": "password"
-    }
-  },
-  "service": {...}
-}
-```
-
-#### Lambda destination
-
-This configuration runs the extension via AWS, therefore the lambda does not need to be exposed with
-API Gateway.
-In this scenario CommerceTools uses an IAM user to run the function,
-the detailed guide is available [here](https://docs.commercetools.com/tutorials/extensions#setting-up-an-api-extension)
-In this mode the basic authentication is optional.
+[Commercetools recommends using lambda authentication](https://docs.commercetools.com/api/projects/api-extensions#awslambdadestination). This configuration runs the extension via AWS, therefore the lambda does not need to be exposed with
+API Gateway. In this scenario CommerceTools uses an IAM user to run the function,
+the detailed guide is available [here](https://docs.commercetools.com/tutorials/extensions#setting-up-an-api-extension). Basic authentication for lambda is supported, but not recommended.
 
 ```json
 "CT_MOLLIE_CONFIG": {
@@ -164,11 +142,15 @@ Setting up the extension as a google cloud function requires an existing functio
 1. Run `npm run zip-gcp-function` from the [repository root directory](../extension)
 2. Upload the generated zip file to your google cloud function ([Guide to creating cloud functions](https://cloud.google.com/functions/docs#training-and-tutorials))
 3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables` as JSON object.
-4. Set Runtime to `Node.js 14` and change entry point to `handler`
+4. Set Runtime to `Node.js 18` and change entry point to `handler`
+
+### GCP functions Authentication
+
+We strongly recommend setting up basic authentication for GCP functions. Follow the guide for [basic authentication](#basic-authentication)
 
 ## Azure
 
-1. Create function named `extension` based on HTTP trigger template. Set runtime node, runtime-version 18 and functions-version 4. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+1. Create function named `extension` based on HTTP trigger template. Set `runtime node`, `runtime-version 18` and `functions-version 4`. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
 2. Add the `CT_MOLLIE_CONFIG` to the functions `Application settings` as JSON object
 3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the functions `Application settings` and assign it value `1`
 4. Run `npm run zip-azure-function-auth` from the [repository root directory](../extension). If you do not want to have authentication enabled, (not recommended), use `npm run zip-azure-function`
@@ -191,3 +173,21 @@ Note that the environment variables that are required should be passed with the 
 
 When finished, to stop the container, run:
 `docker stop ct-mollie-extension`
+
+### Basic Authentication
+
+For Docker and GCP functions it is recommended to enable the basic authentication. Authentication config can be added to `CT_MOLLIE_CONFIG` object:
+
+```json
+"CT_MOLLIE_CONFIG": {
+  "mollie": {...},
+  "commercetools": {...
+    "authentication": {
+      "isBasicAuth": true,
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "service": {...}
+}
+```

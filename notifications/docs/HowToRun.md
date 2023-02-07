@@ -89,12 +89,12 @@ logTransports: "terminal"
 
 ## Deployment
 
-This project offers different deployment options. There is a [dockerfile](../Dockerfile) as well as different cloud provider handlers.
+This project offers different deployment options. There is a [dockerfile](../Dockerfile) as well as different cloud provider handlers. Due to functionality of webhooks, notification module is expected to not have incoming authentication set up. You can read more info on webhooks from [mollie documentation](https://docs.mollie.com/overview/webhooks)
 
 ## AWS Lambda
 
 1. Run `npm run zip-aws-lambda` from the [repository root directory](../../notifications), to zip the contents in preparation for uploading to AWS
-2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 14.x.
+2. An AWS lambda function should be created ([Guide to creating lambda functions](https://docs.aws.amazon.com/lambda/latest/dg/getting-started-create-function.html)). The runtime should be Node.js 18.x.
 3. Upload the generated zip file to the lambda function (in the code section, select upload from zip file)
 4. Add the environment variable `CT_MOLLIE_CONFIG` into environment variables ([Guide to adding environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-config))
 
@@ -105,11 +105,11 @@ Setting up the extension as a google cloud function requires an existing functio
 1. Run `npm run zip-gcp-function` from the [repository root directory](../../notifications)
 2. Upload the generated zip file to your google cloud function ([Guide to creating cloud functions](https://cloud.google.com/functions/docs#training-and-tutorials))
 3. Add the `CT_MOLLIE_CONFIG` to the function as `Runtime environment variables` as JSON object.
-4. Set Runtime to `Node.js 14` and change entry point to `handler`
+4. Set Runtime to `Node.js 18` and change entry point to `handler`
 
 ## Azure
 
-1. Create function named `notifications` based on HTTP trigger template. Set runtime node, runtime-version 18 and functions-version 4. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
+1. Create function named `notifications` based on HTTP trigger template. Set `runtime node`, `runtime-version 18` and `functions-version 4`. ([Guide to creating Azure functions](https://docs.microsoft.com/en-us/azure/azure-functions/))
 2. Add the `CT_MOLLIE_CONFIG` to the function `Application settings` as JSON object.
 3. Add the `WEBSITE_RUN_FROM_PACKAGE` to the function `Application settings` and assign it value `1`
 4. Run `npm run zip-azure-function` from the [repository root directory](../../notifications)
