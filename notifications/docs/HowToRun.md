@@ -54,12 +54,7 @@ Below is an example of how these should be formatted:
     "clientSecret": "example_client_secret",
     "authUrl": "example_auth_url",
     "host": "example_host",
-    "scopes": ["example_scope:example_projectKey"],
-    "authentication": {
-      "isBasicAuth": true,
-      "username": "username",
-      "password": "password"
-    }
+    "scopes": ["example_scope:example_projectKey"]
   },
   "service": {
     "port": 3050,
