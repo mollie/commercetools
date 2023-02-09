@@ -1,13 +1,13 @@
 # Setting up the API Extension on commercetools
 
-  * [Installing API Extension](#installing-api-extension)
-    + [HTTP Destination (GCP, Azure, Docker)](#http-destination-gcp-azure-docker)
-      - [_Authentication_](#authentication)
-      - [_Example JSON body_](#example-json-body)
-    + [AWS Lambda Destination](#aws-lambda-destination)
-      - [_Authentication_](#authentication-1)
-      - [_Example JSON body_](#example-json-body-1)
-  * [Configure custom fields for your project](#configure-custom-fields-for-your-project)
+- [Installing API Extension](#installing-api-extension)
+  - [HTTP Destination (GCP, Docker)](#http-destination-gcp-docker)
+    - [_Authentication_](#authentication)
+    - [_Example JSON body_](#example-json-body)
+  - [AWS Lambda Destination](#aws-lambda-destination)
+    - [_Authentication_](#authentication-1)
+    - [_Example JSON body_](#example-json-body-1)
+- [Configure custom fields for your project](#configure-custom-fields-for-your-project)
 
 ## Installing API Extension
 

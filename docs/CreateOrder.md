@@ -59,7 +59,7 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `variant: { en: "Green Apple" }`                                           | `name: "Green Apple"`                                                     | YES      |
+| `name: { en: "Green Apple" }`                                              | `name: "Green Apple"`                                                     | YES      |
 | `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
 | `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
 | `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
