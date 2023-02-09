@@ -1,6 +1,6 @@
 {
   "name": "mollie-commercetools-extension-module",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "Mollie",
   "description": "Integration between commercetools and mollie payment service provider",
   "license": "MIT",
@@ -29,8 +29,8 @@
     "payment integration",
     "payment provider"
   ],
-  "engines" : { 
-    "node" : ">=14.0.0"
+  "engines": {
+    "node": ">=14.0.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "8.10.109",
