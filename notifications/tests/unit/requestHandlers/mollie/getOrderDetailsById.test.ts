@@ -1,6 +1,5 @@
 import { MollieClient } from '@mollie/api-client';
-import OrdersResource from '@mollie/api-client/dist/types/src/resources/orders/OrdersResource';
-import { mocked } from 'ts-jest/utils';
+import OrdersBinder from '@mollie/api-client/dist/types/src/binders/orders/OrdersBinder';
 import getOrderDetailsById from '../../../../src/requestHandlers/mollie/getOrderDetailsById';
 import Logger from '../../../../src/logger/logger';
 
@@ -9,20 +8,20 @@ jest.mock('@mollie/api-client');
 describe('getOrderDetailsById', () => {
   const mockLogDebug = jest.fn();
   const mockMollieClient = {} as MollieClient;
-  const mockOrdersResource = {} as OrdersResource;
+  const mockOrdersBinder = {} as OrdersBinder;
 
   // orders.get() on Mollie Client has two overloads
   // One returns Order type, one returns never
   // To get typescript to compile, had to cast the mock response as 'never' (any does not work)
   const mockOrder = { id: 'ord_12345' } as never;
 
-  mockMollieClient.orders = mockOrdersResource;
+  mockMollieClient.orders = mockOrdersBinder;
 
   beforeEach(() => {
     jest.clearAllMocks();
     const mockGetOrder = jest.fn().mockImplementationOnce(() => mockOrder);
-    mockOrdersResource.get = mockGetOrder;
-    mocked(mockOrdersResource.get).mockResolvedValueOnce(mockOrder);
+    mockOrdersBinder.get = mockGetOrder;
+    jest.mocked(mockOrdersBinder.get).mockResolvedValueOnce(mockOrder);
     Logger.debug = mockLogDebug;
   });
 
@@ -36,15 +35,15 @@ describe('getOrderDetailsById', () => {
   });
 
   it('should format 404 errors and add source information', async () => {
-    const orderNotFoundError = jest.fn().mockRejectedValue({ message: 'Order not found', status: 404 });
-    mockOrdersResource.get = orderNotFoundError;
+    const orderNotFoundError = jest.fn().mockRejectedValue({ message: 'Order not found', statusCode: 404 });
+    mockOrdersBinder.get = orderNotFoundError;
 
     await expect(getOrderDetailsById('ord_12345', mockMollieClient)).rejects.toEqual({ message: 'Order not found', source: 'mollie', status: 404 });
   });
 
   it('should log full error (at debug level) then throw the error if mollie call fails', async () => {
     const getOrderFailure = jest.fn().mockRejectedValue(new Error('Mollie Error'));
-    mockOrdersResource.get = getOrderFailure;
+    mockOrdersBinder.get = getOrderFailure;
 
     await expect(getOrderDetailsById('ord_12345', mockMollieClient)).rejects.toThrow(Error);
     expect(mockLogDebug).toHaveBeenCalledTimes(1);

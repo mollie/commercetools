@@ -2,8 +2,8 @@
 
   * [Overview](#overview)
   * [Parameters map](#parameters-map)
-  * [Representation: CT Payment](#representation--ct-payment)
-  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
+  * [Representation: CT Payment](#representation-ct-payment)
+  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollies-response)
 
 ## Overview
 

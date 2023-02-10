@@ -1,13 +1,13 @@
 # Setting up the API Extension on commercetools
 
-  * [Installing API Extension](#installing-api-extension)
-    + [HTTP Destination (GCP, Azure, Docker)](#http-destination--gcp--azure--docker-)
-      - [_Authentication_](#-authentication-)
-      - [_Example JSON body_](#-example-json-body-)
-    + [AWS Lambda Destination](#aws-lambda-destination)
-      - [_Authentication_](#-authentication--1)
-      - [_Example JSON body_](#-example-json-body--1)
-  * [Configure custom fields for your project](#configure-custom-fields-for-your-project)
+- [Installing API Extension](#installing-api-extension)
+  - [HTTP Destination (GCP, Docker)](#http-destination-gcp-docker)
+    - [_Authentication_](#authentication)
+    - [_Example JSON body_](#example-json-body)
+  - [AWS Lambda Destination](#aws-lambda-destination)
+    - [_Authentication_](#authentication-1)
+    - [_Example JSON body_](#example-json-body-1)
+- [Configure custom fields for your project](#configure-custom-fields-for-your-project)
 
 ## Installing API Extension
 
@@ -15,13 +15,13 @@ In order to install the extension module, it should first be deployed, either us
 
 Once it is deployed, we need to make a request to commercetools to point to the deployment.
 
-### HTTP Destination (GCP, Azure, Docker)
+### HTTP Destination (GCP, Docker)
 
 #### _Authentication_
 
 For HTTP Destination API Extensions, we can add an optional authorization header. We use Basic authorization, configured with a username and password which is set in the environment variables. This is recommended, in order to prevent potential malicious actors from accessing your extension deployment.
 
-To enable Authentication on an HTTP trigger API Extension, make sure you add the `Authorization Header` [as per the docs](https://docs.commercetools.com/api/projects/api-extensions#http-destination-authentication).
+To enable Authentication on an HTTP trigger API Extension, make sure you add the `Authorization Header` [as per the docs](https://docs.commercetools.com/api/projects/api-extensions#httpdestinationauthentication).
 
 Authentication configuration should also be added to `CT_MOLLIE_CONFIG` as described in [deployment documentation](./deployment.md)
 
@@ -53,7 +53,7 @@ We should then make a POST request to `<host>/<project-key>/extensions`. (N.B. t
 
 #### _Authentication_
 
-AWS Lambda destinations use accessKey and accessSecret for authentication. Refer to the [Commercetools guide for setting up an AWS lambda extension for more information](https://docs.commercetools.com/api/projects/api-extensions#aws-lambda-destination)
+AWS Lambda destinations use accessKey and accessSecret for authentication. Refer to the [Commercetools guide for setting up an AWS lambda extension for more information](https://docs.commercetools.com/api/projects/api-extensions#awslambdadestination)
 
 #### _Example JSON body_
 
@@ -64,6 +64,34 @@ AWS Lambda destinations use accessKey and accessSecret for authentication. Refer
     "arn": "<my-lambda-arn>",
     "accessKey": "<my-aws-access-key>",
     "accessSecret": "<my-aws-access-secret>"
+  },
+  "triggers": [
+    {
+      "resourceTypeId": "payment",
+      "actions": ["Create", "Update"]
+    }
+  ],
+  "key": "<my-extension-key>"
+}
+```
+
+### Azure Functions Destination
+
+#### _Authentication_
+
+If your Azure function has authentication enabled, it is recommended to not leave the authentication key in the url. Refer to the [Commercetools guide for setting up an Azure functions authentication for more information](https://docs.commercetools.com/api/projects/api-extensions#azurefunctionsauthentication)
+
+#### _Example JSON body_
+
+```json
+{
+  "destination": {
+    "type": "HTTP",
+    "url": "<my-deployed-extension-trigger>",
+    "authentication": {
+      "type": "AzureFunctions",
+      "key": "<my-azure-function-code>"
+    }
   },
   "triggers": [
     {

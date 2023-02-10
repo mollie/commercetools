@@ -7,7 +7,7 @@ export default async function getOrderDetailsById(orderId: string, mollieClient:
     return order;
   } catch (error: any) {
     Logger.debug('Error in getOrderDetailsById');
-    if (error.status === 404) {
+    if (error.statusCode === 404) {
       return Promise.reject({ status: 404, source: 'mollie', message: error.message });
     } else {
       throw error;

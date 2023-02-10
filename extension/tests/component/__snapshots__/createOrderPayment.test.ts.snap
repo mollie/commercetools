@@ -1,23 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay later (klarna) to pay now method (iDEAL) 1`] = `
-Object {
+{
   "action": "addInterfaceInteraction",
-  "fields": Object {
+  "fields": {
     "actionType": "createOrderPayment",
     "createdAt": "2022-01-17T13:18:53+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
-    "request": "{\\"transactionId\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\",\\"paymentMethod\\":\\"ideal\\"}",
-    "response": "{\\"molliePaymentId\\":\\"tr_DCNv63fDhy\\",\\"checkoutUrl\\":\\"https://www.mollie.com/checkout/test-mode?method=klarnapaylater&token=3.ld7bf8\\",\\"transactionId\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\"}",
+    "request": "{"transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","paymentMethod":"ideal"}",
+    "response": "{"molliePaymentId":"tr_DCNv63fDhy","checkoutUrl":"https://www.mollie.com/checkout/test-mode?method=klarnapaylater&token=3.ld7bf8","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
   },
-  "type": Object {
+  "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
   },
 }
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay later (klarna) to pay now method (iDEAL) 2`] = `
-Object {
+{
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_DCNv63fDhy",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -25,7 +25,7 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay later (klarna) to pay now method (iDEAL) 3`] = `
-Object {
+{
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T13:18:53+00:00",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -33,7 +33,7 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay later (klarna) to pay now method (iDEAL) 4`] = `
-Object {
+{
   "action": "changeTransactionState",
   "state": "Pending",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -41,23 +41,23 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay now (iDEAL) to pay later method (klarna) 1`] = `
-Object {
+{
   "action": "addInterfaceInteraction",
-  "fields": Object {
+  "fields": {
     "actionType": "createOrderPayment",
     "createdAt": "2022-01-17T13:18:53+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
-    "request": "{\\"transactionId\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\",\\"paymentMethod\\":\\"klarnapaylater\\"}",
-    "response": "{\\"molliePaymentId\\":\\"tr_DCNv63fDhy\\",\\"checkoutUrl\\":\\"https://www.mollie.com/checkout/test-mode?method=klarnapaylater&token=3.ld7bf8\\",\\"transactionId\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\"}",
+    "request": "{"transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","paymentMethod":"klarnapaylater"}",
+    "response": "{"molliePaymentId":"tr_DCNv63fDhy","checkoutUrl":"https://www.mollie.com/checkout/test-mode?method=klarnapaylater&token=3.ld7bf8","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
   },
-  "type": Object {
+  "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
   },
 }
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay now (iDEAL) to pay later method (klarna) 2`] = `
-Object {
+{
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_DCNv63fDhy",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -65,7 +65,7 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay now (iDEAL) to pay later method (klarna) 3`] = `
-Object {
+{
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T13:18:53+00:00",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -73,7 +73,7 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing from pay now (iDEAL) to pay later method (klarna) 4`] = `
-Object {
+{
   "action": "changeTransactionState",
   "state": "Pending",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -81,23 +81,23 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing payment method from klarnasliceit to klarnapaylater 1`] = `
-Object {
+{
   "action": "addInterfaceInteraction",
-  "fields": Object {
+  "fields": {
     "actionType": "createOrderPayment",
     "createdAt": "2022-01-17T13:18:53+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
-    "request": "{\\"transactionId\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\",\\"paymentMethod\\":\\"klarnapaylater\\"}",
-    "response": "{\\"molliePaymentId\\":\\"tr_DCNv63fDhy\\",\\"checkoutUrl\\":\\"https://www.mollie.com/checkout/test-mode?method=klarnapaylater&token=3.ld7bf8\\",\\"transactionId\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\"}",
+    "request": "{"transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","paymentMethod":"klarnapaylater"}",
+    "response": "{"molliePaymentId":"tr_DCNv63fDhy","checkoutUrl":"https://www.mollie.com/checkout/test-mode?method=klarnapaylater&token=3.ld7bf8","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
   },
-  "type": Object {
+  "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
   },
 }
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing payment method from klarnasliceit to klarnapaylater 2`] = `
-Object {
+{
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_DCNv63fDhy",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -105,7 +105,7 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing payment method from klarnasliceit to klarnapaylater 3`] = `
-Object {
+{
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T13:18:53+00:00",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
@@ -113,7 +113,7 @@ Object {
 `;
 
 exports[`Create Order Payment Happy Path Should return 201 when a new payment is created against the mollie order, changing payment method from klarnasliceit to klarnapaylater 4`] = `
-Object {
+{
   "action": "changeTransactionState",
   "state": "Pending",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",

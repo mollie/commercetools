@@ -8,8 +8,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         The azure HttpRequest object does not expose the path, it can be configured directly in the function config
         https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?tabs=javascript
      */
-  const headers = new Map([['authorization', req.headers['authorization'] ?? '']]);
-  const requestInput = new HandleRequestInput('/', req.method!.toString(), req.body, headers);
+  const requestInput = new HandleRequestInput('/', req.method!.toString(), req.body);
   const result = await handleRequest(requestInput);
   if (result instanceof HandleRequestSuccess) {
     context.res = {

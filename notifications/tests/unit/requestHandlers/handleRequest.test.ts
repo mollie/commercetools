@@ -1,5 +1,4 @@
 import { Payment, Order } from '@mollie/api-client';
-import { mocked } from 'ts-jest/utils';
 import { CTPayment } from '../../../src/types/ctPayment';
 import handleRequest from '../../../src/requestHandlers/handleRequest';
 import Logger from '../../../src/logger/logger';
@@ -40,8 +39,8 @@ describe('handleRequest', () => {
     Logger.error = mockLogError;
     Logger.debug = mockLogDebug;
 
-    mocked(handleOrderWebhook).mockResolvedValue(mockCTPayment);
-    mocked(handlePaymentWebhook).mockResolvedValue(mockCTPayment);
+    jest.mocked(handleOrderWebhook).mockResolvedValue(mockCTPayment);
+    jest.mocked(handlePaymentWebhook).mockResolvedValue(mockCTPayment);
   });
 
   afterAll(() => {
@@ -70,7 +69,7 @@ describe('handleRequest', () => {
 
     it('should return 400 if there is an error when calling mollie (except 404) or calling commercetools', async () => {
       const mockUpdateRejected = jest.fn().mockRejectedValue(new Error('Update rejected'));
-      mocked(handleOrderWebhook).mockRejectedValueOnce(mockUpdateRejected);
+      jest.mocked(handleOrderWebhook).mockRejectedValueOnce(mockUpdateRejected);
 
       const mockInput: HandleRequestInput = {
         httpPath: '/',
@@ -100,7 +99,7 @@ describe('handleRequest', () => {
     });
 
     it('should log error and return 200 when webhook is triggered with an unknown mollie id', async () => {
-      mocked(handleOrderWebhook).mockRejectedValueOnce({ status: 404, message: 'Order not found', source: 'mollie' });
+      jest.mocked(handleOrderWebhook).mockRejectedValueOnce({ status: 404, message: 'Order not found', source: 'mollie' });
 
       const mockInput: HandleRequestInput = {
         httpPath: '/',

@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { mocked } from 'ts-jest/utils';
+
 import { makeActions } from '../../src/makeActions';
 import { ControllerAction } from '../../src/types';
 import { createDateNowString } from '../../src/utils';
@@ -10,8 +10,8 @@ jest.mock('../../src/utils');
 describe('makeActions', () => {
   const mockUuid = 'f2e6db50-7bd8-4036-8e1f-9971b6226c62';
   beforeAll(() => {
-    mocked(uuid).mockReturnValue(mockUuid);
-    mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
+    jest.mocked(uuid).mockReturnValue(mockUuid);
+    jest.mocked(createDateNowString).mockReturnValue('2021-10-08T12:12:02.625Z');
   });
   afterAll(() => {
     jest.resetAllMocks();

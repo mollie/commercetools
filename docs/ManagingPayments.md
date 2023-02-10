@@ -191,6 +191,6 @@ For pay now, you cannot use the transaction type "CancelAuthorization" as this i
 
 ### Errors
 
-If an error occurs, you will receive a 400 response and an error message. This means commercetools will not persist the result of the original call, (see the [API Extension documentation](https://docs.commercetools.com/api/projects/api-extensions#the-api-extension-within-the-flow-of-the-api-call) for more details).
+If an error occurs, you will receive a 400 response and an error message. This means commercetools will not persist the result of the original call, (see the [API Extension documentation](https://docs.commercetools.com/api/projects/api-extensions#api-extension-within-the-flow-of-the-api-call) for more details).
 
 If the mollie API returns an error, this message will be returned within the `extraInfo` section of the error response. This will include the reason, field (if applicable) and links to the appropriate mollie documentation.

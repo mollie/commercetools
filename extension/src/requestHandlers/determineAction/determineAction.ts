@@ -71,20 +71,6 @@ const checkPaymentMethodInput = (paymentMethod: string): { isValid: boolean; err
   };
 };
 
-/**
- * @param method string - mollie payment method enum
- *
- * The PaymentMethod enum is currently missing 'voucher' & 'mybank'. These will be added
- * in V3.6 or V4 of the mollie node SDK.
- *
- * Until then, we cast 'mybank' as PaymentMethod and track this in Issue #34
- * https://github.com/mollie/commercetools/issues/34
- * Voucher is out of scope for V1.
- *
- */
 const hasValidPaymentMethod = (method: string | undefined) => {
-  if (method == 'mybank') {
-    return true;
-  }
   return !!PaymentMethod[method as PaymentMethod];
 };

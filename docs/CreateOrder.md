@@ -5,11 +5,11 @@
   * [Line Items object](#line-items-object)
   * [Custom Line Items object](#custom-line-items-object)
   * [Shipping Info object](#shipping-info-object)
-  * [Billing / Shipping Address object](#billing---shipping-address-object)
-  * [Representation: CT Cart](#representation--ct-cart)
-  * [Representation: CT Payment](#representation--ct-payment)
-  * [Representation: Mollie Order Parameters](#representation--mollie-order-parameters)
-  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
+  * [Billing / Shipping Address object](#billing--shipping-address-object)
+  * [Representation: CT Cart](#representation-ct-cart)
+  * [Representation: CT Payment](#representation-ct-payment)
+  * [Representation: Mollie Order Parameters](#representation-mollie-order-parameters)
+  * [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollies-response)
 
 ## Overview
 
@@ -59,7 +59,7 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 
 | Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `variant: { en: "Green Apple" }`                                           | `name: "Green Apple"`                                                     | YES      |
+| `name: { en: "Green Apple" }`                                              | `name: "Green Apple"`                                                     | YES      |
 | `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
 | `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
 | `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |

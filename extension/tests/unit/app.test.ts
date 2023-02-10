@@ -1,11 +1,11 @@
 import request from 'supertest';
 import app from '../../src/app';
-import { mocked } from 'ts-jest/utils';
+
 import { checkAuthorizationHeader } from '../../src/authentication/authenticationHandler';
 jest.mock('../../src/authentication/authenticationHandler');
 
 describe('App', () => {
-  mocked(checkAuthorizationHeader).mockImplementation(() => {
+  jest.mocked(checkAuthorizationHeader).mockImplementation(() => {
     return {
       isValid: true,
       message: '',

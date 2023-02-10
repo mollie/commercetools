@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 1`] = `
-Object {
+{
   "action": "changeTransactionState",
   "state": "Pending",
   "transactionId": "e5f86ecd-0605-4e4f-be21-745cc33c338b",
@@ -9,7 +9,7 @@ Object {
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 2`] = `
-Object {
+{
   "action": "changeTransactionInteractionId",
   "interactionId": "re_sANm7WTxRm",
   "transactionId": "e5f86ecd-0605-4e4f-be21-745cc33c338b",
@@ -17,7 +17,7 @@ Object {
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 3`] = `
-Object {
+{
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T11:12:45+00:00",
   "transactionId": "e5f86ecd-0605-4e4f-be21-745cc33c338b",
@@ -25,23 +25,23 @@ Object {
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with description is added against a pay later order 4`] = `
-Object {
+{
   "action": "addInterfaceInteraction",
-  "fields": Object {
+  "fields": {
     "actionType": "createCustomRefund",
     "createdAt": "2022-01-17T11:12:45+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
-    "request": "{\\"refundTransaction\\":\\"e5f86ecd-0605-4e4f-be21-745cc33c338b\\",\\"refundRequested\\":{\\"currencyCode\\":\\"EUR\\",\\"centAmount\\":5500}}",
-    "response": "{\\"originalTransaction\\":\\"2b5f68ad-ae94-4bf1-ae41-7096e5142f89\\",\\"molliePaymentId\\":\\"tr_vsfkQmj4Fd\\",\\"refundTransaction\\":\\"e5f86ecd-0605-4e4f-be21-745cc33c338b\\"}",
+    "request": "{"refundTransaction":"e5f86ecd-0605-4e4f-be21-745cc33c338b","refundRequested":{"currencyCode":"EUR","centAmount":5500}}",
+    "response": "{"originalTransaction":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","molliePaymentId":"tr_vsfkQmj4Fd","refundTransaction":"e5f86ecd-0605-4e4f-be21-745cc33c338b"}",
   },
-  "type": Object {
+  "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
   },
 }
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 1`] = `
-Object {
+{
   "action": "changeTransactionState",
   "state": "Pending",
   "transactionId": "e5f86ecd-0605-4e4f-be21-745cc33c338b",
@@ -49,7 +49,7 @@ Object {
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 2`] = `
-Object {
+{
   "action": "changeTransactionInteractionId",
   "interactionId": "re_sANm7WTxRm",
   "transactionId": "e5f86ecd-0605-4e4f-be21-745cc33c338b",
@@ -57,7 +57,7 @@ Object {
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 3`] = `
-Object {
+{
   "action": "changeTransactionTimestamp",
   "timestamp": "2022-01-17T11:12:45+00:00",
   "transactionId": "e5f86ecd-0605-4e4f-be21-745cc33c338b",
@@ -65,16 +65,16 @@ Object {
 `;
 
 exports[`Create Refund Happy Path should return 201 and correct update actions when a partial refund with metadata is added against a pay now order 4`] = `
-Object {
+{
   "action": "addInterfaceInteraction",
-  "fields": Object {
+  "fields": {
     "actionType": "createCustomRefund",
     "createdAt": "2022-01-17T11:12:45+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
-    "request": "{\\"refundTransaction\\":\\"e5f86ecd-0605-4e4f-be21-745cc33c338b\\",\\"refundRequested\\":{\\"currencyCode\\":\\"EUR\\",\\"centAmount\\":5500}}",
-    "response": "{\\"originalTransaction\\":\\"55936871-55ed-484d-ab4c-7c1ce944a07d\\",\\"molliePaymentId\\":\\"tr_kT7USTNHzR\\",\\"refundTransaction\\":\\"e5f86ecd-0605-4e4f-be21-745cc33c338b\\"}",
+    "request": "{"refundTransaction":"e5f86ecd-0605-4e4f-be21-745cc33c338b","refundRequested":{"currencyCode":"EUR","centAmount":5500}}",
+    "response": "{"originalTransaction":"55936871-55ed-484d-ab4c-7c1ce944a07d","molliePaymentId":"tr_kT7USTNHzR","refundTransaction":"e5f86ecd-0605-4e4f-be21-745cc33c338b"}",
   },
-  "type": Object {
+  "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
   },
 }

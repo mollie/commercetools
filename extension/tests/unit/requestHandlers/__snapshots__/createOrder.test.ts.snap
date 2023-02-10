@@ -1,37 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 1`] = `
-Object {
+{
   "action": "addInterfaceInteraction",
-  "fields": Object {
+  "fields": {
     "actionType": "createOrder",
     "createdAt": "2018-08-02T09:29:56+00:00",
     "id": "3fea7470-5434-4056-a829-a187339e94d8",
-    "request": "{\\"cartId\\":\\"fd5317fa-c2f8-44c0-85ab-a1c1169d2404\\",\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\",\\"createPayment\\":{\\"locale\\":\\"fr_FR\\"}}",
-    "response": "{\\"mollieOrderId\\":\\"ord_dsczl7\\",\\"transactionId\\":\\"949ab89f-7a71-4c7a-bb43-605354322a96\\"}",
+    "request": "{"cartId":"fd5317fa-c2f8-44c0-85ab-a1c1169d2404","transactionId":"949ab89f-7a71-4c7a-bb43-605354322a96","createPayment":{"locale":"fr_FR"}}",
+    "response": "{"mollieOrderId":"ord_dsczl7","transactionId":"949ab89f-7a71-4c7a-bb43-605354322a96"}",
   },
-  "type": Object {
+  "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
   },
 }
 `;
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 2`] = `
-Object {
+{
   "action": "setStatusInterfaceText",
   "interfaceText": undefined,
 }
 `;
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 3`] = `
-Object {
+{
   "action": "setKey",
   "key": "ord_dsczl7",
 }
 `;
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 4`] = `
-Object {
+{
   "action": "changeTransactionState",
   "state": "Pending",
   "transactionId": "949ab89f-7a71-4c7a-bb43-605354322a96",
@@ -39,7 +39,7 @@ Object {
 `;
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 5`] = `
-Object {
+{
   "action": "changeTransactionInteractionId",
   "interactionId": "tr_2hwPMAs5qU",
   "transactionId": "949ab89f-7a71-4c7a-bb43-605354322a96",
@@ -47,7 +47,7 @@ Object {
 `;
 
 exports[`createCTActions Should create correct ct actions from request and mollies order 6`] = `
-Object {
+{
   "action": "changeTransactionTimestamp",
   "timestamp": "2018-08-02T09:29:56+00:00",
   "transactionId": "949ab89f-7a71-4c7a-bb43-605354322a96",
@@ -55,7 +55,7 @@ Object {
 `;
 
 exports[`makeMollieAddress Should properly map address fields 1`] = `
-Object {
+{
   "city": "Amsterdam",
   "country": "NL",
   "email": "coloured_square_lover@basicart.com",
@@ -67,26 +67,26 @@ Object {
 `;
 
 exports[`makeMollieLine Should make correct lineItem parameters 1`] = `
-Object {
-  "discountAmount": Object {
+{
+  "discountAmount": {
     "currency": "EUR",
     "value": "2.58",
   },
-  "metadata": Object {
+  "metadata": {
     "cartLineItemId": "5ab4dbee-2e4f-439f-91fd-f1f4bbf1acfd",
   },
   "name": "Banana",
   "quantity": 2,
   "sku": "12345",
-  "totalAmount": Object {
+  "totalAmount": {
     "currency": "EUR",
     "value": "1.42",
   },
-  "unitPrice": Object {
+  "unitPrice": {
     "currency": "EUR",
     "value": "2.00",
   },
-  "vatAmount": Object {
+  "vatAmount": {
     "currency": "EUR",
     "value": "0.25",
   },
@@ -95,21 +95,21 @@ Object {
 `;
 
 exports[`makeMollieLineCustom Should make correct customLineItem parameters 1`] = `
-Object {
-  "metadata": Object {
+{
+  "metadata": {
     "cartCustomLineItemId": "33025909-90b6-48c6-b885-43feb2c",
   },
   "name": "Giftcard",
   "quantity": 1,
-  "totalAmount": Object {
+  "totalAmount": {
     "currency": "EUR",
     "value": "-1.50",
   },
-  "unitPrice": Object {
+  "unitPrice": {
     "currency": "EUR",
     "value": "-1.50",
   },
-  "vatAmount": Object {
+  "vatAmount": {
     "currency": "EUR",
     "value": "-0.26",
   },

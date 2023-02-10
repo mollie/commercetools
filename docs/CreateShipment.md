@@ -2,9 +2,9 @@
 
 * [Overview](#overview)
 * [Parameters map](#parameters-map)
-* [Representation: CT Payment](#representation--ct-payment)
-* [Representation: Mollie Shipment Response](#representation--mollie-shipment-response)
-* [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollie-s-response)
+* [Representation: CT Payment](#representation-ct-payment)
+* [Representation: Mollie Shipment Response](#representation-mollie-shipment-response)
+* [Creating commercetools actions from Mollie's response](#creating-commercetools-actions-from-mollies-response)
 
 ## Overview
 
