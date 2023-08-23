@@ -17,6 +17,7 @@ const isConfigValid = (config: Config): { valid: boolean; message: string } => {
 };
 
 export function loadConfig(ctMollieConfig: string | undefined) {
+  console.info("loadConfig : " + ctMollieConfig);
   try {
     const envConfig = JSON.parse(ctMollieConfig || '');
 
