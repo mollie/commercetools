@@ -14,7 +14,7 @@ exports.handler = async (event: APIGatewayProxyEvent) => {
   if (result instanceof HandleRequestSuccess) {
     return {
       responseType: 'UpdateRequest',
-      actions: result.actions
+      actions: result.actions,
     };
   } else {
     return {
