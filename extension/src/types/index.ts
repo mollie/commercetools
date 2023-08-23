@@ -34,6 +34,7 @@ export type Action = {
   transactionId?: string;
   interactionId?: string;
   state?: CTTransactionState;
+  paymentMethodsResponse?: string;
 };
 
 export type CTError = {
