@@ -54,6 +54,14 @@ exports[`Create Order Happy Path Should return 201 when mollie order created fro
 }
 `;
 
+exports[`Create Order Happy Path Should return 201 when mollie order created from cart with both Line Items and Custom Line Items 7`] = `
+{
+  "action": "setCustomField",
+  "name": "mollieOrderId",
+  "value": "ord_1.ca1j7q",
+}
+`;
+
 exports[`Create Order Happy Path Should return 201 when mollie order created successfully using pay later method (Klarnapaylater) 1`] = `
 {
   "action": "addInterfaceInteraction",
@@ -108,6 +116,14 @@ exports[`Create Order Happy Path Should return 201 when mollie order created suc
 }
 `;
 
+exports[`Create Order Happy Path Should return 201 when mollie order created successfully using pay later method (Klarnapaylater) 7`] = `
+{
+  "action": "setCustomField",
+  "name": "mollieOrderId",
+  "value": "ord_1.l2idwq",
+}
+`;
+
 exports[`Create Order Happy Path Should return 201 when mollie order created successfully using pay now method (iDEAL) 1`] = `
 {
   "action": "addInterfaceInteraction",
@@ -159,5 +175,13 @@ exports[`Create Order Happy Path Should return 201 when mollie order created suc
   "action": "changeTransactionTimestamp",
   "timestamp": "2021-12-20T10:15:15+00:00",
   "transactionId": "2b5f68ad-ae94-4bf1-ae41-7096e5142f89",
+}
+`;
+
+exports[`Create Order Happy Path Should return 201 when mollie order created successfully using pay now method (iDEAL) 7`] = `
+{
+  "action": "setCustomField",
+  "name": "mollieOrderId",
+  "value": "ord_1.8xnw8a",
 }
 `;
