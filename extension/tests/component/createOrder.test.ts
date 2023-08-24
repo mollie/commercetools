@@ -243,7 +243,7 @@ describe('Create Order', () => {
       // Ensure the interface interaction contains the checkout url
       const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
       expect(JSON.parse(interfaceInteractionAction.fields.response)).toEqual({
-        mollieOrderId: 'ord_8xnw8a',
+        mollieOrderId: 'ord_1.8xnw8a',
         checkoutUrl: 'https://www.mollie.com/checkout/order/8xnw8a',
         transactionId: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
       });
@@ -286,7 +286,7 @@ describe('Create Order', () => {
       // Ensure the interface interaction contains the checkout url
       const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
       expect(JSON.parse(interfaceInteractionAction.fields.response)).toEqual({
-        mollieOrderId: 'ord_l2idwq',
+        mollieOrderId: 'ord_1.l2idwq',
         checkoutUrl: 'https://www.mollie.com/checkout/order/l2idwq',
         transactionId: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
       });
@@ -331,7 +331,7 @@ describe('Create Order', () => {
       // Ensure the interface interaction contains the checkout url
       const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
       expect(JSON.parse(interfaceInteractionAction.fields.response)).toEqual({
-        mollieOrderId: 'ord_ca1j7q',
+        mollieOrderId: 'ord_1.ca1j7q',
         checkoutUrl: 'https://www.mollie.com/checkout/order/ca1j7q',
         transactionId: '2b5f68ad-ae94-4bf1-ae41-7096e5142f89',
       });
