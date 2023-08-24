@@ -271,7 +271,7 @@ describe('createCTActions', () => {
     };
     const mockedMollieCreatedOrder = {
       resource: 'order',
-      id: 'ord_dsczl7',
+      id: 'ord_1.dsczl7',
       profileId: 'pfl_VtWA783A63',
       createdAt: '2018-08-02T09:29:56+00:00',
       amount: { value: '10.00', currency: 'EUR' },
@@ -304,7 +304,7 @@ describe('createCTActions', () => {
     };
     const mockedMollieCreatedOrder: any = {
       resource: 'order',
-      id: 'ord_dsczl7',
+      id: 'ord_1.dsczl7',
       profileId: 'pfl_VtWA783A63',
       amount: { value: '10.00', currency: 'EUR' },
       orderNumber: '1001',
@@ -327,7 +327,7 @@ describe('createCTActions', () => {
     };
     const mockedMollieCreatedOrder: any = {
       resource: 'order',
-      id: 'ord_dsczl7',
+      id: 'ord_1.dsczl7',
       profileId: 'pfl_VtWA783A63',
       amount: { value: '10.00', currency: 'EUR' },
       orderNumber: '1001',
