@@ -8,7 +8,7 @@ exports[`Create Order Happy Path Should return 201 when mollie order created fro
     "createdAt": "2021-12-21T07:33:07+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
     "request": "{"cartId":"84e5f274-c413-404e-b938-ffb45ce63f61","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","createPayment":{}}",
-    "response": "{"mollieOrderId":"ord_ca1j7q","checkoutUrl":"https://www.mollie.com/checkout/order/ca1j7q","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
+    "response": "{"mollieOrderId":"ord_1.ca1j7q","checkoutUrl":"https://www.mollie.com/checkout/order/ca1j7q","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
   },
   "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -26,7 +26,7 @@ exports[`Create Order Happy Path Should return 201 when mollie order created fro
 exports[`Create Order Happy Path Should return 201 when mollie order created from cart with both Line Items and Custom Line Items 3`] = `
 {
   "action": "setKey",
-  "key": "ord_ca1j7q",
+  "key": "ord_1_ca1j7q",
 }
 `;
 
@@ -62,7 +62,7 @@ exports[`Create Order Happy Path Should return 201 when mollie order created suc
     "createdAt": "2021-12-20T11:17:23+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
     "request": "{"cartId":"08f21547-92c8-4519-9fd8-84dc05827f0f","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","createPayment":{}}",
-    "response": "{"mollieOrderId":"ord_l2idwq","checkoutUrl":"https://www.mollie.com/checkout/order/l2idwq","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
+    "response": "{"mollieOrderId":"ord_1.l2idwq","checkoutUrl":"https://www.mollie.com/checkout/order/l2idwq","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
   },
   "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -80,7 +80,7 @@ exports[`Create Order Happy Path Should return 201 when mollie order created suc
 exports[`Create Order Happy Path Should return 201 when mollie order created successfully using pay later method (Klarnapaylater) 3`] = `
 {
   "action": "setKey",
-  "key": "ord_l2idwq",
+  "key": "ord_1_l2idwq",
 }
 `;
 
@@ -116,7 +116,7 @@ exports[`Create Order Happy Path Should return 201 when mollie order created suc
     "createdAt": "2021-12-20T10:15:15+00:00",
     "id": "b2bd1698-9923-4704-9729-02db2de495d1",
     "request": "{"cartId":"08f21547-92c8-4519-9fd8-84dc05827f0f","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89","createPayment":{}}",
-    "response": "{"mollieOrderId":"ord_8xnw8a","checkoutUrl":"https://www.mollie.com/checkout/order/8xnw8a","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
+    "response": "{"mollieOrderId":"ord_1.8xnw8a","checkoutUrl":"https://www.mollie.com/checkout/order/8xnw8a","transactionId":"2b5f68ad-ae94-4bf1-ae41-7096e5142f89"}",
   },
   "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -134,7 +134,7 @@ exports[`Create Order Happy Path Should return 201 when mollie order created suc
 exports[`Create Order Happy Path Should return 201 when mollie order created successfully using pay now method (iDEAL) 3`] = `
 {
   "action": "setKey",
-  "key": "ord_8xnw8a",
+  "key": "ord_1_8xnw8a",
 }
 `;
 
