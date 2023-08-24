@@ -10,7 +10,7 @@ describe('Cancel Order', () => {
   const mockLogError = jest.fn();
 
   const ctPaymentId = 'dfc2dcb0-10b8-4091-8334-687ce9db16ed';
-  const mollieOrderId = 'ord_8wmqcHMN4U';
+  const mollieOrderId = 'ord_1_8wmqcHMN4U';
   const molliePaymentId = 'tr_GrP6dJRf3U';
 
   const baseMockCTPayment: any = {
