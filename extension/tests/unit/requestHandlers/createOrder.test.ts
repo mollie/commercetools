@@ -289,7 +289,7 @@ describe('createCTActions', () => {
       },
     } as Order;
     const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404');
-    expect(ctActions).toHaveLength(6);
+    expect(ctActions).toHaveLength(7);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
     });
