@@ -212,13 +212,18 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       id: interfaceInteractionId,
       timestamp: mollieCreatedAt,
     };
+
+    // Convert the Mollie orderId to an acceptable one for CommerceTools
+    let mollieOrderId = orderResponse.id;
+    let commerceToolsOrderId = mollieOrderId.substring(0, 5) + '_' + mollieOrderId.substring(6);
+
     const result: Action[] = [
       // Add interface interaction
       makeActions.addInterfaceInteraction(interfaceInteractionParams),
       // Set status interface text
       makeActions.setStatusInterfaceText(orderResponse.status),
       // Set key
-      makeActions.setKey(orderResponse.id),
+      makeActions.setKey(commerceToolsOrderId),
       // Update transaction state
       makeActions.changeTransactionState(originalTransaction.id, CTTransactionState.Pending),
       // Update transaction interactionId

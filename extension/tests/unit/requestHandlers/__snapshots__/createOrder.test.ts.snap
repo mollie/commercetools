@@ -8,7 +8,7 @@ exports[`createCTActions Should create correct ct actions from request and molli
     "createdAt": "2018-08-02T09:29:56+00:00",
     "id": "3fea7470-5434-4056-a829-a187339e94d8",
     "request": "{"cartId":"fd5317fa-c2f8-44c0-85ab-a1c1169d2404","transactionId":"949ab89f-7a71-4c7a-bb43-605354322a96","createPayment":{"locale":"fr_FR"}}",
-    "response": "{"mollieOrderId":"ord_dsczl7","transactionId":"949ab89f-7a71-4c7a-bb43-605354322a96"}",
+    "response": "{"mollieOrderId":"ord_1.dsczl7","transactionId":"949ab89f-7a71-4c7a-bb43-605354322a96"}",
   },
   "type": {
     "key": "ct-mollie-integration-interface-interaction-type",
@@ -26,7 +26,7 @@ exports[`createCTActions Should create correct ct actions from request and molli
 exports[`createCTActions Should create correct ct actions from request and mollies order 3`] = `
 {
   "action": "setKey",
-  "key": "ord_dsczl7",
+  "key": "ord_1_dsczl7",
 }
 `;
 
