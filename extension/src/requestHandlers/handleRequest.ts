@@ -1,5 +1,5 @@
 import { MollieClient } from '@mollie/api-client';
-import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors, HandleRequestInput, HandleRequestSuccess, HandleRequestFailure, HandleRequestOutput } from '../types/index';
+import { CTUpdatesRequestedResponse, ControllerAction, CTEnumErrors, HandleRequestInput, HandleRequestSuccess, HandleRequestFailure, HandleRequestOutput, Action } from '../types/index';
 import actions from './actions';
 import { determineAction } from './determineAction/determineAction';
 import formatErrorResponse from '../errorHandlers';
@@ -21,17 +21,18 @@ export default async function handleRequest(input: HandleRequestInput): Promise<
     return new HandleRequestFailure(400, [{ code: CTEnumErrors.Unauthorized, message: message }]);
   }
 
-  if (input.httpPath !== '/') {
+  if ((input.httpPath ?? '/') !== '/') {
     Logger.http(`Path ${input.httpPath} not allowed`);
     return new HandleRequestFailure(400);
   }
-  if (input.httpMethod !== 'POST') {
+  if ((input.httpMethod ?? 'POST') !== 'POST') {
     Logger.http(`Method ${input.httpMethod} not allowed`);
     return new HandleRequestFailure(405);
   }
 
+  const result = JSON.parse(JSON.stringify(input.httpBody));
   try {
-    const ctPaymentObject = input.httpBody?.resource?.obj;
+    const ctPaymentObject = input.httpBody?.resource?.obj ?? result.httpBody?.resource?.obj;
     if (!isMolliePaymentInterface(ctPaymentObject)) {
       Logger.debug('Payment interface is not Mollie, ending request');
       return new HandleRequestSuccess(200);

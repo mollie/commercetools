@@ -36,7 +36,8 @@ Below are some conversion tables, as well as JSON representations of the calls b
 | `paymentMethodInfo.interface: "mollie"` **                                 |                                              | YES      |
 | `paymentMethodInfo.method: "ideal"` ***                                    | `method: ideal`                              | YES      |
 |                                                                            |                                              |          |
-| Parameter (CT Cart)                                                        |                                              |          |
+|                                                                            |                                              |          |
+| Parameter (CT Cart)                                                        | Parameter (Mollie Order)                     | Required |
 | `lineItems: [array]`                                                       | `lines: [array of mollieLines]`              | NO       |
 | `customLineItems: [array]`                                                 | `lines: [array of mollieLines]`              | NO       |
 | `shippingInfo: [shippingInfo]` ****                                        | `lines: [mollieLine type shipping_fee]`      | NO       |
@@ -57,33 +58,33 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 
 ## Line Items object
 
-| Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `name: { en: "Green Apple" }`                                              | `name: "Green Apple"`                                                     | YES      |
-| `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
-| `sku: "SKU12345"`                                                          | `sku: "SKU12345"`                                                         | NO       |
-| `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`              | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
-| `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
-| `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
-| `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                    | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
-| `price: { value } x quantity - totalPrice` **                              | `discountAmount: { currency: "EUR", value: "10.00" }`                     | NO       |
-| `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartLineItemId: "09f525b2-b739-4169" }`                      | NO       |
+| Parameter (CT Cart Line Item)                                             | Parameter (Mollie)                                       | Required |
+|---------------------------------------------------------------------------|----------------------------------------------------------|----------|
+| `name: { en: "Green Apple" }`                                             | `name: "Green Apple"`                                    | YES      |
+| `quantity: 1`                                                             | `quantity: 1`                                            | YES      |
+| `sku: "SKU12345"`                                                         | `sku: "SKU12345"`                                        | NO       |
+| `price: { value: { currencyCode: "EUR", centAmount: 1000 } }`             | `unitPrice: { currency: "EUR", value: "10.00" } `        | YES      |
+| `taxRate: { amount: 0.21 }`                                               | `vatRate: "21.00"`                                       | YES      |
+| `taxedPrice: { totalGross } - { totalNet }` *                             | `vatAmount: { currency: "EUR", value: "2.82" }`          | YES      |
+| `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                   | `totalAmount: { currency: "EUR", value: "10.00" } `      | YES      |
+| `price: { value } x quantity - totalPrice` **                             | `discountAmount: { currency: "EUR", value: "10.00" }`    | NO       |
+| `id: "09f525b2-b739-4169"`                                                | `metadata: { cartLineItemId: "09f525b2-b739-4169" }`     | NO       |
 
 \* vatAmount is calculated by using `totalGross - totalNet`
 \** discountAmount is calculated only if there is `price.discounted.value` or `discountedPrice.value` present on line item. Calculation is using `line.price.value.centAmount * line.quantity - line.totalPrice.centAmount`
 
 ## Custom Line Items object
 
-| Parameter (CT Cart Line Item)                                              | Parameter (Mollie)                                                        | Required |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
-| `name: { en: "Green Apple" }`                                              | `name: "Green Apple"`                                                     | YES      |
-| `quantity: 1`                                                              | `quantity: 1`                                                             | YES      |
-| `money: { currencyCode: "EUR", centAmount: 1000 }`                         | `unitPrice: { currency: "EUR", value: "10.00" } `                         | YES      |
-| `taxRate: { amount: 0.21 }`                                                | `vatRate: "21.00"`                                                        | YES      |
-| `taxedPrice: { totalGross } - { totalNet }` *                              | `vatAmount: { currency: "EUR", value: "2.82" }`                           | YES      |
-| `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                    | `totalAmount: { currency: "EUR", value: "10.00" } `                       | YES      |
-| `money x quantity - totalPrice` **                                         | `discountAmount: { currency: "EUR", value: "10.00" }`                     | NO       |
-| `id: "09f525b2-b739-4169"`                                                 | `metadata: { cartCustomLineItemId: "09f525b2-b739-4169" }`                | NO       |
+| Parameter (CT Cart Line Item)                                             | Parameter (Mollie)                                                       | Required  |
+|---------------------------------------------------------------------------|--------------------------------------------------------------------------|-----------|
+| `name: { en: "Green Apple" }`                                             | `name: "Green Apple"`                                                    | YES       |
+| `quantity: 1`                                                             | `quantity: 1`                                                            | YES       |
+| `money: { currencyCode: "EUR", centAmount: 1000 }`                        | `unitPrice: { currency: "EUR", value: "10.00" } `                        | YES       |
+| `taxRate: { amount: 0.21 }`                                               | `vatRate: "21.00"`                                                       | YES       |
+| `taxedPrice: { totalGross } - { totalNet }` *                             | `vatAmount: { currency: "EUR", value: "2.82" }`                          | YES       |
+| `totalprice: { currencyCode: "EUR", centAmount: 1000 }`                   | `totalAmount: { currency: "EUR", value: "10.00" } `                      | YES       |
+| `money x quantity - totalPrice` **                                        | `discountAmount: { currency: "EUR", value: "10.00" }`                    | NO        |
+| `id: "09f525b2-b739-4169"`                                                | `metadata: { cartCustomLineItemId: "09f525b2-b739-4169" }`               | NO        |
 
 \* vatAmount is calculated by using `totalGross - totalNet`
 \** discountAmount is calculated only if there is `discountedPrice.value` present on custom line item. Calculation is using `customLine.money.centAmount * customLine.quantity - customLine.totalPrice.centAmount`
@@ -91,7 +92,7 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 ## Shipping Info object
 
 | Parameter (CT Cart Shipping Info)                                          | Parameter (Mollie)                                                        | Required |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
+|----------------------------------------------------------------------------|---------------------------------------------------------------------------|----------|
 | `shippingMethodName: "Standard EU"`                                        | `name: "Shipping - Standard EU"`                                          | YES      |
 |                                                                            | `quantity: 1`                                                             | YES      |
 | `price: { currencyCode: "EUR", centAmount: 1000 }`                         | `unitPrice: { currency: "EUR", value: "10.00" }`                          | YES      |
@@ -110,15 +111,15 @@ Available issuers can be listed as part of the [list payment methods](./Managing
 Mollie only requires billing address to create the order. However, we require shipping address as commercetools does not calculate the tax price for each line item without the shipping address being set.
 
 | Parameter (CT Cart billingAddress/shippingAddress/customerEmail/customer's email) | Parameter (Mollie)                            | Required |
-| -------------------------------------------------- | --------------------------------------------- | -------- |
-| `firstName: "Piet"`                                | `givenName: "Piet"`                           | YES      |
-| `lastName: "Mondriaan"`                            | `familyName: "Mondriaan"`                     | YES      |
-| `email: "coloured_square_lover@basicart.com"`      | `email: "coloured_square_lover@basicart.com"` | YES      |
-| `streetName: "Keizersgracht"`                      | `streetAndNumber: "Keizersgracht 126"`        | YES      |
-| `streetNumber: "126"`                              |                                               | YES      |
-| `postalCode: "1234AB"`                             | `postalCode: "1234AB"`                        | YES      |
-| `country: "NL"`                                    | `country: "NL"`                               | YES      |
-| `city: "Amsterdam"`                                | `city: "Amsterdam"`                           | YES      |
+|-----------------------------------------------------------------------------------|-----------------------------------------------|----------|
+| `firstName: "Piet"`                                                               | `givenName: "Piet"`                           | YES      |
+| `lastName: "Mondriaan"`                                                           | `familyName: "Mondriaan"`                     | YES      |
+| `email: "coloured_square_lover@basicart.com"`                                     | `email: "coloured_square_lover@basicart.com"` | YES      |
+| `streetName: "Keizersgracht"`                                                     | `streetAndNumber: "Keizersgracht 126"`        | YES      |
+| `streetNumber: "126"`                                                             |                                               | YES      |
+| `postalCode: "1234AB"`                                                            | `postalCode: "1234AB"`                        | YES      |
+| `country: "NL"`                                                                   | `country: "NL"`                               | YES      |
+| `city: "Amsterdam"`                                                               | `city: "Amsterdam"`                           | YES      |
 
 <br />
 
@@ -499,7 +500,7 @@ Mollie only requires billing address to create the order. However, we require sh
 When an order is successfully created on Mollie, we update commercetools payment with following actions
 
 | Action name (CT)                 | Value                                                                      |
-| -------------------------------- | -------------------------------------------------------------------------- |
+|----------------------------------|----------------------------------------------------------------------------|
 | `setKey`                         | `key: <mollie Order ID>`                                                   |
 | `setMethodInfoName`              | `interfaceText: "created"`                                                 |
 | `changeTransactionState`         | `createOrderResponse: <transactionId>, state: 'Pending'`                   |
