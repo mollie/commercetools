@@ -45,4 +45,7 @@ The notification module will process the notification sent by Mollie and match t
 Please see the [Contribution Guide](./docs/ContributionGuidelines.md).
 
 ## Support & other guides
+
+[CommerceTools integration Wiki](https://github.com/mollie/commercetools/wiki)
+
 [Mollie's support page](https://help.mollie.com/hc/en-us)
