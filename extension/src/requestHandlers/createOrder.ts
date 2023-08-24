@@ -230,6 +230,8 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
       makeActions.changeTransactionInteractionId(originalTransaction.id, molliePaymentId),
       // Update transaction timestamp
       makeActions.changeTransactionTimestamp(originalTransaction.id, mollieCreatedAt),
+      // Store the original Mollie OrderId in custom field
+      makeActions.setCustomField('mollieOrderId', mollieOrderId),
     ];
     return Promise.resolve(result);
   } catch (error: any) {
