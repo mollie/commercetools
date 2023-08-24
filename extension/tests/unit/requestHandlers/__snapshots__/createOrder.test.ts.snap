@@ -54,6 +54,14 @@ exports[`createCTActions Should create correct ct actions from request and molli
 }
 `;
 
+exports[`createCTActions Should create correct ct actions from request and mollies order 7`] = `
+{
+  "action": "setCustomField",
+  "name": "mollieOrderId",
+  "value": "ord_1.dsczl7",
+}
+`;
+
 exports[`makeMollieAddress Should properly map address fields 1`] = `
 {
   "city": "Amsterdam",
