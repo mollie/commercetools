@@ -26,7 +26,7 @@ describe('Config test', () => {
       mollie: { apiKey: 'testMollieApiKey' },
       commercetools: ctConfig,
       service: {
-        port: 3000,
+        port: 3001,
         logLevel: 'info',
         logTransports: 'terminal',
       },
