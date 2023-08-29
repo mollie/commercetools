@@ -8,7 +8,7 @@ describe('Config test', () => {
     clientSecret: 'abcdefghi',
     authUrl: 'https://auth.dummy.com',
     host: 'https://api.dummy.com',
-    authentication: { isBasicAuth: false },
+    authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' },
     enableRetry: true,
   };
   beforeEach(() => {
