@@ -18,11 +18,11 @@ const {
  */
 export default async function handleRequest(input: HandleRequestInput): Promise<HandleRequestOutput> {
   // Only accept '/' endpoint
-  if (input.httpPath !== '/') {
+  if ((input.httpPath ?? '/') !== '/') {
     Logger.http(`Path ${input.httpPath} not allowed`);
     return new HandleRequestFailure(400);
   }
-  if (input.httpMethod !== 'POST') {
+  if ((input.httpMethod ?? 'POST') !== 'POST') {
     Logger.http(`Method ${input.httpMethod} not allowed`);
     return new HandleRequestFailure(405);
   }

@@ -36,13 +36,18 @@ export function makeTransactionUpdateActions(molliePayments: Payment[], commerce
 export async function handleOrderWebhook(mollieOrderId: string, mollieClient: MollieClient, commercetoolsClient: any): Promise<CTPayment> {
   let updateActions: CTUpdateAction[] = [];
 
+  let commerceToolsOrderId = mollieOrderId;
+  if (mollieOrderId.substring(5, 6) == '.') {
+    commerceToolsOrderId = mollieOrderId.substring(0, 5) + '_' + mollieOrderId.substring(6);
+  }
+
   // Get mollie order info, including payments
   const order = await actions.mGetOrderDetailsById(mollieOrderId, mollieClient);
   const mollieOrderStatus = order.status;
   const molliePayments = order._embedded?.payments ?? ([] as Payment[]);
 
   // Get commercetools payment info, including transactions
-  const ctPayment = await actions.ctGetPaymentByKey(mollieOrderId, commercetoolsClient, projectKey);
+  const ctPayment = await actions.ctGetPaymentByKey(commerceToolsOrderId, commercetoolsClient, projectKey);
 
   // Create update actions for the commercetools transactions, to match the mollie order's payments
   const transactionUpdates = makeTransactionUpdateActions(molliePayments, ctPayment.transactions || ([] as CTTransaction[]));
@@ -56,6 +61,7 @@ export async function handleOrderWebhook(mollieOrderId: string, mollieClient: Mo
   }
 
   // Update the CT Payment
-  const updatedPayment = await actions.ctUpdatePaymentByKey(mollieOrderId, commercetoolsClient, projectKey, ctPayment.version, updateActions);
+  const updatedPayment = await actions.ctUpdatePaymentByKey(commerceToolsOrderId, commercetoolsClient, projectKey, ctPayment.version, updateActions);
+
   return updatedPayment;
 }

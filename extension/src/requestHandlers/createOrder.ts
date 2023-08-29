@@ -215,7 +215,10 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
 
     // Convert the Mollie orderId to an acceptable one for CommerceTools
     let mollieOrderId = orderResponse.id;
-    let commerceToolsOrderId = mollieOrderId.substring(0, 5) + '_' + mollieOrderId.substring(6);
+    let commerceToolsOrderId = mollieOrderId;
+    if (mollieOrderId.substring(5, 6) == '.') {
+      commerceToolsOrderId = mollieOrderId.substring(0, 5) + '_' + mollieOrderId.substring(6);
+    }
 
     const result: Action[] = [
       // Add interface interaction
