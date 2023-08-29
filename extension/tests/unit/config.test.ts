@@ -8,7 +8,7 @@ describe('Config test', () => {
     clientSecret: 'abcdefghi',
     authUrl: 'https://auth.dummy.com',
     host: 'https://api.dummy.com',
-    authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' },
+    authentication: { isBasicAuth: false },
     enableRetry: true,
   };
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('Config test', () => {
       mollie: { apiKey: 'testMollieApiKey' },
       commercetools: ctConfig,
       service: {
-        port: 3001,
+        port: 3000,
         logLevel: 'info',
         logTransports: 'terminal',
       },
@@ -82,10 +82,9 @@ describe('Config test', () => {
         projectKey: 'test',
         clientId: '123456789',
         clientSecret: 'abcdefghi',
-        authUrl: 'https://auth.dummy.com.x',
+        authUrl: 'https://auth.dummy.com',
         host: 'https://api.dummy.com',
         enableRetry: false,
-        authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' },
       },
       service: { port: 2000, locale: 'nl' },
     });
@@ -95,10 +94,10 @@ describe('Config test', () => {
         projectKey: 'test',
         clientId: '123456789',
         clientSecret: 'abcdefghi',
-        authUrl: 'https://auth.dummy.com.x',
+        authUrl: 'https://auth.dummy.com',
         host: 'https://api.dummy.com',
         enableRetry: false,
-        authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' },
+        authentication: { isBasicAuth: false },
       },
       service: {
         port: 2000,
