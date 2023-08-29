@@ -38,6 +38,17 @@
         },
         "required": false,
         "inputHint": "MultiLine"
+      },
+      {
+        "type": {
+          "name": "String"
+        },
+        "name": "mollieOrderId",
+        "label": {
+          "en": "Original Mollie OrderId"
+        },
+        "required": false,
+        "inputHint": "SingleLine"
       }
     ]
   },

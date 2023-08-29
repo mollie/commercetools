@@ -238,7 +238,7 @@ describe('Create Order', () => {
       expect(status).toBe(201);
 
       const { actions } = body;
-      expect(actions).toHaveLength(6);
+      expect(actions).toHaveLength(7);
 
       // Ensure the interface interaction contains the checkout url
       const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
@@ -281,7 +281,7 @@ describe('Create Order', () => {
       expect(status).toBe(201);
 
       const { actions } = body;
-      expect(actions).toHaveLength(6);
+      expect(actions).toHaveLength(7);
 
       // Ensure the interface interaction contains the checkout url
       const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
@@ -326,7 +326,7 @@ describe('Create Order', () => {
       expect(status).toBe(201);
 
       const { actions } = body;
-      expect(actions).toHaveLength(6);
+      expect(actions).toHaveLength(7);
 
       // Ensure the interface interaction contains the checkout url
       const interfaceInteractionAction = actions.find((action: any) => action.action === 'addInterfaceInteraction');
