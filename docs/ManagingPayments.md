@@ -48,7 +48,7 @@ The extension checks every incoming payment request for payment interface name, 
 
 On your webshop, a customer will add items to their basket. This is reflected in a [Cart](https://docs.commercetools.com/api/projects/carts) on commercetools. Before checkout, make sure the Cart is up to date, including shipping information and amount. The lines and totals in the Cart are used to make the order in mollie.
 
-In order to checkout, this Cart needs to be linked to a Payment. This Payment should have `amountPlanned` set to the total amount of the Cart. It must also have its [payment method interface](https://docs.commercetools.com/api/projects/payments#paymentmethodinfo) must be set to "mollie", (this is to allow for other API extensions on the same commercetools project, and prevent unintended updates).
+In order to checkout, this Cart needs to be linked to a Payment. This Payment should have `amountPlanned` set to the total amount of the Cart. It must also have its [payment method interface](https://docs.commercetools.com/api/projects/payments#paymentmethodinfo) set to "mollie", (this is to allow for other API extensions on the same commercetools project, and prevent unintended updates).
 
 ### List Payment Methods
 
