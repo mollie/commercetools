@@ -85,6 +85,7 @@ describe('Config test', () => {
         authUrl: 'https://auth.dummy.com.x',
         host: 'https://api.dummy.com',
         enableRetry: false,
+        authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' },
       },
       service: { port: 2000, locale: 'nl' },
     });
@@ -97,7 +98,7 @@ describe('Config test', () => {
         authUrl: 'https://auth.dummy.com.x',
         host: 'https://api.dummy.com',
         enableRetry: false,
-        authentication: { isBasicAuth: false },
+        authentication: { isBasicAuth: false, username: 'testUser', password: 'testPassword' },
       },
       service: {
         port: 2000,
