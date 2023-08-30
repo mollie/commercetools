@@ -12,7 +12,9 @@ For an overview of how this module works, please see the [Managing Payments](../
 
 ### Running locally
 
-To run, you will need the correct environment variables, as described in the [deployment guidelines](../docs/Deployment.md). This module expects to find a `CT_MOLLIE_CONFIG` environment variable.
+To run, you will need the correct environment variables, 
+as described in the [deployment guidelines](./docs/Deployment.md). 
+This module expects to find a `CT_MOLLIE_CONFIG` environment variable.
 
 Install node modules:
 
