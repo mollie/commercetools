@@ -119,7 +119,6 @@ There MUST be a perfect match between the list of scopes provided to the user an
 CTP_SCOPES=view_orders:<project-name> view_payments:<project-name> manage_payments:<project-name>
 ```
 
-
 ## Configure custom fields for your project
 
 This integration works by creating an API Extension on commercetools. This is triggered on every create and update call to Payments. It uses custom fields, which need to be created on the commercetools project.

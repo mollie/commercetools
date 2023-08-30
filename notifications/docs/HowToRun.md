@@ -26,7 +26,7 @@ Commercetools Mollie integration requires one environment variable to start. Thi
 Here is a table to show which environment variables are necessary, and which are optional:
 
 | Env variable name | Required | Notes                                                                                                                                                                                     |
-| ----------------- |----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `mollie`          | YES      | Contains Mollie-specific project variables                                                                                                                                                |
 | `apiKey`          | YES      | API key for interacting with mollie                                                                                                                                                       |
 | `commercetools`   | YES      | Contains commercetools-specific project variables                                                                                                                                         |
