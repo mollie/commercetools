@@ -113,6 +113,12 @@ If you use our script to [configure custom fields for your project](#configure-c
 
 You can read more about the scopes [here](https://docs.commercetools.com/api/scopes).
 
+There MUST be a perfect match between the list of scopes provided to the user and those listed in the configurations, for example:
+
+```
+CTP_SCOPES=view_orders:<project-name> view_payments:<project-name> manage_payments:<project-name>
+```
+
 ## Configure custom fields for your project
 
 This integration works by creating an API Extension on commercetools. This is triggered on every create and update call to Payments. It uses custom fields, which need to be created on the commercetools project.
@@ -131,7 +137,7 @@ CTP_CLIENT_SECRET=<client_secret>
 CTP_CLIENT_ID=<client_id>
 CTP_AUTH_URL=<auth_url>
 CTP_API_URL=<api_url>
-CTP_SCOPES=<scopes>[optional]
+CTP_SCOPES=<scopes>
 ```
 
 Once this file is set, you should rename it to .env and move it to the extension/ directory:

@@ -67,7 +67,7 @@ export const amountLowerThanMinimumKlarnaSliceIt = {
 
 export const orderCreatedWithTwoLineItemsUsingKlarna = {
   resource: 'order',
-  id: 'ord_l2idwq',
+  id: 'ord_1.l2idwq',
   profileId: 'pfl_a2jBK6dR32',
   method: 'klarnapaylater',
   amount: {
@@ -109,7 +109,7 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
     {
       resource: 'orderline',
       id: 'odl_1.q46hg4',
-      orderId: 'ord_l2idwq',
+      orderId: 'ord_1.l2idwq',
       name: 'Sweater Pinko white',
       sku: 'M0E20000000DJR9',
       type: 'physical',
@@ -155,7 +155,7 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
     {
       resource: 'orderline',
       id: 'odl_1.wb6ssm',
-      orderId: 'ord_l2idwq',
+      orderId: 'ord_1.l2idwq',
       name: 'Bag medium GUM black',
       sku: 'A0E2000000027DV',
       type: 'physical',
@@ -222,7 +222,7 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
         },
         locale: 'nl_NL',
         profileId: 'pfl_a2jBK6dR32',
-        orderId: 'ord_l2idwq',
+        orderId: 'ord_1.l2idwq',
         sequenceType: 'oneoff',
         redirectUrl: 'https://www.redirect.url/',
         webhookUrl: 'https://www.webhook.url',
@@ -244,7 +244,7 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
             type: 'text/html',
           },
           order: {
-            href: 'https://api.mollie.com/v2/orders/ord_l2idwq',
+            href: 'https://api.mollie.com/v2/orders/ord_1.l2idwq',
             type: 'application/hal+json',
           },
         },
@@ -254,11 +254,11 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
   },
   _links: {
     self: {
-      href: 'https://api.mollie.com/v2/orders/ord_l2idwq?embed=payments%2Crefunds',
+      href: 'https://api.mollie.com/v2/orders/ord_1.l2idwq?embed=payments%2Crefunds',
       type: 'application/hal+json',
     },
     dashboard: {
-      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_l2idwq',
+      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_1.l2idwq',
       type: 'text/html',
     },
     checkout: {
@@ -274,7 +274,7 @@ export const orderCreatedWithTwoLineItemsUsingKlarna = {
 
 export const orderCreatedWithTwoLinesUsingIdeal = {
   resource: 'order',
-  id: 'ord_8xnw8a',
+  id: 'ord_1.8xnw8a',
   profileId: 'pfl_a2jBK6dR32',
   method: 'ideal',
   amount: {
@@ -316,7 +316,7 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
     {
       resource: 'orderline',
       id: 'odl_1.y0kpfo',
-      orderId: 'ord_8xnw8a',
+      orderId: 'ord_1.8xnw8a',
       name: 'Sweater Pinko white',
       sku: 'M0E20000000DJR9',
       type: 'physical',
@@ -362,7 +362,7 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
     {
       resource: 'orderline',
       id: 'odl_1.4labw6',
-      orderId: 'ord_8xnw8a',
+      orderId: 'ord_1.8xnw8a',
       name: 'Bag medium GUM black',
       sku: 'A0E2000000027DV',
       type: 'physical',
@@ -425,7 +425,7 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
         expiresAt: '2021-12-20T10:30:15+00:00',
         locale: 'nl_NL',
         profileId: 'pfl_a2jBK6dR32',
-        orderId: 'ord_8xnw8a',
+        orderId: 'ord_1.8xnw8a',
         sequenceType: 'oneoff',
         redirectUrl: 'https://www.redirect.url/',
         webhookUrl: 'https://www.webhook.url',
@@ -443,7 +443,7 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
             type: 'text/html',
           },
           order: {
-            href: 'https://api.mollie.com/v2/orders/ord_8xnw8a',
+            href: 'https://api.mollie.com/v2/orders/ord_1.8xnw8a',
             type: 'application/hal+json',
           },
         },
@@ -453,11 +453,11 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
   },
   _links: {
     self: {
-      href: 'https://api.mollie.com/v2/orders/ord_8xnw8a?embed=payments%2Crefunds',
+      href: 'https://api.mollie.com/v2/orders/ord_1.8xnw8a?embed=payments%2Crefunds',
       type: 'application/hal+json',
     },
     dashboard: {
-      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_8xnw8a',
+      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_1.8xnw8a',
       type: 'text/html',
     },
     checkout: {
@@ -473,7 +473,7 @@ export const orderCreatedWithTwoLinesUsingIdeal = {
 
 export const orderCreatedIncludingDiscountLineUsingIdeal = {
   resource: 'order',
-  id: 'ord_ca1j7q',
+  id: 'ord_1.ca1j7q',
   profileId: 'pfl_a2jBK6dR32',
   method: 'ideal',
   amount: {
@@ -515,7 +515,7 @@ export const orderCreatedIncludingDiscountLineUsingIdeal = {
     {
       resource: 'orderline',
       id: 'odl_1.uvuwbi',
-      orderId: 'ord_ca1j7q',
+      orderId: 'ord_1.ca1j7q',
       name: 'Sweater Pinko white',
       sku: 'M0E20000000DJR9',
       type: 'physical',
@@ -561,7 +561,7 @@ export const orderCreatedIncludingDiscountLineUsingIdeal = {
     {
       resource: 'orderline',
       id: 'odl_1.1uasgg',
-      orderId: 'ord_ca1j7q',
+      orderId: 'ord_1.ca1j7q',
       name: 'Bag medium GUM black',
       sku: 'A0E2000000027DV',
       type: 'physical',
@@ -607,7 +607,7 @@ export const orderCreatedIncludingDiscountLineUsingIdeal = {
     {
       resource: 'orderline',
       id: 'odl_1.7xk3r6',
-      orderId: 'ord_ca1j7q',
+      orderId: 'ord_1.ca1j7q',
       name: 'Holiday Discount',
       sku: null,
       type: 'physical',
@@ -670,7 +670,7 @@ export const orderCreatedIncludingDiscountLineUsingIdeal = {
         expiresAt: '2021-12-21T07:48:07+00:00',
         locale: 'nl_NL',
         profileId: 'pfl_a2jBK6dR32',
-        orderId: 'ord_ca1j7q',
+        orderId: 'ord_1.ca1j7q',
         sequenceType: 'oneoff',
         redirectUrl: 'https://google.com',
         webhookUrl: 'https://google.com',
@@ -688,7 +688,7 @@ export const orderCreatedIncludingDiscountLineUsingIdeal = {
             type: 'text/html',
           },
           order: {
-            href: 'https://api.mollie.com/v2/orders/ord_ca1j7q',
+            href: 'https://api.mollie.com/v2/orders/ord_1.ca1j7q',
             type: 'application/hal+json',
           },
         },
@@ -698,11 +698,11 @@ export const orderCreatedIncludingDiscountLineUsingIdeal = {
   },
   _links: {
     self: {
-      href: 'https://api.mollie.com/v2/orders/ord_ca1j7q?embed=payments%2Crefunds',
+      href: 'https://api.mollie.com/v2/orders/ord_1.ca1j7q?embed=payments%2Crefunds',
       type: 'application/hal+json',
     },
     dashboard: {
-      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_ca1j7q',
+      href: 'https://www.mollie.com/dashboard/org_12908718/orders/ord_1.ca1j7q',
       type: 'text/html',
     },
     checkout: {

@@ -271,7 +271,7 @@ describe('createCTActions', () => {
     };
     const mockedMollieCreatedOrder = {
       resource: 'order',
-      id: 'ord_dsczl7',
+      id: 'ord_1.dsczl7',
       profileId: 'pfl_VtWA783A63',
       createdAt: '2018-08-02T09:29:56+00:00',
       amount: { value: '10.00', currency: 'EUR' },
@@ -289,7 +289,7 @@ describe('createCTActions', () => {
       },
     } as Order;
     const ctActions = await createCtActions(mockedMollieCreatedOrder, mockedCtObject as CTPayment, 'fd5317fa-c2f8-44c0-85ab-a1c1169d2404');
-    expect(ctActions).toHaveLength(6);
+    expect(ctActions).toHaveLength(7);
     ctActions.forEach(action => {
       expect(action).toMatchSnapshot();
     });
@@ -304,7 +304,7 @@ describe('createCTActions', () => {
     };
     const mockedMollieCreatedOrder: any = {
       resource: 'order',
-      id: 'ord_dsczl7',
+      id: 'ord_1.dsczl7',
       profileId: 'pfl_VtWA783A63',
       amount: { value: '10.00', currency: 'EUR' },
       orderNumber: '1001',
@@ -327,7 +327,7 @@ describe('createCTActions', () => {
     };
     const mockedMollieCreatedOrder: any = {
       resource: 'order',
-      id: 'ord_dsczl7',
+      id: 'ord_1.dsczl7',
       profileId: 'pfl_VtWA783A63',
       amount: { value: '10.00', currency: 'EUR' },
       orderNumber: '1001',
