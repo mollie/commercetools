@@ -1,10 +1,10 @@
-# Setup of Development Environment
+# Setup of Test Environment
 
 
-These are the steps for a correct configuration of the Development Environment.
+These are the steps for a correct configuration of a test Environment.
 
 
-## Create Mollie account
+## Create test Mollie account
 
 Create a new account for Mollie in:
 
@@ -15,14 +15,14 @@ After the creation of the account, don't forget to set test mode on, in the top 
 https://my.mollie.com/dashboard/<ORGANISATION_ID>/orders
 
 
-## Create and configure CommerceTools account
+## Create and configure test CommerceTools account
 
 Create a new account for CommerceTools in:
 
 https://mc.europe-west1.gcp.commercetools.com/
 
 
-Create a new Project in CommerceTools.
+Create a new Project in CommerceTools, with a name that will be forward referred as <PROJECT_NAME>.
 
 
 
