@@ -4,12 +4,16 @@ import formatErrorResponse from '../errorHandlers';
 import { Action, ControllerAction, CTPayment, CTTransactionState, CTTransactionType, CTUpdatesRequestedResponse } from '../types';
 import Logger from '../../src/logger/logger';
 import { makeActions } from '../makeActions';
-import { ctToMollieLines, findInitialTransaction, isPartialTransaction } from '../utils';
+import { ctToMollieLines, findInitialTransaction, isPartialTransaction, ctToMollieOrderId } from '../utils';
 
 export function getShipmentParams(ctPayment: Required<CTPayment>, mollieOrder: Order | undefined): Promise<ShipmentCreateParams> {
+  Logger.debug('getShipmentParams : ctPayment : ' + JSON.stringify(ctPayment));
+  Logger.debug('getShipmentParams : mollieOrder : ' + JSON.stringify(mollieOrder));
+
   try {
+    let mollieOrderId = ctToMollieOrderId(ctPayment.key);
     const shipmentParams: ShipmentCreateParams = {
-      orderId: ctPayment.key,
+      orderId: mollieOrderId,
     };
     if (isPartialTransaction(ctPayment.transactions, CTTransactionType.Charge) && mollieOrder) {
       const initialCharge = findInitialTransaction(ctPayment.transactions, CTTransactionType.Charge);
@@ -68,6 +72,7 @@ export function createCtActions(mollieShipmentRes: Shipment, ctPayment: CTPaymen
 }
 
 export default async function createShipment(ctPayment: Required<CTPayment>, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+  Logger.debug('createShipment : ctPayment : ' + JSON.stringify(ctPayment));
   try {
     Logger.debug('ctPayment: %o', ctPayment);
     const mollieOrderRes = isPartialTransaction(ctPayment.transactions ?? [], CTTransactionType.Charge) ? await mollieClient.orders.get(ctPayment.key) : undefined;
