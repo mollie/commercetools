@@ -4,11 +4,14 @@ import formatErrorResponse from '../errorHandlers';
 import { Action, CTPayment, CTTransactionType, CTUpdatesRequestedResponse, CTTransactionState, ControllerAction } from '../types';
 import Logger from '../logger/logger';
 import { makeActions } from '../makeActions';
+import { ctToMollieOrderId } from '../utils';
 
 export function getOrdersPaymentsParams(ctPayment: CTPayment): OrderPaymentCreateParams {
+  Logger.debug('getOrdersPaymentsParams : ctPayment ' + JSON.stringify(ctPayment));
+  let mollieOrderId = ctToMollieOrderId(ctPayment.key);
   const orderPaymentCreateParams: OrderPaymentCreateParams = {
     // Payments without key create a new order in determine action
-    orderId: ctPayment.key!,
+    orderId: mollieOrderId,
     method: ctPayment.paymentMethodInfo.method as PaymentMethod,
   };
   return orderPaymentCreateParams;
@@ -25,6 +28,9 @@ export function createCtActions(orderPaymentRes: Payment, ctPayment: CTPayment):
     }
     // TODO - remove when transaction type is updated to have ID as required
     originalTransaction.id = originalTransaction.id ?? '';
+
+    Logger.debug('createCtActions : originalTransaction.id : ' + originalTransaction.id);
+    Logger.debug('createCtActions : orderPaymentRes.id : ' + orderPaymentRes.id);
 
     const interfaceInteractionId = uuid();
     const molliePaymentId = orderPaymentRes.id;
@@ -64,6 +70,7 @@ export function createCtActions(orderPaymentRes: Payment, ctPayment: CTPayment):
 }
 
 export default async function createOrderPayment(ctPayment: CTPayment, mollieClient: MollieClient, getOrdersPaymentsParams: Function, createCtActions: Function): Promise<CTUpdatesRequestedResponse> {
+  Logger.debug('createOrderPayment : ctPayment : ' + JSON.stringify(ctPayment));
   try {
     const ordersPaymentsParams = getOrdersPaymentsParams(ctPayment);
     const mollieOrderPaymentRes = await mollieClient.orders_payments.create(ordersPaymentsParams);
