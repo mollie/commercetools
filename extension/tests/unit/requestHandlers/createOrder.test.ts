@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { Order, OrderLineType } from '@mollie/api-client';
 import { cloneDeep, omit } from 'lodash';
-import { makeMollieAmount } from '../../../src/utils';
+import { makeMollieAmount, mollieToCtOrderId } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 import createOrder, {
   makeMollieAddress,
@@ -252,6 +252,7 @@ describe('createCTActions', () => {
   });
 
   it('Should create correct ct actions from request and mollies order', async () => {
+    jest.mocked(mollieToCtOrderId).mockReturnValue('ord_1_dsczl7');
     const mockedCreateOrderString = '{"locale":"fr_FR"}';
     const mockedCtObject = {
       id: '3d0ede94-df76-423f-b560-71d4c365d086',
