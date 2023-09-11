@@ -38,6 +38,7 @@ function extractMethodListParameters(ctObj: CTPayment): Promise<MethodsListParam
 }
 
 export default async function getPaymentMethods(ctObj: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+  Logger.debug('getPaymentMethods : ctObj : ' + JSON.stringify(ctObj));
   try {
     const mollieOptions = await extractMethodListParameters(ctObj);
     const methods: List<Method> = await mollieClient.methods.list(mollieOptions);
