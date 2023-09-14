@@ -97,6 +97,7 @@ const createCtActions = (refundTransaction: CTTransaction, originalPaymentTransa
  * get the mollie payment id.
  */
 export async function createCustomRefund(ctPayment: CTPayment, mollieClient: MollieClient): Promise<CTUpdatesRequestedResponse> {
+  Logger.debug('createCustomRefund : ctPayment : ' + JSON.stringify(ctPayment));
   try {
     // Get the refund transaction (initial), amount etc.
     const { transactions } = ctPayment;

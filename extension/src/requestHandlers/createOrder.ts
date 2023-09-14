@@ -7,6 +7,7 @@ import { makeMollieAmount } from '../utils';
 import Logger from '../logger/logger';
 import config from '../../config/config';
 import { makeActions } from '../makeActions';
+import { mollieToCtOrderId } from '../utils';
 
 const {
   commercetools: { projectKey },
@@ -215,10 +216,7 @@ export function createCtActions(orderResponse: Order, ctPayment: CTPayment, cart
 
     // Convert the Mollie orderId to an acceptable one for CommerceTools
     let mollieOrderId = orderResponse.id;
-    let commerceToolsOrderId = mollieOrderId;
-    if (mollieOrderId.substring(5, 6) == '.') {
-      commerceToolsOrderId = mollieOrderId.substring(0, 5) + '_' + mollieOrderId.substring(6);
-    }
+    let commerceToolsOrderId = mollieToCtOrderId(mollieOrderId);
 
     const result: Action[] = [
       // Add interface interaction
@@ -250,6 +248,7 @@ export default async function createOrder(
   createCtActions: Function,
 ): Promise<CTUpdatesRequestedResponse> {
   const paymentId = ctPayment?.id;
+  Logger.debug('createOrder : paymentId : ' + JSON.stringify(paymentId));
   try {
     const baseRequestParams = {
       method: 'GET',

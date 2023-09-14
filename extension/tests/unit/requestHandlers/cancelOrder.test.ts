@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { Order } from '@mollie/api-client';
 import { Action, CTPayment, CTTransaction } from '../../../src/types';
 import cancelOrder, { getCancelOrderParams, createCtActions } from '../../../src/requestHandlers/cancelOrder';
-import { isPartialTransaction, createDateNowString, mollieToCtLines, findInitialTransaction, ctToMollieLines } from '../../../src/utils';
+import { isPartialTransaction, createDateNowString, mollieToCtLines, findInitialTransaction, ctToMollieLines, ctToMollieOrderId } from '../../../src/utils';
 import Logger from '../../../src/logger/logger';
 
 jest.mock('uuid');
@@ -30,6 +30,7 @@ describe('getCancelOrderParams', () => {
     const mockMollieLines = [{ id: 'odl_1.tlaa3w' }, { id: 'odl_1.6997yo' }, { id: 'odl_1.cgark2' }];
     jest.mocked(findInitialTransaction).mockReturnValue(mockTransaction);
     jest.mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
+    jest.mocked(ctToMollieOrderId).mockReturnValue('ord_3uwvfd');
     const mockCtPayment = {
       key: 'ord_3uwvfd',
       transactions: [mockTransaction],
@@ -75,6 +76,7 @@ describe('getCancelOrderParams', () => {
       orderId: 'ord_3uwvfd',
       lines: mockMollieLines,
     };
+
     await expect(getCancelOrderParams(mockCtPayment, mockOrderRes)).resolves.toEqual(expectedCancelOrderParams);
   });
   it('Should create all optional params for mollie cancelOrder call when cancelling partial lines', async () => {
@@ -91,6 +93,7 @@ describe('getCancelOrderParams', () => {
     const mockMollieLines = [{ id: 'odl_1.tlaa3w', quantity: 2, amount: { value: '5.00', currency: 'EUR' } }, { id: 'odl_1.cgark2' }];
     jest.mocked(findInitialTransaction).mockReturnValue(mockTransaction);
     jest.mocked(ctToMollieLines).mockReturnValue(mockMollieLines);
+    jest.mocked(ctToMollieOrderId).mockReturnValue('ord_3uwvfd');
 
     const mockCtPayment = {
       key: 'ord_3uwvfd',
@@ -213,6 +216,7 @@ describe('cancelOrder', () => {
   });
   it('Should call mollie, handle response and return actions when cancelling complete order', async () => {
     jest.mocked(isPartialTransaction).mockReturnValue(false);
+    jest.mocked(ctToMollieOrderId).mockReturnValue('ord_jwtj05');
     const mockedCtPayment: any = {
       key: 'ord_jwtj05',
     };

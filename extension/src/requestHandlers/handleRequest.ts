@@ -15,6 +15,7 @@ const commercetoolsClient = initialiseCommercetoolsClient();
 const mollieClient = initialiseMollieClient();
 
 export default async function handleRequest(input: HandleRequestInput): Promise<HandleRequestOutput> {
+  Logger.debug('handleRequest : input : ' + JSON.stringify(input));
   const { isValid, message } = checkAuthorizationHeader(input.headers);
   if (!isValid) {
     Logger.error(message);
@@ -68,6 +69,7 @@ export default async function handleRequest(input: HandleRequestInput): Promise<
 
 const processAction = async function (action: ControllerAction, ctPaymentObject: any, mollieClient: MollieClient, commercetoolsClient: any) {
   let result = {} as CTUpdatesRequestedResponse;
+  Logger.debug('processAction : action : ' + JSON.stringify(action));
   switch (action) {
     case ControllerAction.GetPaymentMethods:
       Logger.debug(`action: ${ControllerAction.GetPaymentMethods}`);

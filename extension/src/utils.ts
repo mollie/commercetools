@@ -113,3 +113,19 @@ export function mollieToCtLines(mollieOrderLines: OrderLine[]): string {
 
   return ctLinesString;
 }
+
+export function mollieToCtOrderId(mollieOrderId: string): string {
+  let commerceToolsOrderId = mollieOrderId;
+  if (mollieOrderId.substring(5, 6) == '.') {
+    commerceToolsOrderId = mollieOrderId.substring(0, 5) + '_' + mollieOrderId.substring(6);
+  }
+  return commerceToolsOrderId;
+}
+
+export function ctToMollieOrderId(commerceToolsOrderId: any): string {
+  let mollieOrderId = commerceToolsOrderId;
+  if (mollieOrderId != null && mollieOrderId.length > 6 && mollieOrderId.substring(5, 6) == '_') {
+    mollieOrderId = mollieOrderId.substring(0, 5) + '.' + mollieOrderId.substring(6);
+  }
+  return mollieOrderId;
+}
