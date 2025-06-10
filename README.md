@@ -1,3 +1,9 @@
+# DEPRECATED REPOSITORY
+
+⚠️ This integration is deprecated in favor of [mollie/commercetools-connector](https://github.com/mollie/commercetools-connector) ⚠️
+
+___
+
 [![GitHub Actions](https://github.com/mollie/commercetools/actions/workflows/ci.yaml/badge.svg)](https://github.com/mollie/commercetools/actions/workflows/ci.yaml/badge.svg)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
